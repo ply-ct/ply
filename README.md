@@ -1,10 +1,10 @@
-[![Limberest Logo](https://limberest.github.io/limberest/img/logo.png)](https://limberest.io)
+#Ply
 
 ## REST API Automated Testing
 
 ## Install
 ```bash
-npm install --save limberest
+npm install --save ply-ct
 ```
 
 ## Usage
@@ -47,4 +47,4 @@ request.run(options, values)
 ```
 
 ## Full Documentation:
-  - https://limberest.io/topics/requests
+  - https://ply-ct.com/topics/requests
