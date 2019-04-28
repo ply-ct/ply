@@ -7,7 +7,7 @@ which would disagree with the expected result.  Real-world APIs need an orchestr
 Cases use JavaScript to string together multiple requests.  They can include conditionality and populate values programmatically, and they
 can easily parse JSON response content.  This gives you the power to build tests as complex as the API you're exercising.
 
-Take a look at this snippet from the ply-demo [movie-crud.js](https://github.com/ply-ct/ply-demo/blob/master/test/cases/movie-crud.js)
+Take a look at this snippet from the ply-demo [movie-crud.js](https://github.com/ply-ct/ply-demo/blob/master/src/test/ply/cases/movie-crud.js)
 test case:
 ```javascript
 const ply = require('ply');
@@ -88,7 +88,7 @@ Result: {
 If you clone the [ply-demo](https://github.com/ply-ct/ply-demo) project, you can run the command 
 above from the test/cases/ directory.
 
-In fact, the [ply-js](https://www.npmjs.com/package/ply-ct) node module has all kinds of capabilities for
+In fact, the [ply-ct](https://www.npmjs.com/package/ply-ct) node module has all kinds of capabilities for
 complete API test automation, with or without Ply UI.
 
 Next Topic: [Options](options)

@@ -5,11 +5,11 @@ layout: topic
 Values provide a way to repeatedly run tests with varying input.  Values files are JSON.  They can be in
 [Postman environment](https://www.getpostman.com/docs/postman/environments_and_globals/manage_environments) format,
 or as (simpler and preferred) straight-JSON objects.  Values can hold environment-specific parameters like these:
-  - [ply-ct.com.values](https://github.com/ply-ct/ply-demo/blob/master/test/ply-ct.com.values)
-  - [localhost.values](https://github.com/ply-ct/ply-demo/blob/master/test/localhost.values)
+  - [ply-ct.com.values](https://github.com/ply-ct/ply-demo/blob/master/src/test/ply/ply-ct.com.values)
+  - [localhost.values](https://github.com/ply-ct/ply-demo/blob/master/src/test/ply/localhost.values)
 
 But values can also hold arbitrary testing data like this:
-  - [global.values](https://github.com/ply-ct/ply-demo/blob/master/test/global.values)
+  - [global.values](https://github.com/ply-ct/ply-demo/blob/master/src/test/ply/global.values)
   
 The examples in the previous topic illustrate how values are referenced in result YAML using JavaScript 
 [template literal expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) syntax:

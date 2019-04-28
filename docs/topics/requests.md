@@ -11,7 +11,7 @@ Each request represents an HTTP request with a parameterized endpoint, header an
 Ply has its own native JSON format, but the easiest way to get started is to
 [create and export a collection](https://www.getpostman.com/docs/postman/collections/creating_collections) 
 in [Postman](https://www.getpostman.com/).  As an example, the [ply-demo](https://github.com/ply-ct/ply-demo)
-project has an exported [movies-api collection](https://github.com/ply-ct/ply-demo/blob/master/test/movies-api.postman).
+project has an exported [movies-api collection](https://github.com/ply-ct/ply-demo/blob/master/src/test/ply/movies-api.postman).
 
 Every request in the collection can be run individually, or linked together in Ply [Cases](cases).
 An intuitive way to visualize a request is through [Ply UI](https://ply-ct.com/ui/requests).
