@@ -1,6 +1,6 @@
 {
   "name": "ply-ct",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Continuous testing for your API",
   "keywords": [
     "REST",

@@ -18,7 +18,7 @@ var values;
 
 ply.loadGroup(testsLoc + '/movies-api.postman')
 .then(group => {
-  request = group.getRequests();
+  request = group.getRequest();
   return ply.loadValues(options, ['/ply.io.values']);
 })
 .then(values => {
