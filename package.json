@@ -5,9 +5,8 @@
   "keywords": [
     "REST",
     "API",
-    "Automated Testing",
-    "Continuous Testing"
-  ],  
+    "Automated Testing"
+  ],
   "main": "index.js",
   "dependencies": {
     "async": "^2.5.0",
@@ -17,6 +16,7 @@
     "diff": "^3.3.0",
     "glob": "^7.1.2",
     "js-yaml": "^3.9.1",
+    "json-stable-stringify": "^1.0.1",
     "mkdirp": "^0.5.1",
     "request": "^2.81.0",
     "sanitize-filename": "^1.6.1"
@@ -34,11 +34,6 @@
     "type": "git",
     "url": "git+https://github.com/ply-ct/ply.git"
   },
-  "keywords": [
-    "REST",
-    "API",
-    "Automated Testing"
-  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ply-ct/ply/issues"

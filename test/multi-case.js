@@ -1,13 +1,14 @@
 'use strict';
 
+const ply = require('../lib/ply');
 const Multirun = require('../lib/multirun');
 
-const testsLoc = 'https://raw.githubusercontent.com/limberest/limberest-demo/master/test';
+const testsLoc = 'https://raw.githubusercontent.com/ply-ct/ply-demo/master/src/test/ply';
 
 const options = {
   location: testsLoc,
   expectedResultLocation: testsLoc + '/results/expected',
-  resultLocation: '../../limberest-demo/test/results/actual',
+  resultLocation: '../../ply-demo/src/test/ply/results/actual',
   debug: true,
   responseHeaders: ['content-type']
 };
@@ -15,12 +16,11 @@ const options = {
 var requests;
 var values;
 
-limberest.loadGroup(testsLoc + '/movies-api.postman')
+ply.loadGroup(testsLoc + '/movies-api.postman')
 .then(group => {
   request = group.getRequests();
-  return limberest.loadValues(options, ['/limberest.io.values']);
+  return ply.loadValues(options, ['/ply.io.values']);
 })
 .then(values => {
   new Multirun().runCases();
 })
-

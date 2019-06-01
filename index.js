@@ -1,5 +1,5 @@
 'use strict';
 
-var limberest = require('./lib/limberest.js');
+var ply = require('./lib/ply.js');
 
-module.exports = limberest;
+module.exports = ply;

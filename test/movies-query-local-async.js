@@ -1,13 +1,13 @@
 'use strict';
 
-const limberest = require('../lib/limberest');
+const ply = require('../lib/ply');
 
-const testsLoc = '../../limberest-demo/test';
+const testsLoc = '../../ply-demo/src/test/ply';
 
 const options = {
   location: testsLoc,
   expectedResultLocation: testsLoc + '/results/expected',
-  resultLocation: '../../limberest-demo/test/results/actual',
+  resultLocation: testsLoc + '/results/actual',
   debug: true,
   responseHeaders: ['content-type']
 };
@@ -15,10 +15,10 @@ const options = {
 var request;
 var values;
 
-limberest.loadGroup(testsLoc + '/movies-api.postman')
+ply.loadGroup(testsLoc + '/movies-api.postman')
 .then(group => {
   request = group.getRequest('GET', 'movies?{query}');
-  return limberest.loadValues(options, ['/limberest.io.values']); 
+  return ply.loadValues(options, ['/ply-ct.com.values']); 
 })
 .then(vals => {
   values = vals;

@@ -18,12 +18,12 @@ URL-Style Locations:
  
 ## Example:
 ```javascript
-const limberest = require('../lib/limberest');
+const ply = require('../lib/ply');
 
 // Note testsLoc on file system allows synchronous reads.
-const testsLoc = '../../limberest-demo/test';
-var values = limberest.loadValuesSync(testsLoc + '/limberest.io.values');
-var group = limberest.loadGroupSync(testsLoc + '/movies-api.postman');
+const testsLoc = '../../ply-demo/test';
+var values = ply.loadValuesSync(testsLoc + '/ply.io.values');
+var group = ply.loadGroupSync(testsLoc + '/movies-api.postman');
 
 var request = group.getRequest('GET', 'movies?{query}');
 
