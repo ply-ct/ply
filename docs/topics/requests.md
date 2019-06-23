@@ -3,7 +3,7 @@ layout: topic
 ---
 ## Requests
 Ply is all about automated testing of REST APIs. When executing a test, 
-you'll invoke actual REST calls to exercise *any* API (not just those built on Ply).
+you'll send actual HTTP requests to exercise your services.
 Every aspect of a test can be parameterized using [Values](values).
 
 Requests are the reusable building blocks you'll arrange to create test sequences.

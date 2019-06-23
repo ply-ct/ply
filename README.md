@@ -47,4 +47,5 @@ request.run(options, values)
 ```
 
 ## Full Documentation:
-  - https://ply-ct.com/topics/requests
+  - https://ply-ct.github.io/ply/topics/requests
+  
