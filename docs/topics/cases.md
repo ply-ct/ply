@@ -13,37 +13,34 @@ test case:
 const ply = require('ply-ct');
 const demo = require('../lib/ply-demo');
 ...
-var group = 'movies-api.postman'; // to be replaced once loaded
 
-ply.loadGroup(options.location + '/' + group)
-.then(loadedGroup => {
-  group = loadedGroup;
-  return demo.cleanupMovie(group, values);
-})
+const collection = ply.loadCollection(options.location + '/movies-api.postman');
+
+demo.cleanupMovie(collection, values)
 .then(() => {
   logger.info('Cleanup completed for movie: ' + values.id);
-  var post = group.getRequest('POST', 'movies');
+  var post = collection.getRequest('POST', 'movies');
   return testCase.run(post, values);
 })
 .then(response => {
   // update it (with programmatically-set rating)
   values.rating = 4.5;
-  var put = group.getRequest('PUT', 'movies/{id}');
+  var put = collection.getRequest('PUT', 'movies/{id}');
   return testCase.run(put, values);
 })
 .then(response => {
   // confirm update
-  var get = group.getRequest('GET', 'movies/{id}');
+  var get = collection.getRequest('GET', 'movies/{id}');
   return testCase.run(get, values);
 })
 .then(response => {
   // delete it
-  var del = group.getRequest('DELETE', 'movies/{id}');
+  var del = collection.getRequest('DELETE', 'movies/{id}');
   return testCase.run(del, values);
 })
 .then(response => {
   // confirm delete
-  var get = group.getRequest('GET', 'movies/{id}');
+  var get = collection.getRequest('GET', 'movies/{id}');
   return testCase.run(get, values);
 })
 .then(response => {

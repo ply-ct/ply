@@ -22,8 +22,8 @@ const ply = require('ply-ct');
 
 // Note testsLoc on file system allows synchronous reads
 const testsLoc = '../test';
-var values = ply.loadValuesSync(testsLoc + '/localhost.values');
-var group = ply.loadGroupSync(testsLoc + '/movies-api.postman');
+var values = ply.loadValues(testsLoc + '/localhost.values');
+var group = ply.loadCollection(testsLoc + '/movies-api.postman');
 
 var request = group.getRequest('GET', 'movies?{query}');
 

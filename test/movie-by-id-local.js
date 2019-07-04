@@ -2,12 +2,11 @@
 
 const ply = require('../src/ply');
 
-// Note testsLoc on file system allows synchronous reads.
 const testsLoc = '../../ply-demo/src/test/ply';
-var group = ply.loadGroupSync(testsLoc + '/movies-api.postman');
-var request = group.getRequest('GET', 'Movie by ID');
-var values = Object.assign({}, ply.loadValuesSync(testsLoc + '/global.values'), 
-      ply.loadValuesSync(testsLoc + '/ply-ct.com.values'));
+var requests = ply.loadRequests(testsLoc + '/movie-queries.request.yaml');
+var request = requests.movieById;
+var values = Object.assign({}, ply.loadValuesAsync(testsLoc + '/global.values'), 
+      ply.loadValuesAsync(testsLoc + '/ply-ct.com.values'));
 
 var options = {
   location: testsLoc,

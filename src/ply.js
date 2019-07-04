@@ -1,11 +1,13 @@
 'use strict';
 
+const jsYaml = require('js-yaml');
 const postman = require('./postman');
 const group = require('./group');
 const compare = require('./compare');
 const subst = require('./subst');
 const Storage = require('./storage').Storage;
 const Retrieval = require('./retrieval').Retrieval;
+const isUrl = require('./retrieval').isUrl;
 const Case = require('./case').Case;
 const GitHub = require('./github').GitHub;
 const Options = require('./options').Options;
@@ -23,19 +25,32 @@ Ply.prototype.getLogger = function(options) {
   });
 };
 
-Ply.prototype.loadValuesSync = function(location) {
+// TODO: return promise if location is URL
+Ply.prototype.loadRequests = function(location) {
+  const str = new Storage(location).read();
+  if (!str) {
+    throw new Error('Location not found: ' + location);
+  }
+  return jsYaml.safeLoad(str, { filename: location });
+};
+
+// Loads values, returning an object (or promise if location is URL);
+Ply.prototype.loadValues = function(location) {
+  if (isUrl(location)) {
+    return this.loadValuesAsync(null, [location]);
+  }
   const obj = JSON.parse(new Storage(location).read());
   if (!obj)
     throw new Error('Values not found: ' + location);
   return postman.isEnv(obj) ? postman.values(obj) : obj;
 };
 
-Ply.prototype.loadValues = function(options, paths) {
+Ply.prototype.loadValuesAsync = function(options, paths) {
   return new Promise(function(resolve, reject) {
     const async = require('async');
     var vals = {};
     async.map(paths, function(path, callback) {
-      var loc = options.location + '/' + path;
+      var loc = options ? options.location + '/' + path : path;
       new Retrieval(loc).load(function(err, data) {
         if (err) {
           reject(err);
@@ -63,7 +78,100 @@ Ply.prototype.loadValues = function(options, paths) {
   });
 };
 
-Ply.prototype.loadFile = function(options, path) {
+// Loads a collection, returning object (or promise if location is URL).
+// Does not merge local storage.
+Ply.prototype.loadCollection = function(location) {
+  if (isUrl(location)) {
+    return this.loadCollectionAsync(location);
+  }
+  const obj = JSON.parse(new Storage(location).read());
+  if (!obj) {
+      throw new Error('Location not found: ' + location);
+  }
+  if (postman.isCollection(obj)) {
+    return group.create(location, postman.group(obj));
+  }
+  else {
+    return group.create(location, obj);
+  }
+};
+
+// Does not merge local storage.
+Ply.prototype.loadCollectionAsync = function(location) {
+  return new Promise(function(resolve, reject) {
+    new Retrieval(location).load(function(err, data) {
+      if (err) {
+        reject(err);
+      }
+      else {
+        if (!err) {
+          try {
+            const obj = JSON.parse(data);
+            if (postman.isCollection(obj)) {
+              resolve(group.create(location, postman.group(obj)));
+            }
+            else {
+              resolve(group.create(location, obj));
+            }
+          }
+          catch (e) {
+            reject(e);
+          }
+        }
+      }
+    });  
+  });
+};
+
+// Merges local storage if retrieved from remote.
+Ply.prototype.loadAllCollectionsAsync = function(options) {
+  options = new Options(options).options;
+  var source;
+  if (options.location.startsWith('https://') || options.location.startsWith('http://')) {
+    source = new GitHub(options.location);
+  }
+  else {
+    source = new Storage(options.location);
+  }
+  var limbThis = this;
+  return new Promise((resolve, reject) => {
+    source.getMatches(options, function(err, matches) {
+      var groups = [];
+      matches.forEach(match => {
+        var obj = JSON.parse(match.contents);
+        let grp;
+        if (postman.isCollection(obj)) {
+          grp = group.create(match.location, postman.group(obj));
+          grp.postmanObj = obj;
+        }
+        else {
+          grp = group.create(match.location, obj);
+          const lastDot = match.name.lastIndexOf('.');
+          grp.name = lastDot > 0 ? match.name.substring(0, lastDot) : match.name;
+        }
+
+        grp.filename = match.name;
+        grp.origin = match.origin;
+        grp.uiOrigin = match.uiOrigin;
+        
+        limbThis.syncGroup(options, grp);
+        groups.push(grp);
+      });
+      if (err) {
+        reject(err);
+      }
+      else {
+        resolve(groups);
+      }
+    });    
+  });
+};
+
+Ply.prototype.loadFile = function(location) {
+
+}
+
+Ply.prototype.loadFileAsync = function(options, path) {
   return new Promise(function(resolve, reject) {
     if (options.localLocation) {
       // check local-only
@@ -311,90 +419,6 @@ Ply.prototype.saveRequest = function(options, token, groupName, request, message
   });
 };
 
-// Does not merge local storage.
-Ply.prototype.loadGroupSync = function(location) {
-  const obj = JSON.parse(new Storage(location).read());
-  if (!obj) {
-      throw new Error('Location not found: ' + location);
-  }
-  if (postman.isCollection(obj)) {
-    return group.create(location, postman.group(obj));
-  }
-  else {
-    return group.create(location, obj);
-  }
-};
-
-// Does not merge local storage.
-Ply.prototype.loadGroup = function(location) {
-  return new Promise(function(resolve, reject) {
-    new Retrieval(location).load(function(err, data) {
-      if (err) {
-        reject(err);
-      }
-      else {
-        if (!err) {
-          try {
-            const obj = JSON.parse(data);
-            if (postman.isCollection(obj)) {
-              resolve(group.create(location, postman.group(obj)));
-            }
-            else {
-              resolve(group.create(location, obj));
-            }
-          }
-          catch (e) {
-            reject(e);
-          }
-        }
-      }
-    });  
-  });
-};
-
-// Merges local storage if retrieved from remote.
-Ply.prototype.loadGroups = function(options) {
-  options = new Options(options).options;
-  var source;
-  if (options.location.startsWith('https://') || options.location.startsWith('http://')) {
-    source = new GitHub(options.location);
-  }
-  else {
-    source = new Storage(options.location);
-  }
-  var limbThis = this;
-  return new Promise((resolve, reject) => {
-    source.getMatches(options, function(err, matches) {
-      var groups = [];
-      matches.forEach(match => {
-        var obj = JSON.parse(match.contents);
-        let grp;
-        if (postman.isCollection(obj)) {
-          grp = group.create(match.location, postman.group(obj));
-          grp.postmanObj = obj;
-        }
-        else {
-          grp = group.create(match.location, obj);
-          const lastDot = match.name.lastIndexOf('.');
-          grp.name = lastDot > 0 ? match.name.substring(0, lastDot) : match.name;
-        }
-
-        grp.filename = match.name;
-        grp.origin = match.origin;
-        grp.uiOrigin = match.uiOrigin;
-        
-        limbThis.syncGroup(options, grp);
-        groups.push(grp);
-      });
-      if (err) {
-        reject(err);
-      }
-      else {
-        resolve(groups);
-      }
-    });    
-  });
-};
 
 // Builds group requests (including expected results), merging from local storage.
 Ply.prototype.constructGroup = function(options, group) {

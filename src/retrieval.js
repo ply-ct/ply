@@ -62,3 +62,6 @@ Retrieval.prototype.toString = function retrievalToString() {
 };
 
 exports.Retrieval = Retrieval;
+exports.isUrl = function(location) {
+  return location.startsWith('https://') || location.startsWith('http://');
+}
