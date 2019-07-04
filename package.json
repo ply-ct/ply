@@ -1,6 +1,6 @@
 {
   "name": "ply-ct",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Continuous testing for your API",
   "keywords": [
     "REST",
@@ -19,7 +19,8 @@
     "json-stable-stringify": "^1.0.1",
     "mkdirp": "^0.5.1",
     "request": "^2.81.0",
-    "sanitize-filename": "^1.6.1"
+    "sanitize-filename": "^1.6.1",
+    "why-is-node-running": "^2.1.0"
   },
   "devDependencies": {
     "eslint": "^5.16.0",

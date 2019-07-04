@@ -1,6 +1,6 @@
 'use strict';
 
-const ply = require('../lib/ply');
+const ply = require('../src/ply');
 
 const testsLoc = 'https://raw.githubusercontent.com/ply-ct/ply-demo/master/src/test/ply';
 
@@ -17,7 +17,7 @@ var values;
 
 ply.loadGroup(testsLoc + '/movies-api.postman')
 .then(group => {
-  request = group.getRequest('GET', 'movies?{query}');
+  request = group.getRequest('GET', 'Movies Query');
   return ply.loadValues(options, ['/ply-ct.com.values']);
 })
 .then(vals => {

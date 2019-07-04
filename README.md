@@ -18,11 +18,11 @@ URL-Style Locations:
  
 ## Example:
 ```javascript
-const ply = require('../lib/ply');
+const ply = require('ply-ct');
 
-// Note testsLoc on file system allows synchronous reads.
-const testsLoc = '../../ply-demo/test';
-var values = ply.loadValuesSync(testsLoc + '/ply.io.values');
+// Note testsLoc on file system allows synchronous reads
+const testsLoc = '../test';
+var values = ply.loadValuesSync(testsLoc + '/localhost.values');
 var group = ply.loadGroupSync(testsLoc + '/movies-api.postman');
 
 var request = group.getRequest('GET', 'movies?{query}');

@@ -1,7 +1,7 @@
 'use strict';
 
-const ply = require('../lib/ply');
-const Multirun = require('../lib/multirun');
+const ply = require('../src/ply');
+const Multirun = require('../src/multirun');
 
 const testsLoc = 'https://raw.githubusercontent.com/ply-ct/ply-demo/master/src/test/ply';
 

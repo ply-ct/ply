@@ -1,11 +1,11 @@
 'use strict';
 
-const ply = require('../lib/ply');
+const ply = require('../src/ply');
 
 // Note testsLoc on file system allows synchronous reads.
 const testsLoc = '../../ply-demo/src/test/ply';
 var group = ply.loadGroupSync(testsLoc + '/movies-api.postman');
-var request = group.getRequest('GET', 'movies/{id}');
+var request = group.getRequest('GET', 'Movie by ID');
 var values = Object.assign({}, ply.loadValuesSync(testsLoc + '/global.values'), 
       ply.loadValuesSync(testsLoc + '/ply-ct.com.values'));
 

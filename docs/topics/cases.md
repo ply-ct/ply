@@ -10,7 +10,7 @@ can easily parse JSON response content.  This gives you the power to build tests
 Take a look at this snippet from the ply-demo [movie-crud.js](https://github.com/ply-ct/ply-demo/blob/master/src/test/ply/cases/movie-crud.js)
 test case:
 ```javascript
-const ply = require('ply');
+const ply = require('ply-ct');
 const demo = require('../lib/ply-demo');
 ...
 var group = 'movies-api.postman'; // to be replaced once loaded
