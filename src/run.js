@@ -47,7 +47,7 @@ const proto = {
             run.response.status.message = codes[run.response.status.code];
         }
         if (error) {
-          reject(error);
+          reject(new Error(error)); // this stack is more useful than throwing error
         }
         else {
           resolve(run.response);

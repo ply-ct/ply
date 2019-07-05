@@ -25,16 +25,59 @@ Ply.prototype.getLogger = function(options) {
   });
 };
 
-// TODO: return promise if location is URL
+// Load requests, returning an object (or promise if location is URL).
 Ply.prototype.loadRequests = function(location) {
+  if (isUrl(location)) {
+    return this.loadRequestsAsync(location);
+  }
   const str = new Storage(location).read();
   if (!str) {
     throw new Error('Location not found: ' + location);
   }
-  return jsYaml.safeLoad(str, { filename: location });
+  if (str.startsWith('{') && postman.isCollection(JSON.parse(str))) {
+    return this.loadCollection(location).getRequests();
+  }
+  else {
+    return jsYaml.safeLoad(str, { filename: location });
+  }
 };
 
-// Loads values, returning an object (or promise if location is URL);
+Ply.prototype.loadRequestsAsync = function(location) {
+  return new Promise(function(resolve, reject) {
+    const async = require('async');
+    var vals = {};
+    async.map([location], function(path, callback) {
+      new Retrieval(location).load(function(err, data) {
+        if (err) {
+          reject(err);
+        }
+        else {
+          try {
+            if (data.startsWith('{')) {
+              resolve(group.create(location, postman.group(JSON.parse(data))).getRequests());
+            }
+            else {
+              resolve(jsYaml.safeLoad(data, { filename: location }));
+            }
+          }
+          catch (e) {
+            reject(e);
+          }
+        }
+        resolve(vals);
+      });
+    }, function(err) {
+      if (err) {
+        reject(err);
+      }
+      else {
+        resolve(vals);
+      }
+    });
+  });
+}
+
+// Load values, returning an object (or promise if location is URL).
 Ply.prototype.loadValues = function(location) {
   if (isUrl(location)) {
     return this.loadValuesAsync(null, [location]);
@@ -78,7 +121,7 @@ Ply.prototype.loadValuesAsync = function(options, paths) {
   });
 };
 
-// Loads a collection, returning object (or promise if location is URL).
+// Load a collection, returning object (or promise if location is URL).
 // Does not merge local storage.
 Ply.prototype.loadCollection = function(location) {
   if (isUrl(location)) {

@@ -270,10 +270,12 @@ Case.prototype.verifyResult = function(expected, values) {
 
 Case.prototype.handleError = function(error) {
   this.error = error;
-  if (error.stack)
+  if (error.stack) {
     this.logger.error(error.stack);
-  else
+  }
+  else {
     this.logger.error(error);
+  }
   this.result = { 
       status: 'Errored', 
       message: error.toString()

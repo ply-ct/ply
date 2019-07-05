@@ -18,6 +18,13 @@ const proto = {
     if (idx >= 0)
       this.requests.splice(idx, 1);
     this.requests.push(request);
+  },
+  getRequests() {
+    var requests = {};
+    this.requests.forEach(req => {
+      requests[req.name] = request.create(this.name, req);
+    });
+    return requests;
   }
 };
 
