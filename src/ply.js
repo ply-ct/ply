@@ -1,5 +1,6 @@
 'use strict';
 
+const path = require('path');
 const jsYaml = require('js-yaml');
 const postman = require('./postman');
 const group = require('./group');
@@ -39,7 +40,7 @@ Ply.prototype.loadRequests = function(location) {
   }
   else {
     const obj = jsYaml.safeLoad(str, { filename: location });
-    const grp = {name: location, requests: []};
+    const grp = {name: path.basename(location, '.request.yaml'), requests: []};
     Object.keys(obj).forEach(key => {
       grp.requests.push(Object.assign({name: key}, obj[key]));
     });
