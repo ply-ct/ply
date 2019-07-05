@@ -6,12 +6,6 @@
     "configurations": [
         {
             "type": "node",
-            "request": "attach",
-            "name": "Attach by Process ID",
-            "processId": "${command:PickProcess}"
-        },
-        {
-            "type": "node",
             "request": "launch",
             "name": "movie-by-id-local",
             "program": "${workspaceFolder}/test/movie-by-id-local.js",
@@ -20,9 +14,9 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "rich-ziggy",
-            "program": "${workspaceFolder}/notes/rich-ziggy.js",
-            "cwd": "${workspaceFolder}/notes"
-        }        
+            "name": "movie-by-id-local_postman",
+            "program": "${workspaceFolder}/test/movie-by-id-local_postman.js",
+            "cwd": "${workspaceFolder}/test"
+        }
     ]
 }

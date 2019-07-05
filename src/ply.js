@@ -38,7 +38,12 @@ Ply.prototype.loadRequests = function(location) {
     return this.loadCollection(location).getRequests();
   }
   else {
-    return jsYaml.safeLoad(str, { filename: location });
+    const obj = jsYaml.safeLoad(str, { filename: location });
+    const grp = {name: location, requests: []};
+    Object.keys(obj).forEach(key => {
+      grp.requests.push(Object.assign({name: key}, obj[key]));
+    });
+    return group.create(location, grp).getRequests();
   }
 };
 
