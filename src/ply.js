@@ -211,7 +211,10 @@ Ply.prototype.loadAllCollectionsAsync = function(options) {
 };
 
 Ply.prototype.loadFile = function(location) {
-
+  if (isUrl(location)) {
+    return this.loadFileAsync(null, [location]);
+  }
+  return new Storage(location).read();
 }
 
 Ply.prototype.loadFileAsync = function(options, path) {
