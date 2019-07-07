@@ -12,7 +12,7 @@ const options = {
   debug: true,
   responseHeaders: ['content-type']
 };
-  
+
 var request;
 var values;
 
@@ -28,7 +28,7 @@ ply.loadRequests(testsLoc + '/requests/movies-api.postman_collection.json')
   return request.run(options, values);
 })
 .then(response => {
-  request.verify(values);
+  request.verifyAsync(values);
 })
 .catch(err => {
   console.log(err);

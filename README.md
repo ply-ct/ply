@@ -9,13 +9,13 @@ npm install --save ply-ct
 
 ## Usage
 Path-Style Locations:
- - If using Node, point to file system directories. 
+ - If using Node, point to file system directories.
  - If in browser, point to local storage paths.
- 
+
 URL-Style Locations:
 (For options.location, options.expectedResultLocation)
  - Point to GitHub repository relative location.
- 
+
 ## Example:
 ```javascript
 const ply = require('ply-ct');
@@ -48,4 +48,3 @@ request.run(options, values)
 
 ## Full Documentation:
   - https://ply-ct.github.io/ply/topics/requests
-  

@@ -22,9 +22,13 @@ const proto = {
     return this.implicitCase.run(this, values);
   },
   verify: function(values) {
+    this.result = this.implicitCase.verify(values);
+    return this.result;
+  },
+  verifyAsync: function(values) {
     var request = this;
     return new Promise(function(resolve, reject) {
-      request.implicitCase.verify(values)
+      request.implicitCase.verifyAsync(values)
       .then(result => {
         request.result = result;
         resolve(result);
@@ -34,14 +38,10 @@ const proto = {
       });
     });
   },
-  verifySync: function(values) {
-    this.result = this.implicitCase.verifySync(values);
-    return this.result;
-  },
   verifyResult: function(expected, values) {
     this.result = this.implicitCase.verifyResult(expected, values);
     return this.result;
-  },  
+  },
   getRequest(values) {
     const req = {
       url: subst.replace(this.url, values),

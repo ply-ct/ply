@@ -21,7 +21,7 @@ Ply.prototype.getLogger = function(options) {
   return new Logger({
     level: options.debug ? 'debug' : 'info',
     location: options.logLocation,
-    name: 'ply.log', 
+    name: 'ply.log',
     retain: options.retainLog
   });
 };
@@ -50,36 +50,41 @@ Ply.prototype.loadRequests = function(location) {
 
 Ply.prototype.loadRequestsAsync = function(location) {
   return new Promise(function(resolve, reject) {
-    const async = require('async');
-    var vals = {};
-    async.map([location], function(path, callback) {
-      new Retrieval(location).load(function(err, data) {
+    if (isUrl(location)) {
+      const async = require('async');
+      var vals = {};
+      async.map([location], function(path, callback) {
+        new Retrieval(location).loadAsync(function(err, data) {
+          if (err) {
+            reject(err);
+          }
+          else {
+            try {
+              if (data.startsWith('{')) {
+                resolve(group.create(location, postman.group(JSON.parse(data))).getRequests());
+              }
+              else {
+                resolve(jsYaml.safeLoad(data, { filename: location }));
+              }
+            }
+            catch (e) {
+              reject(e);
+            }
+          }
+          resolve(vals);
+        });
+      }, function(err) {
         if (err) {
           reject(err);
         }
         else {
-          try {
-            if (data.startsWith('{')) {
-              resolve(group.create(location, postman.group(JSON.parse(data))).getRequests());
-            }
-            else {
-              resolve(jsYaml.safeLoad(data, { filename: location }));
-            }
-          }
-          catch (e) {
-            reject(e);
-          }
+          resolve(vals);
         }
-        resolve(vals);
       });
-    }, function(err) {
-      if (err) {
-        reject(err);
-      }
-      else {
-        resolve(vals);
-      }
-    });
+    }
+    else {
+      resolve(this.loadRequests(location));
+    }
   });
 }
 
@@ -100,7 +105,7 @@ Ply.prototype.loadValuesAsync = function(options, paths) {
     var vals = {};
     async.map(paths, function(path, callback) {
       var loc = options ? options.location + '/' + path : path;
-      new Retrieval(loc).load(function(err, data) {
+      new Retrieval(loc).loadAsync(function(err, data) {
         if (err) {
           reject(err);
         }
@@ -148,7 +153,7 @@ Ply.prototype.loadCollection = function(location) {
 // Does not merge local storage.
 Ply.prototype.loadCollectionAsync = function(location) {
   return new Promise(function(resolve, reject) {
-    new Retrieval(location).load(function(err, data) {
+    new Retrieval(location).loadAsync(function(err, data) {
       if (err) {
         reject(err);
       }
@@ -168,7 +173,7 @@ Ply.prototype.loadCollectionAsync = function(location) {
           }
         }
       }
-    });  
+    });
   });
 };
 
@@ -182,7 +187,7 @@ Ply.prototype.loadAllCollectionsAsync = function(options) {
   else {
     source = new Storage(options.location);
   }
-  var limbThis = this;
+  var plyThis = this;
   return new Promise((resolve, reject) => {
     source.getMatches(options, function(err, matches) {
       var groups = [];
@@ -202,8 +207,8 @@ Ply.prototype.loadAllCollectionsAsync = function(options) {
         grp.filename = match.name;
         grp.origin = match.origin;
         grp.uiOrigin = match.uiOrigin;
-        
-        limbThis.syncGroup(options, grp);
+
+        plyThis.syncGroup(options, grp);
         groups.push(grp);
       });
       if (err) {
@@ -212,7 +217,7 @@ Ply.prototype.loadAllCollectionsAsync = function(options) {
       else {
         resolve(groups);
       }
-    });    
+    });
   });
 };
 
@@ -243,7 +248,7 @@ Ply.prototype.loadFileAsync = function(options, path) {
       }
     }
     // pull from original source
-    new Retrieval(options.location + '/' + path).load(function(err, contents) {
+    new Retrieval(options.location + '/' + path).loadAsync(function(err, contents) {
       if (err) {
         reject(err);
       }
@@ -257,7 +262,7 @@ Ply.prototype.loadFileAsync = function(options, path) {
 // Does not merge local storage (TODO: needed?).
 Ply.prototype.refreshFile = function(location) {
   return new Promise(function(resolve, reject) {
-    new Retrieval(location).load(function(err, contents) {
+    new Retrieval(location).loadAsync(function(err, contents) {
       if (err) {
         reject(err);
       }
@@ -395,7 +400,7 @@ Ply.prototype.updateRequest = function(options, groupName, request) {
   var resName = this.getResourceName(request);
   var storage = new Storage(options.localLocation + '/' + groupName, resName);
   storage.write(JSON.stringify(request));
-  request.location = options.localLocation + '/' + groupName + '/' + resName;  
+  request.location = options.localLocation + '/' + groupName + '/' + resName;
 };
 
 Ply.prototype.discardRequest = function(options, groupName, request) {
@@ -405,7 +410,7 @@ Ply.prototype.discardRequest = function(options, groupName, request) {
   var storage = new Storage(options.localLocation + '/' + groupName, resName);
   storage.remove();
   delete request.location;
-  
+
   // remove from local-only (newly-added request)
   var grpStore = new Storage(options.localLocation + '/' + groupName);
   if (grpStore.exists()) {
@@ -498,7 +503,7 @@ Ply.prototype.constructGroup = function(options, group) {
           request.location = storage.path;
         }
       }
-      storage = new Storage(options.localLocation + '/' + group.name, 
+      storage = new Storage(options.localLocation + '/' + group.name,
           this.getResourceName(request.method, request.name, 'yaml'));
       if (storage.exists())
         request.expectedLocation = storage.path;  // indicate exp res overridden
@@ -529,7 +534,7 @@ Ply.prototype.syncGroup = function(options, group) {
   });
 };
 
-Ply.prototype.loadExpected = function(options, groupName, request) {
+Ply.prototype.loadExpectedAsync = function(options, groupName, request) {
   options = new Options(options).options;
   var resName = this.getResourceName(request.method, request.name, 'yaml');
   request.expectedName = require('sanitize-filename')(resName, {replacement: '_'});
@@ -538,12 +543,12 @@ Ply.prototype.loadExpected = function(options, groupName, request) {
     request.expectedOrigin = options.expectedResultLocation + '/' + groupName + '/' + request.expectedName;
     request.expectedUiOrigin = options.location + '/blob/' + options.branch + '/' + request.expectedPath;
   }
-  const limbThis = this;
+  const plyThis = this;
   return new Promise((resolve, reject) => {
     if (options.localLocation) {
       // check first in local
       var storage = new Storage(options.localLocation + '/' + groupName, resName);
-      limbThis.getLogger(options).debug('Loading expected result: ' + storage);
+      plyThis.getLogger(options).debug('Loading expected result: ' + storage);
       if (storage.exists()) {
         request.expectedLocation = options.localLocation + '/' + groupName + '/' + resName;
         resolve(storage.read());
@@ -551,8 +556,8 @@ Ply.prototype.loadExpected = function(options, groupName, request) {
       }
     }
     var retrieval = new Retrieval(options.expectedResultLocation + '/' + groupName, resName);
-    limbThis.getLogger(options).debug('Loading expected result: ' + retrieval);
-    retrieval.load((err, contents) => {
+    plyThis.getLogger(options).debug('Loading expected result: ' + retrieval);
+    retrieval.loadAsync((err, contents) => {
       if (err) {
         reject(err);
       }
@@ -569,7 +574,7 @@ Ply.prototype.updateExpectedResult = function(options, groupName, request, resul
   var resName = this.getResourceName(request.method, request.name, 'yaml');
   var storage = new Storage(options.localLocation + '/' + groupName, resName);
   storage.write(result);
-  request.expectedLocation = options.localLocation + '/' + groupName + '/' + resName;  
+  request.expectedLocation = options.localLocation + '/' + groupName + '/' + resName;
 };
 
 Ply.prototype.discardExpectedResult = function(options, groupName, request) {
@@ -652,7 +657,7 @@ Ply.prototype.getResourceName = function(method, name, ext) {
 Ply.prototype.getRequest = function() {
   if (typeof window === 'undefined') {
     return require('request').defaults({headers: {'User-Agent': 'ply'}});
-  } 
+  }
   else {
     return require('browser-request');
   }

@@ -6,7 +6,7 @@ const codes = require('builtin-status-codes');
 // Abstraction that uses either URL retrieval or storage.
 // name is optional
 var Retrieval = function(location, name) {
-  
+
   this.location = location;
   this.name = name;
 
@@ -19,7 +19,7 @@ var Retrieval = function(location, name) {
       this.request = require('browser-request');
   }
   else {
-    this.storage = new Storage(this.location, this.name);    
+    this.storage = new Storage(this.location, this.name);
   }
 
   this.path = this.location;
@@ -27,7 +27,14 @@ var Retrieval = function(location, name) {
     this.path += '/' + this.name;
 };
 
-Retrieval.prototype.load = function(callback) {
+Retrieval.prototype.load = function() {
+  if (this.request)
+    throw new Error('Synchronized load not supported for: ' + this.path);
+  else
+    return this.storage.read();
+};
+
+Retrieval.prototype.loadAsync = function(callback) {
   if (this.request) {
     const url = this.path;
     this.request(this.path, function(err, response, body) {
@@ -41,13 +48,6 @@ Retrieval.prototype.load = function(callback) {
   else {
     return this.storage.read(callback);
   }
-};
-
-Retrieval.prototype.loadSync = function() {
-  if (this.request)
-    throw new Error('Synchronized load not supported for: ' + this.path);
-  else
-    return this.storage.read();
 };
 
 Retrieval.prototype.isUrl = function(location) {

@@ -1,6 +1,6 @@
 {
   "name": "ply-ct",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "Continuous testing for your API",
   "keywords": [
     "REST",
@@ -8,7 +8,9 @@
     "Automated Testing"
   ],
   "main": "index.js",
+  "types": "./src/ply.d.ts",
   "dependencies": {
+    "@types/node": "^12.0.12",
     "async": "^2.5.0",
     "browser-request": "^0.3.3",
     "builtin-status-codes": "^3.0.0",
@@ -19,10 +21,10 @@
     "json-stable-stringify": "^1.0.1",
     "mkdirp": "^0.5.1",
     "request": "^2.81.0",
-    "sanitize-filename": "^1.6.1",
-    "why-is-node-running": "^2.1.0"
+    "sanitize-filename": "^1.6.1"
   },
   "devDependencies": {
+    "dts-gen": "^0.5.8",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.17.3",

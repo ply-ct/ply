@@ -17,12 +17,12 @@ var Case = exports.Case = function(name, options) {
   }
   this.name = name;
   this.options = new Options(options).options;
-  
-  if (this.options.resultLocation.startsWith('https://') || 
+
+  if (this.options.resultLocation.startsWith('https://') ||
       this.options.resultLocation.startsWith('http://')) {
     throw new Error('Unsupported result location: ' + this.options.resultLocation);
   }
-  
+
   this.init();
 };
 
@@ -52,10 +52,10 @@ Case.prototype.init = function(qualifier) {
   this.logger = new Logger({
     level: this.options.debug ? 'debug' : 'info',
     location: logLoc,
-    name: this.name + '.log', 
+    name: this.name + '.log',
     retain: this.options.retainLog
   });
-  
+
   if (qualifier)  // TODO: better initialization
     this.inited = true;
 };
@@ -67,14 +67,14 @@ Case.prototype.run = function(test, values, name) {
     else
       this.init(test.group);
   }
-  
+
   this.result = null;
   this.logger.info(test.group + '/' + this.name + ' @' + new Date());
   const testRun = run.create(name ? name : this.name);
-  
+
   if (values)
     this.logger.debug('Values: ' + this.jsonString(values));
-  
+
   var req = test.getRequest(values);
   if (this.authHeader) {
     if (!req.headers) {
@@ -85,17 +85,17 @@ Case.prototype.run = function(test, values, name) {
     }
   }
   this.logger.debug('Request: ' + this.jsonString(req));
-  
+
   const testCase = this;
   return new Promise(function(resolve, reject) {
     testRun.execute(req)
     .then(resp => {
       try {
-        if (resp) 
+        if (resp)
           testCase.logger.debug('Response: ' + testCase.jsonString(resp));
 
         if (testCase.options.captureResult) {
-            
+
           if (req) {
             // remove Authorization header
             if (req.headers && req.headers.Authorization) {
@@ -126,7 +126,7 @@ Case.prototype.run = function(test, values, name) {
             if (!testCase.options.responseTime)
               delete resp.time;
           }
-            
+
           // save yaml results
           var actualYaml = testCase.yamlString(testCase.options.formatResult ? testRun.format(testCase.options.prettyIndent) : testRun);
           testCase.actualResultStorage.append(actualYaml);
@@ -134,14 +134,14 @@ Case.prototype.run = function(test, values, name) {
             testCase.logger.info('Writing expected result: ' + testCase.expectedResultRetrieval.storage);
             testCase.expectedResultRetrieval.storage.append(actualYaml);
           }
-            
+
           if (resp) {
             // restore for programmatic access
             resp.headers = allHeaders;
             resp.time = time;
           }
         }
-          
+
         resolve(resp);
       }
       catch (err) {
@@ -156,7 +156,7 @@ Case.prototype.run = function(test, values, name) {
   });
 };
 
-Case.prototype.verify = function(values) {
+Case.prototype.verifyAsync = function(values) {
   var thisCase = this;
   return new Promise(function(resolve, reject) {
     if (thisCase.error) {
@@ -165,7 +165,7 @@ Case.prototype.verify = function(values) {
     }
     else {
       try {
-        thisCase.expectedResultRetrieval.load(function(err, data) {
+        thisCase.expectedResultRetrieval.loadAsync(function(err, data) {
           var result;
           if (data) {
             result = thisCase.verifyResult(data, values);
@@ -184,13 +184,16 @@ Case.prototype.verify = function(values) {
   });
 };
 
-Case.prototype.verifySync = function(values) {
+Case.prototype.verify = function(values) {
   if (this.error) {
     this.handleError(this.error);
     return;
   }
   try {
-    var expected = this.expectedResultRetrieval.loadSync();
+    var expected = this.expectedResultRetrieval.load();
+    if (!expected) {
+      throw new Error('Expected result not found: ' + this.expectedResultRetrieval);
+    }
     return this.verifyResult(expected, values);
   }
   catch (err) {
@@ -202,12 +205,12 @@ Case.prototype.verifySync = function(values) {
 Case.prototype.verifyResult = function(expected, values) {
   var expectedYaml = subst.trimComments(expected.replace(/\r/g, ''));
   if (!this.actualResultStorage.exists())
-    throw new Error('Result not found: ' + this.actualResultStorage);
+    throw new Error('Actual result not found: ' + this.actualResultStorage);
   this.logger.debug('Comparing: ' + this.expectedResultRetrieval + '\n  with: ' + this.actualResultStorage);
   var actual = this.actualResultStorage.read();
   var actualYaml = subst.trimComments(actual);
   var diffs = compare.diffLines(subst.extractCode(expectedYaml), subst.extractCode(actualYaml), values, {
-    newlineIsToken: false, 
+    newlineIsToken: false,
     ignoreWhitespace: false
   });
   var firstDiffLine = 0;
@@ -247,7 +250,7 @@ Case.prototype.verifyResult = function(expected, values) {
           diffMsg += subst.prefix(diff.value, '+ ', actualYaml, actLine - 1);
           diffMsg += '===\n';
         }
-        actLine += diff.count; 
+        actLine += diff.count;
       }
       else {
         line += diff.count;
@@ -276,8 +279,8 @@ Case.prototype.handleError = function(error) {
   else {
     this.logger.error(error);
   }
-  this.result = { 
-      status: 'Errored', 
+  this.result = {
+      status: 'Errored',
       message: error.toString()
   };
 };
