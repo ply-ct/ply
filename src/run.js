@@ -4,7 +4,7 @@ var codes = require('builtin-status-codes');
 const stringify = require('json-stable-stringify');
 
 const proto = {
-    
+
   execute(req) {
     this.request = req;
     this.response = null;
@@ -13,7 +13,7 @@ const proto = {
     var request;
     if (typeof window === 'undefined') {
       request = require('request');
-    } 
+    }
     else {
       request = require('browser-request');
     }
@@ -52,7 +52,7 @@ const proto = {
         else {
           resolve(run.response);
         }
-      });    
+      });
     });
   },
   format(indent) {
@@ -68,9 +68,9 @@ const proto = {
       pretty.request.headers = this.request.headers;
       if (this.request.body) {
         try {
-          pretty.request.body = stringify(JSON.parse(this.request.body), stringifyOpts)
+          pretty.request.body = stringify(JSON.parse(this.request.body), stringifyOpts);
         }
-        catch (err) { 
+        catch (err) {
           console.log(err);
         }
       }
@@ -81,9 +81,9 @@ const proto = {
       pretty.response.headers = this.response.headers;
       if (this.response.body) {
         try {
-          pretty.response.body = stringify(JSON.parse(this.response.body), stringifyOpts)
+          pretty.response.body = stringify(JSON.parse(this.response.body), stringifyOpts);
         }
-        catch (err) { 
+        catch (err) {
           console.log(err);
         }
       }
@@ -106,7 +106,7 @@ const proto = {
         }
       }
     }
-    return headers;    
+    return headers;
   }
 };
 

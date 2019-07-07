@@ -53,7 +53,7 @@ Ply.prototype.loadRequestsAsync = function(location) {
     if (isUrl(location)) {
       const async = require('async');
       var vals = {};
-      async.map([location], function(path, callback) {
+      async.map([location], function() {
         new Retrieval(location).loadAsync(function(err, data) {
           if (err) {
             reject(err);
@@ -86,7 +86,7 @@ Ply.prototype.loadRequestsAsync = function(location) {
       resolve(this.loadRequests(location));
     }
   });
-}
+};
 
 // Load values, returning an object (or promise if location is URL).
 Ply.prototype.loadValues = function(location) {
@@ -103,7 +103,7 @@ Ply.prototype.loadValuesAsync = function(options, paths) {
   return new Promise(function(resolve, reject) {
     const async = require('async');
     var vals = {};
-    async.map(paths, function(path, callback) {
+    async.map(paths, function(path) {
       var loc = options ? options.location + '/' + path : path;
       new Retrieval(loc).loadAsync(function(err, data) {
         if (err) {
@@ -226,7 +226,7 @@ Ply.prototype.loadFile = function(location) {
     return this.loadFileAsync(null, [location]);
   }
   return new Storage(location).read();
-}
+};
 
 Ply.prototype.loadFileAsync = function(options, path) {
   return new Promise(function(resolve, reject) {
@@ -330,7 +330,7 @@ Ply.prototype.fileHasLocal = function(options, path) {
       localLoc += '/' + options.qualifier;
     return new Storage(localLoc + '/' + path).exists();
   }
-}
+};
 
 // Updates local storage.  Does not save to origin.
 Ply.prototype.updateFile = function(options, file) {
@@ -350,7 +350,7 @@ Ply.prototype.discardFile = function(options, file) {
   file.location = file.origin;
   // remove from local-only (newly-added file)
   var localFiles = [];
-  var storage = new Storage(options.localLocation + '/' + options.path);
+  storage = new Storage(options.localLocation + '/' + options.path);
   if (storage.exists()) {
     localFiles = JSON.parse(storage.read());
     var idx = localFiles.findIndex(localFile => {
@@ -454,7 +454,7 @@ Ply.prototype.saveRequest = function(options, token, groupName, request, message
     const github = new GitHub(options.location);
     var path = options.path + '/' + groupName + options.extensions[0]; // TODO
     github.get({path: path}, contents => {
-      const obj = JSON.parse(contents);
+      var obj = JSON.parse(contents);
       if (postman.isCollection(obj)) {
         postman.setRequest(obj, request);
       }
@@ -520,7 +520,7 @@ Ply.prototype.syncGroup = function(options, group) {
       name: fileName,
       path: options.path + '/' + fileName,
       origin: group.origin
-  }
+  };
   group.requests.forEach(request => {
     if (group.postmanObj) {
       postman.setRequest(group.postmanObj, request);

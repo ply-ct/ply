@@ -18,6 +18,8 @@
   "globals": {
     "require": false,
     "module": false,
-    "localStorage": false
+    "localStorage": false,
+    "fetch": false,
+    "Request": true
   }
 }

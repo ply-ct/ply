@@ -62,7 +62,7 @@ const proto = {
     if (arguments.length === 1) {
       // set mode
       if (!body) {
-        delete this.body
+        delete this.body;
       }
       else {
         this.body = JSON.stringify(body, null, 2);

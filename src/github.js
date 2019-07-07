@@ -19,13 +19,13 @@ var GitHub = function(url, branch) {
   else {
     throw new Error('Unsupported URL format: ' + url);
   }
-  
+
   this.branch = branch ? branch : 'master';
-  
+
   if (typeof window === 'undefined') {
     this.request = require('request');
     this.requestOptions = {headers: {'User-Agent': 'ply'}};
-  } 
+  }
   else {
     this.request = require('browser-request');
     this.requestOptions = {};
@@ -86,7 +86,7 @@ GitHub.prototype.commitAndPush = function(token, file, message, callback) {
   if (!baseUrl.endsWith('/'))
     baseUrl += '/';
   baseUrl += 'git';
-  
+
   // GET master HEAD commit
   fetch(baseUrl + '/refs/heads/master')
   .then(response => {
@@ -119,7 +119,7 @@ GitHub.prototype.commitAndPush = function(token, file, message, callback) {
             mode: '100644'
           }]
       };
-      return fetch(new Request(baseUrl + '/trees' + accessTokenParam), { 
+      return fetch(new Request(baseUrl + '/trees' + accessTokenParam), {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(newTree)
@@ -141,7 +141,7 @@ GitHub.prototype.commitAndPush = function(token, file, message, callback) {
         message: message,
         parents: [ masterHeadSha ]
       };
-      return fetch(new Request(baseUrl + '/commits' + accessTokenParam), { 
+      return fetch(new Request(baseUrl + '/commits' + accessTokenParam), {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(newCommit)
@@ -158,7 +158,7 @@ GitHub.prototype.commitAndPush = function(token, file, message, callback) {
   .then(json => {
     if (ok) {
       // PATCH branch to point to new commit
-      return fetch(new Request(baseUrl + '/refs/heads/master' + accessTokenParam), { 
+      return fetch(new Request(baseUrl + '/refs/heads/master' + accessTokenParam), {
         method: 'PATCH',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ sha: json.sha})
@@ -176,7 +176,7 @@ GitHub.prototype.commitAndPush = function(token, file, message, callback) {
     if (ok) {
       file.origin = 'https://raw.githubusercontent.com/' + this.path + '/' + this.branch + '/' + file.path;
       file.uiOrigin = 'https://github.com/' + this.path + '/blob/' + this.branch + '/' + file.path;
-      callback()
+      callback();
     }
     else {
       callback(new Error(JSON.stringify(json)));

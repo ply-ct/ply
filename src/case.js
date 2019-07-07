@@ -146,12 +146,12 @@ Case.prototype.run = function(test, values, name) {
       }
       catch (err) {
         testCase.handleError(err);
-        reject(error);
+        reject(err);
       }
     })
     .catch(err => {
       testCase.handleError(err);
-      reject(err)
+      reject(err);
     });
   });
 };
