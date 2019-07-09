@@ -6,7 +6,8 @@ const ply = require('../src/ply');
 const testsLoc = '../../ply-demo/src/test/ply';
 var requests = ply.loadRequests(testsLoc + '/requests/movie-queries.request.yaml');
 var request = requests.movieById;
-var values = Object.assign({}, ply.loadValues(testsLoc + '/values/main.values.json'), 
+
+var values = Object.assign({}, ply.loadValues(testsLoc + '/values/main.values.json'),
       ply.loadValues(testsLoc + '/values/ply-ct.com.values.json'));
 
 var options = {
@@ -16,7 +17,7 @@ var options = {
   debug: true,
   responseHeaders: ['content-type']
 };
-    
+
 request.run(options, values)
 .then(response => {
   request.verify(values);

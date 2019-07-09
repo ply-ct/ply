@@ -4,7 +4,7 @@ const Case = require('./case').Case;
 const subst = require('./subst');
 
 const proto = {
-  run(options, values) {
+  run(options, values, name) {
     var caseName = options.caseName;
     if (!caseName) {
       caseName = this.name;
@@ -19,7 +19,7 @@ const proto = {
       }
     }
     this.implicitCase = new Case(caseName, options);
-    return this.implicitCase.run(this, values);
+    return this.implicitCase.run(this, values, name);
   },
   verify: function(values) {
     this.result = this.implicitCase.verify(values);

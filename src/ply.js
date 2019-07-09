@@ -49,6 +49,7 @@ Ply.prototype.loadRequests = function(location) {
 };
 
 Ply.prototype.loadRequestsAsync = function(location) {
+  const plyThis = this;
   return new Promise(function(resolve, reject) {
     if (isUrl(location)) {
       const async = require('async');
@@ -83,7 +84,7 @@ Ply.prototype.loadRequestsAsync = function(location) {
       });
     }
     else {
-      resolve(this.loadRequests(location));
+      resolve(plyThis.loadRequests(location));
     }
   });
 };
