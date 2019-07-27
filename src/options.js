@@ -24,7 +24,7 @@ Options.prototype.get = function(name) {
 
 Options.defaultOptions = {
   location: path.dirname(process.argv[1]),
-  // extensions: (eg: ['.postman']
+  // extensions: (eg: ['.request.yaml']
   // expectedResultLocation: (same as 'location')
   resultLocation: 'results',
   // logLocation: (same as 'resultLocation'),
