@@ -25,7 +25,7 @@ Options.prototype.get = function(name) {
 };
 
 Options.defaultOptions = {
-  location: path.dirname(process.argv[1]),
+  location: process.cwd(),
   // extensions: (eg: ['.request.yaml']
   // expectedResultLocation: this.location + '/results/expected',
   // resultLocation: this.location + '/results/actual',

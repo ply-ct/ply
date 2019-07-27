@@ -12,6 +12,7 @@ function parse(raw) {
       '--version': Boolean,
       '--debug': Boolean,
       '--values': [String],
+      '--responseHeaders': [String],
 
       // aliases
       '-h': '--help',
@@ -76,13 +77,7 @@ function runRequest(requestFile, options, values) {
     let request = requests[name];
     request.run(options, values, name)
     .then(response => {
-      // load results
-      const expected = ply.loadFile(options.location + '/results/expected/movies-api/movie-queries.yaml');
-      if (!expected) {
-        throw new Error("Expected result not found: " + 'xxx');
-      }
-      // compare expected vs actual
-      const res = request.implicitCase.verifyResult(expected, values);
+      request.verify(values);
     })
     .catch(err => {
       request.implicitCase.handleError(err);
