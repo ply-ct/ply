@@ -14,7 +14,7 @@ var options = {
   responseHeaders: ['content-type']
 };
 
-request.run(options, values)  
+request.run(options, values)
 ```
 
 ### Option Values
@@ -23,8 +23,8 @@ request.run(options, values)
 | :----- | :------ |
 | **location** | `path.dirname(process.argv[1])` | File system location or URL |
 | **extensions** | `[.json]` | Filename extensions for request groups/collections |
-| **expectedResultLocation** | (same as *location*) | Expected results YAML |
-| **resultLocation** | `'results'` | Where to write actual results YAML |
+| **expectedResultLocation** | `[location]/results/expected` | Expected results YAML |
+| **resultLocation** | `[location]/results/actual` | Where to write actual results YAML |
 | **logLocation** | (same as *resultLocation*) | Where logs are written |
 | **localLocation** | (for ply-ui) | Logical path where overrides are saved in browser local storage |
 | **debug** | `false` | Debug logging output

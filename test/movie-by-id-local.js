@@ -12,8 +12,6 @@ var values = Object.assign({}, ply.loadValues(testsLoc + '/values/main.values.js
 
 var options = {
   location: testsLoc,
-  expectedResultLocation: testsLoc + '/results/expected',
-  resultLocation: testsLoc + '/results/actual',
   debug: true,
   responseHeaders: ['content-type']
 };

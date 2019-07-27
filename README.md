@@ -31,8 +31,6 @@ values = Object.assign({}, values, {query: 'year=1935&rating=5'});
 
 var options = {
   location: testsLoc,
-  expectedResultLocation: testsLoc + '/results/expected',
-  resultLocation: testsLoc + '/results/actual',
   debug: true,
   responseHeaders: ['content-type']
 };

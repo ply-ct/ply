@@ -8,6 +8,7 @@ const testsLoc = 'https://raw.githubusercontent.com/ply-ct/ply-demo/master/src/t
 const options = {
   location: testsLoc,
   expectedResultLocation: testsLoc + '/results/expected',
+  // resultLocation on local file system
   resultLocation: '../../ply-demo/src/test/ply/results/actual',
   debug: true,
   responseHeaders: ['content-type']
@@ -17,7 +18,7 @@ var request;
 var values;
 
 // loadRequests() returns a promise when loading from URL
-ply.loadRequests(testsLoc + '/requests/movies-api.postman_collection.json')
+ply.loadRequests(testsLoc + '/requests/postman/movies-api.postman_collection.json')
 .then(requests => {
   request = requests['Movies Query'];
   return ply.loadValues(testsLoc + '/values/ply-ct.com.postman_environment.json');

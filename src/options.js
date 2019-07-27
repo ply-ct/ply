@@ -5,14 +5,16 @@ const defaults = require('defaults');
 
 var Options = function(options) {
   this.options = defaults(options, Options.defaultOptions);
-  if (!this.options.expectedResultLocation) {
-    this.options.expectedResultLocation = this.options.location;
+  if (!options.resultLocation) {
+    options.resultLocation = options.location + '/results/actual';
   }
-  if (!this.options.logLocation) {
-    this.options.logLocation = this.options.resultLocation;
+  if (!options.expectedResultLocation) {
+    options.expectedResultLocation = options.location + '/results/expected';
   }
-  if (this.options.expectedResultLocation
-      && this.options.expectedResultLocation.startsWith('https://github.com/')) {
+  if (!options.logLocation) {
+    options.logLocation = options.resultLocation;
+  }
+  if (this.options.expectedResultLocation.startsWith('https://github.com/')) {
     this.options.expectedResultLocation = 'https://raw.githubusercontent.com/'
         + this.options.expectedResultLocation.substring(19);
   }
@@ -25,9 +27,9 @@ Options.prototype.get = function(name) {
 Options.defaultOptions = {
   location: path.dirname(process.argv[1]),
   // extensions: (eg: ['.request.yaml']
-  // expectedResultLocation: (same as 'location')
-  resultLocation: 'results',
-  // logLocation: (same as 'resultLocation'),
+  // expectedResultLocation: this.location + '/results/expected',
+  // resultLocation: this.location + '/results/actual',
+  // logLocation: path.dirname(process.argv[1]) + '/results/actual',
   // localLocation: (indicates local override possible)
   debug: false,
   retainLog: false,  // accumulate for multiple runs

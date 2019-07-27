@@ -17,6 +17,18 @@
             "name": "movie-by-id-local_postman",
             "program": "${workspaceFolder}/test/movie-by-id-local_postman.js",
             "cwd": "${workspaceFolder}/test"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "ply movie-queries.request.yaml",
+            "program": "${workspaceFolder}/bin/ply.js",
+            "args": [
+                "--values=values/ply-ct.com.values.json",
+                "--values=values/main.values.json",
+                "requests/movie-queries.request.yaml"
+            ],
+            "cwd": "/ply/ply-demo/src/test/ply"
         }
     ]
 }
