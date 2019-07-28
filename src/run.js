@@ -56,7 +56,7 @@ const proto = {
     });
   },
   format(indent) {
-    var pretty = { test: this.test };
+    var pretty = {};
     var stringifyOpts = {};
     if (indent) {
       stringifyOpts.space = ''.padStart(indent);
@@ -89,7 +89,15 @@ const proto = {
       }
     }
     pretty.response.time = this.response.time;
-    return pretty;
+    var res = {};
+    res[this.test] = pretty;
+    return res;
+  },
+  raw() {
+    let raw = {};
+    raw[this.test] = this;
+    delete raw[this.test].test;
+    return raw;
   },
   parseResponseHeaders(xhrResponse) {
     var headerStr = xhrResponse.getAllResponseHeaders();

@@ -26,6 +26,7 @@
             "args": [
                 "--values=values/ply-ct.com.values.json",
                 "--values=values/main.values.json",
+                "--responseHeaders=content-type",
                 "requests/movie-queries.request.yaml"
             ],
             "cwd": "/ply/ply-demo/src/test/ply"

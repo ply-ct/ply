@@ -25,22 +25,21 @@ Options.prototype.get = function(name) {
 };
 
 Options.defaultOptions = {
+  debug: false,
   location: process.cwd(),
-  // extensions: (eg: ['.request.yaml']
   // expectedResultLocation: this.location + '/results/expected',
   // resultLocation: this.location + '/results/actual',
   // logLocation: path.dirname(process.argv[1]) + '/results/actual',
   // localLocation: (indicates local override possible)
-  debug: false,
+  extensions: ['.request.yaml','.postman_collection.json'],
+  // responseHeaders: (array of validated response headers, in the order they'll appear in result yaml)
+  formatResult: true,
+  prettyIndent: 2,
   retainLog: false,  // accumulate for multiple runs
   captureResult: true,
   retainResult: false,
-  formatResult: true,
-  prettyIndent: 2,
   qualifyLocations: true, // result and log paths prefixed by group (or can be string for custom)
-  overwriteExpected: false,
-  // responseHeaders: (array of validated response headers, in the order they'll appear in result yaml)
-  sortResponseKeys: true
+  overwriteExpected: false
 };
 
 exports.Options = Options;

@@ -128,7 +128,7 @@ Case.prototype.run = function(test, values, name) {
           }
 
           // save yaml results
-          var actualYaml = testCase.yamlString(testCase.options.formatResult ? testRun.format(testCase.options.prettyIndent) : testRun);
+          var actualYaml = testCase.yamlString(testCase.options.formatResult ? testRun.format(testCase.options.prettyIndent) : testRun.raw());
           testCase.actualResultStorage.append(actualYaml);
           if (testCase.options.overwriteExpected) {
             testCase.logger.info('Writing expected result: ' + testCase.expectedResultRetrieval.storage);
