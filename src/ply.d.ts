@@ -131,6 +131,20 @@ export function loadRequests(location: string): Requests | Promise<Requests>;
  */
 export function loadRequestsAsync(location: any): Promise<Requests>;
 
+export type Cases = {
+    [key: string]: Case
+}
+/**
+ * Loads cases from a resource synchronously unless location is a url.
+ * @param location file path or a url
+ */
+export function loadCases(location: string): Cases | Promise<Cases>;
+/**
+ * Load cases asynchronously (from a url or a file).
+ * @param location file path or url
+ */
+export function loadCasesAsync(location: any): Promise<Cases>;
+
 /**
  * Load a values object for test substitution.
  * @param location file path or url of straight JSON file or Postman values file

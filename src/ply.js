@@ -27,6 +27,7 @@ Ply.prototype.getLogger = function(options) {
 };
 
 // Load requests, returning an object (or promise if location is URL).
+// TODO: ply.yaml is hardcoded
 Ply.prototype.loadRequests = function(location) {
   if (isUrl(location)) {
     return this.loadRequestsAsync(location);
@@ -40,7 +41,7 @@ Ply.prototype.loadRequests = function(location) {
   }
   else {
     const obj = jsYaml.safeLoad(str, { filename: location });
-    const grp = {name: path.basename(location, '.request.yaml'), requests: []};
+    const grp = {name: path.basename(location, '.ply.yaml'), requests: []};
     Object.keys(obj).forEach(key => {
       grp.requests.push(Object.assign({name: key}, obj[key]));
     });
@@ -88,6 +89,79 @@ Ply.prototype.loadRequestsAsync = function(location) {
     }
   });
 };
+
+// Load cases, returning an object (or promise if location is URL).
+// TODO: this isn't right -- see what workflow drives
+Ply.prototype.loadCases = function(location) {
+  if (isUrl(location)) {
+    return this.loadCasesAsync(location);
+  }
+  const str = new Storage(location).read();
+  if (!str) {
+    throw new Error('Location not found: ' + location);
+  }
+  return this.parseCases(str);
+};
+
+// location is caseFile
+Ply.prototype.loadCasesAsync = function(location) {
+  const plyThis = this;
+  return new Promise(function(resolve, reject) {
+    if (isUrl(location)) {
+      const async = require('async');
+      var vals = {};
+      async.map([location], function() {
+        new Retrieval(location).loadAsync(function(err, data) {
+          if (err) {
+            reject(err);
+          }
+          else {
+            // parse case file for runs
+            try {
+              resolve(plyThis.parseCases(data));
+            }
+            catch (e) {
+              reject(e);
+            }
+          }
+          resolve(vals);
+        });
+      }, function(err) {
+        if (err) {
+          reject(err);
+        }
+        else {
+          resolve(vals);
+        }
+      });
+    }
+    else {
+      resolve(plyThis.loadCases(location));
+    }
+  });
+};
+
+// TODO: this is silly
+// TODO: should this be cases or runs?  let workflow needs decide
+// TODO: real regex, better parsing, and true instantiation
+Ply.prototype.parseCases = function(js) {
+  const cases = {};
+  var regex = /new Case\('(.*)'.*\)/g;
+  var match = regex.exec(js);
+  if (match) {
+    var caseName = match[1];
+    regex = /run\(.*, '(.*)'\)/g;
+    var match = regex.exec(js);
+    while (match !== null) {
+      cases[match[1]] = {
+        group: caseName,
+        name: match[1]
+      }
+      match = regex.exec(js);
+    }
+  }
+  return cases;
+}
 
 // Load values, returning an object (or promise if location is URL).
 Ply.prototype.loadValues = function(location) {
