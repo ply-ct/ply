@@ -38,7 +38,7 @@ Options.defaultOptions = {
   retainLog: false,  // accumulate for multiple runs
   captureResult: true,
   retainResult: false,
-  qualifyLocations: true, // result and log paths prefixed by group (or can be string for custom)
+  qualifyLocations: true, // actual result and log paths prefixed by group (or can be string for custom)
   overwriteExpected: false
 };
 

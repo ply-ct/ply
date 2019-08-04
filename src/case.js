@@ -28,8 +28,6 @@ var Case = exports.Case = function(name, options) {
 
 Case.prototype.init = function(qualifier) {
   var expectedLoc = this.options.expectedResultLocation;
-  if (qualifier)
-    expectedLoc += '/' + qualifier;
   this.expectedResultRetrieval = new Retrieval(expectedLoc, this.name + '.yaml');
 
   var actualLoc = this.options.resultLocation;
@@ -156,7 +154,8 @@ Case.prototype.run = function(test, values, name) {
   });
 };
 
-Case.prototype.verifyAsync = function(values) {
+// name is subelement within expected result storage
+Case.prototype.verifyAsync = function(values, name) {
   var thisCase = this;
   return new Promise(function(resolve, reject) {
     if (thisCase.error) {
@@ -168,11 +167,24 @@ Case.prototype.verifyAsync = function(values) {
         thisCase.expectedResultRetrieval.loadAsync(function(err, data) {
           var result;
           if (data) {
-            result = thisCase.verifyResult(data, values);
+            if (name) {
+              const obj = jsYaml.safeLoad(expected, { filename: thisCase.expectedResultRetrieval.toString() });
+              const expectedObj = obj[name];
+              if (!expectedObj)
+                reject(new Error('Expected result not found: ' + thisCase.expectedResultRetrieval + '#' + name));
+              const yamlObj = {};
+              yamlObj[name] = expectedObj;
+              expected = thisCase.yamlString(yamlObj);
+              result = thisCase.verifyResult(expected, values);
+
+            }
+            else {
+              result = thisCase.verifyResult(data, values);
+            }
             resolve(result);
           }
           else {
-            reject(new Error("No expected result found: " + thisCase.expectedResultRetrieval));
+            reject(new Error("Expected result not found: " + thisCase.expectedResultRetrieval));
           }
         });
       }
@@ -184,7 +196,8 @@ Case.prototype.verifyAsync = function(values) {
   });
 };
 
-Case.prototype.verify = function(values) {
+// name is subelement within expected result storage
+Case.prototype.verify = function(values, name) {
   if (this.error) {
     this.handleError(this.error);
     return;
@@ -194,7 +207,19 @@ Case.prototype.verify = function(values) {
     if (!expected) {
       throw new Error('Expected result not found: ' + this.expectedResultRetrieval);
     }
-    return this.verifyResult(expected, values);
+    if (name) {
+      const obj = jsYaml.safeLoad(expected, { filename: this.expectedResultRetrieval.toString() });
+      const expectedObj = obj[name];
+      if (!expectedObj)
+        throw new Error('Expected result not found: ' + this.expectedResultRetrieval + '#' + name);
+      const yamlObj = {};
+      yamlObj[name] = expectedObj;
+      expected = this.yamlString(yamlObj);
+      return this.verifyResult(expected, values);
+    }
+    else {
+      return this.verifyResult(expected, values);
+    }
   }
   catch (err) {
     this.handleError(err);

@@ -6,7 +6,7 @@ const Options = require('./options').Options;
 const ply = require('./ply.js');
 const Case = ply.Case;
 
-const help = 'ply [options] one.request.yaml|case1.ply.js [two.request.yaml|case2.ply.js]\n' +
+const help = 'ply [options] one.ply.yaml[#aRequest]|case1.ply.js [two.ply.yaml|case2.ply.js]\n' +
   'Options:\n' +
   '  -h, --help                   This help output\n' +
   '  -d, -v, --debug, --verbose   Debug logging output (false)\n' +
@@ -14,7 +14,7 @@ const help = 'ply [options] one.request.yaml|case1.ply.js [two.request.yaml|case
   '  --expectedResultLocation     Expected results YAML location ([cwd]/results/expected)\n' +
   '  --resultLocation             Where to write actual results YAML ([cwd]/results/actual)\n' +
   '  --logLocation                Where logs are written (same as *resultLocation*)\n' +
-  '  --extensions                 Filename extensions for requests ([.request.yaml,.postman_collections.json])\n' +
+  '  --extensions                 Filename extensions for requests ([.ply.yaml,.postman_collections.json])\n' +
   '  --responseHeaders            Array of validated response headers, in the order they\'ll appear in result YAML (all)\n' +
   '  --formatResult               Pretty-print and sort keys of JSON body content in results (true) -- for comparision vs expected\n' +
   '  --prettyIndent               Pretty-print indentation (2)\n' +
@@ -87,10 +87,15 @@ const cli = {
           Object.assign(values, ply.loadValues(vals));
         });
       }
-      options.qualifyLocations = false;
-      plyees.filter(p => isRequest(p)).forEach(requestFile => {
-        logger.info('Plying: ' + requestFile + '...');
-        runRequests(requestFile, options, values);
+      plyees.filter(p => isRequest(p)).forEach(req => {
+        logger.info('Plying: ' + req + '...');
+        let name = undefined;
+        let hash = req.lastIndexOf('#');
+        if (hash > 0 && req.length > hash + 1) {
+          name = req.substring(hash + 1);
+          req = req.substring(0, hash);
+        }
+        runRequests(req, options, values, name);
       });
     }
   }
@@ -100,24 +105,44 @@ function isRequest(plyee) {
   return !plyee.endsWith('.js');
 }
 
-function runRequests(requestFile, options, values) {
-  const requests = ply.loadRequests(requestFile);
+function runRequests(requestFile, options, values, requestName) {
+  let requests = ply.loadRequests(requestFile);
   const caseName = getCaseName(requestFile, options.extensions);
   const testCase = new Case(caseName, options);
 
-  // tests are run sequentially
-  Object.keys(requests).reduce((promise, name) => {
-    return promise.then(() => {
-      let request = requests[name];
-      return testCase.run(request, values, name);
+  if (requestName) {
+    options.qualifyLocations = true;
+    // single test
+    const request = requests[requestName];
+    if (request) {
+      testCase.run(request, values, requestName)
+      .then(() => {
+        testCase.verify(values, requestName)
+      })
+      .catch(err => {
+        testCase.handleError(err);
+      });
+    }
+    else {
+      throw new Error('Request not found: ' + requestFile + '#' + requestName);
+    }
+  }
+  else {
+    // tests are run sequentially
+    options.qualifyLocations = false;
+    Object.keys(requests).reduce((promise, name) => {
+      return promise.then(() => {
+        let request = requests[name];
+        return testCase.run(request, values, name);
+      });
+    }, Promise.resolve())
+    .then(() => {
+        testCase.verify(values)
+    })
+    .catch(err => {
+      testCase.handleError(err);
     });
-  }, Promise.resolve())
-  .then(() => {
-      testCase.verify(values)
-  })
-  .catch(err => {
-    testCase.handleError(err);
-  });
+  }
 }
 
 function runCase(caseFile, options, values) {
