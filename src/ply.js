@@ -151,17 +151,17 @@ Ply.prototype.parseCases = function(js) {
   if (match) {
     var caseName = match[1];
     regex = /run\(.*, '(.*)'\)/g;
-    var match = regex.exec(js);
+    match = regex.exec(js);
     while (match !== null) {
       cases[match[1]] = {
         group: caseName,
         name: match[1]
-      }
+      };
       match = regex.exec(js);
     }
   }
   return cases;
-}
+};
 
 // Load values, returning an object (or promise if location is URL).
 Ply.prototype.loadValues = function(location) {

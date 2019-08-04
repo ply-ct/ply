@@ -1,6 +1,5 @@
 'use strict';
 
-const path = require('path');
 const defaults = require('defaults');
 
 var Options = function(options) {

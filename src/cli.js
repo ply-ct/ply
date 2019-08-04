@@ -117,7 +117,7 @@ function runRequests(requestFile, options, values, requestName) {
     if (request) {
       testCase.run(request, values, requestName)
       .then(() => {
-        testCase.verify(values, requestName)
+        testCase.verify(values, requestName);
       })
       .catch(err => {
         testCase.handleError(err);
@@ -137,16 +137,12 @@ function runRequests(requestFile, options, values, requestName) {
       });
     }, Promise.resolve())
     .then(() => {
-        testCase.verify(values)
+        testCase.verify(values);
     })
     .catch(err => {
       testCase.handleError(err);
     });
   }
-}
-
-function runCase(caseFile, options, values) {
-  console.log("Case: " + caseFile);
 }
 
 function getCaseName(requestFile, extensions) {

@@ -168,15 +168,14 @@ Case.prototype.verifyAsync = function(values, name) {
           var result;
           if (data) {
             if (name) {
-              const obj = jsYaml.safeLoad(expected, { filename: thisCase.expectedResultRetrieval.toString() });
+              const obj = jsYaml.safeLoad(data, { filename: thisCase.expectedResultRetrieval.toString() });
               const expectedObj = obj[name];
               if (!expectedObj)
                 reject(new Error('Expected result not found: ' + thisCase.expectedResultRetrieval + '#' + name));
               const yamlObj = {};
               yamlObj[name] = expectedObj;
-              expected = thisCase.yamlString(yamlObj);
+              const expected = thisCase.yamlString(yamlObj);
               result = thisCase.verifyResult(expected, values);
-
             }
             else {
               result = thisCase.verifyResult(data, values);
