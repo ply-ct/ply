@@ -31,7 +31,7 @@ Options.defaultOptions = {
   // resultLocation: this.location + '/results/actual',
   // logLocation: path.dirname(process.argv[1]) + '/results/actual',
   // localLocation: (indicates local override possible)
-  extensions: ['.request.yaml','.postman_collection.json'],
+  extensions: ['.ply.yaml','.postman_collection.json'],
   // responseHeaders: (array of validated response headers, in the order they'll appear in result yaml)
   formatResult: true,
   prettyIndent: 2,
