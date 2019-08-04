@@ -7,28 +7,22 @@ const proto = {
   run(options, values, name) {
     var caseName = options.caseName;
     if (!caseName) {
-      caseName = this.name;
-      var method = this.method ? this.method : null;
-      if (method) {
-        if (method == 'DELETE')
-          caseName = 'DEL:' + caseName;
-        else if (method == 'OPTIONS')
-          caseName = 'OPT:' + caseName;
-        else
-          caseName = method + ':' + caseName;
-      }
+      caseName = this.group;
+    }
+    if (!name) {
+      name = this.name;
     }
     this.implicitCase = new Case(caseName, options);
     return this.implicitCase.run(this, values, name);
   },
   verify: function(values) {
-    this.result = this.implicitCase.verify(values);
+    this.result = this.implicitCase.verify(values, this.name);
     return this.result;
   },
   verifyAsync: function(values) {
     var request = this;
     return new Promise(function(resolve, reject) {
-      request.implicitCase.verifyAsync(values)
+      request.implicitCase.verifyAsync(values, this.name)
       .then(result => {
         request.result = result;
         resolve(result);

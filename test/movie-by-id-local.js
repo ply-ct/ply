@@ -4,7 +4,7 @@ const ply = require('../src/ply');
 
 // testsLoc on file system allows synchronous reads
 const testsLoc = '../../ply-demo/src/test/ply';
-var requests = ply.loadRequests(testsLoc + '/requests/movie-queries.request.yaml');
+var requests = ply.loadRequests(testsLoc + '/requests/movie-queries.ply.yaml');
 var request = requests.movieById;
 
 var values = Object.assign({}, ply.loadValues(testsLoc + '/values/main.values.json'),

@@ -111,8 +111,8 @@ function runRequests(requestFile, options, values, requestName) {
   const testCase = new Case(caseName, options);
 
   if (requestName) {
-    options.qualifyLocations = true;
     // single test
+    options.qualifyLocations = true;
     const request = requests[requestName];
     if (request) {
       testCase.run(request, values, requestName)

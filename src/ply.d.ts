@@ -58,8 +58,8 @@ export class Case implements Plyable {
     /**
      * Verify vs conventional expected response.
      */
-    verify(values: object): Result;
-    verifyAsync(values: object): Promise<Result>;
+    verify(values: object, name: string | undefined): Result;
+    verifyAsync(values: object, name: string | undefined): Promise<Result>;
     /**
      * Verify vs supplied expected response.
      */
@@ -82,16 +82,6 @@ export interface Plyable {
      * @returns response
      */
     run(request: Request, values: object, name: string | undefined): Promise<Response>;
-
-    /**
-     * Verify vs conventional expected response.
-     */
-    verify(values: object): Result;
-    verifyAsync(values: object): Promise<Result>;
-    /**
-     * Verify vs supplied expected response.
-     */
-    verifyResult(expected: string, values: object): Result;
 }
 
 export class Response {
