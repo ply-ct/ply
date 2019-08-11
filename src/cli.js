@@ -119,7 +119,12 @@ const cli = {
           const testCase = new Case(baseName, this.options);
           testCase.run(request, this.values, request.name)
           .then(() => {
-            testCase.verifyAsync(this.values, request.name);
+            testCase.verifyAsync(this.values, request.name)
+            .then(result => {
+              if (result.status !== 'Passed') {
+                process.exit(result.lineNumber ? result.lineNumber : -1);
+              }
+            });
           })
           .catch(err => {
             testCase.handleError(err);
@@ -145,7 +150,12 @@ const cli = {
           });
         }, Promise.resolve())
         .then(() => {
-            testCase.verifyAsync(this.values);
+            testCase.verifyAsync(this.values)
+            .then(result => {
+              if (result.status !== 'Passed') {
+                process.exit(-1);
+              }
+            });
         })
         .catch(err => {
           testCase.handleError(err);

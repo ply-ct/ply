@@ -193,6 +193,8 @@ Case.prototype.verifyAsync = function(values, name) {
               yamlObj[name] = expectedObj;
               const expected = thisCase.yamlString(yamlObj);
               result = thisCase.verifyResult(expected, values);
+              // line number in expected result storage
+              result.lineNumber = expectedObj.line + 1;
             }
             else {
               result = thisCase.verifyResult(data, values);
@@ -231,7 +233,10 @@ Case.prototype.verify = function(values, name) {
       const yamlObj = {};
       yamlObj[name] = expectedObj;
       expected = this.yamlString(yamlObj);
-      return this.verifyResult(expected, values);
+      let result = this.verifyResult(expected, values);
+      // line number in expected result storage
+      result.lineNumber = expectedObj.line + 1;
+      return result;
     }
     else {
       return this.verifyResult(expected, values);
@@ -333,7 +338,7 @@ Case.prototype.jsonString = function(obj) {
 Case.prototype.yamlString = function(obj) {
   let noLines = {};
   Object.keys(obj).forEach(key => {
-    let {line, ...withoutLine} = obj[key];
+    let {line, ...withoutLine} = obj[key]; // eslint-disable-line no-unused-vars
     noLines[key] = withoutLine;
   });
   return yaml.dump(noLines);
