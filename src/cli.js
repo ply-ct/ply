@@ -105,51 +105,53 @@ const cli = {
     return !plyee.endsWith('.js');
   },
   runRequests: function(requestFile, requestName) {
-    let requests = ply.loadRequests(requestFile);
-
-    if (requestName) {
-      // single test
-      this.options.qualifyLocations = false;
-      this.options.storageSuffix = true;
-      const request = requests[requestName];
-      if (request) {
-        this.logger.info('Plying: ' + requestFile + '#' + requestName + '...');
-        let baseName = this.getBaseName(requestFile);
-        const testCase = new Case(baseName, this.options);
-        testCase.run(request, this.values, request.name)
-        .then(() => {
-          testCase.verify(this.values, request.name);
-        })
-        .catch(err => {
-          testCase.handleError(err);
-        });
+    //let requests = ply.loadRequests(requestFile);
+    ply.loadRequestsAsync(requestFile)
+    .then(requests => {
+      if (requestName) {
+        // single test
+        this.options.qualifyLocations = false;
+        this.options.storageSuffix = true;
+        const request = requests[requestName];
+        if (request) {
+          this.logger.info('Plying: ' + requestFile + '#' + requestName + '...');
+          let baseName = this.getBaseName(requestFile);
+          const testCase = new Case(baseName, this.options);
+          testCase.run(request, this.values, request.name)
+          .then(() => {
+            testCase.verifyAsync(this.values, request.name);
+          })
+          .catch(err => {
+            testCase.handleError(err);
+          });
+        }
+        else {
+          throw new Error('Request not found: ' + requestFile + '#' + requestName);
+        }
       }
       else {
-        throw new Error('Request not found: ' + requestFile + '#' + requestName);
-      }
-    }
-    else {
-      // tests are run sequentially with one case
-      this.options.qualifyLocations = false;
-      let caseName = this.getBaseName(requestFile);
-      let testCase = new Case(caseName, this.options);
-      Object.keys(requests).reduce((promise, name) => {
-        return promise.then(() => {
-          let request = requests[name];
-          this.logger.info('Plying: ' + requestFile + '#' + name + '...');
-          return testCase.run(request, this.values, name);
+        // tests are run sequentially with one case
+        this.options.qualifyLocations = false;
+        let caseName = this.getBaseName(requestFile);
+        let testCase = new Case(caseName, this.options);
+        Object.keys(requests).reduce((promise, name) => {
+          return promise.then(() => {
+            let request = requests[name];
+            this.logger.info('Plying: ' + requestFile + '#' + name + '...');
+            return testCase.run(request, this.values, name);
+          })
+          .catch(err => {
+            testCase.handleError(err);
+          });
+        }, Promise.resolve())
+        .then(() => {
+            testCase.verifyAsync(this.values);
         })
         .catch(err => {
           testCase.handleError(err);
         });
-      }, Promise.resolve())
-      .then(() => {
-          testCase.verify(this.values);
-      })
-      .catch(err => {
-        testCase.handleError(err);
-      });
-    }
+      }
+    });
   },
   getBaseName: function(requestFile) {
     let fileName = path.basename(requestFile);

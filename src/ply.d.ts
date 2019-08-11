@@ -3,6 +3,7 @@
 export class Request implements Plyable {
     group: string;
     name: string;
+    line: number; // zero-based
     url: string;
     method: string;
     headers: object | undefined;
@@ -46,6 +47,7 @@ export class Case implements Plyable {
     init(qualifier: string | undefined): void;
 
     name: string;
+    line: number;
 
     /**
      * Execute this test.
@@ -73,6 +75,7 @@ export class Case implements Plyable {
 export interface Plyable {
 
     name: string;
+    line: number;
 
     /**
      * Execute this plyable.

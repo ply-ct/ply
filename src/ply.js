@@ -1,7 +1,7 @@
 'use strict';
 
 const path = require('path');
-const jsYaml = require('js-yaml');
+const yaml = require('./yaml');
 const postman = require('./postman');
 const group = require('./group');
 const compare = require('./compare');
@@ -40,10 +40,11 @@ Ply.prototype.loadRequests = function(location) {
     return this.loadCollection(location).getRequests();
   }
   else {
-    const obj = jsYaml.safeLoad(str, { filename: location });
+    const obj = yaml.load(location, str);
     const grp = {name: path.basename(location, '.ply.yaml'), requests: []};
     Object.keys(obj).forEach(key => {
-      grp.requests.push(Object.assign({name: key}, obj[key]));
+      let request = Object.assign({name: key}, obj[key]);
+      grp.requests.push(request);
     });
     return group.create(location, grp).getRequests();
   }
@@ -66,7 +67,13 @@ Ply.prototype.loadRequestsAsync = function(location) {
                 resolve(group.create(location, postman.group(JSON.parse(data))).getRequests());
               }
               else {
-                resolve(jsYaml.safeLoad(data, { filename: location }));
+                const obj = yaml.load(location, data);
+                const grp = {name: path.basename(location, '.ply.yaml'), requests: []};
+                Object.keys(obj).forEach(key => {
+                  let request = Object.assign({name: key}, obj[key]);
+                  grp.requests.push(request);
+                });
+                resolve(group.create(location, grp).getRequests());
               }
             }
             catch (e) {

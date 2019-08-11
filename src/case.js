@@ -1,7 +1,7 @@
 'use strict';
 
 const path = require('path');
-const jsYaml = require('js-yaml');
+const yaml = require('./yaml');
 const Options = require('./options').Options;
 const Logger = require('./logger').Logger;
 const run = require('./run');
@@ -185,7 +185,7 @@ Case.prototype.verifyAsync = function(values, name) {
           var result;
           if (data) {
             if (name) {
-              const obj = jsYaml.safeLoad(data, { filename: thisCase.expectedResultRetrieval.toString() });
+              const obj = yaml.load(thisCase.expectedResultRetrieval.toString(), data);
               const expectedObj = obj[name];
               if (!expectedObj)
                 reject(new Error('Expected result not found: ' + thisCase.expectedResultRetrieval + '#' + name));
@@ -224,7 +224,7 @@ Case.prototype.verify = function(values, name) {
       throw new Error('Expected result not found: ' + this.expectedResultRetrieval);
     }
     if (name) {
-      const obj = jsYaml.safeLoad(expected, { filename: this.expectedResultRetrieval.toString() });
+      const obj = yaml.load(this.expectedResultRetrieval.toString(), expected);
       const expectedObj = obj[name];
       if (!expectedObj)
         throw new Error('Expected result not found: ' + this.expectedResultRetrieval + '#' + name);
@@ -331,5 +331,10 @@ Case.prototype.jsonString = function(obj) {
 };
 
 Case.prototype.yamlString = function(obj) {
-  return jsYaml.safeDump(obj, {noCompatMode: true, skipInvalid: true});
+  let noLines = {};
+  Object.keys(obj).forEach(key => {
+    let {line, ...withoutLine} = obj[key];
+    noLines[key] = withoutLine;
+  });
+  return yaml.dump(noLines);
 };
