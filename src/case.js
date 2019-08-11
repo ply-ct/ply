@@ -22,19 +22,20 @@ var Case = exports.Case = function(name, options) {
       this.options.resultLocation.startsWith('http://')) {
     throw new Error('Unsupported result location: ' + this.options.resultLocation);
   }
-
-  this.init();
 };
 
-Case.prototype.init = function(qualifier) {
+Case.prototype.init = function(qualifier, suffix) {
   var expectedLoc = this.options.expectedResultLocation;
   this.expectedResultRetrieval = new Retrieval(expectedLoc, this.name + '.yaml');
 
   var actualLoc = this.options.resultLocation;
   if (qualifier)
     actualLoc += '/' + qualifier;
-  this.actualResultStorage = new Storage(actualLoc, this.name + '.yaml');
-  if (!this.options.retainResult || (qualifier && !this.inited)) {
+  var storageName = this.name;
+  if (suffix)
+    storageName += '#' + suffix;
+  this.actualResultStorage = new Storage(actualLoc, storageName + '.yaml');
+  if (!this.options.retainResult) {
     this.actualResultStorage.remove();
     if (this.options.overwriteExpected) {
       if (this.expectedResultRetrieval.storage)
@@ -47,28 +48,44 @@ Case.prototype.init = function(qualifier) {
   var logLoc = this.options.logLocation;
   if (qualifier)
     logLoc += '/' + qualifier;
+  var logName = this.name;
+  if (suffix)
+    logName += '#' + suffix;
   this.logger = new Logger({
     level: this.options.debug ? 'debug' : 'info',
     location: logLoc,
-    name: this.name + '.log',
+    name: logName + '.log',
     retain: this.options.retainLog
   });
 
-  if (qualifier)  // TODO: better initialization
-    this.inited = true;
+  this.inited = true;
 };
 
 Case.prototype.run = function(test, values, name) {
-  if (this.options.qualifyLocations) {
-    if (typeof this.options.qualifyLocations === 'string')
-      this.init(this.options.qualifyLocations);
-    else
-      this.init(test.group);
+  if (!this.inited) {
+    var qualifier = undefined;
+    if (this.options.qualifyLocations) {
+      if (typeof this.options.qualifyLocations === 'string')
+        qualifier = this.options.qualifyLocations;
+      else
+        qualifier = test.group;
+    }
+    var suffix = undefined;
+    if (this.options.storageSuffix) {
+      if (typeof this.options.storageSuffix === 'string')
+        suffix = this.options.storageSuffix;
+      else
+        suffix = name;
+    }
+    this.init(qualifier, suffix);
   }
 
   this.result = null;
-  this.logger.info(test.group + '/' + this.name + ' @' + new Date());
   const testRun = run.create(name ? name : this.name);
+  if (qualifier)
+    this.logger.info(test.group + '/' + testRun.test + ' @' + new Date());
+  else
+    this.logger.info(this.name + '#' + testRun.test + ' @' + new Date());
 
   if (values)
     this.logger.debug('Values: ' + this.jsonString(values));

@@ -70,92 +70,99 @@ function parse(raw) {
 }
 
 const cli = {
+  init: function(plyees, parsedArgs) {
+    this.plyees = plyees;
+    this.options = new Options(parsedArgs).options;
+    this.options.location = process.cwd();
+    this.logger = ply.getLogger(this.options);
+    this.logger.debug('options: ' + JSON.stringify(this.options, null, 2));
+    this.values = {};
+    if (this.options.values) {
+      this.options.values.forEach(vals => {
+        Object.assign(this.values, ply.loadValues(vals));
+      });
+    }
+  },
   run: function(args) {
     let parsed = parse(args);
     if (parsed.help) {
       console.log(help);
     }
     else {
-      let plyees = parsed._;
-      let options = new Options(parsed).options;
-      options.location = process.cwd();
-      let logger = ply.getLogger(options);
-      logger.debug('options: ' + JSON.stringify(options, null, 2));
-      let values = {};
-      if (options.values) {
-        options.values.forEach(vals => {
-          Object.assign(values, ply.loadValues(vals));
-        });
-      }
-      plyees.filter(p => isRequest(p)).forEach(req => {
-        logger.info('Plying: ' + req + '...');
+      this.init(parsed._, parsed);
+      this.plyees.filter(p => this.isRequest(p)).forEach(req => {
         let name = undefined;
         let hash = req.lastIndexOf('#');
         if (hash > 0 && req.length > hash + 1) {
           name = req.substring(hash + 1);
           req = req.substring(0, hash);
         }
-        runRequests(req, options, values, name);
+        this.runRequests(req, name);
       });
     }
-  }
-};
+  },
+  isRequest: function(plyee) {
+    return !plyee.endsWith('.js');
+  },
+  runRequests: function(requestFile, requestName) {
+    let requests = ply.loadRequests(requestFile);
 
-function isRequest(plyee) {
-  return !plyee.endsWith('.js');
-}
-
-function runRequests(requestFile, options, values, requestName) {
-  let requests = ply.loadRequests(requestFile);
-  const caseName = getCaseName(requestFile, options.extensions);
-  const testCase = new Case(caseName, options);
-
-  if (requestName) {
-    // single test
-    options.qualifyLocations = true;
-    const request = requests[requestName];
-    if (request) {
-      testCase.run(request, values, requestName)
+    if (requestName) {
+      // single test
+      this.options.qualifyLocations = false;
+      this.options.storageSuffix = true;
+      const request = requests[requestName];
+      if (request) {
+        this.logger.info('Plying: ' + requestFile + '#' + requestName + '...');
+        let baseName = this.getBaseName(requestFile);
+        const testCase = new Case(baseName, this.options);
+        testCase.run(request, this.values, request.name)
+        .then(() => {
+          testCase.verify(this.values, request.name);
+        })
+        .catch(err => {
+          testCase.handleError(err);
+        });
+      }
+      else {
+        throw new Error('Request not found: ' + requestFile + '#' + requestName);
+      }
+    }
+    else {
+      // tests are run sequentially with one case
+      this.options.qualifyLocations = false;
+      let caseName = this.getBaseName(requestFile);
+      let testCase = new Case(caseName, this.options);
+      Object.keys(requests).reduce((promise, name) => {
+        return promise.then(() => {
+          let request = requests[name];
+          this.logger.info('Plying: ' + requestFile + '#' + name + '...');
+          return testCase.run(request, this.values, name);
+        })
+        .catch(err => {
+          testCase.handleError(err);
+        });
+      }, Promise.resolve())
       .then(() => {
-        testCase.verify(values, requestName);
+          testCase.verify(this.values);
       })
       .catch(err => {
         testCase.handleError(err);
       });
     }
-    else {
-      throw new Error('Request not found: ' + requestFile + '#' + requestName);
-    }
-  }
-  else {
-    // tests are run sequentially
-    options.qualifyLocations = false;
-    Object.keys(requests).reduce((promise, name) => {
-      return promise.then(() => {
-        let request = requests[name];
-        return testCase.run(request, values, name);
-      });
-    }, Promise.resolve())
-    .then(() => {
-        testCase.verify(values);
-    })
-    .catch(err => {
-      testCase.handleError(err);
-    });
-  }
-}
-
-function getCaseName(requestFile, extensions) {
-  let fileName = path.basename(requestFile);
-  if (extensions && extensions.length > 0) {
-    for (let i = 0; i < extensions.length; i++) {
-      if (fileName.endsWith(extensions[i])) {
-        return fileName.substring(0, fileName.length - extensions[i].length);
+  },
+  getBaseName: function(requestFile) {
+    let fileName = path.basename(requestFile);
+    if (this.options.extensions && this.options.extensions.length > 0) {
+      for (let i = 0; i < this.options.extensions.length; i++) {
+        if (fileName.endsWith(this.options.extensions[i])) {
+          return fileName.substring(0, fileName.length - this.options.extensions[i].length);
+        }
       }
     }
+    return fileName;
   }
-  return fileName;
-}
+};
 
 module.exports = cli;
 

@@ -37,7 +37,8 @@ Options.defaultOptions = {
   retainLog: false,  // accumulate for multiple runs
   captureResult: true,
   retainResult: false,
-  qualifyLocations: true, // actual result and log paths prefixed by group (or can be string for custom)
+  qualifyLocations: false, // actual result and log paths prefixed by group (or can be string for custom)
+  storageSuffix: false, // actual result and log storage name suffixed with test run name (string for custom)
   overwriteExpected: false
 };
 
