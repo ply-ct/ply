@@ -90,22 +90,26 @@ const cli = {
     }
     else {
       this.init(parsed._, parsed);
-      this.plyees.filter(p => this.isRequest(p)).forEach(req => {
-        let name = undefined;
-        let hash = req.lastIndexOf('#');
-        if (hash > 0 && req.length > hash + 1) {
-          name = req.substring(hash + 1);
-          req = req.substring(0, hash);
+      this.plyees.forEach(p => {
+        if (this.isRequests(p)) {
+          let name = undefined;
+          let hash = req.lastIndexOf('#');
+          if (hash > 0 && req.length > hash + 1) {
+            name = req.substring(hash + 1);
+            req = req.substring(0, hash);
+          }
+          this.runRequests(req, name);
         }
-        this.runRequests(req, name);
-      });
+        else {
+          // TODO run case
+        }
+      }, this);
     }
   },
-  isRequest: function(plyee) {
+  isRequests: function(plyee) {
     return !plyee.endsWith('.js');
   },
   runRequests: function(requestFile, requestName) {
-    //let requests = ply.loadRequests(requestFile);
     ply.loadRequestsAsync(requestFile)
     .then(requests => {
       if (requestName) {
