@@ -6,6 +6,7 @@ const postman = require('./postman');
 const group = require('./group');
 const compare = require('./compare');
 const subst = require('./subst');
+const cli = require('./cli');
 const Storage = require('./storage').Storage;
 const Retrieval = require('./retrieval').Retrieval;
 const isUrl = require('./retrieval').isUrl;

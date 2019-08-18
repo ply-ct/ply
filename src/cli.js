@@ -90,21 +90,34 @@ const cli = {
     }
     else {
       this.init(parsed._, parsed);
-      this.plyees.forEach(p => {
-        if (this.isRequests(p)) {
-          let name = undefined;
-          let hash = req.lastIndexOf('#');
-          if (hash > 0 && req.length > hash + 1) {
-            name = req.substring(hash + 1);
-            req = req.substring(0, hash);
-          }
-          this.runRequests(req, name);
-        }
-        else {
-          // TODO run case
-        }
-      }, this);
+      this.exec();
     }
+  },
+  // this is the public api
+  ply: function(plyees, options, values) {
+    this.plyees = plyees;
+    this.options = new Options(options).options;
+    this.values = values;
+    this.logger = ply.getLogger(this.options);
+    this.logger.debug('options: ' + JSON.stringify(this.options, null, 2));
+    this.exec();
+
+  },
+  exec: function() {
+    this.plyees.forEach(p => {
+      if (this.isRequests(p)) {
+        let name = undefined;
+        let hash = req.lastIndexOf('#');
+        if (hash > 0 && req.length > hash + 1) {
+          name = req.substring(hash + 1);
+          req = req.substring(0, hash);
+        }
+        this.runRequests(req, name);
+      }
+      else {
+        // TODO run case
+      }
+    }, this);
   },
   isRequests: function(plyee) {
     return !plyee.endsWith('.js');

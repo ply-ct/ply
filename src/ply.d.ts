@@ -113,6 +113,7 @@ export class Result {
 export type Requests = {
     [key: string]: Request
 }
+
 /**
  * Loads requests from a resource synchronously unless location is a url.
  * @param location file path or a url
@@ -255,6 +256,10 @@ export function updateExpectedResult(options: any, groupName: any, request: any,
 export function updateFile(options: any, file: any): void;
 export function updateRequest(options: any, groupName: any, request: any): void;
 
+export namespace cli {
+    function ply(plyees: string[], options: object, values: object)
+}
+
 export namespace compare {
     function diffLines(expected: any, actual: any, values: any, options: any): any;
 
@@ -300,6 +305,5 @@ export namespace subst {
     function replace(template: any, map: any, fallback: any): any;
 
     function trimComments(code: any): any;
-
 }
 
