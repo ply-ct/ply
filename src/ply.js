@@ -21,8 +21,8 @@ function Ply() {
 Ply.prototype.getLogger = function(options) {
   return new Logger({
     level: options.debug ? 'debug' : 'info',
-    location: options.logLocation,
     name: 'ply.log',
+    location: options.logLocation,
     retain: options.retainLog
   });
 };
@@ -755,4 +755,5 @@ Ply.prototype.postman = postman;
 Ply.prototype.compare = compare;
 Ply.prototype.subst = subst;
 Ply.prototype.createGroup = group.create;
+Ply.prototype.cli = cli;
 module.exports = new Ply();

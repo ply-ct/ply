@@ -257,7 +257,7 @@ export function updateFile(options: any, file: any): void;
 export function updateRequest(options: any, groupName: any, request: any): void;
 
 export namespace cli {
-    function ply(plyees: string[], options: object, values: object)
+    function ply(plyees: string[], options: object, values: object): void;
 }
 
 export namespace compare {

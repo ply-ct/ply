@@ -3,7 +3,7 @@
 const path = require('path');
 const arg = require('arg');
 const Options = require('./options').Options;
-const ply = require('./ply.js');
+const ply = require('./ply');
 const Case = ply.Case;
 
 const help = 'ply [options] one.ply.yaml[#aRequest]|case1.ply.js [two.ply.yaml|case2.ply.js]\n' +
@@ -107,12 +107,12 @@ const cli = {
     this.plyees.forEach(p => {
       if (this.isRequests(p)) {
         let name = undefined;
-        let hash = req.lastIndexOf('#');
-        if (hash > 0 && req.length > hash + 1) {
-          name = req.substring(hash + 1);
-          req = req.substring(0, hash);
+        let hash = p.lastIndexOf('#');
+        if (hash > 0 && p.length > hash + 1) {
+          name = p.substring(hash + 1);
+          p = p.substring(0, hash);
         }
-        this.runRequests(req, name);
+        this.runRequests(p, name);
       }
       else {
         // TODO run case
@@ -131,11 +131,13 @@ const cli = {
         this.options.storageSuffix = true;
         const request = requests[requestName];
         if (request) {
+          console.log("PLY...");
           this.logger.info('Plying: ' + requestFile + '#' + requestName + '...');
           let baseName = this.getBaseName(requestFile);
           const testCase = new Case(baseName, this.options);
           testCase.run(request, this.values, request.name)
           .then(() => {
+            console.log("VERIFY...");
             testCase.verifyAsync(this.values, request.name)
             .then(result => {
               if (result.status !== 'Passed') {
