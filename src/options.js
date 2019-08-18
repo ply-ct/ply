@@ -25,6 +25,7 @@ Options.prototype.get = function(name) {
 
 Options.defaultOptions = {
   debug: false,
+  bail: false,
   location: process.cwd(),
   // expectedResultLocation: this.location + '/results/expected',
   // resultLocation: this.location + '/results/actual',

@@ -192,7 +192,7 @@ Case.prototype.verifyAsync = function(values, name) {
               const yamlObj = {};
               yamlObj[name] = expectedObj;
               const expected = thisCase.yamlString(yamlObj);
-              result = thisCase.verifyResult(expected, values);
+              result = thisCase.verifyResult(expected, values, name);
               // line number in expected result storage
               result.lineNumber = expectedObj.line + 1;
             }
@@ -248,7 +248,7 @@ Case.prototype.verify = function(values, name) {
 };
 
 // verify with preloaded result
-Case.prototype.verifyResult = function(expected, values) {
+Case.prototype.verifyResult = function(expected, values, name) {
   var expectedYaml = subst.trimComments(expected.replace(/\r/g, ''));
   if (!this.actualResultStorage.exists())
     throw new Error('Actual result not found: ' + this.actualResultStorage);
@@ -305,12 +305,13 @@ Case.prototype.verifyResult = function(expected, values) {
     }
   }
   var result;
+  name = name || this.name;
   if (firstDiffLine) {
-    this.logger.error('Case "' + this.name + '" FAILED: Results differ from line ' + firstDiffLine + ':\n' + diffMsg);
+    this.logger.error('Case "' + name + '" FAILED: Results differ from line ' + firstDiffLine + ':\n' + diffMsg);
     result = {status: 'Failed', message: 'Results differ from line ' + firstDiffLine};
   }
   else {
-    this.logger.info('Case "' + this.name + '" PASSED');
+    this.logger.info('Case "' + name + '" PASSED');
     result = {status: 'Passed', message: 'Test succeeded'};
   }
   this.logger.debug('Result: ' + this.jsonString(result));

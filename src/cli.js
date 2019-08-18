@@ -10,6 +10,7 @@ const help = 'ply [options] one.ply.yaml[#aRequest]|case1.ply.js [two.ply.yaml|c
   'Options:\n' +
   '  -h, --help                   This help output\n' +
   '  -d, -v, --debug, --verbose   Debug logging output (false)\n' +
+  '  -b, --bail                   Exit after first failure\n' +
   '  --values                     Values JSON file\n' +
   '  --expectedResultLocation     Expected results YAML location ([cwd]/results/expected)\n' +
   '  --resultLocation             Where to write actual results YAML ([cwd]/results/actual)\n' +
@@ -29,6 +30,7 @@ function parse(raw) {
       '--help': Boolean,
       '--version': Boolean,
       '--debug': Boolean,
+      '--bail': Boolean,
       '--values': [String],
       '--expectedResultLocation': String,
       '--resultLocation': String,
@@ -46,7 +48,8 @@ function parse(raw) {
       '-h': '--help',
       '--verbose': '--debug',
       '-d': '--debug',
-      '-v': '--debug'
+      '-v': '--debug',
+      '-b': '--bail'
     },
     {
       argv: raw.slice(2),
@@ -90,7 +93,19 @@ const cli = {
     }
     else {
       this.init(parsed._, parsed);
-      this.exec();
+      this.exec()
+      .then(success => {
+        process.exitCode = (success ? 0 : -1);
+      })
+      .catch(error => {
+        if (error.stack) {
+          this.logger.error(error.stack);
+        }
+        else {
+          this.logger.error(error);
+        }
+        process.exitCode = -1;
+      });
     }
   },
   // this is the public api
@@ -100,86 +115,119 @@ const cli = {
     this.values = values;
     this.logger = ply.getLogger(this.options);
     this.logger.debug('options: ' + JSON.stringify(this.options, null, 2));
-    this.exec();
-
-  },
-  exec: function() {
-    this.plyees.forEach(p => {
-      if (this.isRequests(p)) {
-        let name = undefined;
-        let hash = p.lastIndexOf('#');
-        if (hash > 0 && p.length > hash + 1) {
-          name = p.substring(hash + 1);
-          p = p.substring(0, hash);
-        }
-        this.runRequests(p, name);
+    this.exec()
+    .then(success => {
+      process.exitCode = (success ? 0 : -1);
+    })
+    .catch(error => {
+      if (error.stack) {
+        this.logger.error(error.stack);
       }
       else {
-        // TODO run case
+        this.logger.error(error);
       }
-    }, this);
+      process.exitCode = -1;
+    });
+  },
+  exec: function() {
+    return new Promise(resolve => {
+      let success = true;
+      this.plyees.reduce((promise, plyee) => {
+        return promise.then(() => {
+          return new Promise(res => {
+            if (this.options.bail && !success) {
+              res();
+            }
+            else {
+              if (this.isRequests(plyee)) {
+                this.logger.info('Plyee: ' + plyee);
+                let name = undefined;
+                let hash = plyee.lastIndexOf('#');
+                if (hash > 0 && plyee.length > hash + 1) {
+                  name = plyee.substring(hash + 1);
+                  plyee = plyee.substring(0, hash);
+                }
+                this.runRequests(plyee, name)
+                .then(plyeeSuccess => {
+                  if (!plyeeSuccess) {
+                    success = false;
+                    res();
+                  }
+                });
+              }
+              else {
+                // TODO run case
+              }
+            }
+          });
+        });
+      }, Promise.resolve())
+      .then(() => {
+        resolve(success);
+      });
+    });
   },
   isRequests: function(plyee) {
     return !plyee.endsWith('.js');
   },
   runRequests: function(requestFile, requestName) {
-    ply.loadRequestsAsync(requestFile)
-    .then(requests => {
-      if (requestName) {
-        // single test
+    return new Promise(resolve => {
+      ply.loadRequestsAsync(requestFile)
+      .then(requests => {
         this.options.qualifyLocations = false;
         this.options.storageSuffix = true;
-        const request = requests[requestName];
-        if (request) {
-          console.log("PLY...");
-          this.logger.info('Plying: ' + requestFile + '#' + requestName + '...');
-          let baseName = this.getBaseName(requestFile);
-          const testCase = new Case(baseName, this.options);
-          testCase.run(request, this.values, request.name)
-          .then(() => {
-            console.log("VERIFY...");
-            testCase.verifyAsync(this.values, request.name)
-            .then(result => {
-              if (result.status !== 'Passed') {
-                process.exit(result.lineNumber ? result.lineNumber : -1);
-              }
+        if (requestName) {
+          // single request
+          const request = requests[requestName];
+          if (request) {
+            this.logger.info('Plying: ' + requestFile + '#' + requestName + '...');
+            let baseName = this.getBaseName(requestFile);
+            const testCase = new Case(baseName, this.options);
+            testCase.run(request, this.values, requestName)
+            .then(() => {
+              testCase.verifyAsync(this.values, requestName)
+              .then(result => {
+                resolve(result.status === 'Passed');
+              });
             });
-          })
-          .catch(err => {
-            testCase.handleError(err);
-          });
+          }
+          else {
+            throw new Error('Request not found: ' + requestFile + '#' + requestName);
+          }
         }
         else {
-          throw new Error('Request not found: ' + requestFile + '#' + requestName);
-        }
-      }
-      else {
-        // tests are run sequentially with one case
-        this.options.qualifyLocations = false;
-        let caseName = this.getBaseName(requestFile);
-        let testCase = new Case(caseName, this.options);
-        Object.keys(requests).reduce((promise, name) => {
-          return promise.then(() => {
-            let request = requests[name];
-            this.logger.info('Plying: ' + requestFile + '#' + name + '...');
-            return testCase.run(request, this.values, name);
-          })
-          .catch(err => {
-            testCase.handleError(err);
-          });
-        }, Promise.resolve())
-        .then(() => {
-            testCase.verifyAsync(this.values)
-            .then(result => {
-              if (result.status !== 'Passed') {
-                process.exit(-1);
-              }
+          // all requests are run sequentially
+          let caseName = this.getBaseName(requestFile);
+          let success = true;
+          Object.keys(requests).reduce((promise, name) => {
+            return promise.then(() => {
+              return new Promise(res => {
+                if (this.options.bail && !success) {
+                  res();
+                }
+                else {
+                  let request = requests[name];
+                  let testCase = new Case(caseName, this.options);
+                  this.logger.info('\nPlying: ' + requestFile + '#' + name + '...');
+                  testCase.run(request, this.values, name)
+                  .then(() => {
+                    testCase.verifyAsync(this.values, name)
+                    .then(result => {
+                      if (result.status !== 'Passed') {
+                        success = false;
+                      }
+                      res();
+                    });
+                  });
+                }
+              });
             });
-        })
-        .catch(err => {
-          testCase.handleError(err);
-        });
-      }
+          }, Promise.resolve())
+          .then(() => {
+            resolve(success);
+          });
+        }
+      });
     });
   },
   getBaseName: function(requestFile) {
