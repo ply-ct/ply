@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const EventEmitter = require('events').EventEmitter;
 const arg = require('arg');
 const Options = require('./options').Options;
 const ply = require('./ply');
@@ -108,26 +109,19 @@ const cli = {
       });
     }
   },
-  // this is the public api
-  ply: function(plyees, options, values) {
+  // This is the public api.
+  // Listener is for 'outcome' events.
+  ply: async function(plyees, options, values, listener) {
     this.plyees = plyees;
     this.options = new Options(options).options;
     this.values = values;
     this.logger = ply.getLogger(this.options);
     this.logger.debug('options: ' + JSON.stringify(this.options, null, 2));
-    this.exec()
-    .then(success => {
-      process.exitCode = (success ? 0 : -1);
-    })
-    .catch(error => {
-      if (error.stack) {
-        this.logger.error(error.stack);
-      }
-      else {
-        this.logger.error(error);
-      }
-      process.exitCode = -1;
-    });
+    if (listener) {
+      this.emitter = new EventEmitter();
+      this.emitter.on('outcome', listener);
+    }
+    return this.exec();
   },
   exec: function() {
     return new Promise(resolve => {
@@ -180,15 +174,43 @@ const cli = {
           // single request
           const request = requests[requestName];
           if (request) {
-            this.logger.info('Plying: ' + requestFile + '#' + requestName + '...');
+            let requestId = requestFile + '#' + requestName;
+            this.logger.info('Plying: ' + requestId + '...');
             let baseName = this.getBaseName(requestFile);
             const testCase = new Case(baseName, this.options);
             testCase.run(request, this.values, requestName)
-            .then(() => {
+            .then(response => {
               testCase.verifyAsync(this.values, requestName)
               .then(result => {
+                if (this.emitter) {
+                  this.emitter.emit('outcome', {
+                    id: requestId,
+                    request: request,
+                    response: response,
+                    result: result
+                  });
+                }
                 resolve(result.status === 'Passed');
+              })
+              .catch(err => {
+                if (this.emitter) {
+                  this.emitter.emit('outcome', {
+                    id: requestId,
+                    request: request,
+                    response: response,
+                    error: err
+                  });
+                }
               });
+            })
+            .catch(err => {
+              if (this.emitter) {
+                this.emitter.emit('outcome', {
+                  id: requestId,
+                  request: request,
+                  error: err
+                });
+              }
             });
           }
           else {
@@ -208,16 +230,45 @@ const cli = {
                 else {
                   let request = requests[name];
                   let testCase = new Case(caseName, this.options);
-                  this.logger.info('\nPlying: ' + requestFile + '#' + name + '...');
+                  let requestId = requestFile + '#' + name;
+                  this.logger.info('\nPlying: ' + requestId + '...');
                   testCase.run(request, this.values, name)
-                  .then(() => {
+                  .then(response => {
                     testCase.verifyAsync(this.values, name)
                     .then(result => {
                       if (result.status !== 'Passed') {
                         success = false;
                       }
+                      if (this.emitter) {
+                        this.emitter.emit('outcome', {
+                          id: requestId,
+                          request: request,
+                          response: response,
+                          result: result
+                        });
+                      }
                       res();
+                    })
+                    .catch(err => {
+                      success = false;
+                      if (this.emitter) {
+                        this.emitter.emit('outcome', {
+                          id: requestId,
+                          request: request,
+                          response: response,
+                          error: err
+                        });
+                      }
                     });
+                  })
+                  .catch(err => {
+                    if (this.emitter) {
+                      this.emitter.emit('outcome', {
+                        id: requestId,
+                        request: request,
+                        error: err
+                      });
+                    }
                   });
                 }
               });

@@ -110,6 +110,14 @@ export class Result {
     message: string;
 }
 
+export class Outcome {
+    id: string | undefined;
+    request: Request | undefined;
+    response: Response | undefined;
+    result: Result | undefined;
+    error: Error | undefined;
+}
+
 export type Requests = {
     [key: string]: Request
 }
@@ -257,7 +265,7 @@ export function updateFile(options: any, file: any): void;
 export function updateRequest(options: any, groupName: any, request: any): void;
 
 export namespace cli {
-    function ply(plyees: string[], options: object, values: object): void;
+    function ply(plyees: string[], options: object, values: object, listener: Function): Promise<void>;
 }
 
 export namespace compare {
