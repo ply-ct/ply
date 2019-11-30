@@ -20,6 +20,6 @@ module.exports = {
     return obj;
   },
   dump: function(obj) {
-    return jsYaml.safeDump(obj, {noCompatMode: true, skipInvalid: true});
+    return jsYaml.safeDump(obj, {noCompatMode: true, skipInvalid: true, lineWidth: -1});
   }
 };
