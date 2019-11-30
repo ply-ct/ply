@@ -110,7 +110,7 @@ const cli = {
     }
   },
   // This is the public api.
-  // Listener is for 'outcome' events.
+  // Listener is for 'start' and 'outcome' events.
   ply: async function(plyees, options, values, listener) {
     this.plyees = plyees;
     this.options = new Options(options).options;
@@ -119,6 +119,7 @@ const cli = {
     this.logger.debug('options: ' + JSON.stringify(this.options, null, 2));
     if (listener) {
       this.emitter = new EventEmitter();
+      this.emitter.on('start', listener);
       this.emitter.on('outcome', listener);
     }
     return this.exec();
@@ -134,7 +135,6 @@ const cli = {
             }
             else {
               if (this.isRequests(plyee)) {
-                this.logger.info('Plyee: ' + plyee);
                 let name = undefined;
                 let hash = plyee.lastIndexOf('#');
                 if (hash > 0 && plyee.length > hash + 1) {
@@ -175,9 +175,12 @@ const cli = {
           const request = requests[requestName];
           if (request) {
             let requestId = requestFile + '#' + requestName;
-            this.logger.info('Plying: ' + requestId + '...');
+            this.logger.info('Plying: ' + requestId);
             let baseName = this.getBaseName(requestFile);
             const testCase = new Case(baseName, this.options);
+            this.emitter.emit('start', {
+              id: requestId
+            });
             testCase.run(request, this.values, requestName)
             .then(response => {
               testCase.verifyAsync(this.values, requestName)
@@ -231,7 +234,10 @@ const cli = {
                   let request = requests[name];
                   let testCase = new Case(caseName, this.options);
                   let requestId = requestFile + '#' + name;
-                  this.logger.info('\nPlying: ' + requestId + '...');
+                  this.logger.info('\nPlying: ' + requestId);
+                  this.emitter.emit('start', {
+                    id: requestId
+                  });
                   testCase.run(request, this.values, name)
                   .then(response => {
                     testCase.verifyAsync(this.values, name)

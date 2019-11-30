@@ -1,26 +1,47 @@
 'use strict';
 
-const jsdiff = require('diff');
+const DiffMatchPatch = require('diff-match-patch');
 const subst = require('./subst');
 
-// Options are the same as jsdiff.
 function Compare() {
 }
 
-Compare.prototype.diffLines = function(expected, actual, values, options) {
-  // must always end with newline (https://github.com/kpdecker/jsdiff/issues/68)
-  if (!expected.endsWith('\n'))
-    expected += '\n';
-  if (!actual.endsWith('\n'))
-    actual += '\n';
-
-  var diffs = jsdiff.diffLines(expected, actual, options);
+Compare.prototype.diffLines = function(expected, actual, values) {
+  const dmp = new DiffMatchPatch();
+  var a = dmp.diff_linesToChars_(expected, actual);
+  var lineText1 = a.chars1;
+  var lineText2 = a.chars2;
+  var lineArray = a.lineArray;
+  var diffs = dmp.diff_main(lineText1, lineText2, false);
+  dmp.diff_charsToLines_(diffs, lineArray);
+  diffs = this.convertToJsDiff(diffs);
   if (values) {
     return this.markIgnored(diffs, values);
   }
   else {
     return diffs;
   }
+};
+
+// Converts diff-match-patch line diffs to jsdiff for compatibility
+Compare.prototype.convertToJsDiff = function (diffs) {
+  var jsdiffs = [];
+  diffs.forEach(diff => {
+    let jsdiff = {};
+    if (diff[0] == -1) {
+      jsdiff.removed = true;
+    }
+    else if (diff[0] == 1) {
+      jsdiff.added = true;
+    }
+    jsdiff.value = diff[1];
+    jsdiff.count = jsdiff.value.split(/\r\n|\r|\n/).length;
+    if (jsdiff.value.endsWith('\n')) {
+      jsdiff.count--;
+    }
+    jsdiffs.push(jsdiff);
+  });
+  return jsdiffs;
 };
 
 Compare.prototype.markIgnored = function(diffs, values) {
@@ -83,7 +104,7 @@ Compare.prototype.markLines = function(start, lines, ignored) {
   var linesIdx = 0;
   lines.forEach(line => {
     var marker = {
-      start: start + linesIdx, 
+      start: start + linesIdx,
       end: start + linesIdx + line.length + 1,
     };
     if (ignored)
@@ -107,8 +128,12 @@ Compare.prototype.getMarkers = function(diffs, lines) {
         if (correspondingAdd) {
           // diff each line
           var newLines = correspondingAdd.value.replace(/\n$/, '').split(/\n/);
+          const dmp = new DiffMatchPatch();
           for (let j = 0; j < oldLines.length && j < newLines.length; j++) {
-            jsdiff.diffWordsWithSpace(oldLines[j], newLines[j]).forEach(lineDiff => {
+            let lineDiffs = dmp.diff_main(oldLines[j], newLines[j]);
+            dmp.diff_cleanupEfficiency(lineDiffs);
+            lineDiffs = this.convertToJsDiff(lineDiffs);
+            lineDiffs.forEach(lineDiff => {
               if (lineDiff.removed) {
                 var marker = {
                   start: idx,
@@ -131,11 +156,11 @@ Compare.prototype.getMarkers = function(diffs, lines) {
           // mark every line
           markers.push.apply(markers, this.markLines(idx, oldLines, diff.ignored));
         }
-  
+
         if (correspondingAdd) {
           i++; // corresponding add already covered
         }
-        
+
         // account for ignored comments
         if (lines && lines[lineIdx].comment) {
           idx += lines[lineIdx].comment.length;
@@ -152,7 +177,7 @@ Compare.prototype.getMarkers = function(diffs, lines) {
       }
     }
   }
-  
+
   return markers;
 };
 

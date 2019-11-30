@@ -110,6 +110,10 @@ export class Result {
     message: string;
 }
 
+export class Start {
+    id: string | undefined;
+}
+
 export class Outcome {
     id: string | undefined;
     request: Request | undefined;

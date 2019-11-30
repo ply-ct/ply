@@ -20,6 +20,7 @@
     "builtin-status-codes": "^3.0.0",
     "defaults": "^1.0.3",
     "diff": "^3.3.0",
+    "diff-match-patch": "^1.0.4",
     "glob": "^7.1.2",
     "js-yaml": "^3.9.1",
     "json-stable-stringify": "^1.0.1",

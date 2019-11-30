@@ -255,10 +255,7 @@ Case.prototype.verifyResult = function(expected, values, name) {
   this.logger.debug('Comparing: ' + this.expectedResultRetrieval + '\n  with: ' + this.actualResultStorage);
   var actual = this.actualResultStorage.read();
   var actualYaml = subst.trimComments(actual);
-  var diffs = compare.diffLines(subst.extractCode(expectedYaml), subst.extractCode(actualYaml), values, {
-    newlineIsToken: false,
-    ignoreWhitespace: false
-  });
+  var diffs = compare.diffLines(subst.extractCode(expectedYaml), subst.extractCode(actualYaml), values);
   var firstDiffLine = 0;
   var diffMsg = '';
   if (diffs) {
