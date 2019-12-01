@@ -145,8 +145,8 @@ const cli = {
                 .then(plyeeSuccess => {
                   if (!plyeeSuccess) {
                     success = false;
-                    res();
                   }
+                  res();
                 });
               }
               else {
@@ -178,15 +178,19 @@ const cli = {
             this.logger.info('Plying: ' + requestId);
             let baseName = this.getBaseName(requestFile);
             const testCase = new Case(baseName, this.options);
-            this.emitter.emit('start', {
-              id: requestId
-            });
+            if (this.emitter) {
+              this.emitter.emit('start', {
+                type: 'start',
+                id: requestId
+              });
+            }
             testCase.run(request, this.values, requestName)
             .then(response => {
               testCase.verifyAsync(this.values, requestName)
               .then(result => {
                 if (this.emitter) {
                   this.emitter.emit('outcome', {
+                    type: 'outcome',
                     id: requestId,
                     request: request,
                     response: response,
@@ -198,6 +202,7 @@ const cli = {
               .catch(err => {
                 if (this.emitter) {
                   this.emitter.emit('outcome', {
+                    type: 'outcome',
                     id: requestId,
                     request: request,
                     response: response,
@@ -209,6 +214,7 @@ const cli = {
             .catch(err => {
               if (this.emitter) {
                 this.emitter.emit('outcome', {
+                  type: 'outcome',
                   id: requestId,
                   request: request,
                   error: err
@@ -235,9 +241,12 @@ const cli = {
                   let testCase = new Case(caseName, this.options);
                   let requestId = requestFile + '#' + name;
                   this.logger.info('\nPlying: ' + requestId);
-                  this.emitter.emit('start', {
-                    id: requestId
-                  });
+                  if (this.emitter) {
+                    this.emitter.emit('start', {
+                      type: 'start',
+                      id: requestId
+                    });
+                  }
                   testCase.run(request, this.values, name)
                   .then(response => {
                     testCase.verifyAsync(this.values, name)
@@ -247,6 +256,7 @@ const cli = {
                       }
                       if (this.emitter) {
                         this.emitter.emit('outcome', {
+                          type: 'outcome',
                           id: requestId,
                           request: request,
                           response: response,
@@ -259,6 +269,7 @@ const cli = {
                       success = false;
                       if (this.emitter) {
                         this.emitter.emit('outcome', {
+                          type: 'outcome',
                           id: requestId,
                           request: request,
                           response: response,
@@ -270,6 +281,7 @@ const cli = {
                   .catch(err => {
                     if (this.emitter) {
                       this.emitter.emit('outcome', {
+                        type: 'outcome',
                         id: requestId,
                         request: request,
                         error: err

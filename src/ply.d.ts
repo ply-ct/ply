@@ -110,12 +110,13 @@ export class Result {
     message: string;
 }
 
-export class Start {
-    id: string | undefined;
-}
-
-export class Outcome {
-    id: string | undefined;
+/**
+ * Event type is 'start' or 'outcome'.
+ * Event id is the request id or case id.
+ */
+export class PlyEvent {
+    type: string;
+    id: string;
     request: Request | undefined;
     response: Response | undefined;
     result: Result | undefined;
