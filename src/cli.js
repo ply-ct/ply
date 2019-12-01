@@ -175,7 +175,6 @@ const cli = {
           const request = requests[requestName];
           if (request) {
             let requestId = requestFile + '#' + requestName;
-            this.logger.info('Plying: ' + requestId);
             let baseName = this.getBaseName(requestFile);
             const testCase = new Case(baseName, this.options);
             if (this.emitter) {
@@ -184,6 +183,7 @@ const cli = {
                 id: requestId
               });
             }
+            this.logger.info('Plying: ' + requestId);
             testCase.run(request, this.values, requestName)
             .then(response => {
               testCase.verifyAsync(this.values, requestName)
@@ -240,13 +240,13 @@ const cli = {
                   let request = requests[name];
                   let testCase = new Case(caseName, this.options);
                   let requestId = requestFile + '#' + name;
-                  this.logger.info('\nPlying: ' + requestId);
                   if (this.emitter) {
                     this.emitter.emit('start', {
                       type: 'start',
                       id: requestId
                     });
                   }
+                  this.logger.info('\nPlying: ' + requestId);
                   testCase.run(request, this.values, name)
                   .then(response => {
                     testCase.verifyAsync(this.values, name)
