@@ -156,7 +156,6 @@ Case.prototype.run = function(test, values, name) {
             resp.time = time;
           }
         }
-
         resolve(resp);
       }
       catch (err) {

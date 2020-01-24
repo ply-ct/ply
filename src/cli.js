@@ -200,6 +200,7 @@ const cli = {
                 resolve(result.status === 'Passed');
               })
               .catch(err => {
+                this.logger.error(err);
                 if (this.emitter) {
                   this.emitter.emit('outcome', {
                     type: 'outcome',
@@ -212,6 +213,7 @@ const cli = {
               });
             })
             .catch(err => {
+              this.logger.error(err);
               if (this.emitter) {
                 this.emitter.emit('outcome', {
                   type: 'outcome',
@@ -267,6 +269,7 @@ const cli = {
                     })
                     .catch(err => {
                       success = false;
+                      this.logger.error(err);
                       if (this.emitter) {
                         this.emitter.emit('outcome', {
                           type: 'outcome',
@@ -279,6 +282,7 @@ const cli = {
                     });
                   })
                   .catch(err => {
+                    this.logger.error(err);
                     if (this.emitter) {
                       this.emitter.emit('outcome', {
                         type: 'outcome',
@@ -296,6 +300,9 @@ const cli = {
             resolve(success);
           });
         }
+      })
+      .catch(err => {
+        this.logger.error(err);
       });
     });
   },

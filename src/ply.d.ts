@@ -8,6 +8,7 @@ export interface PlyOptions {
     values?: string[];
     responseHeaders?: string[];
     debug?: boolean;
+    verbose?: boolean; // alias for debug
     bail?: boolean;
     extensions?: string[];
     formatResult?: boolean;
