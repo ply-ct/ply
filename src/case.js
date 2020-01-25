@@ -26,6 +26,8 @@ var Case = exports.Case = function(name, options) {
 
 Case.prototype.init = function(qualifier, suffix) {
   var expectedLoc = this.options.expectedResultLocation;
+  if (qualifier)
+    expectedLoc += '/' + qualifier;
   this.expectedResultRetrieval = new Retrieval(expectedLoc, this.name + '.yaml');
 
   var actualLoc = this.options.resultLocation;

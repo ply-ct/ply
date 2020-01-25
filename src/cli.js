@@ -5,6 +5,7 @@ const EventEmitter = require('events').EventEmitter;
 const arg = require('arg');
 const Options = require('./options').Options;
 const ply = require('./ply');
+const isUrl = require('./retrieval').isUrl;
 const Case = ply.Case;
 
 const help = 'ply [options] one.ply.yaml[#aRequest]|case1.ply.js [two.ply.yaml|case2.ply.js]\n' +
@@ -13,8 +14,9 @@ const help = 'ply [options] one.ply.yaml[#aRequest]|case1.ply.js [two.ply.yaml|c
   '  -d, -v, --debug, --verbose   Debug logging output (false)\n' +
   '  -b, --bail                   Exit after first failure\n' +
   '  --values                     Values JSON file\n' +
-  '  --expectedResultLocation     Expected results YAML location ([cwd]/results/expected)\n' +
-  '  --resultLocation             Where to write actual results YAML ([cwd]/results/actual)\n' +
+  '  --location                   Base location (result output subpaths are similar to how plyee file relates to this) ([cwd])\n' +
+  '  --expectedResultLocation     Expected results YAML location ([location]/results/expected)\n' +
+  '  --resultLocation             Where to write actual results YAML ([location]/results/actual)\n' +
   '  --logLocation                Where logs are written (same as *resultLocation*)\n' +
   '  --extensions                 Filename extensions for requests ([.ply.yaml,.postman_collections.json])\n' +
   '  --responseHeaders            Array of validated response headers, in the order they\'ll appear in result YAML (all)\n' +
@@ -33,6 +35,7 @@ function parse(raw) {
       '--debug': Boolean,
       '--bail': Boolean,
       '--values': [String],
+      '--location': String,
       '--expectedResultLocation': String,
       '--resultLocation': String,
       '--logLocation': String,
@@ -77,7 +80,8 @@ const cli = {
   init: function(plyees, parsedArgs) {
     this.plyees = plyees;
     this.options = new Options(parsedArgs).options;
-    this.options.location = process.cwd();
+    if (!this.options.location)
+      this.options.location = process.cwd();
     this.logger = ply.getLogger(this.options);
     this.logger.debug('options: ' + JSON.stringify(this.options, null, 2));
     this.values = {};
@@ -87,6 +91,7 @@ const cli = {
       });
     }
   },
+  // This is the command-line runner.
   run: function(args) {
     let parsed = parse(args);
     if (parsed.help) {
@@ -125,9 +130,19 @@ const cli = {
     return this.exec();
   },
   exec: function() {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       let success = true;
       this.plyees.reduce((promise, plyee) => {
+        // TODO: qualify locations for URLs (right now must explicitly specify full path in expectedResults)
+        if (!isUrl(plyee)) {
+          plyee = plyee.replace(/\\/g, '/');
+          const absLocDir = path.normalize(path.resolve(this.options.location));
+          const absPlyeeDir = path.normalize(path.resolve(path.dirname(plyee)));
+          if (!absPlyeeDir.startsWith(absLocDir))
+            reject('Plyee "' + absPlyeeDir + path.sep + path.basename(plyee) + '" must reside under location "' + absLocDir + '"');
+          if (absPlyeeDir != absLocDir)
+            this.options.qualifyLocations = absPlyeeDir.substring(absLocDir.length + 1).replace(/\\/g, '/');
+        }
         return promise.then(() => {
           return new Promise(res => {
             if (this.options.bail && !success) {
@@ -168,7 +183,7 @@ const cli = {
     return new Promise(resolve => {
       ply.loadRequestsAsync(requestFile)
       .then(requests => {
-        this.options.qualifyLocations = false;
+        // this.options.qualifyLocations = false;
         this.options.storageSuffix = true;
         if (requestName) {
           // single request

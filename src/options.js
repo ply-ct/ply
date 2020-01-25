@@ -2,17 +2,22 @@
 
 const defaults = require('defaults');
 
+// everything is forward slashes
 var Options = function(options) {
   this.options = defaults(options, Options.defaultOptions);
+  options.location = options.location.replace(/\\/g, '/');
   if (!options.resultLocation) {
     options.resultLocation = options.location + '/results/actual';
   }
+  options.resultLocation = options.resultLocation.replace(/\\/g, '/');
   if (!options.expectedResultLocation) {
     options.expectedResultLocation = options.location + '/results/expected';
   }
+  options.expectedResultLocation = options.expectedResultLocation.replace(/\\/g, '/');
   if (!options.logLocation) {
     options.logLocation = options.resultLocation;
   }
+  options.logLocation = options.logLocation.replace(/\\/g, '/');
   if (this.options.expectedResultLocation.startsWith('https://github.com/')) {
     this.options.expectedResultLocation = 'https://raw.githubusercontent.com/'
         + this.options.expectedResultLocation.substring(19);

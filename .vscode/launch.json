@@ -21,13 +21,27 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "ply movie-queries.request.yaml",
+            "name": "cli",
             "program": "${workspaceFolder}/bin/ply.js",
             "args": [
                 "--values=values/ply-ct.com.values.json",
                 "--values=values/main.values.json",
                 "--responseHeaders=content-type",
-                "requests/movie-queries.request.yaml"
+                "requests\\asub/by-year-and-rating.ply.yaml"
+            ],
+            "cwd": "/ply/ply-demo/src/test/ply"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "cli remote",
+            "program": "${workspaceFolder}/bin/ply.js",
+            "args": [
+                "--values=values/ply-ct.com.values.json",
+                "--values=values/main.values.json",
+                "--responseHeaders=content-type",
+                "--expectedResultLocation=https://raw.githubusercontent.com/ply-ct/ply-demo/master/src/test/ply/results/expected/requests",
+                "https://raw.githubusercontent.com/ply-ct/ply-demo/master/src/test/ply/requests/movie-queries.ply.yaml"
             ],
             "cwd": "/ply/ply-demo/src/test/ply"
         }
