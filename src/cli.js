@@ -183,9 +183,9 @@ const cli = {
     return new Promise(resolve => {
       ply.loadRequestsAsync(requestFile)
       .then(requests => {
-        // this.options.qualifyLocations = false;
-        this.options.storageSuffix = true;
         if (requestName) {
+          if (this.options.storageSuffix === undefined)
+            this.options.storageSuffix = true;
           // single request
           const request = requests[requestName];
           if (request) {
@@ -201,6 +201,8 @@ const cli = {
             this.logger.info('Plying: ' + requestId);
             testCase.run(request, this.values, requestName)
             .then(response => {
+              if (this.options.retainResult === undefined && this.plyees.length > 1)
+                this.options.retainResult = true; // retain result for multi-plyee
               testCase.verifyAsync(this.values, requestName)
               .then(result => {
                 if (this.emitter) {
@@ -247,6 +249,8 @@ const cli = {
           // all requests are run sequentially
           let caseName = this.getBaseName(requestFile);
           let success = true;
+          if (this.options.storageSuffix == undefined)
+            this.options.storageSuffix = false;
           Object.keys(requests).reduce((promise, name) => {
             return promise.then(() => {
               return new Promise(res => {
@@ -266,6 +270,8 @@ const cli = {
                   this.logger.info('\nPlying: ' + requestId);
                   testCase.run(request, this.values, name)
                   .then(response => {
+                    if (this.options.retainResult === undefined)
+                      this.options.retainResult = true; // start retaining after first run
                     testCase.verifyAsync(this.values, name)
                     .then(result => {
                       if (result.status !== 'Passed') {

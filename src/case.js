@@ -193,7 +193,7 @@ Case.prototype.verifyAsync = function(values, name) {
               const yamlObj = {};
               yamlObj[name] = expectedObj;
               const expected = thisCase.yamlString(yamlObj);
-              result = thisCase.verifyResult(expected, values, name);
+              result = thisCase.verifyResult(expected, values, name, expectedObj.line);
               // line number in expected result storage
               result.lineNumber = expectedObj.line + 1;
             }
@@ -234,7 +234,7 @@ Case.prototype.verify = function(values, name) {
       const yamlObj = {};
       yamlObj[name] = expectedObj;
       expected = this.yamlString(yamlObj);
-      let result = this.verifyResult(expected, values);
+      let result = this.verifyResult(expected, values, null, expectedObj.line);
       // line number in expected result storage
       result.lineNumber = expectedObj.line + 1;
       return result;
@@ -249,12 +249,23 @@ Case.prototype.verify = function(values, name) {
 };
 
 // verify with preloaded result
-Case.prototype.verifyResult = function(expected, values, name) {
+Case.prototype.verifyResult = function(expected, values, name, startLine) {
+  if (startLine === undefined)
+    startLine = 0;
   var expectedYaml = subst.trimComments(expected.replace(/\r/g, ''));
   if (!this.actualResultStorage.exists())
     throw new Error('Actual result not found: ' + this.actualResultStorage);
   this.logger.debug('Comparing: ' + this.expectedResultRetrieval + '\n  with: ' + this.actualResultStorage);
   var actual = this.actualResultStorage.read();
+  if (name) {
+    const obj = yaml.load(this.actualResultStorage.toString(), actual);
+    const actualObj = obj[name];
+    if (!actualObj)
+      throw new Error('Actual result not found: ' + this.actualResultStorage + '#' + name);
+    const yamlObj = {};
+    yamlObj[name] = actualObj;
+    actual = this.yamlString(yamlObj);
+  }
   var actualYaml = subst.trimComments(actual);
   var diffs = compare.diffLines(subst.extractCode(expectedYaml), subst.extractCode(actualYaml), values);
   var firstDiffLine = 0;
@@ -268,14 +279,14 @@ Case.prototype.verifyResult = function(expected, values, name) {
         var correspondingAdd = (i < diffs.length - 1 && diffs[i + 1].added) ? diffs[i + 1] : null;
         if (!diff.ignored) {
           if (!firstDiffLine)
-            firstDiffLine = line;
-          diffMsg += line;
+            firstDiffLine = line + startLine;
+          diffMsg += (line + startLine);
           if (diff.count > 1)
-            diffMsg += '-' + (line + diff.count - 1);
+            diffMsg += '-' + (line + startLine + diff.count - 1);
           diffMsg += '\n';
-          diffMsg += subst.prefix(diff.value, '- ', expectedYaml, line - 1);
+          diffMsg += subst.prefix(diff.value, '- ', expectedYaml, line + startLine - 1);
           if (correspondingAdd) {
-            diffMsg += subst.prefix(correspondingAdd.value, '+ ', actualYaml, actLine - 1);
+            diffMsg += subst.prefix(correspondingAdd.value, '+ ', actualYaml, actLine + startLine - 1);
           }
           diffMsg += '===\n';
         }
@@ -289,9 +300,9 @@ Case.prototype.verifyResult = function(expected, values, name) {
         if (!diff.ignored) {
           // added with no corresponding remove
           if (!firstDiffLine)
-            firstDiffLine = line;
+            firstDiffLine = line + startLine;
           diffMsg += line + '\n';
-          diffMsg += subst.prefix(diff.value, '+ ', actualYaml, actLine - 1);
+          diffMsg += subst.prefix(diff.value, '+ ', actualYaml, actLine + startLine - 1);
           diffMsg += '===\n';
         }
         actLine += diff.count;

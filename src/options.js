@@ -42,9 +42,9 @@ Options.defaultOptions = {
   prettyIndent: 2,
   retainLog: false,  // accumulate for multiple runs
   captureResult: true,
-  retainResult: false,
+  retainResult: undefined,
   qualifyLocations: false, // actual result and log paths prefixed by group (or can be string for custom)
-  storageSuffix: false, // actual result and log storage name suffixed with test run name (string for custom)
+  storageSuffix: undefined, // actual result and log storage name suffixed with test run name (string for custom)
   overwriteExpected: false
 };
 
