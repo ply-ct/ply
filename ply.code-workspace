@@ -2,9 +2,10 @@
 	"folders": [
 		{
 			"path": "."
-		},
-		{
-			"path": "C:\\ply\\ply-demo"
 		}
-	]
+	],
+	"settings": {
+        "editor.detectIndentation": false,
+        "editor.formatOnPaste": true
+	}
 }

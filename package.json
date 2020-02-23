@@ -1,54 +1,39 @@
 {
   "name": "ply-ct",
-  "version": "1.2.1",
-  "description": "Continuous testing for your API",
-  "keywords": [
-    "REST",
-    "API",
-    "Automated Testing"
-  ],
-  "main": "index.js",
-  "types": "./src/ply.d.ts",
-  "bin": {
-    "ply": "./bin/ply.js"
-  },
-  "dependencies": {
-    "@types/node": "^12.0.12",
-    "arg": "^4.1.1",
-    "async": "^2.5.0",
-    "browser-request": "^0.3.3",
-    "builtin-status-codes": "^3.0.0",
-    "defaults": "^1.0.3",
-    "diff": "^3.3.0",
-    "diff-match-patch": "^1.0.4",
-    "glob": "^7.1.2",
-    "js-yaml": "^3.9.1",
-    "json-stable-stringify": "^1.0.1",
-    "mkdirp": "^0.5.1",
-    "request": "^2.81.0",
-    "sanitize-filename": "^1.6.1"
-  },
-  "devDependencies": {
-    "dts-gen": "^0.5.8",
-    "eslint": "^5.16.0",
-    "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.17.3",
-    "eslint-plugin-node": "^9.1.0",
-    "eslint-plugin-promise": "^4.1.1",
-    "eslint-plugin-standard": "^4.0.0"
-  },
-  "scripts": {
-    "eslint": "eslint ."
-  },
+  "version": "2.0.1",
+  "description": "REST API Automated Testing",
+  "main": "dist/main.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ply-ct/ply.git"
   },
+  "keywords": [
+    "REST"
+  ],
+  "author": "",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ply-ct/ply/issues"
   },
-  "engines": {
-    "node": ">=8.3.0"
+  "scripts": {
+    "test": "mocha --require ts-node/register test/mocha/**/*.ts"
+  },
+  "homepage": "https://github.com/ply-ct/ply#readme",
+  "devDependencies": {
+    "@babel/core": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "@babel/register": "^7.8.3",
+    "@types/mocha": "^7.0.1",
+    "@types/node": "^13.7.4",
+    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "@typescript-eslint/parser": "^2.20.0",
+    "eslint": "^6.8.0",
+    "mocha": "^7.0.1",
+    "ts-node": "^8.6.2",
+    "typescript": "^3.8.2"
+  },
+  "dependencies": {
+    "filenamify": "^4.1.0",
+    "mkdirp": "^1.0.3"
   }
 }

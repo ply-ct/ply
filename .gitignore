@@ -1,3 +1,6 @@
 node_modules/
 /notes/
 /npm-debug.log
+dist/
+*.code-workspace
+temp/
