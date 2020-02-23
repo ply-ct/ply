@@ -29,7 +29,5 @@ const proto = {
 };
 
 module.exports = {
-  create: (location, from) => {
-    return Object.assign({location: location}, proto, from);
-  }
+  create: (location, from) => Object.assign({location: location}, proto, from)
 };

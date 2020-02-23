@@ -5,7 +5,6 @@ const EventEmitter = require('events').EventEmitter;
 const arg = require('arg');
 const Options = require('./options').Options;
 const ply = require('./ply');
-const isUrl = require('./retrieval').isUrl;
 const Case = ply.Case;
 
 const help = 'ply [options] one.ply.yaml[#aRequest]|case1.ply.js [two.ply.yaml|case2.ply.js]\n' +
@@ -130,19 +129,10 @@ const cli = {
     return this.exec();
   },
   exec: function() {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       let success = true;
       this.plyees.reduce((promise, plyee) => {
-        // TODO: qualify locations for URLs (right now must explicitly specify full path in expectedResults)
-        if (!isUrl(plyee)) {
-          plyee = plyee.replace(/\\/g, '/');
-          const absLocDir = path.normalize(path.resolve(this.options.location));
-          const absPlyeeDir = path.normalize(path.resolve(path.dirname(plyee)));
-          if (!absPlyeeDir.startsWith(absLocDir))
-            reject('Plyee "' + absPlyeeDir + path.sep + path.basename(plyee) + '" must reside under location "' + absLocDir + '"');
-          if (absPlyeeDir != absLocDir)
-            this.options.qualifyLocations = absPlyeeDir.substring(absLocDir.length + 1).replace(/\\/g, '/');
-        }
+        ply.qualify(this.options, plyee);
         return promise.then(() => {
           return new Promise(res => {
             if (this.options.bail && !success) {

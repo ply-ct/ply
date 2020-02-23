@@ -28,11 +28,12 @@ Ply.prototype.getLogger = function(options) {
 };
 
 // Load requests, returning an object (or promise if location is URL).
-// TODO: ply.yaml is hardcoded
-Ply.prototype.loadRequests = function(location) {
+// TODO: ply.yaml extension is hardcoded
+Ply.prototype.loadRequests = function(location, options) {
   if (isUrl(location)) {
-    return this.loadRequestsAsync(location);
+    return this.loadRequestsAsync(location, options);
   }
+  this.qualify(options, location);
   const str = new Storage(location).read();
   if (!str) {
     throw new Error('Location not found: ' + location);
@@ -47,11 +48,17 @@ Ply.prototype.loadRequests = function(location) {
       let request = Object.assign({name: key}, obj[key]);
       grp.requests.push(request);
     });
-    return group.create(location, grp).getRequests();
+    const requests = group.create(location, grp).getRequests();
+    Object.keys(requests).forEach(name => {
+      let request = requests[name];
+      request.init(options);
+    });
+    return requests;
   }
 };
 
-Ply.prototype.loadRequestsAsync = function(location) {
+// TODO: ply.yaml extension is hardcoded
+Ply.prototype.loadRequestsAsync = function(location, options) {
   const plyThis = this;
   return new Promise(function(resolve, reject) {
     if (isUrl(location)) {
@@ -65,7 +72,9 @@ Ply.prototype.loadRequestsAsync = function(location) {
           else {
             try {
               if (data.startsWith('{')) {
-                resolve(group.create(location, postman.group(JSON.parse(data))).getRequests());
+                const request = group.create(location, postman.group(JSON.parse(data))).getRequests();
+                request.init();
+                resolve(request);
               }
               else {
                 const obj = yaml.load(location, data);
@@ -74,7 +83,12 @@ Ply.prototype.loadRequestsAsync = function(location) {
                   let request = Object.assign({name: key}, obj[key]);
                   grp.requests.push(request);
                 });
-                resolve(group.create(location, grp).getRequests());
+                const requests = group.create(location, grp).getRequests();
+                Object.keys(requests).forEach(name => {
+                  let request = requests[name];
+                  request.init(options);
+                });
+                resolve(requests);
               }
             }
             catch (e) {
@@ -93,7 +107,13 @@ Ply.prototype.loadRequestsAsync = function(location) {
       });
     }
     else {
-      resolve(plyThis.loadRequests(location));
+      try {
+        plyThis.qualify(options, location);
+        resolve(plyThis.loadRequests(location, options));
+      }
+      catch (err) {
+        reject(err);
+      }
     }
   });
 };
@@ -109,6 +129,19 @@ Ply.prototype.loadCases = function(location) {
     throw new Error('Location not found: ' + location);
   }
   return this.parseCases(str);
+};
+
+// TODO: qualify locations for URLs (right now must explicitly specify full path in expectedResults)
+Ply.prototype.qualify = function(options, location) {
+  if (!isUrl(location)) {
+    location = location.replace(/\\/g, '/');
+    const absLocDir = path.normalize(path.resolve(options.location));
+    const absPlyeeDir = path.normalize(path.resolve(path.dirname(location)));
+    if (!absPlyeeDir.startsWith(absLocDir))
+      throw new Error('Plyee "' + absPlyeeDir + path.sep + path.basename(location) + '" must reside under location "' + absLocDir + '"');
+    if (absPlyeeDir != absLocDir)
+      options.qualifyLocations = absPlyeeDir.substring(absLocDir.length + 1).replace(/\\/g, '/');
+  }
 };
 
 // location is caseFile

@@ -2,8 +2,39 @@
 
 const Case = require('./case').Case;
 const subst = require('./subst');
+const Retrieval = require('./retrieval').Retrieval;
+const Storage = require('./storage').Storage;
 
 const proto = {
+  // TODO .yaml extension is hardcoded
+  init: function(options) {
+    var qualifier = undefined;
+    if (options.qualifyLocations) {
+      if (typeof options.qualifyLocations === 'string')
+        qualifier = options.qualifyLocations;
+      else
+        qualifier = this.group;
+    }
+    var suffix = undefined;
+    if (options.storageSuffix) {
+      if (typeof options.storageSuffix === 'string')
+        suffix = options.storageSuffix;
+      else
+        suffix = this.name;
+    }
+    var expectedLoc = options.expectedResultLocation;
+    if (qualifier)
+      expectedLoc += '/' + qualifier;
+    this.expected = new Retrieval(expectedLoc, this.group + '.yaml');
+
+    var actualLoc = options.resultLocation;
+    if (qualifier)
+      actualLoc += '/' + qualifier;
+    var storageName = this.group;
+    if (suffix)
+      storageName += '#' + suffix;
+    this.actual = new Storage(actualLoc, storageName + '.yaml');
+  },
   run(options, values, name) {
     var caseName = options.caseName;
     if (!caseName) {

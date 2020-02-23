@@ -51,7 +51,26 @@ Retrieval.prototype.loadAsync = function(callback) {
 };
 
 Retrieval.prototype.isUrl = function(location) {
-  return location.startsWith('https://') || location.startsWith('http://');
+  const loc = location ? location : this.location;
+  return loc.startsWith('https://') || loc.startsWith('http://');
+};
+
+Retrieval.prototype.exists = function() {
+  if (this.request)
+    throw new Error('Synchronized load not supported for: ' + this.path);
+  else
+    return this.storage.exists();
+};
+
+Retrieval.prototype.existsAsync = function(callback) {
+  if (this.request) {
+    this.request({method: 'HEAD', uri: this.path}, function (err, response) {
+      callback(!err && response && response.statusCode == 200);
+    });
+  }
+  else {
+    return this.storage.read(callback);
+  }
 };
 
 Retrieval.prototype.toString = function retrievalToString() {

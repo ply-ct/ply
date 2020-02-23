@@ -28,7 +28,7 @@ Case.prototype.init = function(qualifier, suffix) {
   var expectedLoc = this.options.expectedResultLocation;
   if (qualifier)
     expectedLoc += '/' + qualifier;
-  this.expectedResultRetrieval = new Retrieval(expectedLoc, this.name + '.yaml');
+  this.expected = new Retrieval(expectedLoc, this.name + '.yaml');
 
   var actualLoc = this.options.resultLocation;
   if (qualifier)
@@ -36,12 +36,12 @@ Case.prototype.init = function(qualifier, suffix) {
   var storageName = this.name;
   if (suffix)
     storageName += '#' + suffix;
-  this.actualResultStorage = new Storage(actualLoc, storageName + '.yaml');
+  this.actual = new Storage(actualLoc, storageName + '.yaml');
   if (!this.options.retainResult) {
-    this.actualResultStorage.remove();
+    this.actual.remove();
     if (this.options.overwriteExpected) {
-      if (this.expectedResultRetrieval.storage)
-        this.expectedResultRetrieval.storage.remove();
+      if (this.expected.storage)
+        this.expected.storage.remove();
       else
         throw new Error('Overwrite not supported for expectedResultLocation: ' + this.options.expectedResultLocation);
     }
@@ -146,10 +146,10 @@ Case.prototype.run = function(test, values, name) {
 
           // save yaml results
           var actualYaml = testCase.yamlString(testCase.options.formatResult ? testRun.format(testCase.options.prettyIndent) : testRun.raw());
-          testCase.actualResultStorage.append(actualYaml);
+          testCase.actual.append(actualYaml);
           if (testCase.options.overwriteExpected) {
-            testCase.logger.info('Writing expected result: ' + testCase.expectedResultRetrieval.storage);
-            testCase.expectedResultRetrieval.storage.append(actualYaml);
+            testCase.logger.info('Writing expected result: ' + testCase.expected.storage);
+            testCase.expected.storage.append(actualYaml);
           }
 
           if (resp) {
@@ -182,14 +182,14 @@ Case.prototype.verifyAsync = function(values, name) {
     }
     else {
       try {
-        thisCase.expectedResultRetrieval.loadAsync(function(err, data) {
+        thisCase.expected.loadAsync(function(err, data) {
           var result;
           if (data) {
             if (name) {
-              const obj = yaml.load(thisCase.expectedResultRetrieval.toString(), data);
+              const obj = yaml.load(thisCase.expected.toString(), data);
               const expectedObj = obj[name];
               if (!expectedObj)
-                reject(new Error('Expected result not found: ' + thisCase.expectedResultRetrieval + '#' + name));
+                reject(new Error('Expected result not found: ' + thisCase.expected + '#' + name));
               const yamlObj = {};
               yamlObj[name] = expectedObj;
               const expected = thisCase.yamlString(yamlObj);
@@ -203,7 +203,7 @@ Case.prototype.verifyAsync = function(values, name) {
             resolve(result);
           }
           else {
-            reject(new Error("Expected result not found: " + thisCase.expectedResultRetrieval));
+            reject(new Error("Expected result not found: " + thisCase.expected));
           }
         });
       }
@@ -222,15 +222,15 @@ Case.prototype.verify = function(values, name) {
     return;
   }
   try {
-    var expected = this.expectedResultRetrieval.load();
+    var expected = this.expected.load();
     if (!expected) {
-      throw new Error('Expected result not found: ' + this.expectedResultRetrieval);
+      throw new Error('Expected result not found: ' + this.expected);
     }
     if (name) {
-      const obj = yaml.load(this.expectedResultRetrieval.toString(), expected);
+      const obj = yaml.load(this.expected.toString(), expected);
       const expectedObj = obj[name];
       if (!expectedObj)
-        throw new Error('Expected result not found: ' + this.expectedResultRetrieval + '#' + name);
+        throw new Error('Expected result not found: ' + this.expected + '#' + name);
       const yamlObj = {};
       yamlObj[name] = expectedObj;
       expected = this.yamlString(yamlObj);
@@ -253,15 +253,15 @@ Case.prototype.verifyResult = function(expected, values, name, startLine) {
   if (startLine === undefined)
     startLine = 0;
   var expectedYaml = subst.trimComments(expected.replace(/\r/g, ''));
-  if (!this.actualResultStorage.exists())
-    throw new Error('Actual result not found: ' + this.actualResultStorage);
-  this.logger.debug('Comparing: ' + this.expectedResultRetrieval + '\n  with: ' + this.actualResultStorage);
-  var actual = this.actualResultStorage.read();
+  if (!this.actual.exists())
+    throw new Error('Actual result not found: ' + this.actual);
+  this.logger.debug('Comparing: ' + this.expected + '\n  with: ' + this.actual);
+  var actual = this.actual.read();
   if (name) {
-    const obj = yaml.load(this.actualResultStorage.toString(), actual);
+    const obj = yaml.load(this.actual.toString(), actual);
     const actualObj = obj[name];
     if (!actualObj)
-      throw new Error('Actual result not found: ' + this.actualResultStorage + '#' + name);
+      throw new Error('Actual result not found: ' + this.actual + '#' + name);
     const yamlObj = {};
     yamlObj[name] = actualObj;
     actual = this.yamlString(yamlObj);

@@ -28,6 +28,8 @@ export class Request implements Plyable {
     method: string;
     headers: object | undefined;
     body: string | undefined;
+    expected: Retrieval;
+    actual: Storage;
 
     /**
      * Execute this test.
@@ -64,13 +66,14 @@ export class Request implements Plyable {
 
 export class Case implements Plyable {
     constructor(name: string, options: object);
-    init(qualifier: string | undefined): void;
 
     name: string;
     line: number;
+    expected: Retrieval;
+    actual: Storage;
 
     /**
-     * Execute this test.
+     * Execute this test case.
      * @param options test case options
      * @param values values to apply
      * @param name optional name of run
@@ -93,18 +96,10 @@ export class Case implements Plyable {
 }
 
 export interface Plyable {
-
     name: string;
     line: number;
-
-    /**
-     * Execute this plyable.
-     * @param options test case options
-     * @param values values to apply
-     * @param name optional name of run
-     * @returns response
-     */
-    run(request: Request, values: object, name: string | undefined): Promise<Response>;
+    expected: Retrieval;
+    actual: Storage;
 }
 
 export class Response {
@@ -147,16 +142,37 @@ export type Requests = {
     [key: string]: Request
 }
 
+export class Retrieval {
+    constructor(location: string, name: string);
+    isUrl(): boolean;
+    exists(): boolean;
+    existsAsync(callback: (exists: boolean) => void): boolean | undefined;
+    load(): string;
+    loadAsync(callback: (res: string | Error) => void): string | undefined;
+    toString(): string;
+}
+
+export class Storage {
+    constructor(location: string, name: string);
+    exists(): boolean;
+    read(callback: (res: string | Error) => void): string | undefined;
+    write(value: string): void;
+    append(value: string): void;
+    remove(): void;
+    toString(): string;
+}
+
+
 /**
  * Loads requests from a resource synchronously unless location is a url.
  * @param location file path or a url
  */
-export function loadRequests(location: string): Requests | Promise<Requests>;
+export function loadRequests(location: string, options: PlyOptions): Requests | Promise<Requests>;
 /**
  * Load requests asynchronously (from a url or a file).
  * @param location file path or url
  */
-export function loadRequestsAsync(location: any): Promise<Requests>;
+export function loadRequestsAsync(location: any, options: PlyOptions): Promise<Requests>;
 
 export type Cases = {
     [key: string]: Case
@@ -196,62 +212,20 @@ export function loadCollectionAsync(location: string): Promise<Requests>;
 
 export class Logger {
     constructor(options: any);
-
     debug(message: any, obj: any): void;
-
     error(message: any, obj: any): void;
-
     info(message: any, obj: any): void;
-
     log(level: any, message: any, obj: any): void;
-
     toString(): any;
-
 }
 
-export class Retrieval {
-    constructor(location: any, name: any);
-
-    isUrl(location: any): any;
-
-    load(): any;
-
-    loadAsync(callback: any): any;
-
-    toString(): any;
-
-}
-
-export class Storage {
-    constructor(location: any, name: any);
-
-    append(value: any): void;
-
-    exists(): any;
-
-    getMatches(options: any, callback: any): any;
-
-    read(callback: any): any;
-
-    remove(): void;
-
-    toString(): any;
-
-    write(value: any): void;
-
-}
 
 export class GitHub {
     constructor(url: any, branch: any);
-
     commitAndPush(token: any, file: any, message: any, callback: any): any;
-
     get(file: any, callback: any): void;
-
     getMatches(options: any, callback: any): any;
-
     toString(): any;
-
 }
 
 // internal APIs
