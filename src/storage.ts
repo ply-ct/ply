@@ -17,8 +17,8 @@ export class Storage {
      * @param name filename or logical
      */
     constructor(readonly location: string, readonly name: string) {
-        if (typeof localStorage === 'undefined' || localStorage === null) {
-            this.name = require('filenamify')(this.name, { replacement: '_' });
+        if (typeof localStorage === 'undefined') {
+            this.name = this.namify(this.name);
             require('mkdirp').sync(this.location);
         }
         else {
@@ -54,7 +54,7 @@ export class Storage {
 
     write(contents: string) {
         if (this.localStorage) {
-            localStorage.setItem(this.path, contents);
+            this.localStorage.setItem(this.path, contents);
         }
         else {
             fs.writeFileSync(this.path, contents);
@@ -81,7 +81,15 @@ export class Storage {
         }
     }
 
+    namify(name: string): string {
+        const orig = name;
+        let result = require('filenamify')(name, { replacement: '_' });
+        return orig.startsWith('.') ? '.'+ result : result;
+    }
+
     toString(): string {
         return this.path;
     }
+
+
 }

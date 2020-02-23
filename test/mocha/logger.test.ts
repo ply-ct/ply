@@ -15,5 +15,6 @@ describe('Logger', function () {
         let storage = new Storage('temp', 'output.log');
         let log = storage.read() || '';
         assert.equal(log, `info message\nerror message\n${err.stack}\n`);
+        storage.remove();
     });
 });
