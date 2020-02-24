@@ -46,7 +46,7 @@ export class Retrieval {
         }
         else {
             try {
-                return this.fetch(this.location, { method: 'HEAD' })
+                return this.fetch(this.path, { method: 'HEAD' })
                 .then((response: Response) => {
                     return Promise.resolve(response.ok);
                 });

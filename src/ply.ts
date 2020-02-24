@@ -45,6 +45,7 @@ export class Ply {
         if (contents.startsWith('{')) {
             const obj = JSON.parse(contents);
             if (postman.isCollection(obj)) {
+                // TODO postman requests
                 // return this.loadCollection(location).getRequests();
             }
         } else {
