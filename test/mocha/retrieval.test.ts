@@ -13,7 +13,7 @@ describe('Retrieval', function () {
     });
 
     it('should read url', async function () {
-        let retrieval = new Retrieval('https://raw.githubusercontent.com/ply-ct/ply/master/.gitignore');
+        let retrieval = new Retrieval('https://raw.githubusercontent.com/ply-ct/ply/master', '.gitignore');
         let exists = await retrieval.exists;
         assert.ok(exists);
         let contents = await retrieval.read();

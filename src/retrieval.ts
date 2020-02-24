@@ -9,7 +9,7 @@ export class Retrieval {
     private readonly storage?: Storage;
     private readonly fetch: any;
 
-    constructor(readonly location: string, readonly name?: string) {
+    constructor(readonly location: string, readonly name: string) {
         if (this.isRemote) {
             if (typeof window === 'undefined') {
                 this.fetch = require('node-fetch');
