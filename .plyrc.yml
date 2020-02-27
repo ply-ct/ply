@@ -1,0 +1,18 @@
+locations:
+  tests: test/ply
+  results:
+    expected: test/ply/results/expected
+    actual: test/ply/results/actual
+
+files:
+  requests:
+    - '**/*.ply.yaml'
+    - '**/*.postman_collection.json'
+  cases:
+    - '**/*.ply.ts'
+    - '**/*.ply.js'
+
+response:
+  # these are the headers we care about matching
+  headers:
+    - 'content-type'

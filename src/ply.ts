@@ -42,7 +42,7 @@ export class Ply {
         )
 
 
-        if (contents.startsWith('{')) {
+        if (contents.startsWith('{') && !retrieval.isYamlExt) {
             const obj = JSON.parse(contents);
             if (postman.isCollection(obj)) {
                 // TODO postman requests

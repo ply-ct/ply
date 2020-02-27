@@ -19,7 +19,6 @@ export class Storage {
     constructor(readonly location: string, readonly name: string) {
         if (typeof localStorage === 'undefined') {
             this.name = this.namify(this.name);
-            require('mkdirp').sync(this.location);
         }
         else {
             this.localStorage = localStorage;
@@ -57,6 +56,7 @@ export class Storage {
             this.localStorage.setItem(this.path, contents);
         }
         else {
+            require('mkdirp').sync(this.location);
             fs.writeFileSync(this.path, contents);
         }
     }
@@ -67,6 +67,7 @@ export class Storage {
             this.localStorage.setItem(this.path, exist ? exist + contents : contents);
         }
         else {
+            require('mkdirp').sync(this.location);
             fs.appendFileSync(this.path, contents);
         }
     }

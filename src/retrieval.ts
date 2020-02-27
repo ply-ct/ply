@@ -60,6 +60,26 @@ export class Retrieval {
         return this.location.startsWith('https://') || this.location.startsWith('http://');
     }
 
+    get isYamlExt(): boolean {
+        return this.ext === '.yaml' || this.ext === '.yml';
+    }
+
+    get base(): string {
+        const lastDot = this.name.lastIndexOf('.');
+        if (lastDot > 0 && lastDot < this.name.length - 1) {
+            return this.name.substring(0, lastDot);
+        } else {
+            return this.name;
+        }
+    }
+
+    get ext(): string | undefined {
+        const lastDot = this.name.lastIndexOf('.');
+        if (lastDot > 0 && lastDot < this.name.length - 1) {
+            return this.name.substring(lastDot + 1);
+        }
+    }
+
     toString(): string {
         if (this.storage) {
             return this.storage.toString();
