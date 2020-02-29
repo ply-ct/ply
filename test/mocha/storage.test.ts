@@ -4,12 +4,13 @@ import { Storage } from '../../src/storage';
 describe('Storage', function () {
 
     it('should build path', function() {
-        let storage = new Storage('temp', 'greeting.txt');
+        let storage = new Storage('temp/greeting.txt');
         assert.equal(storage.toString(), 'temp/greeting.txt');
     });
 
     it('should write and read', async function() {
-        let storage = new Storage('temp', 'greeting.txt');
+        let storage = new Storage('temp\\greeting.txt');
+        assert.equal('temp/greeting.txt', storage.location.toString());
         storage.write('Hello');
         assert.ok(storage.exists);
         let greeting = storage.read();

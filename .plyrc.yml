@@ -7,10 +7,8 @@ locations:
 files:
   requests:
     - '**/*.ply.yaml'
-    - '**/*.postman_collection.json'
   cases:
     - '**/*.ply.ts'
-    - '**/*.ply.js'
 
 response:
   # these are the headers we care about matching

@@ -1,0 +1,19 @@
+movieById:
+  url: '${baseUrl}/movies/${id}'
+  method: GET
+  headers:
+    Accept: application/json
+
+moviesByYearAndRating:
+  url: '${baseUrl}/movies?year=${year}&rating=${rating}'
+  method: GET
+  headers:
+    Accept: application/json
+
+# general purpose query
+moviesQuery:
+  url: '${baseUrl}/movies?${query}'
+  method: GET
+  headers:
+    Accept: application/json
+

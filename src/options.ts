@@ -88,6 +88,8 @@ export class Config {
 
             }
         }
+
+        return new Options(); // TODO
     }
 
     private getRc(): string | undefined {

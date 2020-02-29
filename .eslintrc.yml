@@ -14,5 +14,8 @@ parserOptions:
 plugins:
   - '@typescript-eslint'
 rules: {
-  'no-console': false
+  'no-console': 0,
+  eqeqeq: 2,
+  curly: [error, all],
+  '@typescript-eslint/no-unused-vars': error
 }

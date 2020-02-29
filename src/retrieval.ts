@@ -1,3 +1,4 @@
+import { Location } from './location';
 import { Storage } from './storage';
 
 /**
@@ -5,12 +6,17 @@ import { Storage } from './storage';
  */
 export class Retrieval {
 
-    readonly path: string;
+    readonly location: Location;
+
     private readonly storage?: Storage;
     private readonly fetch: any;
 
-    constructor(readonly location: string, readonly name: string) {
-        if (this.isRemote) {
+    /**
+     * @param location file path or url (backslashes are replaced with slashes)
+     */
+    constructor(location: string) {
+        this.location = new Location(location);
+        if (this.location.isUrl) {
             if (typeof window === 'undefined') {
                 this.fetch = require('node-fetch');
             }
@@ -19,12 +25,7 @@ export class Retrieval {
             }
         }
         else {
-            this.storage = new Storage(this.location, this.name!);
-        }
-
-        this.path = this.location;
-        if (this.name) {
-            this.path += '/' + this.name;
+            this.storage = new Storage(location);
         }
     }
 
@@ -33,7 +34,7 @@ export class Retrieval {
             return Promise.resolve(this.storage.read());
         }
         else {
-            return this.fetch(this.path)
+            return this.fetch(this.location.path)
             .then((response: Response) => {
                 return response.text();
             });
@@ -46,7 +47,7 @@ export class Retrieval {
         }
         else {
             try {
-                return this.fetch(this.path, { method: 'HEAD' })
+                return this.fetch(this.location.path, { method: 'HEAD' })
                 .then((response: Response) => {
                     return Promise.resolve(response.ok);
                 });
@@ -56,36 +57,7 @@ export class Retrieval {
         }
     }
 
-    get isRemote(): boolean {
-        return this.location.startsWith('https://') || this.location.startsWith('http://');
-    }
-
-    get isYamlExt(): boolean {
-        return this.ext === '.yaml' || this.ext === '.yml';
-    }
-
-    get base(): string {
-        const lastDot = this.name.lastIndexOf('.');
-        if (lastDot > 0 && lastDot < this.name.length - 1) {
-            return this.name.substring(0, lastDot);
-        } else {
-            return this.name;
-        }
-    }
-
-    get ext(): string | undefined {
-        const lastDot = this.name.lastIndexOf('.');
-        if (lastDot > 0 && lastDot < this.name.length - 1) {
-            return this.name.substring(lastDot + 1);
-        }
-    }
-
     toString(): string {
-        if (this.storage) {
-            return this.storage.toString();
-        }
-        else {
-            return this.path;
-        }
+        return this.location.toString();
     }
 }

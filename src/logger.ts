@@ -1,9 +1,9 @@
 import { Storage } from './storage';
 
 export enum LogLevel {
-    error = 0,
-    info = 1,
-    debug = 3
+    error,
+    info,
+    debug
 }
 
 export interface LogOptions {
@@ -27,7 +27,7 @@ export class Logger {
             this.options = Object.assign({}, this.options, options);
         }
         if (this.options.location && this.options.name) {
-            this.storage = new Storage(this.options.location, this.options.name);
+            this.storage = new Storage(this.options.location + '/' + this.options.name);
             if (!this.options.retain) {
                 this.storage.remove();
             }

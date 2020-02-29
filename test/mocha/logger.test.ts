@@ -12,7 +12,7 @@ describe('Logger', function () {
         let err = new Error('something bad happened');
         logger2.error('error message', err);
         logger2.debug('should not appear');
-        let storage = new Storage('temp', 'output.log');
+        let storage = new Storage('temp/output.log');
         let log = storage.read() || '';
         assert.equal(log, `info message\nerror message\n${err.stack}\n`);
         storage.remove();
