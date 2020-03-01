@@ -1,105 +1,112 @@
-import * as fs from 'fs';
+import * as findUp from 'find-up';
+import * as yargs from 'yargs';
+import { Retrieval } from './retrieval';
+import * as yaml from './yaml';
 
 export interface Options {
     /**
-     * verbose output
+     * tests base directory ('.')
      */
-    verbose: boolean;
+    testsLocation?: string;
     /**
-     * bail on first failure
+     * expected results base dir (testsLocation + '/results/expected')
      */
-    bail: boolean;
+    expectedLocation?: string;
     /**
-     * tests base directory
+     * actual results base dir (this.testsLocation + '/results/actual')
      */
-    testsLocation: string;
+    actualLocation?: string;
     /**
-     * expected results base dir
+     * log file base dir (this.actualLocation)
      */
-    expectedLocation: string;
+    logLocation?: string;
     /**
-     * actual results base dir
+     * request file(s) glob patterns (['**\/*.ply.yaml', ' **\/*.ply.yml'])
      */
-    actualLocation: string;
+    requestFiles?: string[];
     /**
-     * log location
+     * case files(s) glob patterns (['**\/*.ply.ts'])
      */
+    caseFiles?: string[];
     /**
-     * request file(s) glob patterns
+     * verbose output (false)
      */
-    requestFiles: string[];
+    verbose?: boolean;
     /**
-     * case files(s) glob patterns
+     * bail on first failure (false)
      */
-    caseFiles: string[];
+    bail?: boolean;
     /**
-     * prettify response body (needed for comparison)
+     * prettify response body -- needed for comparison (true)
      */
-    formatResponseBody: boolean;
+    formatResponseBody?: boolean;
     /**
-     * prettification indent
+     * prettification indent (2)
      */
-    responseBodyIndent: number;
+    responseBodyIndent?: number;
     /**
-     * retain log
+     * retain log (false)
      */
-    retainLog: boolean;
+    retainLog?: boolean;
     /**
-     * capture result
+     * capture result (true)
      */
-    captureResult: boolean;
+    captureResult?: boolean;
     /**
-     * retain result
+     * retain result (false)
      */
-    retainResult: boolean;
+    retainResult?: boolean;
     /**
-     * response headers
+     * response headers (['content-type'])
      */
-    responseHeaders: string[];
+    responseHeaders?: string[];
 }
 
-export class Options {
-    verbose = false;
-    bail = false;
+export class DefaultOptions implements Options {
     testsLocation = '.';
     expectedLocation = this.testsLocation + '/results/expected';
     actualLocation = this.testsLocation + '/results/actual';
+    logLocation = this.actualLocation;
     requestFiles = ['**/*.ply.yaml', '**/*.ply.yml'];
-    caseFiles = ['**/*.ply.ts', '**/*.ply.js'];
+    caseFiles = ['**/*.ply.ts'];
+    verbose = false;
+    bail = false;
     formatResponseBody = true;
     responseBodyIndent = 2;
     retainLog = false;
     captureResult = true;
     retainResult = false;
     responseHeaders = ['content-type'];
-
-
 }
 
 export class Config {
 
-    private loadRc(): Options | undefined {
-        const rc = this.getRc();
-        if (rc) {
-            var contents = fs.readFileSync(rc);
-            if (rc.endsWith('.json')) {
+    public options: Options;
 
-            } else {
+    constructor() {
+        this.options = this.load();
+    }
 
+    private load() : Options {
+        const configPath = findUp.sync(['.plyrc.yaml', '.plyrc.yml', '.plyrc.json']);
+        const config = configPath ? this.read(configPath) : {};
+        const options = yargs.config(config).argv;
+        return Object.assign({testsLocation: '.'}, options);
+    }
+
+    private read(configPath: string): object {
+        const retrieval = new Retrieval(configPath);
+        const contents = retrieval.sync();
+        if (typeof contents === 'string') {
+            if (retrieval.location.isYaml) {
+                return yaml.load(retrieval.location.path, contents);
+            }
+            else {
+                return JSON.parse(contents);
             }
         }
-
-        return new Options(); // TODO
-    }
-
-    private getRc(): string | undefined {
-        if (fs.existsSync('.plyrc.yml')) {
-            return '.plyrc.yml';
-        } else if (fs.existsSync('.plyrc.yaml')) {
-            return '.plyrc.yaml';
-        } else if (fs.existsSync('.plyrc.json')) {
-            return '.plyrc.json';
+        else {
+            throw new Error("Cannot load config: " + configPath);
         }
     }
-
 }

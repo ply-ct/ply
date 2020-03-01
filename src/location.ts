@@ -25,7 +25,7 @@ export class Location {
     }
 
     get name(): string {
-        return this.lastSlash ? this.path.substring(0, this.lastSlash) : this.path;
+        return this.lastSlash ? this.path.substring(this.lastSlash + 1) : this.path;
     }
 
     get base(): string {
@@ -48,7 +48,7 @@ export class Location {
     }
 
     get isYaml(): boolean {
-        return this.ext === '.yaml' || this.ext === '.yml';
+        return this.ext === 'yaml' || this.ext === 'yml';
     }
 
     get isUrl(): boolean {

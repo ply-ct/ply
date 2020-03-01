@@ -41,6 +41,15 @@ export class Retrieval {
         }
     }
 
+    sync(): string | undefined {
+        if (this.storage) {
+            return this.storage.read();
+        }
+        else {
+            throw new Error('Retrieval.sync() not supported for remote path: ' + this);
+        }
+    }
+
     get exists(): Promise<boolean> {
         if (this.storage) {
             return Promise.resolve(this.storage.exists);

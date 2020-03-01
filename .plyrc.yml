@@ -1,16 +1,12 @@
-locations:
-  tests: test/ply
-  results:
-    expected: test/ply/results/expected
-    actual: test/ply/results/actual
+testsLocation: test/ply
+expectedLocation: test/ply/results/expected
+actualLocation: test/ply/results/actual
 
-files:
-  requests:
-    - '**/*.ply.yaml'
-  cases:
-    - '**/*.ply.ts'
+requestFiles:
+  - '**/*.ply.yaml'
+caseFiles:
+  - '**/*.ply.ts'
 
-response:
-  # these are the headers we care about matching
-  headers:
-    - 'content-type'
+# these are the headers we care about matching
+responseHeaders:
+  - 'content-type'

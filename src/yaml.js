@@ -1,5 +1,3 @@
-'use strict';
-
 const jsYaml = require('js-yaml');
 
 module.exports = {
@@ -15,7 +13,7 @@ module.exports = {
         });
         Object.keys(obj).forEach(key => {
             let line = lines[key];
-            if (typeof (line) !== 'undefined') {
+            if (typeof line !== 'undefined' && typeof obj[key] === 'object') {
                 obj[key].line = line;
             }
         });

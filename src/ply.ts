@@ -1,10 +1,10 @@
+import { Options } from './options';
 import { Retrieval } from './retrieval';
 import { Storage } from './storage';
 import { Suite } from './suite';
 import { Request } from './request';
 import { Case } from './case';
 const yaml = require('./yaml');
-
 
 export type TestType = 'request' | 'case' | 'workflow';
 
@@ -20,18 +20,22 @@ export interface Plyable {
 
 export class Ply {
 
+    constructor(options: Options) {
+
+    }
+
     /**
      * Load request suites.
      * @param locations can be URLs or file paths
      */
     async loadRequests(locations: string[]) {
-        const retrievals = locations.map(loc => new Retrieval(loc, ''));
+        const retrievals = locations.map(loc => new Retrieval(loc));
 
     }
 
     async loadRequestSuite(retrieval: Retrieval): Promise<Suite<Request>> {
 
-        const name = retrieval.name;
+        const name = retrieval.location.name;
         const requests = new Map<string,Request>();
 
         const contents = await retrieval.read();
@@ -44,11 +48,11 @@ export class Ply {
             name,
             retrieval,
             requests,
-            new Retrieval('', ''),  // TODO
-            new Storage('', '')     // TODO
+            new Retrieval(''),  // TODO
+            new Storage('')     // TODO
         )
 
-        const obj = yaml.load(retrieval.path, contents);
+        const obj = yaml.load(retrieval.location.path, contents);
         Object.keys(obj).forEach(key => {
             let request = new Request(suite, key, obj[key]);
             requests.set(key, request);
@@ -66,10 +70,10 @@ export class Ply {
         const suite = new Suite<Case>(
             'case',
             name,
-            new Retrieval('', ''),  // TODO
+            new Retrieval(''),  // TODO
             cases,
-            new Retrieval('', ''),  // TODO
-            new Storage('', '')     // TODO
+            new Retrieval(''),  // TODO
+            new Storage('')     // TODO
         )
 
         // TODO this will use the Typescript compiler API
