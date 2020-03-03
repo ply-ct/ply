@@ -1,4 +1,5 @@
 import { Options, PlyOptions, Defaults } from './options';
+import { Location } from './location';
 import { Retrieval } from './retrieval';
 import { Storage } from './storage';
 import { Suite } from './suite';
@@ -33,26 +34,25 @@ export class Ply {
     async loadRequests(locations: string[]): Promise<Suite<Request>[]> {
         const retrievals = locations.map(loc => new Retrieval(loc));
         // load request files in parallel
-        const promises = retrievals.map(retr => this.loadRequestSuite(retr));
+        const promises = retrievals.map(retr => this.loadRequestsSuite(retr));
         return Promise.all(promises);
     }
 
-    async loadRequestSuite(retrieval: Retrieval): Promise<Suite<Request>> {
-
-        const name = retrieval.location.name;
-        const requests = new Map<string,Request>();
+    async loadRequestsSuite(retrieval: Retrieval): Promise<Suite<Request>> {
 
         const contents = await retrieval.read();
         if (!contents) {
             throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
         }
 
-        const relPath = retrieval.location.relativeTo(this.options.testsLocation).parent;
-        const resultFilePath = relPath + '/' + retrieval.location.base + '.' + retrieval.location.ext;
+        const requests = new Map<string, Request>();
+
+        const relPath = retrieval.location.relativeTo(this.options.testsLocation);
+        const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
 
         const suite = new Suite<Request>(
             'request',
-            name,
+            relPath,
             retrieval,
             requests,
             new Retrieval(this.options.expectedLocation + '/' + resultFilePath),
@@ -61,21 +61,20 @@ export class Ply {
 
         const obj = yaml.load(retrieval.location.path, contents);
         Object.keys(obj).forEach(key => {
-            let request = new Request(suite, key, obj[key]);
+            let request = new Request(suite.path, key, obj[key]);
             requests.set(key, request);
         });
 
         return suite;
     }
 
-    async loadCaseSuite(): Promise<Suite<Case>> {
+    async loadCases(locations: string[]): Promise<Suite<Case>[]> {
 
-        const name = 'suite name'; //retrieval.name;
         const cases = new Map<string, Case>();
 
         const suite = new Suite<Case>(
             'case',
-            name,
+            '',                 // TODO
             new Retrieval(''),  // TODO
             cases,
             new Retrieval(''),  // TODO
@@ -86,7 +85,7 @@ export class Ply {
 
 
 
-        return suite;
+        return [suite];
     }
 
 }

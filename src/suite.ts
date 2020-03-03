@@ -12,7 +12,7 @@ import { Retrieval } from './retrieval';
 export class Suite<T extends Plyable> {
 
     constructor(readonly type: TestType,
-        readonly name: string,
+        readonly path: string,
         readonly retrieval: Retrieval,
         readonly children: Map<string,T>,
         readonly expected: Retrieval,

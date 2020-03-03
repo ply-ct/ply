@@ -16,6 +16,14 @@ describe('Requests', async () => {
         assert.equal(suites[0].actual.location.path,
             'test/ply/results/actual/requests/movie-queries.ply.yaml');
 
-        console.log("request: " + JSON.stringify(suites[0].children.get('movieById')));
+        let request = suites[0].children.get('moviesByYearAndRating')!;
+        assert.ok(request !== null);
+        assert.equal(request.suite, 'requests/movie-queries.ply.yaml');
+        assert.equal(request.name, 'moviesByYearAndRating');
+        assert.equal(request.method, 'GET');
+        let headers = request.headers;
+        assert.equal(headers['Accept'], 'application/json');
+        assert.equal(request.line, 6);
+
     });
 });

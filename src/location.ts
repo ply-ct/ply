@@ -13,6 +13,9 @@ export class Location {
      */
     constructor(path: string) {
         this.path = path.replace(/\\/g, '/');
+        if (this.path.endsWith('/')) {
+            this.path = this.path.substring(0, this.path.length - 1);
+        }
         const ls = this.path.lastIndexOf('/');
         if (ls !== -1) { this.lastSlash = ls; }
     }
@@ -58,11 +61,11 @@ export class Location {
     }
 
     get absolute(): string {
-        return path.resolve(this.path);
+        return path.normalize(path.resolve(this.path)).replace(/\\/g, '/');
     }
 
-    relativeTo(root: string): Location {
-        return new Location(path.relative(root, this.path));
+    relativeTo(root: string): string {
+        return path.normalize(path.relative(root, this.path)).replace(/\\/g, '/');
     }
 
     toString(): string {
