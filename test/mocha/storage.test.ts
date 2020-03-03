@@ -1,14 +1,14 @@
 import * as assert from 'assert';
 import { Storage } from '../../src/storage';
 
-describe('Storage', function () {
+describe('Storage', () => {
 
-    it('should build path', function() {
+    it('should build path', () => {
         let storage = new Storage('temp/greeting.txt');
         assert.equal(storage.toString(), 'temp/greeting.txt');
     });
 
-    it('should write and read', async function() {
+    it('should write and read', async () => {
         let storage = new Storage('temp\\greeting.txt');
         assert.equal('temp/greeting.txt', storage.location.toString());
         storage.write('Hello');

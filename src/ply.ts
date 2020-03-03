@@ -1,4 +1,4 @@
-import { Options } from './options';
+import { Options, PlyOptions, Defaults } from './options';
 import { Retrieval } from './retrieval';
 import { Storage } from './storage';
 import { Suite } from './suite';
@@ -20,17 +20,21 @@ export interface Plyable {
 
 export class Ply {
 
-    constructor(options: Options) {
+    readonly options: PlyOptions;
 
+    constructor(options: Options) {
+        this.options = Object.assign({}, new Defaults(), options);
     }
 
     /**
      * Load request suites.
      * @param locations can be URLs or file paths
      */
-    async loadRequests(locations: string[]) {
+    async loadRequests(locations: string[]): Promise<Suite<Request>[]> {
         const retrievals = locations.map(loc => new Retrieval(loc));
-
+        // load request files in parallel
+        const promises = retrievals.map(retr => this.loadRequestSuite(retr));
+        return Promise.all(promises);
     }
 
     async loadRequestSuite(retrieval: Retrieval): Promise<Suite<Request>> {
@@ -40,16 +44,19 @@ export class Ply {
 
         const contents = await retrieval.read();
         if (!contents) {
-            throw new Error('Cannot retrieve: ' + retrieval);
+            throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
         }
+
+        const relPath = retrieval.location.relativeTo(this.options.testsLocation).parent;
+        const resultFilePath = relPath + '/' + retrieval.location.base + '.' + retrieval.location.ext;
 
         const suite = new Suite<Request>(
             'request',
             name,
             retrieval,
             requests,
-            new Retrieval(''),  // TODO
-            new Storage('')     // TODO
+            new Retrieval(this.options.expectedLocation + '/' + resultFilePath),
+            new Storage(this.options.actualLocation + '/' + resultFilePath)
         )
 
         const obj = yaml.load(retrieval.location.path, contents);
@@ -59,7 +66,6 @@ export class Ply {
         });
 
         return suite;
-
     }
 
     async loadCaseSuite(): Promise<Suite<Case>> {

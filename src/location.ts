@@ -1,3 +1,5 @@
+import * as path from 'path';
+
 /**
  * Abstraction for a URL or file location.
  */
@@ -32,7 +34,7 @@ export class Location {
         const name = this.name;
         const lastDot = name.lastIndexOf('.');
         if (lastDot > 0 && lastDot < name.length - 1) {
-            return name.substring(lastDot + 1);
+            return name.substring(0, lastDot);
         }
         else {
             return name;
@@ -55,8 +57,15 @@ export class Location {
         return this.path.startsWith('https://') || this.path.startsWith('http://');
     }
 
+    get absolute(): string {
+        return path.resolve(this.path);
+    }
+
+    relativeTo(root: string): Location {
+        return new Location(path.relative(root, this.path));
+    }
+
     toString(): string {
         return this.path;
     }
-
 }

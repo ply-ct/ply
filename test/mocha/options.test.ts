@@ -1,9 +1,9 @@
 import * as assert from 'assert';
 import { Options, Config } from '../../src/options';
 
-describe('Options', function () {
+describe('Options', () => {
 
-    it('is loaded from config', function () {
+    it('is loaded from config', () => {
         const options: Options = new Config().options;
         assert.equal(options.testsLocation, 'test/ply');
         assert.deepEqual(options.requestFiles, ['**/*.ply.yaml'])

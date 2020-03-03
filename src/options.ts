@@ -62,7 +62,27 @@ export interface Options {
     responseHeaders?: string[];
 }
 
-export class DefaultOptions implements Options {
+/**
+ * Populated options.
+ */
+export interface PlyOptions extends Options {
+    testsLocation: string;
+    expectedLocation: string;
+    actualLocation: string;
+    logLocation: string;
+    requestFiles: string[];
+    caseFiles: string[];
+    verbose: boolean;
+    bail: boolean;
+    formatResponseBody: boolean;
+    responseBodyIndent: number;
+    retainLog: boolean;
+    captureResult: boolean;
+    retainResult: boolean;
+    responseHeaders: string[];
+}
+
+export class Defaults implements Options {
     testsLocation = '.';
     expectedLocation = this.testsLocation + '/results/expected';
     actualLocation = this.testsLocation + '/results/actual';
@@ -87,11 +107,11 @@ export class Config {
         this.options = this.load();
     }
 
-    private load() : Options {
+    private load() : PlyOptions {
         const configPath = findUp.sync(['.plyrc.yaml', '.plyrc.yml', '.plyrc.json']);
         const config = configPath ? this.read(configPath) : {};
         const options = yargs.config(config).argv;
-        return Object.assign({testsLocation: '.'}, options);
+        return Object.assign(new Defaults(), options);
     }
 
     private read(configPath: string): object {

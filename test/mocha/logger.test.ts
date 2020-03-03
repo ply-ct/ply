@@ -2,9 +2,9 @@ import * as assert from 'assert';
 import { Logger } from '../../src/logger';
 import { Storage } from '../../src/storage';
 
-describe('Logger', function () {
+describe('Logger', () => {
 
-    it('should append output', function () {
+    it('should append output', () => {
         let options = { location: 'temp', name: 'output.log' };
         let logger1 = new Logger(Object.assign({}, options, { retain: false }));
         logger1.info('info message');
