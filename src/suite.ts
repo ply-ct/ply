@@ -27,5 +27,9 @@ export class Suite<T extends Plyable> {
         readonly expected: Retrieval,
         readonly actual: Storage) {
     }
+
+    get(name: string): T | undefined {
+        return this.children.get(name);
+    }
 }
 

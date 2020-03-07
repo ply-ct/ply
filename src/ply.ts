@@ -5,6 +5,7 @@ import { Storage } from './storage';
 import { Suite } from './suite';
 import { Request } from './request';
 import { Case } from './case';
+import { CaseLoader } from './caseLoader';
 const yaml = require('./yaml');
 
 export type TestType = 'request' | 'case' | 'workflow';
@@ -17,6 +18,11 @@ export interface Plyable {
      * zero-based
      */
     line: number;
+
+    /**
+     * run the test
+     */
+    ply(): Promise<void>;
 }
 
 export class Ply {
@@ -34,18 +40,18 @@ export class Ply {
     async loadRequests(locations: string[]): Promise<Suite<Request>[]> {
         const retrievals = locations.map(loc => new Retrieval(loc));
         // load request files in parallel
-        const promises = retrievals.map(retr => this.loadRequestsSuite(retr));
+        const promises = retrievals.map(retr => this.loadRequestSuite(retr));
         return Promise.all(promises);
     }
 
-    async loadRequestsSuite(retrieval: Retrieval): Promise<Suite<Request>> {
+    async loadRequestSuite(retrieval: Retrieval): Promise<Suite<Request>> {
 
         const contents = await retrieval.read();
         if (!contents) {
             throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
         }
 
-        const requests = new Map<string, Request>();
+        const requests = new Map<string,Request>();
 
         const relPath = retrieval.location.relativeTo(this.options.testsLocation);
         const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
@@ -69,23 +75,34 @@ export class Ply {
     }
 
     async loadCases(locations: string[]): Promise<Suite<Case>[]> {
+        const retrievals = locations.map(loc => new Retrieval(loc));
+        // load case files in parallel
+        const promises = retrievals.map(retr => this.loadCaseSuite(retr));
+        return Promise.all(promises);
+    }
 
-        const cases = new Map<string, Case>();
+    async loadCaseSuite(retrieval: Retrieval): Promise<Suite<Case>> {
+
+        const contents = await retrieval.read();
+        if (!contents) {
+            throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
+        }
+
+        const loader = new CaseLoader([retrieval.location.path], {});
+        const cases = loader.load();
+
+        const relPath = retrieval.location.relativeTo(this.options.testsLocation);
+        const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
 
         const suite = new Suite<Case>(
             'case',
-            '',                 // TODO
-            new Retrieval(''),  // TODO
+            relPath,
+            retrieval,
             cases,
-            new Retrieval(''),  // TODO
-            new Storage('')     // TODO
+            new Retrieval(this.options.expectedLocation + '/' + resultFilePath),
+            new Storage(this.options.actualLocation + '/' + resultFilePath)
         )
 
-        // TODO this will use the Typescript compiler API
-
-
-
-        return [suite];
+        return suite;
     }
-
 }

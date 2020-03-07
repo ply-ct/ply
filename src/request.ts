@@ -56,4 +56,8 @@ export class Request implements Plyable {
             || upperCase === 'TRACE'
             || upperCase === 'PATCH';
     }
+
+    async ply() {
+        // TODO
+    }
 }

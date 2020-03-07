@@ -2,10 +2,10 @@ const jsYaml = require('js-yaml');
 
 module.exports = {
     // loads with line numbers
-    load: function (filename, contents) {
+    load: function (file, contents) {
         const lines = {};
         const obj = jsYaml.safeLoad(contents, {
-            filename, listener: function (op, state) {
+            filename: file, listener: function (op, state) {
                 if (op === 'open' && state.kind === 'scalar' && typeof (state.line) !== 'undefined') {
                     lines[state.result] = state.line;
                 }

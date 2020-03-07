@@ -9,7 +9,7 @@ export class Case implements Plyable {
     constructor(readonly suite: string, readonly name: string, obj: any) {
     }
 
-    run() {
+    async ply() {
         const testFile = '../test/ply/cases/MovieCrud';
         import(testFile).then(mod => {
             console.log("AFTER IMPORT");
