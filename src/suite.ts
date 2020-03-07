@@ -11,6 +11,15 @@ import { Retrieval } from './retrieval';
  */
 export class Suite<T extends Plyable> {
 
+    /**
+     *
+     * @param type Request/Case/Workflow
+     * @param path relative path from tests location (forward slashes)
+     * @param retrieval suite retrieval
+     * @param children requests/cases/workflows
+     * @param expected expected results retrieval
+     * @param actual actual results storage
+     */
     constructor(readonly type: TestType,
         readonly path: string,
         readonly retrieval: Retrieval,

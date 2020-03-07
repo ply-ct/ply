@@ -9,7 +9,6 @@ export class Case implements Plyable {
     constructor(readonly suite: Suite<Plyable>, readonly name: string, obj: object) {
     }
 
-    // rename run() to submit() maybe?
     run() {
         const testFile = '../test/ply/cases/MovieCrud';
         import(testFile).then(mod => {
