@@ -13,7 +13,7 @@ export class Suite<T extends Plyable> {
 
     /**
      *
-     * @param type Request/Case/Workflow
+     * @param type request/case/workflow
      * @param path relative path from tests location (forward slashes)
      * @param retrieval suite retrieval
      * @param children requests/cases/workflows

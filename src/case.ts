@@ -6,7 +6,7 @@ export class Case implements Plyable {
     line = 0;
 
 
-    constructor(readonly suite: Suite<Plyable>, readonly name: string, obj: object) {
+    constructor(readonly suite: string, readonly name: string, obj: any) {
     }
 
     run() {

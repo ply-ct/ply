@@ -4,7 +4,7 @@ import { Ply } from '../../src/ply';
 
 describe('Requests', async () => {
 
-    it('loaded from yaml', async () => {
+    it('is loaded from yaml', async () => {
         const options: Options = new Config().options;
         const ply = new Ply(options);
         const suites = await ply.loadRequests([
@@ -25,5 +25,15 @@ describe('Requests', async () => {
         assert.equal(headers['Accept'], 'application/json');
         assert.equal(request.line, 6);
 
+    });
+
+    it('rejects missing url', async () => {
+        const options: Options = new Config().options;
+        const ply = new Ply(options);
+        assert.rejects(async () => {
+            await ply.loadRequests([
+                'test/ply/requests/bad-request.ply.yaml'
+            ]);
+        }, Error, "'requests/bad-request.ply.yaml#missingUrl' -> Bad request url: undefined");
     });
 });
