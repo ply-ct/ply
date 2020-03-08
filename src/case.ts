@@ -3,10 +3,9 @@ import { Suite } from './suite';
 
 export class Case implements Plyable {
     type = 'case' as TestType;
-    line = 0;
 
-
-    constructor(readonly suite: string, readonly name: string, obj: any) {
+    constructor(readonly suite: string, readonly suiteClass: string,
+        readonly name: string, readonly method: string, readonly line: number = 0) {
     }
 
     async ply() {

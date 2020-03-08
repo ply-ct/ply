@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { Options, PlyOptions, Defaults } from './options';
 import { Location } from './location';
 import { Retrieval } from './retrieval';
@@ -6,6 +7,7 @@ import { Suite } from './suite';
 import { Request } from './request';
 import { Case } from './case';
 import { CaseLoader } from './caseLoader';
+import ts = require('typescript');
 const yaml = require('./yaml');
 
 export type TestType = 'request' | 'case' | 'workflow';
@@ -75,7 +77,25 @@ export class Ply {
     }
 
     async loadCases(locations: string[]): Promise<Suite<Case>[]> {
+
+        const configPath = ts.findConfigFile("./", ts.sys.fileExists,"tsconfig.json");
+        if (!configPath) {
+            throw new Error("Could not find a valid 'tsconfig.json'.");
+        }
+
+        const configContents = fs.readFileSync(configPath).toString();
+        const compilerOptions = ts.parseConfigFileTextToJson(configPath, configContents);
+
+        const caseLoader = new CaseLoader(locations, compilerOptions as ts.CompilerOptions);
+
+        const cases = caseLoader.load();
+
+
+
+
         const retrievals = locations.map(loc => new Retrieval(loc));
+
+
         // load case files in parallel
         const promises = retrievals.map(retr => this.loadCaseSuite(retr));
         return Promise.all(promises);
@@ -88,12 +108,10 @@ export class Ply {
             throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
         }
 
-        const loader = new CaseLoader([retrieval.location.path], {});
-        const cases = loader.load();
-
         const relPath = retrieval.location.relativeTo(this.options.testsLocation);
         const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
 
+        const cases: Map<string,Case> = new Map();
         const suite = new Suite<Case>(
             'case',
             relPath,
