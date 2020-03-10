@@ -1,18 +1,6 @@
 import * as ts from "typescript";
 import { Case } from './case';
 
-interface DocEntry {
-    name?: string;
-    fileName?: string;
-    documentation?: string;
-    type?: string;
-    constructors?: DocEntry[];
-    parameters?: DocEntry[];
-    returnType?: string;
-    decorators?: DocEntry[];
-    decParam?: string;
-}
-
 interface SuiteDeclaration {
     name: string;
     className: string;
@@ -23,7 +11,6 @@ export class CaseLoader {
 
     program: ts.Program;
     checker: ts.TypeChecker;
-    output: DocEntry[] = [];
 
     cases: Map<string,Case[]> = new Map();
 

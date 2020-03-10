@@ -53,8 +53,6 @@ export class Ply {
             throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
         }
 
-        const requests = new Map<string,Request>();
-
         const relPath = retrieval.location.relativeTo(this.options.testsLocation);
         const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
 
@@ -62,15 +60,14 @@ export class Ply {
             'request',
             relPath,
             retrieval,
-            requests,
             new Retrieval(this.options.expectedLocation + '/' + resultFilePath),
             new Storage(this.options.actualLocation + '/' + resultFilePath)
-        )
+        );
 
         const obj = yaml.load(retrieval.location.path, contents);
         Object.keys(obj).forEach(key => {
             let request = new Request(suite.path, key, obj[key]);
-            requests.set(key, request);
+            suite.add(request);
         });
 
         return suite;
@@ -111,12 +108,10 @@ export class Ply {
         const relPath = retrieval.location.relativeTo(this.options.testsLocation);
         const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
 
-        const cases: Map<string,Case> = new Map();
         const suite = new Suite<Case>(
             'case',
             relPath,
             retrieval,
-            cases,
             new Retrieval(this.options.expectedLocation + '/' + resultFilePath),
             new Storage(this.options.actualLocation + '/' + resultFilePath)
         )

@@ -11,25 +11,38 @@ import { Retrieval } from './retrieval';
  */
 export class Suite<T extends Plyable> {
 
+    private testsByName: Map<string,T> = new Map();
+
     /**
      *
      * @param type request/case/workflow
      * @param path relative path from tests location (forward slashes)
      * @param retrieval suite retrieval
-     * @param children requests/cases/workflows
      * @param expected expected results retrieval
      * @param actual actual results storage
+     * @param tests? requests/cases/workflows
      */
     constructor(readonly type: TestType,
         readonly path: string,
         readonly retrieval: Retrieval,
-        readonly children: Map<string,T>,
         readonly expected: Retrieval,
-        readonly actual: Storage) {
+        readonly actual: Storage,
+        tests: T[] = []) {
+            for (const test of tests) {
+                this.testsByName.set(test.name, test);
+            }
+    }
+
+    add(test: T) {
+        this.testsByName.set(test.name, test);
     }
 
     get(name: string): T | undefined {
-        return this.children.get(name);
+        return this.testsByName.get(name);
+    }
+
+    getAll(): T[] {
+        return Array.from(this.testsByName.values());
     }
 }
 

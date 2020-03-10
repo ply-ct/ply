@@ -16,7 +16,7 @@ describe('Requests', async () => {
         assert.equal(suites[0].actual.location.path,
             'test/ply/results/actual/requests/movie-queries.ply.yaml');
 
-        let request = suites[0].children.get('moviesByYearAndRating')!;
+        let request = suites[0].get('moviesByYearAndRating')!;
         assert.ok(request !== null);
         assert.equal(request.suite, 'requests/movie-queries.ply.yaml');
         assert.equal(request.name, 'moviesByYearAndRating');
