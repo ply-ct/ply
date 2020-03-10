@@ -14,6 +14,7 @@ export type TestType = 'request' | 'case' | 'workflow';
 
 export interface Plyable {
 
+    suitePath: string;
     name: string;
     type: TestType
     /**
@@ -57,6 +58,7 @@ export class Ply {
         const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
 
         const suite = new Suite<Request>(
+            retrieval.location.base,
             'request',
             relPath,
             retrieval,
@@ -83,19 +85,10 @@ export class Ply {
         const configContents = fs.readFileSync(configPath).toString();
         const compilerOptions = ts.parseConfigFileTextToJson(configPath, configContents);
 
-        const caseLoader = new CaseLoader(locations, compilerOptions as ts.CompilerOptions);
+        const caseLoader = new CaseLoader(locations, this.options, compilerOptions as ts.CompilerOptions);
 
-        const cases = caseLoader.load();
-
-
-
-
-        const retrievals = locations.map(loc => new Retrieval(loc));
-
-
-        // load case files in parallel
-        const promises = retrievals.map(retr => this.loadCaseSuite(retr));
-        return Promise.all(promises);
+        const suites = caseLoader.load();
+        return suites;
     }
 
     async loadCaseSuite(retrieval: Retrieval): Promise<Suite<Case>> {
@@ -109,12 +102,13 @@ export class Ply {
         const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
 
         const suite = new Suite<Case>(
+            'name', // TODO
             'case',
             relPath,
             retrieval,
             new Retrieval(this.options.expectedLocation + '/' + resultFilePath),
             new Storage(this.options.actualLocation + '/' + resultFilePath)
-        )
+        );
 
         return suite;
     }

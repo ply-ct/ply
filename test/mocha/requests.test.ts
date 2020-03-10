@@ -18,7 +18,7 @@ describe('Requests', async () => {
 
         let request = suites[0].get('moviesByYearAndRating')!;
         assert.ok(request !== null);
-        assert.equal(request.suite, 'requests/movie-queries.ply.yaml');
+        assert.equal(request.suitePath, 'requests/movie-queries.ply.yaml');
         assert.equal(request.name, 'moviesByYearAndRating');
         assert.equal(request.method, 'GET');
         let headers = request.headers;

@@ -4,8 +4,12 @@ import { Suite } from './suite';
 export class Case implements Plyable {
     type = 'case' as TestType;
 
-    constructor(readonly suite: string, readonly suiteClass: string,
+    constructor(readonly suitePath: string, readonly suiteClass: string,
         readonly name: string, readonly method: string, readonly line: number = 0) {
+    }
+
+    get path() {
+        return this.suitePath + '#' + this.name;
     }
 
     async ply() {

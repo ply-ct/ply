@@ -1,52 +1,70 @@
 import * as ts from "typescript";
+import { PlyOptions } from "./options";
+import { Location } from './location';
+import { Suite } from './suite';
 import { Case } from './case';
+import { Retrieval } from "./retrieval";
+import { Storage } from "./storage";
 
-interface SuiteDeclaration {
+interface SuiteDecoration {
     name: string;
-    className: string;
+    classDeclaration: ts.ClassDeclaration;
     // TODO other decorator params
 }
 
 export class CaseLoader {
 
-    program: ts.Program;
-    checker: ts.TypeChecker;
+    private program: ts.Program;
+    private checker: ts.TypeChecker;
 
-    cases: Map<string,Case[]> = new Map();
-
-    constructor(sourceFiles: string[], compilerOptions: ts.CompilerOptions) {
-
+    constructor(sourceFiles: string[], private options: PlyOptions, compilerOptions: ts.CompilerOptions) {
         this.program = ts.createProgram(sourceFiles, compilerOptions);
         this.checker = this.program.getTypeChecker();
     }
 
 
-    load(): Map<string,Case> {
+    load(): Suite<Case>[] {
+
+        const suites: Suite<Case>[] = [];
 
         for (const sourceFile of this.program.getSourceFiles()) {
-            let suite = this.findSuite(sourceFile);
-            if (suite) {
-                console.log("SUITE: " + JSON.stringify(suite));
+            let suiteDecoration = this.findSuite(sourceFile);
+            if (suiteDecoration) {
+                let retrieval = new Retrieval(sourceFile.fileName);
+                const relPath = retrieval.location.relativeTo(this.options.testsLocation);
+                const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
+
+                const suite = new Suite<Case>(
+                    suiteDecoration.name,
+                    'case',
+                    relPath,
+                    retrieval,
+                    new Retrieval(this.options.expectedLocation + '/' + resultFilePath),
+                    new Storage(this.options.actualLocation + '/' + resultFilePath),
+                    sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getStart()).line
+                );
+
+                this.findCases(suiteDecoration).forEach(c => suite.add(c));
+                suites.push(suite);
             }
 
         }
 
-        const cases = new Map();
-        return cases;
+        return suites;
     }
 
-    private findSuite(sourceFile: ts.SourceFile): SuiteDeclaration | undefined {
+    private findSuite(sourceFile: ts.SourceFile): SuiteDecoration | undefined {
         if (!sourceFile.isDeclarationFile) {
-            let suite: SuiteDeclaration | undefined;
+            let suite: SuiteDecoration | undefined;
             ts.forEachChild(sourceFile, node => {
                 if (ts.isClassDeclaration(node) && node.name && this.isExported(node)) {
-                    let suiteDeclaration = this.findSuiteDeclaration(node as ts.ClassDeclaration);
-                    if (suiteDeclaration) {
+                    let suiteDecoration = this.findSuiteDecoration(node as ts.ClassDeclaration);
+                    if (suiteDecoration) {
                         if (suite) {
                             throw new Error(`Source file ${sourceFile.fileName} cannot contain more than one suite
                                     (${suite.name}, ${node.name})`);
                         }
-                        suite = suiteDeclaration;
+                        suite = suiteDecoration;
                     }
                 }
             });
@@ -54,7 +72,7 @@ export class CaseLoader {
         }
     }
 
-    private findSuiteDeclaration(classDeclaration: ts.ClassDeclaration): SuiteDeclaration | undefined {
+    private findSuiteDecoration(classDeclaration: ts.ClassDeclaration): SuiteDecoration | undefined {
         let classSymbol = this.checker.getSymbolAtLocation(<ts.Node>classDeclaration.name);
         if (classSymbol && classDeclaration.decorators) {
             for (const decorator of classDeclaration.decorators) {
@@ -67,7 +85,7 @@ export class CaseLoader {
                                 const secondChild = decorator.expression.getChildAt(2);
                                 return {
                                     name: secondChild.getText(),
-                                    className: classSymbol.name
+                                    classDeclaration: classDeclaration
                                 };
                             }
                         }
@@ -75,6 +93,20 @@ export class CaseLoader {
                 }
             }
         }
+    }
+
+    private findCases(suiteDecoration: SuiteDecoration): Case[] {
+        const cases: Case[] = [];
+
+        suiteDecoration.classDeclaration.forEachChild(node => {
+            if (ts.isMethodDeclaration(node) && node.name && !ts.isPrivateIdentifier(node)) {
+                console.log("method: " + node.name);
+            }
+
+        });
+
+
+        return cases;
     }
 
     isExported(node: ts.Node): boolean {

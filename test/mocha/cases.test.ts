@@ -11,6 +11,8 @@ describe('Cases', async () => {
             'test/ply/cases/movieCrud.ply.ts'
         ]);
 
+        console.log("SUITES: " + JSON.stringify(suites, null, 2));
+
     });
 
 });

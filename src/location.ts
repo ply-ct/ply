@@ -6,7 +6,6 @@ import * as path from 'path';
 export class Location {
 
     readonly path: string;
-    private readonly lastSlash?: number;
 
     /**
      * @param path url or file path (backslashes are replaced with slashes)
@@ -16,8 +15,13 @@ export class Location {
         if (this.path.endsWith('/')) {
             this.path = this.path.substring(0, this.path.length - 1);
         }
+    }
+
+    private get lastSlash(): number | undefined {
         const ls = this.path.lastIndexOf('/');
-        if (ls !== -1) { this.lastSlash = ls; }
+        if (ls !== -1) {
+            return ls;
+        }
     }
 
     /**

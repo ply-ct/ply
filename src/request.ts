@@ -12,11 +12,11 @@ export class Request implements Plyable {
 
     /**
      *
-     * @param suite suite path relative to tests location (forward slashes)
+     * @param suitePath relative to tests location (forward slashes)
      * @param name test name
      * @param obj object to parse for contents
      */
-    constructor(readonly suite: string, readonly name: string, obj: any) {
+    constructor(readonly suitePath: string, readonly name: string, obj: any) {
 
         this.validate(obj);
 
@@ -40,7 +40,7 @@ export class Request implements Plyable {
     }
 
     get path() {
-        return this.suite + '#' + this.name;
+        return this.suitePath + '#' + this.name;
     }
 
     isSupportedMethod(method: string): boolean {

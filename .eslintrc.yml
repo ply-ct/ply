@@ -15,6 +15,7 @@ plugins:
   - '@typescript-eslint'
 rules: {
   no-console: 0,
+  semi: 2,
   eqeqeq: 2,
   curly: [error, all],
   no-unused-vars: 0,
