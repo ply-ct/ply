@@ -1,9 +1,8 @@
-import { TestType, Plyable } from './ply';
+import { TestType, Test } from './ply';
 import { Storage } from './storage';
 import { Retrieval } from './retrieval';
 
-
-interface Tests<T extends Plyable> {
+interface Tests<T extends Test> {
     [key: string]: T
 }
 
@@ -14,7 +13,7 @@ interface Tests<T extends Plyable> {
  *
  * Suites cannot be nested.
  */
-export class Suite<T extends Plyable> {
+export class Suite<T extends Test> {
 
     readonly tests: Tests<T> = {};
 

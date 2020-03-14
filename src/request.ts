@@ -1,7 +1,7 @@
-import { TestType, Plyable } from './ply';
+import { TestType, Test } from './ply';
 import { Location } from './location';
 
-export class Request implements Plyable {
+export class Request implements Test {
     type = 'request' as TestType;
 
     url: string;

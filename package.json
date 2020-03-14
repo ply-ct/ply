@@ -1,21 +1,30 @@
 {
   "name": "ply-ct",
-  "version": "2.0.1",
+  "version": "2.0.4",
   "description": "REST API Automated Testing",
-  "main": "dist/main.js",
+  "main": "dist/src",
+  "files": [
+    "dist/src"
+  ],
+  "types": "dist/src",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ply-ct/ply.git"
   },
   "keywords": [
-    "REST"
+    "REST",
+    "Continuous Testing"
   ],
   "author": "Donald Oakes",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/ply-ct/ply/issues"
   },
+  "engines": {
+    "node": ">=12"
+  },
   "scripts": {
+    "build": "tsc",
     "test": "mocha --require ts-node/register test/mocha/**/*.ts"
   },
   "homepage": "https://github.com/ply-ct/ply#readme",

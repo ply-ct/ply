@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { Options, PlyOptions, Defaults } from './options';
+import { Options, Config, PlyOptions, Defaults } from './options';
 import { Suite } from './suite';
 import { Request } from './request';
 import { Case } from './case';
@@ -9,7 +9,7 @@ import { RequestLoader } from './requestLoader';
 
 export type TestType = 'request' | 'case' | 'workflow';
 
-export interface Plyable {
+export interface Test {
 
     suitePath: string;
     name: string;
@@ -23,6 +23,14 @@ export interface Plyable {
      * run the test
      */
     ply(): Promise<void>;
+}
+
+/**
+ * Create with options from config file.
+ */
+export function create(): Ply {
+    const options = new Config().options;
+    return new Ply(options);
 }
 
 export class Ply {

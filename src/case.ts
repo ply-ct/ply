@@ -1,6 +1,6 @@
-import { TestType, Plyable } from './ply';
+import { TestType, Test } from './ply';
 
-export class Case implements Plyable {
+export class Case implements Test {
     type = 'case' as TestType;
 
     constructor(readonly suitePath: string, readonly suiteClass: string,
