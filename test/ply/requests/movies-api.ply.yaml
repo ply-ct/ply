@@ -41,6 +41,7 @@ createMovie:
       },
       "year": 1934
     }
+
 updateMovie:
   url: '${baseUrl}/movies/${id}'
   method: PUT
@@ -86,11 +87,13 @@ updateMovie:
       },
       "year": 1934
     }
+
 retrieveMovie:
   url: '${baseUrl}/movies/${id}'
   method: GET
   headers:
     Accept: application/json
+
 deleteMovie:
   url: '${baseUrl}/movies/${id}'
   method: DELETE

@@ -1,5 +1,4 @@
 import { TestType, Plyable } from './ply';
-import { Suite } from './suite';
 
 export class Case implements Plyable {
     type = 'case' as TestType;

@@ -2,6 +2,11 @@ import { TestType, Plyable } from './ply';
 import { Storage } from './storage';
 import { Retrieval } from './retrieval';
 
+
+interface Tests<T extends Plyable> {
+    [key: string]: T
+}
+
 /**
  * A suite represents one ply requests file (.ply.yaml), one ply case file (.ply.ts),
  * or a single folder within a Postman collection (a .postman_collection.json file
@@ -11,7 +16,7 @@ import { Retrieval } from './retrieval';
  */
 export class Suite<T extends Plyable> {
 
-    private tests: Map<string,T> = new Map();
+    readonly tests: Tests<T> = {};
 
     /**
      * @param name suite name
@@ -32,20 +37,20 @@ export class Suite<T extends Plyable> {
         readonly line: number = 0,
         tests: T[] = []) {
             for (const test of tests) {
-                this.tests.set(test.name, test);
+                this.tests[test.name] = test;
             }
     }
 
     add(test: T) {
-        this.tests.set(test.name, test);
+        this.tests[test.name] = test;
     }
 
     get(name: string): T | undefined {
-        return this.tests.get(name);
+        return this.tests[name];
     }
 
     getAll(): T[] {
-        return Array.from(this.tests.values());
+        return Object.values(this.tests);
     }
 }
 

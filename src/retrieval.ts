@@ -8,25 +8,11 @@ export class Retrieval {
 
     readonly location: Location;
 
-    private readonly storage?: Storage;
-    private readonly fetch: any;
-
     /**
      * @param location file path or url (backslashes are replaced with slashes)
      */
     constructor(location: string) {
         this.location = new Location(location);
-        if (this.location.isUrl) {
-            if (typeof window === 'undefined') {
-                this.fetch = require('node-fetch');
-            }
-            else {
-                this.fetch = window.fetch;
-            }
-        }
-        else {
-            this.storage = new Storage(location);
-        }
     }
 
     read(): Promise<string | undefined> {
@@ -68,5 +54,22 @@ export class Retrieval {
 
     toString(): string {
         return this.location.toString();
+    }
+
+    get storage(): Storage | undefined {
+        if (!this.location.isUrl) {
+            return new Storage(this.location.path);
+        }
+    }
+
+    get fetch(): any {
+        if (this.location.isUrl) {
+            if (typeof window === 'undefined') {
+                return require('node-fetch');
+            }
+            else {
+                return window.fetch;
+            }
+        }
     }
 }
