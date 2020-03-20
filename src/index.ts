@@ -4,7 +4,7 @@ export { Request } from './request';
 export { Case } from './case';
 export { Location } from './location';
 export { Logger } from './logger';
-export { Options, Config } from './options';
+export { Options, PlyOptions, Defaults, Config } from './options';
 export { Retrieval } from './retrieval';
 export { Storage } from './storage';
 export { Suite } from './Suite';

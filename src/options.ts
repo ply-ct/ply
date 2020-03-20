@@ -3,6 +3,9 @@ import * as yargs from 'yargs';
 import { Retrieval } from './retrieval';
 import * as yaml from './yaml';
 
+/**
+ * Ply options.  Empty values are populated with Defaults.
+ */
 export interface Options {
     /**
      * tests base directory ('.')
@@ -28,6 +31,10 @@ export interface Options {
      * case files(s) glob patterns (['**\/*.ply.ts'])
      */
     caseFiles?: string[];
+    /**
+     * exclude file patterns (['**\/{ node_modules, bin, dist, out }\/**'])
+     */
+    excludes?: string[];
     /**
      * verbose output (false)
      */
@@ -63,7 +70,7 @@ export interface Options {
 }
 
 /**
- * Populated options.
+ * Populated ply options.
  */
 export interface PlyOptions extends Options {
     testsLocation: string;
@@ -72,6 +79,7 @@ export interface PlyOptions extends Options {
     logLocation: string;
     requestFiles: string[];
     caseFiles: string[];
+    excludes: string[];
     verbose: boolean;
     bail: boolean;
     formatResponseBody: boolean;
@@ -82,13 +90,14 @@ export interface PlyOptions extends Options {
     responseHeaders: string[];
 }
 
-export class Defaults implements Options {
-    testsLocation = '.';
+export class Defaults implements PlyOptions {
+    constructor(readonly testsLocation: string = '.') {}
     expectedLocation = this.testsLocation + '/results/expected';
     actualLocation = this.testsLocation + '/results/actual';
     logLocation = this.actualLocation;
     requestFiles = ['**/*.ply.yaml', '**/*.ply.yml'];
     caseFiles = ['**/*.ply.ts'];
+    excludes = ['**/{node_modules,bin,dist,out}/**'];
     verbose = false;
     bail = false;
     formatResponseBody = true;
@@ -101,17 +110,17 @@ export class Defaults implements Options {
 
 export class Config {
 
-    public options: Options;
+    public options: PlyOptions;
 
-    constructor() {
-        this.options = this.load();
+    constructor(private readonly defaults: PlyOptions = new Defaults()) {
+        this.options = this.load(defaults);
     }
 
-    private load() : PlyOptions {
+    private load(defaults: PlyOptions) : PlyOptions {
         const configPath = findUp.sync(['.plyrc.yaml', '.plyrc.yml', '.plyrc.json']);
         const config = configPath ? this.read(configPath) : {};
         const options = yargs.config(config).argv;
-        return Object.assign(new Defaults(), options);
+        return Object.assign({}, defaults, options);
     }
 
     private read(configPath: string): object {
