@@ -51,9 +51,10 @@ export class Ply {
     }
 
     async loadCases(files: string[]): Promise<Suite<Case>[]> {
-        const configPath = ts.findConfigFile("./", ts.sys.fileExists,"tsconfig.json");
+
+        const configPath = ts.findConfigFile(this.options.testsLocation, ts.sys.fileExists, "tsconfig.json");
         if (!configPath) {
-            throw new Error("Could not find a valid 'tsconfig.json'.");
+            throw new Error("Could not find a valid 'tsconfig.json' from " + this.options.testsLocation);
         }
 
         const configContents = fs.readFileSync(configPath).toString();
