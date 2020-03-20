@@ -117,7 +117,7 @@ export class Config {
     }
 
     private load(defaults: PlyOptions) : PlyOptions {
-        const configPath = findUp.sync(['.plyrc.yaml', '.plyrc.yml', '.plyrc.json']);
+        const configPath = findUp.sync(['.plyrc.yaml', '.plyrc.yml', '.plyrc.json'], { cwd: defaults.testsLocation });
         const config = configPath ? this.read(configPath) : {};
         const options = yargs.config(config).argv;
         return Object.assign({}, defaults, options);
