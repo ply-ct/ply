@@ -24,7 +24,7 @@ describe('Requests', async () => {
         let headers = request.headers;
         assert.equal(headers['Accept'], 'application/json');
         assert.equal(request.line, 6);
-
+        assert.equal(request.endLine, 10);
     });
 
     it('rejects missing url', async () => {
@@ -35,5 +35,9 @@ describe('Requests', async () => {
                 'test/ply/requests/bad-request.ply.yaml'
             ]);
         }, Error, "'requests/bad-request.ply.yaml#missingUrl' -> Bad request url: undefined");
+    });
+
+    it('can be run', async () => {
+
     });
 });

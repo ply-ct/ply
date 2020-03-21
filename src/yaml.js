@@ -5,8 +5,9 @@ module.exports = {
     load: function (file, contents) {
         const lines = {};
         const obj = jsYaml.safeLoad(contents, {
-            filename: file, listener: function (op, state) {
-                if (op === 'open' && state.kind === 'scalar' && typeof (state.line) !== 'undefined') {
+            filename: file,
+            listener: function (op, state) {
+                if (op === 'open' && state.kind === 'scalar') {
                     lines[state.result] = state.line;
                 }
             }

@@ -5,7 +5,7 @@ import { Request } from './request';
 import { Case } from './case';
 import { CaseLoader } from './caseLoader';
 import ts = require('typescript');
-import { RequestLoader } from './requestLoader';
+import { RequestLoader } from './requests';
 
 export type TestType = 'request' | 'case' | 'workflow';
 
@@ -18,6 +18,7 @@ export interface Test {
      * zero-based
      */
     line: number;
+    endLine?: number;
 
     /**
      * run the test

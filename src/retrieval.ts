@@ -27,6 +27,22 @@ export class Retrieval {
         }
     }
 
+    /**
+     * Returns content lines where index is between start and end - 1.
+     * If end is not supplied, read to end of file.
+     */
+    async readLines(start: number, end?: number): Promise<string[] | undefined> {
+        let contents = await this.read();
+        if (contents) {
+            return contents.split(/\r?\n/).reduce((lines: string[], line: string, i: number) => {
+                if (i >= start && (!end || i <= end)) {
+                    lines.push(line);
+                }
+                return lines;
+            }, new Array<string>());
+        }
+    }
+
     sync(): string | undefined {
         if (this.storage) {
             return this.storage.read();

@@ -35,11 +35,9 @@ export class Storage {
             return this.localStorage.getItem(this.location.path);
         }
         else {
-            var contents;
             if (fs.existsSync(this.location.path)) {
-                contents = fs.readFileSync(this.location.path, 'utf-8');
+                return fs.readFileSync(this.location.path, 'utf-8');
             }
-            return contents;
         }
     }
 

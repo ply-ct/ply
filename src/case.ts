@@ -4,7 +4,7 @@ export class Case implements Test {
     type = 'case' as TestType;
 
     constructor(readonly suitePath: string, readonly suiteClass: string,
-        readonly name: string, readonly method: string, readonly line: number = 0) {
+        readonly name: string, readonly method: string, readonly line: number = 0, readonly endLine?: number) {
     }
 
     get path() {

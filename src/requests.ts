@@ -14,11 +14,11 @@ export class RequestLoader {
     async load(): Promise<Suite<Request>[]> {
         const retrievals = this.locations.map(loc => new Retrieval(loc));
         // load request files in parallel
-        const promises = retrievals.map(retr => this.loadRequestSuite(retr));
+        const promises = retrievals.map(retr => this.loadSuite(retr));
         return Promise.all(promises);
     }
 
-    async loadRequestSuite(retrieval: Retrieval): Promise<Suite<Request>> {
+    async loadSuite(retrieval: Retrieval): Promise<Suite<Request>> {
 
         const contents = await retrieval.read();
         if (!contents) {
@@ -38,11 +38,42 @@ export class RequestLoader {
         );
 
         const obj = yaml.load(retrieval.location.path, contents);
-        Object.keys(obj).forEach(key => {
+        let lastRequest: Request | undefined = undefined;
+        for (const key of Object.keys(obj)) {
             let request = new Request(suite.path, key, obj[key]);
+            if (lastRequest && request.line) {
+                lastRequest.endLine = await this.getEndLine(retrieval, lastRequest.line, request.line - 1);
+            }
+            lastRequest = request;
             suite.add(request);
-        });
+        }
+        if (lastRequest) {
+            lastRequest.endLine = await this.getEndLine(retrieval, lastRequest.line);
+        }
+
 
         return suite;
     }
+
+    async getEndLine(retrieval: Retrieval, start: number, end: number | undefined = undefined): Promise<number | undefined> {
+        let lines = await retrieval.readLines(start, end);
+        if (lines) {
+            lines.reverse();
+            let endLine = end || (start + lines.length - 1);
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
+                if (!line || line.startsWith('#')) {
+                    endLine--;
+                }
+                else {
+                    break;
+                }
+            }
+            return endLine;
+        }
+    }
+}
+
+export class RequestRunner {
+
 }

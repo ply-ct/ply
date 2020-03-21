@@ -9,6 +9,7 @@ export class Request implements Test {
     headers: any;
     body: string | undefined;
     line: number;
+    endLine?: number;
 
     /**
      *
