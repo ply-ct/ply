@@ -27,7 +27,9 @@ describe('Cases', async () => {
         assert.equal(create?.suiteClass, 'MovieCrud');
         assert.equal(create?.method, 'createMovie');
         assert.equal(create?.type, 'case');
-        assert.equal(create?.line, 36);
+        assert.equal(create?.startLine, 36);
+
+        console.log("CREATE: " + JSON.stringify(create, null, 2));
     });
 
 });

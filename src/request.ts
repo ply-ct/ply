@@ -8,7 +8,7 @@ export class Request implements Test {
     method: string;
     headers: any;
     body: string | undefined;
-    line: number;
+    startLine: number;
     endLine?: number;
 
     /**
@@ -25,7 +25,7 @@ export class Request implements Test {
         this.method = obj['method'].toUpperCase().trim();
         this.headers = obj['headers'];
         this.body = obj['body'];
-        this.line = obj['line'] || 0;
+        this.startLine = obj['line'] || 0;
     }
 
     validate(obj: any) {
@@ -58,7 +58,7 @@ export class Request implements Test {
             || upperCase === 'PATCH';
     }
 
-    async ply() {
+    async run() {
         // TODO
     }
 }

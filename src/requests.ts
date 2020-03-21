@@ -41,14 +41,14 @@ export class RequestLoader {
         let lastRequest: Request | undefined = undefined;
         for (const key of Object.keys(obj)) {
             let request = new Request(suite.path, key, obj[key]);
-            if (lastRequest && request.line) {
-                lastRequest.endLine = await this.getEndLine(retrieval, lastRequest.line, request.line - 1);
+            if (lastRequest && request.startLine) {
+                lastRequest.endLine = await this.getEndLine(retrieval, lastRequest.startLine, request.startLine - 1);
             }
             lastRequest = request;
             suite.add(request);
         }
         if (lastRequest) {
-            lastRequest.endLine = await this.getEndLine(retrieval, lastRequest.line);
+            lastRequest.endLine = await this.getEndLine(retrieval, lastRequest.startLine);
         }
 
 

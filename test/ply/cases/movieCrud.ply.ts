@@ -42,7 +42,7 @@ export class MovieCrud {
             throw Error('createMovie not found');
         }
 
-        post.ply();
+        post.run();
     }
 
     @test('read')

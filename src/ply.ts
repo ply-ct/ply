@@ -3,7 +3,7 @@ import { Options, Config, PlyOptions, Defaults } from './options';
 import { Suite } from './suite';
 import { Request } from './request';
 import { Case } from './case';
-import { CaseLoader } from './caseLoader';
+import { CaseLoader } from './cases';
 import ts = require('typescript');
 import { RequestLoader } from './requests';
 
@@ -14,16 +14,17 @@ export interface Test {
     suitePath: string;
     name: string;
     type: TestType
+
     /**
      * zero-based
      */
-    line: number;
+    startLine: number;
     endLine?: number;
 
     /**
      * run the test
      */
-    ply(): Promise<void>;
+    run(): Promise<void>;
 }
 
 /**

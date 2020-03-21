@@ -57,7 +57,8 @@ export class CaseLoader {
                         suiteDecoration.className,
                         caseDecoration.name,
                         caseDecoration.methodName,
-                        sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getStart()).line
+                        sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getStart()).line,
+                        sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getEnd()).line
                     );
                     suite.add(c);
                 }

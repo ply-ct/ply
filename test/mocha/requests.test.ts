@@ -23,7 +23,7 @@ describe('Requests', async () => {
         assert.equal(request.method, 'GET');
         let headers = request.headers;
         assert.equal(headers['Accept'], 'application/json');
-        assert.equal(request.line, 6);
+        assert.equal(request.startLine, 6);
         assert.equal(request.endLine, 10);
     });
 
