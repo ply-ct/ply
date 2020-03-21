@@ -1,31 +1,11 @@
 import * as fs from 'fs';
+import ts = require('typescript');
 import { Options, Config, PlyOptions, Defaults } from './options';
 import { Suite } from './suite';
 import { Request } from './request';
 import { Case } from './case';
 import { CaseLoader } from './cases';
-import ts = require('typescript');
 import { RequestLoader } from './requests';
-
-export type TestType = 'request' | 'case' | 'workflow';
-
-export interface Test {
-
-    suitePath: string;
-    name: string;
-    type: TestType
-
-    /**
-     * zero-based
-     */
-    startLine: number;
-    endLine?: number;
-
-    /**
-     * run the test
-     */
-    run(): Promise<void>;
-}
 
 /**
  * Create with options from config file.

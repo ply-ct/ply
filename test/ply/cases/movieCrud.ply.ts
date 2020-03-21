@@ -37,12 +37,12 @@ export class MovieCrud {
     @test('create')
     async createMovie() {
         this.logger.debug('createMovie');
-        var post = (await this.requestSuite).get('createMovie');
-        if (!post) {
+        var postRequest = (await this.requestSuite).get('createMovie');
+        if (!postRequest) {
             throw Error('createMovie not found');
         }
 
-        post.run();
+        // post.run();
     }
 
     @test('read')

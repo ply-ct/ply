@@ -1,4 +1,4 @@
-import { TestType, Test } from './ply';
+import { TestType, Test } from './test';
 import { Storage } from './storage';
 import { Retrieval } from './retrieval';
 

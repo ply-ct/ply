@@ -3,7 +3,9 @@ import { Suite } from './suite';
 import { Location } from './location';
 import { Retrieval } from './retrieval';
 import { Request } from './request';
+import { Response } from './response';
 import { Storage } from './storage';
+import { Options } from './options';
 import * as yaml from './yaml';
 
 export class RequestLoader {
@@ -74,6 +76,43 @@ export class RequestLoader {
     }
 }
 
-export class RequestRunner {
+export class Writer {
+    constructor(private readonly options: Options) {
+    }
+
+    requestYaml(request: Request): string {
+        return '';
+
+    }
+
+    responseYaml(response: Response): string {
+
+        const headerNames = Object.keys(response.headers).sort();
+        const wanted = this.options.responseHeaders || headerNames;
+        const headers: any = {};
+        wanted.forEach(name => {
+            headers[name] = response.headers[name];
+        });
+
+        let body = response.body;
+        if (this.options.formatResponseBody && response.body && response.body.startsWith('{')) {
+            body = JSON.stringify(JSON.parse(body), this.replacer, this.options.prettyIndent);
+
+        }
+
+        const responseObj = {
+            status: { code: response.status.code, message: response.status.message },
+            headers,
+            body
+        };
+
+        return yaml.dump(responseObj, this.options.prettyIndent);
+    }
+
+    replacer(key: string, value: any): any {
+        return value;
+    }
+
+
 
 }

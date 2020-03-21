@@ -8,63 +8,64 @@ import * as yaml from './yaml';
  */
 export interface Options {
     /**
-     * tests base directory ('.')
+     * Tests base directory ('.')
      */
     testsLocation?: string;
     /**
-     * expected results base dir (testsLocation + '/results/expected')
+     * Expected results base dir (testsLocation + '/results/expected')
      */
     expectedLocation?: string;
     /**
-     * actual results base dir (this.testsLocation + '/results/actual')
+     * Actual results base dir (this.testsLocation + '/results/actual')
      */
     actualLocation?: string;
     /**
-     * log file base dir (this.actualLocation)
+     * Log file base dir (this.actualLocation)
      */
     logLocation?: string;
     /**
-     * request file(s) glob patterns (['**\/*.ply.yaml', ' **\/*.ply.yml'])
+     * Request file(s) glob patterns (['**\/*.ply.yaml', ' **\/*.ply.yml'])
      */
     requestFiles?: string[];
     /**
-     * case files(s) glob patterns (['**\/*.ply.ts'])
+     * Case files(s) glob patterns (['**\/*.ply.ts'])
      */
     caseFiles?: string[];
     /**
-     * exclude file patterns (['**\/{ node_modules, bin, dist, out }\/**'])
+     * Exclude file patterns (['**\/{ node_modules, bin, dist, out }\/**'])
      */
     excludes?: string[];
     /**
-     * verbose output (false)
+     * Verbose output (false)
      */
     verbose?: boolean;
     /**
-     * bail on first failure (false)
+     * Bail on first failure (false)
      */
     bail?: boolean;
     /**
-     * prettify response body -- needed for comparison (true)
+     * Prettify response body and sort JSON properties by name -- needed for verification (true)
      */
     formatResponseBody?: boolean;
     /**
-     * prettification indent (2)
+     * Prettification indent for yaml and response body (2)
      */
-    responseBodyIndent?: number;
+    prettyIndent?: number;
     /**
-     * retain log (false)
+     * Retain log (false) between executions
      */
     retainLog?: boolean;
     /**
-     * capture result (true)
+     * Capture result (true)
      */
     captureResult?: boolean;
     /**
-     * retain result (false)
+     * Retain result (false)
      */
     retainResult?: boolean;
     /**
-     * response headers (['content-type'])
+     * Response headers to be considered in verifying results, ordered as they should appear in results (['content-type']).
+     * If not specified, all headers are included in output yaml in alphabetical order.
      */
     responseHeaders?: string[];
 }
@@ -83,11 +84,11 @@ export interface PlyOptions extends Options {
     verbose: boolean;
     bail: boolean;
     formatResponseBody: boolean;
-    responseBodyIndent: number;
+    prettyIndent: number;
     retainLog: boolean;
     captureResult: boolean;
     retainResult: boolean;
-    responseHeaders: string[];
+    responseHeaders?: string[];
 }
 
 export class Defaults implements PlyOptions {
@@ -101,7 +102,7 @@ export class Defaults implements PlyOptions {
     verbose = false;
     bail = false;
     formatResponseBody = true;
-    responseBodyIndent = 2;
+    prettyIndent = 2;
     retainLog = false;
     captureResult = true;
     retainResult = false;

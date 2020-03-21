@@ -37,7 +37,22 @@ describe('Requests', async () => {
         }, Error, "'requests/bad-request.ply.yaml#missingUrl' -> Bad request url: undefined");
     });
 
-    it('can be run', async () => {
+    it('can do get', async () => {
+        const options: Options = new Config().options;
+        const ply = new Ply(options);
+        const suites = await ply.loadRequests(['test/ply/requests/movie-queries.ply.yaml']);
+        let request = suites[0].get('moviesByYearAndRating')!;
 
+        const values = {
+            "baseUrl": "https://ply-ct.com/demo/api",
+            "year": 1931,
+            "rating": 5
+        };
+
+        const response = await request.run(values);
+        assert.equal(response.status.code, 200);
+        assert.equal(response.headers['content-type'], 'application/json');
+        const movies = JSON.parse(response.body).movies;
+        assert.equal(movies[0].title, 'Dracula');
     });
 });
