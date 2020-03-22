@@ -28,6 +28,9 @@ export interface Cls<T extends Inst> {
 }
 
 export class Injector {
+
+    static SUITE_PREFIX = '__ply_suite_';
+
     constructor(private readonly cls: Cls<any>) {
     }
 
@@ -38,4 +41,15 @@ export class Injector {
     run(method: any): void {
 
     }
+
+//     applySuiteDecorator(name: string, ctor) {
+//     if (ctor[ClassTestUI.suiteSymbol]) {
+//         throw new Error(`@suite ${ctor.name} can not subclass another @suite class, use abstract base class instead.`);
+//     }
+//     ctor[ClassTestUI.suiteSymbol] = true;
+//     if (execution) {
+//         ctor[ClassTestUI.executionSymbol] = execution;
+//     }
+//     theTestUI.runner.suite(name, theTestUI.suiteCallbackFromClass(ctor), theTestUI.getSettings(ctor));
+// }
 }

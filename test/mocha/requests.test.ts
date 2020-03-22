@@ -1,11 +1,11 @@
 import * as assert from 'assert';
-import { Options, Config } from '../../src/options';
+import { PlyOptions, Config } from '../../src/options';
 import { Ply } from '../../src/ply';
 
 describe('Requests', async () => {
 
     it('is loaded from yaml', async () => {
-        const options: Options = new Config().options;
+        const options: PlyOptions = new Config().options;
         const ply = new Ply(options);
         const suites = await ply.loadRequests([
             'test/ply/requests/movie-queries.ply.yaml',
@@ -28,7 +28,7 @@ describe('Requests', async () => {
     });
 
     it('rejects missing url', async () => {
-        const options: Options = new Config().options;
+        const options: PlyOptions = new Config().options;
         const ply = new Ply(options);
         assert.rejects(async () => {
             await ply.loadRequests([
@@ -37,8 +37,8 @@ describe('Requests', async () => {
         }, Error, "'requests/bad-request.ply.yaml#missingUrl' -> Bad request url: undefined");
     });
 
-    it('can do get', async () => {
-        const options: Options = new Config().options;
+    it('can run get', async () => {
+        const options: PlyOptions = new Config().options;
         const ply = new Ply(options);
         const suites = await ply.loadRequests(['test/ply/requests/movie-queries.ply.yaml']);
         let request = suites[0].get('moviesByYearAndRating')!;
@@ -49,7 +49,7 @@ describe('Requests', async () => {
             "rating": 5
         };
 
-        const response = await request.run(values);
+        const response = await request.run(options, values);
         assert.equal(response.status.code, 200);
         assert.equal(response.headers['content-type'], 'application/json');
         const movies = JSON.parse(response.body).movies;

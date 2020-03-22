@@ -1,3 +1,4 @@
+import { PlyOptions } from './options';
 import { Response } from './response';
 
 export type TestType = 'request' | 'case' | 'workflow';
@@ -17,6 +18,6 @@ export interface Test {
     /**
      * run the test
      */
-    run(values: object): Promise<Response>;
+    run(options: PlyOptions, values: object): Promise<Response>;
 }
 

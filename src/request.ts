@@ -1,5 +1,6 @@
 import { TestType, Test } from './test';
 import { Location } from './location';
+import { PlyOptions } from './options';
 import { Response } from './response';
 import * as subst from './subst';
 
@@ -69,7 +70,7 @@ export class Request implements Test {
         }
     }
 
-    async run(values: object): Promise<Response> {
+    async run(options: PlyOptions, values: object): Promise<Response> {
 
         const url = subst.replace(this.url, values);
         if (!url.startsWith('http://') && !url.startsWith('https://')) {

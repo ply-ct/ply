@@ -1,53 +1,46 @@
-import { Ply } from '../../../src/ply';
-import { Options, Config } from '../../../src/options';
-import { Suite } from '../../../src/suite';
-import { Request } from '../../../src/request';
-import { Logger, LogLevel } from '../../../src/logger';
-import { suite, test } from '../../../src/decorators';
+import ply from '../../../src/index';
+import { suite, test } from '../../../src/index';
 
 @suite('movie crud')
 export class MovieCrud {
 
-    readonly ply: Ply;
-    readonly logger: Logger;
-
     constructor() {
-        const options: Options = new Config().options;
-        this.ply = new Ply(options);
-        this.logger = new Logger({
-            level: options.verbose ? LogLevel.debug : LogLevel.info,
-            location: options.logLocation
-        });
     }
 
-    get requestSuite(): Promise<Suite<Request>> {
-        return (async () => {
-            this.logger.info('Loading requests');
-            const suites = await this.ply.loadRequests([
-                'test/ply/requests/movies-api.ply.yaml'
-            ]);
-            return suites[0];
-        })();
-    }
 
-    async before() {
+    /**
+     * Static before() is called just once before any test case runs.
+     */
+    static async before() {
         // TODO: clean up leftover movie
     }
 
-    @test('create')
+    @test('create movie')
     async createMovie() {
-        this.logger.debug('createMovie');
-        var postRequest = (await this.requestSuite).get('createMovie');
-        if (!postRequest) {
-            throw Error('createMovie not found');
-        }
+        ply.logger.debug('create movie');
+        const requestSuite = await ply.loadRequestSuite('test/ply/requests/movies-api.ply.yaml');
+        var postRequest = requestSuite.get('createMovie');
 
         // post.run();
     }
 
-    @test('read')
-    async readMovie() {
-
+    @test('retrieve movie')
+    async retrieveMovie() {
+        ply.logger.debug('retrieve movie');
+        const requestSuite = await ply.loadRequestSuite('test/ply/requests/movies-api.ply.yaml');
+        var getRequest = requestSuite.get('retrieveMovie');
+        if (!getRequest) {
+            throw Error('retrieveMovie not found');
+        }
+        const values = {
+            "baseUrl": "https://ply-ct.com/demo/api",
+            "id": "435b30ad"
+        };
+        const response = await getRequest.run(ply.options, values);
+        ply.logger.info("RESPONSE: " + JSON.stringify(response, null, 2));
+        console.log("MADE IT HERE");
+        ply.logger.info("YES I DID");
+        // throw new Error("WTF");
     }
 
     after() {

@@ -74,10 +74,8 @@ export class CaseLoader {
             let suite: SuiteDecoration | undefined;
             ts.forEachChild(sourceFile, node => {
                 if (ts.isClassDeclaration(node) && node.name && this.isExported(node)) {
-                    console.log("class: " + node.name.text);
                     let suiteDecoration = this.findSuiteDecoration(node as ts.ClassDeclaration);
                     if (suiteDecoration) {
-                        console.log("suite dec: " + suiteDecoration);
                         if (suite) {
                             throw new Error(`Source file ${sourceFile.fileName} cannot contain more than one suite
                                     (${suite.name}, ${node.name.text})`);

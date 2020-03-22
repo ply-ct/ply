@@ -91,7 +91,7 @@ export class Writer {
         const wanted = this.options.responseHeaders || headerNames;
         const headers: any = {};
         wanted.forEach(name => {
-            headers[name] = response.headers[name];
+            headers[name.toLowerCase()] = response.headers[name];
         });
 
         let body = response.body;
