@@ -2,7 +2,7 @@ import { PlyOptions } from './options';
 import { Suite } from './suite';
 import { Location } from './location';
 import { Retrieval } from './retrieval';
-import { Request } from './request';
+import { Request, PlyRequest } from './request';
 import { Response } from './response';
 import { Storage } from './storage';
 import { Options } from './options';
@@ -32,7 +32,7 @@ export class RequestLoader {
         const relPath = retrieval.location.relativeTo(this.options.testsLocation);
         const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
         const runtime = new Runtime(
-            this.options.testsLocation,
+            this.options,
             this.logger,
             retrieval,
             new Retrieval(this.options.expectedLocation + '/' + resultFilePath),
@@ -49,14 +49,14 @@ export class RequestLoader {
         const obj = yaml.load(retrieval.location.path, contents);
         let lastRequest: Request | undefined = undefined;
         for (const key of Object.keys(obj)) {
-            let request = new Request(suite.path, key, obj[key]);
-            if (lastRequest && request.startLine) {
+            let request = new PlyRequest(key, obj[key] as Request);
+            if (lastRequest && lastRequest.startLine && request.startLine) {
                 lastRequest.endLine = await this.getEndLine(retrieval, lastRequest.startLine, request.startLine - 1);
             }
             lastRequest = request;
             suite.add(request);
         }
-        if (lastRequest) {
+        if (lastRequest && lastRequest.startLine) {
             lastRequest.endLine = await this.getEndLine(retrieval, lastRequest.startLine);
         }
 
@@ -116,10 +116,10 @@ export class Writer {
         return yaml.dump(responseObj, this.options.prettyIndent);
     }
 
+    /**
+     * TODO ordering of keys
+     */
     replacer(key: string, value: any): any {
         return value;
     }
-
-
-
 }

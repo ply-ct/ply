@@ -11,6 +11,7 @@ export interface LogOptions {
     retain?: boolean;
     location?: string;
     name?: string;
+    prettyIndent?: number;
 }
 
 export class Logger {
@@ -39,13 +40,23 @@ export class Logger {
             if (level === LogLevel.error) {
                 console.error(message);
                 if (obj) {
-                    console.error(obj);
+                    if (obj.stack) {
+                        console.error(obj);
+                    }
+                    else {
+                        console.error(JSON.stringify(obj, null, this.options.prettyIndent));
+                    }
                 }
             }
             else {
                 console.log(message);
                 if (obj) {
-                    console.log(obj);
+                    if (obj.stack) {
+                        console.log(obj);
+                    }
+                    else {
+                        console.log(JSON.stringify(obj, null, this.options.prettyIndent));
+                    }
                 }
             }
             if (this.storage) {
@@ -54,7 +65,7 @@ export class Logger {
                     if (obj.stack) {
                         this.storage.append(obj.stack + '\n');
                     } else {
-                        this.storage.append(obj + '\n');
+                        this.storage.append(JSON.stringify(obj, null, this.options.prettyIndent) + '\n');
                     }
                 }
             }

@@ -1,0 +1,237 @@
+movieById:
+  request:
+    url: '${baseUrl}/movies/${id}'
+    method: GET
+    headers:
+      Accept: application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      content-type: application/json
+    body: |-
+      {
+        "credits": [
+          {
+            "name": "Alan Crosland",
+            "role": "director"
+          },
+          {
+            "name": "Warren William",
+            "role": "actor"
+          },
+          {
+            "name": "Mary Astor",
+            "role": "actor"
+          },
+          {
+            "name": "Allen Jenkins",
+            "role": "actor"
+          },
+          {
+            "name": "Grant Mitchell",
+            "role": "actor"
+          },
+          {
+            "name": "Helen Trenholme",
+            "role": "actor"
+          }
+        ],
+        "id": "${id}",
+        "poster": "cothd.jpg",
+        "rating": 4,
+        "title": "The Case of the Howling Dog",
+        "webRef": {
+          "ref": "tt0024958",
+          "site": "imdb.com"
+        },
+        "year": 1934
+      }
+moviesByYearAndRating:
+  request:
+    url: '${baseUrl}/movies?year=${year}&rating=${rating}'
+    method: GET
+    headers:
+      Accept: application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      content-type: application/json
+    body: |-
+      {
+        "movies": [
+          {
+            "credits": [
+              {
+                "name": "Tod Browning",
+                "role": "director"
+              },
+              {
+                "name": "Bela Lugosi",
+                "role": "actor"
+              },
+              {
+                "name": "Helen Chandler",
+                "role": "actor"
+              },
+              {
+                "name": "David Manners",
+                "role": "actor"
+              },
+              {
+                "name": "Dwight Frye",
+                "role": "actor"
+              },
+              {
+                "name": "Edward Van Sloan",
+                "role": "actor"
+              }
+            ],
+            "description": "The only thing more amazing than Lugosi's out-of-body performance is the fact that the finest horror movie ever made was filmed within 2 years of the advent of talking pictures.",
+            "id": "8f180e68",
+            "poster": "drac.jpg",
+            "rating": ${rating},
+            "title": "Dracula",
+            "webRef": {
+              "ref": "tt0021814",
+              "site": "imdb.com"
+            },
+            "year": ${year}
+          },
+          {
+            "credits": [
+              {
+                "name": "James Whale",
+                "role": "director"
+              },
+              {
+                "name": "Boris Karloff",
+                "role": "actor"
+              },
+              {
+                "name": "Colin Clive",
+                "role": "actor"
+              },
+              {
+                "name": "Mae Clarke",
+                "role": "actor"
+              },
+              {
+                "name": "John Boles",
+                "role": "actor"
+              },
+              {
+                "name": "Dwight Frye",
+                "role": "actor"
+              }
+            ],
+            "description": "Frankenstein solidified Universal's place as the premier horror studio of the era, and stands as the definitive American take on the school of German Expressionism.",
+            "id": "eec22a97",
+            "poster": "frank.jpg",
+            "rating": ${rating},
+            "title": "Frankenstein",
+            "webRef": {
+              "ref": "tt0021884",
+              "site": "imdb.com"
+            },
+            "year": ${year}
+          }
+        ]
+      }
+moviesQuery:
+  request:
+    url: >-
+      ${baseUrl}/movies?${query}
+    method: GET
+    headers:
+      Accept: application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      content-type: application/json
+    body: |-
+      {
+        "movies": [
+          {
+            "credits": [
+              {
+                "name": "James Whale",
+                "role": "director"
+              },
+              {
+                "name": "Boris Karloff",
+                "role": "actor"
+              },
+              {
+                "name": "Colin Clive",
+                "role": "actor"
+              },
+              {
+                "name": "Valerie Hobson",
+                "role": "actor"
+              },
+              {
+                "name": "Ernest Thesiger",
+                "role": "actor"
+              },
+              {
+                "name": "Dwight Frye",
+                "role": "actor"
+              }
+            ],
+            "description": "James Whale's poignant, horrifying, hilarious masterpiece demonstrates his genius and surpasses the original as a cathartic, visionary tour de force.",
+            "id": "f6b3c56c",
+            "poster": "tbof.jpg",
+            "rating": 5,
+            "title": "Bride of Frankenstein",
+            "webRef": {
+              "ref": "tt0026138",
+              "site": "imdb.com"
+            },
+            "year": 1935
+          },
+          {
+            "credits": [
+              {
+                "name": "Alfred Hitchcock",
+                "role": "director"
+              },
+              {
+                "name": "Robert Donat",
+                "role": "actor"
+              },
+              {
+                "name": "Madeleine Carroll",
+                "role": "actor"
+              },
+              {
+                "name": "Lucie Mannheim",
+                "role": "actor"
+              },
+              {
+                "name": "Godfrey Tearle",
+                "role": "actor"
+              },
+              {
+                "name": "Peggy Ashcroft",
+                "role": "actor"
+              }
+            ],
+            "description": "The best of Hitchcock's early features, with a truly thrilling series of chase sequences and a richly developed romantic interest; only slightly sullied by the ludicrous shenanigans during the last five minutes.",
+            "id": "4a4b04d",
+            "poster": "ttns.jpg",
+            "rating": 4.5,
+            "title": "The Thirty-Nine Steps",
+            "webRef": {
+              "ref": "tt0026029",
+              "site": "imdb.com"
+            },
+            "year": 1935
+          }
+        ]
+      }

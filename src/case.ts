@@ -2,30 +2,38 @@ import { TestType, Test } from './test';
 import { Response } from './response';
 import { Result } from './result';
 import { Runtime } from './runtime';
+import * as path from 'path';
 
-export class Case implements Test {
+export interface Case extends Test {
+    readonly suiteClass: string;
+    readonly method: string;
+
+    invoke(runtime: Runtime, values: object): Promise<Response>;
+}
+
+export class PlyCase implements Case {
     type = 'case' as TestType;
 
-    constructor(readonly suitePath: string, readonly suiteClass: string,
-        readonly name: string, readonly method: string, readonly startLine: number = 0, readonly endLine?: number) {
-    }
-
-    get path() {
-        return this.suitePath + '#' + this.name;
+    constructor(
+        readonly name: string,
+        readonly suiteClass: string,
+        readonly method: string,
+        readonly startLine?: number,
+        readonly endLine?: number) {
     }
 
     async invoke(runtime: Runtime, values: object): Promise<Response> {
-        const testFile = runtime.testsLocation.toString() + '/' + this.suitePath;
+        const testFile = runtime.testsLocation.toString() + '/' + runtime.suitePath;
         const mod = await import(testFile);
         const clsName = Object.keys(mod).find(key => key === this.suiteClass);
         if (!clsName) {
-            throw new Error(`Suite class ${this.suiteClass} not found in ${this.suitePath}`);
+            throw new Error(`Suite class ${this.suiteClass} not found in ${testFile}`);
         }
 
         const inst = new mod[clsName]();
         const method = inst[this.method];
         if (!method) {
-            throw new Error(`Case method ${this.method} not found in suite class ${this.suitePath}`);
+            throw new Error(`Case method ${this.method} not found in suite class ${runtime.retrieval.location}`);
         }
 
         await method.call(inst, values);

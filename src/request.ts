@@ -1,51 +1,38 @@
 import { TestType, Test } from './test';
-import { Location } from './location';
 import { Response } from './response';
 import { Result } from './result';
 import { Runtime } from './runtime';
 import * as subst from './subst';
+import { Writer } from './requests';
 
-export class Request implements Test {
+export interface Request extends Test {
+    url: string;
+    method: string;
+    headers: object;
+    body: string | undefined;
+
+    submit(values: object): Promise<Response>;
+}
+
+export class PlyRequest implements Request {
     type = 'request' as TestType;
-
     url: string;
     method: string;
     headers: any;
     body: string | undefined;
-    startLine: number;
+    startLine?: number;
     endLine?: number;
 
     /**
-     *
-     * @param suitePath relative to tests location (forward slashes)
      * @param name test name
      * @param obj object to parse for contents
      */
-    constructor(readonly suitePath: string, readonly name: string, obj: any) {
-
-        this.validateObj(obj);
-
+    constructor(readonly name: string, obj: Request) {
         this.url = obj['url'].trim();
         this.method = obj['method'].toUpperCase().trim();
-        this.headers = obj['headers'];
+        this.headers = obj['headers'] || {};
         this.body = obj['body'];
-        this.startLine = obj['line'] || 0;
-    }
-
-    validateObj(obj: any) {
-        if (!obj) {
-            throw new Error("'" + this.path + "' -> Request object is required");
-        }
-        else if (!obj['url'] || (!obj['url'].startsWith('${') && !(new Location(obj['url']).isUrl))) {
-            throw new Error("'" + this.path + "' -> Bad request url: " + obj['url']);
-        }
-        else if (!(typeof (obj['method']) === 'string')) {
-            throw new Error("'" + this.path + "' -> Bad request method: " + obj['method']);
-        }
-    }
-
-    get path() {
-        return this.suitePath + '#' + this.name;
+        this.startLine = obj['startLine'] || 0;
     }
 
     isSupportedMethod(method: string): boolean {
@@ -72,14 +59,14 @@ export class Request implements Test {
     }
 
     async submit(values: object): Promise<Response> {
+        return this.doSubmit(this.toObject(values));
+    }
 
-        const url = subst.replace(this.url, values);
-        if (!url.startsWith('http://') && !url.startsWith('https://')) {
-            throw new Error('Invalid url: ' + url);
-        }
-
+    private async doSubmit(requestObj: Request) {
         const before = new Date().getTime();
-        const response = await this.fetch(url, this.initObj(values));
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { url, ...fetchRequest } = requestObj;
+        const response = await this.fetch(requestObj.url, fetchRequest);
         const status = { code: response.status, message: response.statusText };
         const headers = this.responseHeaders(response.headers);
         const body = await response.text();
@@ -88,31 +75,32 @@ export class Request implements Test {
     }
 
     /**
-     * Return fetch init object
+     * Request object with substituted values
      */
-    private initObj(values: object): object {
+    private toObject(values?: object): Request {
+        const url = subst.replace(this.url, values);
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            throw new Error('Invalid url: ' + url);
+        }
         const method = subst.replace(this.method, values);
         if (!this.isSupportedMethod(method)) {
             throw new Error('Unsupported method: ' + method);
         }
+        const headers: any = {};
+        Object.keys(this.headers).forEach(name => {
+            headers[name] = subst.replace(this.headers[name], values);
+        });
+        const body = this.body ? subst.replace(this.body, values) : undefined;
+        const noImpl = () => { throw new Error('Not implemented'); };
         return {
+            name: this.name,
+            url,
             method,
-            headers: this.requestHeaders(values),
-            body: this.body ? subst.replace(this.body, values) : undefined
-        };
-    }
-
-    /**
-     * Convert to ES fetch headers, performing substitutions
-     */
-    private requestHeaders(values: object): any {
-        if (this.headers) {
-            const obj: any = {};
-            Object.keys(this.headers).forEach(name => {
-                obj[name] = subst.replace(this.headers[name], values);
-            });
-            return obj;
-        }
+            headers,
+            body,
+            run: noImpl,
+            submit: noImpl
+         };
     }
 
     private responseHeaders(headers: Headers): object {
@@ -123,7 +111,28 @@ export class Request implements Test {
         return obj;
     }
 
+    /**
+     * Runs, writes actual results, and verifies vs expected results.
+     * @returns result object with success, failure or error
+     */
     async run(runtime: Runtime, values: object): Promise<Result> {
-        throw new Error('Method not implemented.');
+        const requestObj = this.toObject(values);
+        runtime.logger.debug('Request:', requestObj);
+        runtime.actual.remove();
+        const response = this.submit(values);
+        const output: any = {};
+        output[this.name] = {
+            request: this.toObject(),
+            response
+        };
+        runtime.actual.write(this.name);
+        const writer = new Writer(runtime.options);
+        runtime.actual.write(writer.requestYaml(this));
+
+        runtime.logger.debug('Response:', response);
+        //runtime.actual.write(writer.responseYaml(response));
+
+        return new Result();
+
     }
 }

@@ -6,15 +6,12 @@ export type TestType = 'request' | 'case' | 'workflow';
 
 export interface Test {
 
-    suitePath: string;
     name: string;
-    type: TestType;
-    path: string;
 
     /**
      * zero-based
      */
-    startLine: number;
+    startLine?: number;
     endLine?: number;
 
     /**

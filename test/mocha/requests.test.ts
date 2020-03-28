@@ -1,6 +1,7 @@
 import * as assert from 'assert';
 import { PlyOptions, Config } from '../../src/options';
 import { Ply } from '../../src/ply';
+import { PlyRequest } from '../../src/request';
 
 describe('Requests', async () => {
 
@@ -16,9 +17,7 @@ describe('Requests', async () => {
         assert.equal(suites[0].runtime.actual.location.path,
             'test/ply/results/actual/requests/movie-queries.ply.yaml');
 
-        let request = suites[0].get('moviesByYearAndRating')!;
-        assert.ok(request !== null);
-        assert.equal(request.suitePath, 'requests/movie-queries.ply.yaml');
+        let request = suites[0].get('moviesByYearAndRating') as PlyRequest;
         assert.equal(request.name, 'moviesByYearAndRating');
         assert.equal(request.method, 'GET');
         let headers = request.headers;

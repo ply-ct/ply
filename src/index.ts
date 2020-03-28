@@ -1,8 +1,8 @@
 import { create } from './ply';
 export { Ply } from './ply';
 export { Test } from './test';
-export { Request } from './request';
-export { Case } from './case';
+export { Request as Request } from './request';
+export { Case as Case } from './case';
 export { Location } from './location';
 export { Logger } from './logger';
 export { Options, PlyOptions, Defaults, Config } from './options';

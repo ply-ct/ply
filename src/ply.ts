@@ -25,7 +25,8 @@ export class Ply {
         this.options = Object.assign({}, new Defaults(), options);
         this.logger = new Logger({
             level: options.verbose ? LogLevel.debug : LogLevel.info,
-            location: options.logLocation
+            location: options.logLocation,
+            prettyIndent: this.options.prettyIndent
         });
     }
 

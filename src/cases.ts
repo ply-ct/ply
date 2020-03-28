@@ -2,7 +2,7 @@ import * as ts from 'typescript';
 import { PlyOptions } from './options';
 import { Location } from './location';
 import { Suite } from './suite';
-import { Case } from './case';
+import { Case, PlyCase } from './case';
 import { Retrieval } from './retrieval';
 import { Storage } from './storage';
 import { Logger } from './logger';
@@ -43,7 +43,7 @@ export class CaseLoader {
                 const relPath = retrieval.location.relativeTo(this.options.testsLocation);
                 const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
                 const runtime = new Runtime(
-                    this.options.testsLocation,
+                    this.options,
                     this.logger,
                     retrieval,
                     new Retrieval(this.options.expectedLocation + '/' + resultFilePath),
@@ -59,10 +59,9 @@ export class CaseLoader {
                 );
 
                 for (let caseDecoration of this.findCases(suiteDecoration)) {
-                    let c = new Case(
-                        relPath,
-                        suiteDecoration.className,
+                    let c = new PlyCase(
                         caseDecoration.name,
+                        suiteDecoration.className,
                         caseDecoration.methodName,
                         sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getStart()).line,
                         sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getEnd()).line

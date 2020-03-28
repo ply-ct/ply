@@ -3,6 +3,10 @@ export interface Status {
     message: string;
 }
 
+export interface ResponseObject {
+
+}
+
 export class Response {
 
     constructor(
@@ -11,4 +15,5 @@ export class Response {
         readonly body: string,
         readonly time: number) {
     }
+
 }
