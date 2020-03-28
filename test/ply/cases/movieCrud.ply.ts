@@ -36,7 +36,7 @@ export class MovieCrud {
             "baseUrl": "https://ply-ct.com/demo/api",
             "id": "435b30ad"
         };
-        const response = await getRequest.run(ply.options, values);
+        const response = await getRequest.submit(values);
         ply.logger.info("RESPONSE: " + JSON.stringify(response, null, 2));
         console.log("MADE IT HERE");
         ply.logger.info("YES I DID");

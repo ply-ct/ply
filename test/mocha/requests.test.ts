@@ -13,7 +13,7 @@ describe('Requests', async () => {
         ]);
 
         assert.equal(suites.length, 2);
-        assert.equal(suites[0].actual.location.path,
+        assert.equal(suites[0].runtime.actual.location.path,
             'test/ply/results/actual/requests/movie-queries.ply.yaml');
 
         let request = suites[0].get('moviesByYearAndRating')!;
@@ -37,7 +37,7 @@ describe('Requests', async () => {
         }, Error, "'requests/bad-request.ply.yaml#missingUrl' -> Bad request url: undefined");
     });
 
-    it('can run get', async () => {
+    it('can submit get', async () => {
         const options: PlyOptions = new Config().options;
         const ply = new Ply(options);
         const suites = await ply.loadRequests(['test/ply/requests/movie-queries.ply.yaml']);
@@ -49,7 +49,7 @@ describe('Requests', async () => {
             "rating": 5
         };
 
-        const response = await request.run(options, values);
+        const response = await request.submit(values);
         assert.equal(response.status.code, 200);
         assert.equal(response.headers['content-type'], 'application/json');
         const movies = JSON.parse(response.body).movies;

@@ -6,11 +6,13 @@ import { Request } from './request';
 import { Response } from './response';
 import { Storage } from './storage';
 import { Options } from './options';
+import { Runtime } from './runtime';
+import { Logger } from './logger';
 import * as yaml from './yaml';
 
 export class RequestLoader {
 
-    constructor(readonly locations: string[], private options: PlyOptions) {
+    constructor(readonly locations: string[], private options: PlyOptions, private logger: Logger) {
     }
 
     async load(): Promise<Suite<Request>[]> {
@@ -29,14 +31,19 @@ export class RequestLoader {
 
         const relPath = retrieval.location.relativeTo(this.options.testsLocation);
         const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
+        const runtime = new Runtime(
+            this.options.testsLocation,
+            this.logger,
+            retrieval,
+            new Retrieval(this.options.expectedLocation + '/' + resultFilePath),
+            new Storage(this.options.actualLocation + '/' + resultFilePath)
+        );
 
         const suite = new Suite<Request>(
             retrieval.location.base,
             'request',
             relPath,
-            retrieval,
-            new Retrieval(this.options.expectedLocation + '/' + resultFilePath),
-            new Storage(this.options.actualLocation + '/' + resultFilePath)
+            runtime
         );
 
         const obj = yaml.load(retrieval.location.path, contents);

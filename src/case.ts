@@ -1,8 +1,7 @@
-import * as path from 'path';
-import * as process from 'process';
 import { TestType, Test } from './test';
-import { PlyOptions } from './options';
 import { Response } from './response';
+import { Result } from './result';
+import { Runtime } from './runtime';
 
 export class Case implements Test {
     type = 'case' as TestType;
@@ -15,12 +14,8 @@ export class Case implements Test {
         return this.suitePath + '#' + this.name;
     }
 
-    async run(options: PlyOptions, values: object): Promise<Response> {
-        let testsLocation = options.testsLocation;
-        if (!path.isAbsolute(testsLocation)) {
-            testsLocation = path.resolve(process.cwd() + '/' + testsLocation);
-        }
-        const testFile = testsLocation.replace(/\\/g, '/') + '/' + this.suitePath;
+    async invoke(runtime: Runtime, values: object): Promise<Response> {
+        const testFile = runtime.testsLocation.toString() + '/' + this.suitePath;
         const mod = await import(testFile);
         const clsName = Object.keys(mod).find(key => key === this.suiteClass);
         if (!clsName) {
@@ -80,8 +75,9 @@ export class Case implements Test {
 
         // let cls: any = constructor;
         // let inst = new cls();
-
-
     }
 
+    async run(runtime: Runtime, values: object): Promise<Result> {
+        throw new Error('Method not implemented.');
+    }
 }

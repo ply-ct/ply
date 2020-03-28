@@ -1,5 +1,6 @@
-import { PlyOptions } from './options';
-import { Response } from './response';
+import { Result } from './result';
+import { Runtime } from './runtime';
+
 
 export type TestType = 'request' | 'case' | 'workflow';
 
@@ -7,7 +8,8 @@ export interface Test {
 
     suitePath: string;
     name: string;
-    type: TestType
+    type: TestType;
+    path: string;
 
     /**
      * zero-based
@@ -18,6 +20,6 @@ export interface Test {
     /**
      * run the test
      */
-    run(options: PlyOptions, values: object): Promise<Response>;
+    run(runtime: Runtime, values: object): Promise<Result>;
 }
 

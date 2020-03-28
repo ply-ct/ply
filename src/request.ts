@@ -1,7 +1,8 @@
 import { TestType, Test } from './test';
 import { Location } from './location';
-import { PlyOptions } from './options';
 import { Response } from './response';
+import { Result } from './result';
+import { Runtime } from './runtime';
 import * as subst from './subst';
 
 export class Request implements Test {
@@ -70,7 +71,7 @@ export class Request implements Test {
         }
     }
 
-    async run(options: PlyOptions, values: object): Promise<Response> {
+    async submit(values: object): Promise<Response> {
 
         const url = subst.replace(this.url, values);
         if (!url.startsWith('http://') && !url.startsWith('https://')) {
@@ -120,5 +121,9 @@ export class Request implements Test {
             obj[name] = value;
         });
         return obj;
+    }
+
+    async run(runtime: Runtime, values: object): Promise<Result> {
+        throw new Error('Method not implemented.');
     }
 }

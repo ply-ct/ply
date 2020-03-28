@@ -5,6 +5,8 @@ import { Suite } from './suite';
 import { Case } from './case';
 import { Retrieval } from './retrieval';
 import { Storage } from './storage';
+import { Logger } from './logger';
+import { Runtime } from './runtime';
 
 interface SuiteDecoration {
     name: string;
@@ -25,7 +27,7 @@ export class CaseLoader {
     private program: ts.Program;
     private checker: ts.TypeChecker;
 
-    constructor(sourceFiles: string[], private options: PlyOptions, compilerOptions: ts.CompilerOptions) {
+    constructor(sourceFiles: string[], private options: PlyOptions, private logger: Logger, compilerOptions: ts.CompilerOptions) {
         this.program = ts.createProgram(sourceFiles, compilerOptions);
         this.checker = this.program.getTypeChecker();
     }
@@ -40,14 +42,19 @@ export class CaseLoader {
                 let retrieval = new Retrieval(sourceFile.fileName);
                 const relPath = retrieval.location.relativeTo(this.options.testsLocation);
                 const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
+                const runtime = new Runtime(
+                    this.options.testsLocation,
+                    this.logger,
+                    retrieval,
+                    new Retrieval(this.options.expectedLocation + '/' + resultFilePath),
+                    new Storage(this.options.actualLocation + '/' + resultFilePath)
+                );
 
                 const suite = new Suite<Case>(
                     suiteDecoration.name,
                     'case',
                     relPath,
-                    retrieval,
-                    new Retrieval(this.options.expectedLocation + '/' + resultFilePath),
-                    new Storage(this.options.actualLocation + '/' + resultFilePath),
+                    runtime,
                     sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getStart()).line
                 );
 

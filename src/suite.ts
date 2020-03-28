@@ -1,6 +1,6 @@
 import { TestType, Test } from './test';
-import { Storage } from './storage';
-import { Retrieval } from './retrieval';
+import { Result } from './result';
+import { Runtime } from './runtime';
 
 interface Tests<T extends Test> {
     [key: string]: T
@@ -21,6 +21,7 @@ export class Suite<T extends Test> {
      * @param name suite name
      * @param type request/case/workflow
      * @param path relative path from tests location (forward slashes)
+     * @param runtime info
      * @param retrieval suite retrieval
      * @param expected expected results retrieval
      * @param actual actual results storage
@@ -30,9 +31,7 @@ export class Suite<T extends Test> {
         readonly name: string,
         readonly type: TestType,
         readonly path: string,
-        readonly retrieval: Retrieval,
-        readonly expected: Retrieval,
-        readonly actual: Storage,
+        readonly runtime: Runtime,
         readonly line: number = 0,
         tests: T[] = []) {
             for (const test of tests) {
@@ -51,5 +50,17 @@ export class Suite<T extends Test> {
     getAll(): T[] {
         return Object.values(this.tests);
     }
+
+    async run(name: string): Promise<Result> {
+        let test = this.get(name);
+        if (!test) {
+            throw new Error(`Test not found: ${name}`);
+        }
+        return test.run(this.runtime, {});
+    }
+
+    // async runAll(): Promise<Result> {
+
+    // }
 }
 

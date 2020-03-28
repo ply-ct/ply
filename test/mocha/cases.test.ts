@@ -16,7 +16,7 @@ describe('Cases', async () => {
         assert.equal(suites[0].type, 'case');
         assert.equal(suites[0].path, 'cases/movieCrud.ply.ts');
         assert.equal(suites[0].line, 3);
-        const suiteRetrieval = suites[0].retrieval;
+        const suiteRetrieval = suites[0].runtime.retrieval;
         assert.equal(suiteRetrieval.location.path, 'test/ply/cases/movieCrud.ply.ts');
 
         const create = suites[0].get('create movie');
@@ -30,7 +30,7 @@ describe('Cases', async () => {
         assert.equal(create?.startLine, 17);
     });
 
-    it('can run retrieve', async () => {
+    it('can invoke retrieve', async () => {
         const options: PlyOptions = new Config().options;
         const ply = new Ply(options);
         const suites = await ply.loadCases(['test/ply/cases/movieCrud.ply.ts']);
@@ -38,9 +38,9 @@ describe('Cases', async () => {
         let testCase = suites[0].get('retrieve movie')!;
 
 
-        const globalValues = {}
+        const globalValues = {};
 
-        const response = await testCase.run(options, globalValues);
+        const response = await testCase.invoke(suites[0].runtime, globalValues);
         assert.equal(response.status.code, 200);
         assert.equal(response.headers['content-type'], 'application/json');
     });

@@ -34,7 +34,7 @@ export class Ply {
      * @param locations can be URLs or file paths
      */
     async loadRequests(locations: string[]): Promise<Suite<Request>[]> {
-        const requestLoader = new RequestLoader(locations, this.options);
+        const requestLoader = new RequestLoader(locations, this.options, this.logger);
         return requestLoader.load();
     }
 
@@ -59,7 +59,7 @@ export class Ply {
         const configContents = fs.readFileSync(configPath).toString();
         const compilerOptions = ts.parseConfigFileTextToJson(configPath, configContents);
 
-        const caseLoader = new CaseLoader(files, this.options, compilerOptions as ts.CompilerOptions);
+        const caseLoader = new CaseLoader(files, this.options, this.logger, compilerOptions as ts.CompilerOptions);
 
         const suites = caseLoader.load();
         return suites;
