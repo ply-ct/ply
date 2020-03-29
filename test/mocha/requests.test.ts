@@ -36,7 +36,7 @@ describe('Requests', async () => {
         }, Error, "'requests/bad-request.ply.yaml#missingUrl' -> Bad request url: undefined");
     });
 
-    it('can submit get', async () => {
+    it('can run get', async () => {
         const options: PlyOptions = new Config().options;
         const ply = new Ply(options);
         const suites = await ply.loadRequests(['test/ply/requests/movie-queries.ply.yaml']);
@@ -50,7 +50,7 @@ describe('Requests', async () => {
 
         const result = await suite.run('moviesByYearAndRating', values);
         const outcome = result.outcomes[0];
-        assert.equal(outcome.name, 'movieByYearAndRating');
+        assert.equal(outcome.name, 'moviesByYearAndRating');
         assert.equal(outcome.response.status.code, 200);
         assert.equal(outcome.response.headers['content-type'], 'application/json');
         const responseBody = outcome.response.body;

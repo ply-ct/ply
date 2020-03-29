@@ -74,7 +74,7 @@ export class Suite<T extends Test> {
         }
         else {
             this.runtime.values = values as object;
-            const test = this.get(name);
+            const test = this.get(nameOrValues);
             if (!test) {
                 throw new Error(`Test not found: ${name}`);
             }
@@ -86,7 +86,7 @@ export class Suite<T extends Test> {
 
     private async runTest(test: T): Promise<Result> {
         const result = await test.run(this.runtime);
-        this.runtime.actual.append(yaml.dump(result.outcomesObject, this.runtime.options.prettyIndent));
+        this.runtime.actual.append(yaml.dump(result.outcomesObject(), this.runtime.options.prettyIndent));
         // TODO compare actual vs expected
         return result;
     }
