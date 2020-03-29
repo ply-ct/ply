@@ -1,14 +1,10 @@
 import { TestType, Test } from './test';
-import { Response } from './response';
-import { Result } from './result';
 import { Runtime } from './runtime';
-import * as path from 'path';
+import { Result } from './result';
 
 export interface Case extends Test {
     readonly suiteClass: string;
     readonly method: string;
-
-    invoke(runtime: Runtime, values: object): Promise<Response>;
 }
 
 export class PlyCase implements Case {
@@ -22,7 +18,7 @@ export class PlyCase implements Case {
         readonly endLine?: number) {
     }
 
-    async invoke(runtime: Runtime, values: object): Promise<Response> {
+    async run(runtime: Runtime): Promise<Result> {
         const testFile = runtime.testsLocation.toString() + '/' + runtime.suitePath;
         const mod = await import(testFile);
         const clsName = Object.keys(mod).find(key => key === this.suiteClass);
@@ -36,24 +32,9 @@ export class PlyCase implements Case {
             throw new Error(`Case method ${this.method} not found in suite class ${runtime.retrieval.location}`);
         }
 
-        await method.call(inst, values);
+        await method.call(inst, runtime.values);
 
-        // TODO probably don't need to return a response
-        return new Response(
-            { code: 200, message: 'ok' },
-            { 'content-type': 'application/json' },
-            '',
-            0
-        );
-
-        // Promise.resolve(method.call(inst, values))
-        // .then(x => {
-        //     console.log("X: " + x);
-        // })
-        // .catch(err => {
-        //     console.log(err);
-        //     throw err;
-        // });
+        return new Result();
 
         // const injector = new Injector(cls);
         // const inst = injector.create();
@@ -83,9 +64,5 @@ export class PlyCase implements Case {
 
         // let cls: any = constructor;
         // let inst = new cls();
-    }
-
-    async run(runtime: Runtime, values: object): Promise<Result> {
-        throw new Error('Method not implemented.');
     }
 }

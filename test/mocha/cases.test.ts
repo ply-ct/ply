@@ -34,13 +34,15 @@ describe('Cases', async () => {
         const ply = new Ply(options);
         const suites = await ply.loadCases(['test/ply/cases/movieCrud.ply.ts']);
         assert.equal(suites.length, 1);
+        const suite = suites[0];
         let testCase = suites[0].get('retrieve movie') as PlyCase;
 
 
         const globalValues = {};
 
-        const response = await testCase.invoke(suites[0].runtime, globalValues);
-        assert.equal(response.status.code, 200);
-        assert.equal(response.headers['content-type'], 'application/json');
+        const result = await suite.run('retrieve movie', globalValues);
+        const outcome = result.outcomes[0];
+        assert.equal(outcome.response.status.code, 200);
+        assert.equal(outcome.response.headers['content-type'], 'application/json');
     });
 });

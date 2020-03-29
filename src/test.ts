@@ -1,6 +1,5 @@
-import { Result } from './result';
 import { Runtime } from './runtime';
-
+import { Result } from './result';
 
 export type TestType = 'request' | 'case' | 'workflow';
 
@@ -16,7 +15,8 @@ export interface Test {
 
     /**
      * run the test
+     * @returns result with request outcomes and status of 'Pending'
      */
-    run(runtime: Runtime, values: object): Promise<Result>;
+    run(runtime: Runtime): Promise<Result>;
 }
 

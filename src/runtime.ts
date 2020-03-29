@@ -9,6 +9,7 @@ import { PlyOptions } from './options';
 export class Runtime {
 
     testsLocation: Location;
+    values: object = {};
 
     constructor(
         readonly options: PlyOptions,

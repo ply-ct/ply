@@ -40,7 +40,7 @@ describe('Requests', async () => {
         const options: PlyOptions = new Config().options;
         const ply = new Ply(options);
         const suites = await ply.loadRequests(['test/ply/requests/movie-queries.ply.yaml']);
-        let request = suites[0].get('moviesByYearAndRating')!;
+        let suite = suites[0];
 
         const values = {
             "baseUrl": "https://ply-ct.com/demo/api",
@@ -48,10 +48,14 @@ describe('Requests', async () => {
             "rating": 5
         };
 
-        const response = await request.submit(values);
-        assert.equal(response.status.code, 200);
-        assert.equal(response.headers['content-type'], 'application/json');
-        const movies = JSON.parse(response.body).movies;
+        const result = await suite.run('moviesByYearAndRating', values);
+        const outcome = result.outcomes[0];
+        assert.equal(outcome.name, 'movieByYearAndRating');
+        assert.equal(outcome.response.status.code, 200);
+        assert.equal(outcome.response.headers['content-type'], 'application/json');
+        const responseBody = outcome.response.body;
+        assert.ok(responseBody);
+        const movies = JSON.parse(responseBody!).movies;
         assert.equal(movies[0].title, 'Dracula');
     });
 });

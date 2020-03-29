@@ -15,29 +15,24 @@ export class MovieCrud {
         // TODO: clean up leftover movie
     }
 
-    @test('create movie')
+    @test('add new movie')
     async createMovie() {
-        ply.logger.debug('create movie');
+        ply.logger.debug('add new movie');
         const requestSuite = await ply.loadRequestSuite('test/ply/requests/movies-api.ply.yaml');
         var postRequest = requestSuite.get('createMovie');
 
         // post.run();
     }
 
-    @test('retrieve movie')
-    async retrieveMovie() {
-        ply.logger.debug('retrieve movie');
-        const requestSuite = await ply.loadRequestSuite('test/ply/requests/movies-api.ply.yaml');
-        const result = requestSuite.run('retrieveMovie');
-        const values = {
-            "baseUrl": "https://ply-ct.com/demo/api",
-            "id": "435b30ad"
-        };
-        // const response = await getRequest.submit(values);
-        // ply.logger.info("RESPONSE: " + JSON.stringify(response, null, 2));
-        console.log("MADE IT HERE");
-        ply.logger.info("YES I DID");
-        // throw new Error("WTF");
+    @test('update rating')
+    async updateRating() {
+        // two requests: update and confirm
+
+    }
+
+    @test('removeMovie')
+    async deleteMovie() {
+        // two requests: delete and confirm
     }
 
     after() {

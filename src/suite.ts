@@ -1,6 +1,7 @@
 import { TestType, Test } from './test';
 import { Result } from './result';
 import { Runtime } from './runtime';
+import * as yaml from './yaml';
 
 interface Tests<T extends Test> {
     [key: string]: T
@@ -47,20 +48,48 @@ export class Suite<T extends Test> {
         return this.tests[name];
     }
 
-    getAll(): T[] {
+    all(): T[] {
         return Object.values(this.tests);
     }
 
-    async run(name: string): Promise<Result> {
-        let test = this.get(name);
-        if (!test) {
-            throw new Error(`Test not found: ${name}`);
+    /**
+     * Run test(s), write request/response to actual results, and verify vs expected.
+     * @param values runtime values for substitution
+     * @returns result indicating outcome
+     */
+    async run(values: object): Promise<Result>;
+    async run(name: string, values: object): Promise<Result>;
+    async run(nameOrValues: object | string, values?: object): Promise<Result> {
+        if (typeof nameOrValues === 'object') {
+            this.runtime.values = nameOrValues;
+            this.runtime.actual.remove();
+            // tests are run sequentially
+            for (const test of this.all()) {
+                const result = await this.runTest(test);
+
+
+            }
+            // TODO accumulate result
+            return new Result();
         }
-        return test.run(this.runtime, {});
+        else {
+            this.runtime.values = values as object;
+            const test = this.get(name);
+            if (!test) {
+                throw new Error(`Test not found: ${name}`);
+            }
+            this.runtime.actual.remove();
+            const result = this.runTest(test);
+            return result;
+        }
     }
 
-    // async runAll(): Promise<Result> {
+    private async runTest(test: T): Promise<Result> {
+        const result = await test.run(this.runtime);
+        this.runtime.actual.append(yaml.dump(result.outcomesObject, this.runtime.options.prettyIndent));
+        // TODO compare actual vs expected
+        return result;
+    }
 
-    // }
 }
 

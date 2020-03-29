@@ -1,17 +1,14 @@
 import { TestType, Test } from './test';
-import { Response } from './response';
-import { Result } from './result';
+import { Response, PlyResponse } from './response';
 import { Runtime } from './runtime';
+import { Result } from './result';
 import * as subst from './subst';
-import { Writer } from './requests';
 
 export interface Request extends Test {
     url: string;
     method: string;
     headers: object;
     body: string | undefined;
-
-    submit(values: object): Promise<Response>;
 }
 
 export class PlyRequest implements Request {
@@ -59,7 +56,7 @@ export class PlyRequest implements Request {
     }
 
     async submit(values: object): Promise<Response> {
-        return this.doSubmit(this.toObject(values));
+        return this.doSubmit(this.requestObject(values));
     }
 
     private async doSubmit(requestObj: Request) {
@@ -71,13 +68,13 @@ export class PlyRequest implements Request {
         const headers = this.responseHeaders(response.headers);
         const body = await response.text();
         const time = new Date().getTime() - before;
-        return new Response(status, headers, body, time);
+        return new PlyResponse(status, headers, body, time);
     }
 
     /**
      * Request object with substituted values
      */
-    private toObject(values?: object): Request {
+    private requestObject(values?: object): Request {
         const url = subst.replace(this.url, values);
         if (!url.startsWith('http://') && !url.startsWith('https://')) {
             throw new Error('Invalid url: ' + url);
@@ -90,16 +87,13 @@ export class PlyRequest implements Request {
         Object.keys(this.headers).forEach(name => {
             headers[name] = subst.replace(this.headers[name], values);
         });
-        const body = this.body ? subst.replace(this.body, values) : undefined;
-        const noImpl = () => { throw new Error('Not implemented'); };
         return {
             name: this.name,
             url,
             method,
             headers,
-            body,
-            run: noImpl,
-            submit: noImpl
+            body: this.body ? subst.replace(this.body, values) : undefined,
+            run: () => { throw new Error('Not implemented'); }
          };
     }
 
@@ -111,28 +105,17 @@ export class PlyRequest implements Request {
         return obj;
     }
 
-    /**
-     * Runs, writes actual results, and verifies vs expected results.
-     * @returns result object with success, failure or error
-     */
-    async run(runtime: Runtime, values: object): Promise<Result> {
-        const requestObj = this.toObject(values);
-        runtime.logger.debug('Request:', requestObj);
-        runtime.actual.remove();
-        const response = this.submit(values);
-        const output: any = {};
-        output[this.name] = {
-            request: this.toObject(),
-            response
-        };
-        runtime.actual.write(this.name);
-        const writer = new Writer(runtime.options);
-        runtime.actual.write(writer.requestYaml(this));
-
+    async run(runtime: Runtime): Promise<Result> {
+        const request = this.requestObject(runtime.values);
+        runtime.logger.debug('Request:', request);
+        const response = await this.doSubmit(request);
         runtime.logger.debug('Response:', response);
-        //runtime.actual.write(writer.responseYaml(response));
-
-        return new Result();
-
+        const result = new Result();
+        result.outcomes.push({
+            name: this.name,
+            request,
+            response: response.responseObject(runtime.options)
+        });
+        return result;
     }
 }
