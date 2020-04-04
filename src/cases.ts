@@ -1,4 +1,5 @@
 import * as ts from 'typescript';
+import * as osLocale from 'os-locale';
 import { PlyOptions } from './options';
 import { Location } from './location';
 import { Suite } from './suite';
@@ -43,6 +44,7 @@ export class CaseLoader {
                 const relPath = retrieval.location.relativeTo(this.options.testsLocation);
                 const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
                 const runtime = new Runtime(
+                    await osLocale(),
                     this.options,
                     this.logger,
                     retrieval,

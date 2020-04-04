@@ -1,3 +1,4 @@
+import * as os from 'os';
 import { TestType, Test } from './test';
 import { Result } from './result';
 import { Runtime } from './runtime';
@@ -59,37 +60,84 @@ export class Suite<T extends Test> {
      */
     async run(values: object): Promise<Result>;
     async run(name: string, values: object): Promise<Result>;
-    async run(nameOrValues: object | string, values?: object): Promise<Result> {
-        if (typeof nameOrValues === 'object') {
-            this.runtime.values = nameOrValues;
-            this.runtime.actual.remove();
-            // tests are run sequentially
-            for (const test of this.all()) {
-                const result = await this.runTest(test);
-
-
-            }
-            // TODO accumulate result
-            return new Result();
+    async run(names: string[], values: object): Promise<Result>;
+    async run(namesOrValues: object | string | string[], values?: object): Promise<Result> {
+        if (typeof namesOrValues === 'object') {
+            // run all tests
+            return this.runTests(this.all(), namesOrValues);
         }
         else {
-            this.runtime.values = values as object;
-            const test = this.get(nameOrValues);
-            if (!test) {
-                throw new Error(`Test not found: ${name}`);
-            }
-            this.runtime.actual.remove();
-            const result = this.runTest(test);
-            return result;
+            const names = typeof namesOrValues === 'string' ? [namesOrValues] : namesOrValues;
+            const tests = names.map(name => {
+                let test = this.get(name);
+                if (!test) {
+                    throw new Error(`Test not found: ${name}`);
+                }
+                return test;
+            }, this);
+            return this.runTests(tests, values || {});
         }
     }
 
-    private async runTest(test: T): Promise<Result> {
-        const result = await test.run(this.runtime);
-        this.runtime.actual.append(yaml.dump(result.outcomesObject(), this.runtime.options.prettyIndent));
+    /**
+     * Tests are run sequentially.
+     * @param tests
+     */
+    async runTests(tests: T[], values: object): Promise<Result> {
+        this.runtime.values = values;
+        this.runtime.actual.remove();
+
+        let result = new Result();
+        // tests are run sequentially
+        for (const test of tests) {
+            result = await test.run(this.runtime);
+            this.runtime.actual.append(this.buildResultYaml(result));
+        }
+
+        // TODO accumulate result
         // TODO compare actual vs expected
         return result;
     }
 
+    buildResultYaml(result: Result): string {
+
+
+        // TODO named outcomesObject == case run
+        // (see test/ply/results/expected/cases/movie-crud.yaml)
+
+
+        let outcomesObject: any = {};
+        for (const outcome of result.outcomes) {
+            outcomesObject[outcome.name] = outcome.outcomeObject();
+        }
+
+        let yml = yaml.dump(outcomesObject, this.runtime.options.prettyIndent);
+
+        // parse for line numbers
+        const baseName = this.runtime.actual.location.base;
+        outcomesObject = yaml.load(baseName, yml);
+        const ymlLines = yml.split('\n');
+        Object.keys(outcomesObject).forEach(name => {
+            let outcome = result.outcomes.find(o => o.name === name);
+            let outcomeObject = outcomesObject[name];
+            if (typeof outcomeObject.__line !== 'undefined') {
+                let outcomeLine = outcomeObject.__line;
+                if (outcome?.request.submitted) {
+                    let submitted = outcome?.request.submitted;
+                    let millis = String(submitted.getMilliseconds()).padStart(3, '0');
+                    let stamp = `${submitted.toLocaleString(this.runtime.locale, { hour12: false })}:${millis}`;
+                    ymlLines[outcomeLine] += `  # ${stamp}`;
+                }
+                if (typeof outcome?.response.time !== 'undefined') {
+                    let responseMs = outcome.response.time + ' ms';
+                    let requestYml = yaml.dump({ request: outcomeObject.request }, this.runtime.options.prettyIndent);
+                    ymlLines[outcomeLine + requestYml.split('\n').length] += ` # ${responseMs}`;
+                }
+            }
+        });
+        yml = ymlLines.join(os.EOL);
+
+        return yml;
+    }
 }
 

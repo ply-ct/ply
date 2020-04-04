@@ -1,7 +1,7 @@
 import { TestType, Test } from './test';
 import { Response, PlyResponse } from './response';
 import { Runtime } from './runtime';
-import { Result } from './result';
+import { Result, Outcome } from './result';
 import * as subst from './subst';
 
 export interface Request extends Test {
@@ -9,6 +9,7 @@ export interface Request extends Test {
     method: string;
     headers: object;
     body: string | undefined;
+    submitted?: Date;
 }
 
 export class PlyRequest implements Request {
@@ -19,6 +20,7 @@ export class PlyRequest implements Request {
     body: string | undefined;
     startLine?: number;
     endLine?: number;
+    submitted?: Date;
 
     /**
      * @param name test name
@@ -93,6 +95,7 @@ export class PlyRequest implements Request {
             method,
             headers,
             body: this.body ? subst.replace(this.body, values) : undefined,
+            submitted: this.submitted,
             run: () => { throw new Error('Not implemented'); }
          };
     }
@@ -106,16 +109,19 @@ export class PlyRequest implements Request {
     }
 
     async run(runtime: Runtime): Promise<Result> {
-        const request = this.requestObject(runtime.values);
-        runtime.logger.debug('Request:', request);
-        const response = await this.doSubmit(request);
+        this.submitted = new Date();
+        runtime.logger.info(`Request: ${this.name} submitted at: ${this.submitted.toLocaleString}`);
+        const requestObject = this.requestObject(runtime.values);
+        runtime.logger.debug('Request:', requestObject);
+        const response = await this.doSubmit(requestObject);
         runtime.logger.debug('Response:', response);
         const result = new Result();
-        result.outcomes.push({
-            name: this.name,
-            request,
-            response: response.responseObject(runtime.options)
-        });
+        const outcome = new Outcome(
+            this.name,
+            requestObject,
+            response.responseObject(runtime.options)
+        );
+        result.outcomes.push(outcome);
         return result;
     }
 }

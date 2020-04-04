@@ -15,7 +15,7 @@ module.exports = {
         Object.keys(obj).forEach(key => {
             let line = lines[key];
             if (typeof line !== 'undefined' && typeof obj[key] === 'object') {
-                obj[key].startLine = line;
+                obj[key].__line = line;
             }
         });
         return obj;

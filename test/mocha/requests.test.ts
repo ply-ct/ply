@@ -36,7 +36,7 @@ describe('Requests', async () => {
         }, Error, "'requests/bad-request.ply.yaml#missingUrl' -> Bad request url: undefined");
     });
 
-    it('can run get', async () => {
+    it('can run one', async () => {
         const options: PlyOptions = new Config().options;
         const ply = new Ply(options);
         const suites = await ply.loadRequests(['test/ply/requests/movie-queries.ply.yaml']);

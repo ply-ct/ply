@@ -19,8 +19,15 @@ export class Outcome {
          * response with ignore headers removed, and formatted/sorted body content
          */
         readonly response: Response
-    ) {
+    ) { }
 
+    outcomeObject(): object {
+        const { name: _name, submitted: _submitted, ...leanRequest } = this.request;
+        const { time: _time, ...leanResponse } = this.response;
+        return {
+            request: leanRequest,
+            response: leanResponse
+        };
     }
 }
 
@@ -36,23 +43,5 @@ export class Result {
             status: this.status,
             message: this.message
         };
-    }
-
-    outcomesObject(name?: string): object {
-        const outcomesObject: any = {};
-        for (const outcome of this.outcomes) {
-            outcomesObject[outcome.name] = {
-                request: outcome.request,
-                response: outcome.response
-            };
-        }
-        if (name) {
-            const namedObject: any = {};
-            namedObject[name] = outcomesObject;
-            return namedObject;
-        }
-        else {
-            return outcomesObject;
-        }
     }
 }

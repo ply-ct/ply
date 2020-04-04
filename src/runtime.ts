@@ -12,6 +12,7 @@ export class Runtime {
     values: object = {};
 
     constructor(
+        readonly locale: string,
         readonly options: PlyOptions,
         readonly logger: Logger,
         readonly retrieval: Retrieval,

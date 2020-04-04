@@ -14,7 +14,7 @@ export interface Test {
     endLine?: number;
 
     /**
-     * run the test
+     * Run the test but do not write actual or compare with expected.
      * @returns result with request outcomes and status of 'Pending'
      */
     run(runtime: Runtime): Promise<Result>;

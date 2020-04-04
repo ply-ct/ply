@@ -1,3 +1,4 @@
+import * as osLocale from 'os-locale';
 import { PlyOptions } from './options';
 import { Suite } from './suite';
 import { Location } from './location';
@@ -30,6 +31,7 @@ export class RequestLoader {
         const relPath = retrieval.location.relativeTo(this.options.testsLocation);
         const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
         const runtime = new Runtime(
+            await osLocale(),
             this.options,
             this.logger,
             retrieval,
@@ -47,7 +49,8 @@ export class RequestLoader {
         const obj = yaml.load(retrieval.location.path, contents);
         let lastRequest: Request | undefined = undefined;
         for (const key of Object.keys(obj)) {
-            let request = new PlyRequest(key, obj[key] as Request);
+            let startLine = obj[key].__line;
+            let request = new PlyRequest(key, Object.assign(obj[key], {startLine, __line: undefined}) as Request);
             if (lastRequest && lastRequest.startLine && request.startLine) {
                 lastRequest.endLine = await this.getEndLine(retrieval, lastRequest.startLine, request.startLine - 1);
             }

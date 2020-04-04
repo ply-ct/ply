@@ -9,6 +9,7 @@ export interface Response {
     status: Status;
     headers: any;
     body?: string;
+    time?: number;
 }
 
 export class PlyResponse implements Response {
@@ -40,7 +41,8 @@ export class PlyResponse implements Response {
         return {
             status: this.status,
             headers,
-            body
+            body,
+            time: this.time
         };
     }
 

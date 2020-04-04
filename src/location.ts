@@ -37,6 +37,9 @@ export class Location {
         return this.lastSlash ? this.path.substring(this.lastSlash + 1) : this.path;
     }
 
+    /**
+     * Name without extension
+     */
     get base(): string {
         const name = this.name;
         const lastDot = name.lastIndexOf('.');

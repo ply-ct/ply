@@ -20,8 +20,8 @@ describe('Cases', async () => {
         const suiteRetrieval = suites[0].runtime.retrieval;
         assert.equal(suiteRetrieval.location.path, 'test/ply/cases/movieCrud.ply.ts');
 
-        const create = suites[0].get('create movie') as PlyCase;
-        const c2 = suites[0].tests['create movie'];
+        const create = suites[0].get('add new movie') as PlyCase;
+        const c2 = suites[0].tests['add new movie'];
         assert.deepEqual(create, c2);
         assert.equal(create.suiteClass, 'MovieCrud');
         assert.equal(create.method, 'createMovie');
