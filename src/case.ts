@@ -19,6 +19,7 @@ export class PlyCase implements Case {
     }
 
     async run(runtime: Runtime): Promise<Result> {
+        runtime.logger.info(`Running '${this.name}'`);
         const testFile = runtime.testsLocation.toString() + '/' + runtime.suitePath;
         const mod = await import(testFile);
         const clsName = Object.keys(mod).find(key => key === this.suiteClass);

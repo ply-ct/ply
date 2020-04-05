@@ -3,6 +3,7 @@ import { Response, PlyResponse } from './response';
 import { Runtime } from './runtime';
 import { Result, Outcome } from './result';
 import * as subst from './subst';
+import './date';
 
 export interface Request extends Test {
     url: string;
@@ -65,6 +66,9 @@ export class PlyRequest implements Request {
         const before = new Date().getTime();
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { url, ...fetchRequest } = requestObj;
+        if (this.headers.Authorization) {
+            (fetchRequest.headers as any).Authorization = this.headers.Authorization;
+        }
         const response = await this.fetch(requestObj.url, fetchRequest);
         const status = { code: response.status, message: response.statusText };
         const headers = this.responseHeaders(response.headers);
@@ -85,12 +89,10 @@ export class PlyRequest implements Request {
         if (!this.isSupportedMethod(method)) {
             throw new Error('Unsupported method: ' + method);
         }
-        const headers: any = {};
-        Object.keys(this.headers).forEach(name => {
-            headers[name] = subst.replace(this.headers[name], values);
-        });
+        const { Authorization: _auth, ...headers } = this.headers;
         return {
             name: this.name,
+            type: this.type,
             url,
             method,
             headers,
@@ -110,7 +112,7 @@ export class PlyRequest implements Request {
 
     async run(runtime: Runtime): Promise<Result> {
         this.submitted = new Date();
-        runtime.logger.info(`Request: ${this.name} submitted at: ${this.submitted.toLocaleString}`);
+        runtime.logger.info(`Request '${this.name}' submitted at ${this.submitted.timestamp(runtime.locale)}`);
         const requestObject = this.requestObject(runtime.values);
         runtime.logger.debug('Request:', requestObject);
         const response = await this.doSubmit(requestObject);

@@ -22,7 +22,8 @@ export class Outcome {
     ) { }
 
     outcomeObject(): object {
-        const { name: _name, submitted: _submitted, ...leanRequest } = this.request;
+        const { name: _name, type: _type, submitted: _submitted, ...leanRequest } = this.request;
+        delete (leanRequest.headers as any).Authorization;
         const { time: _time, ...leanResponse } = this.response;
         return {
             request: leanRequest,

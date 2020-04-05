@@ -3,6 +3,7 @@ import { TestType, Test } from './test';
 import { Result } from './result';
 import { Runtime } from './runtime';
 import * as yaml from './yaml';
+import './date';
 
 interface Tests<T extends Test> {
     [key: string]: T
@@ -123,15 +124,12 @@ export class Suite<T extends Test> {
             if (typeof outcomeObject.__line !== 'undefined') {
                 let outcomeLine = outcomeObject.__line;
                 if (outcome?.request.submitted) {
-                    let submitted = outcome?.request.submitted;
-                    let millis = String(submitted.getMilliseconds()).padStart(3, '0');
-                    let stamp = `${submitted.toLocaleString(this.runtime.locale, { hour12: false })}:${millis}`;
-                    ymlLines[outcomeLine] += `  # ${stamp}`;
+                    ymlLines[outcomeLine] += `  # ${outcome.request.submitted.timestamp(this.runtime.locale)}`;
                 }
                 if (typeof outcome?.response.time !== 'undefined') {
                     let responseMs = outcome.response.time + ' ms';
                     let requestYml = yaml.dump({ request: outcomeObject.request }, this.runtime.options.prettyIndent);
-                    ymlLines[outcomeLine + requestYml.split('\n').length] += ` # ${responseMs}`;
+                    ymlLines[outcomeLine + requestYml.split('\n').length] += `  # ${responseMs}`;
                 }
             }
         });

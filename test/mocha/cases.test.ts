@@ -29,20 +29,20 @@ describe('Cases', async () => {
         assert.equal(create.startLine, 17);
     });
 
-    it('can invoke retrieve', async () => {
+    it('can run one', async () => {
         const options: PlyOptions = new Config().options;
-        const ply = new Ply(options);
+        // options not used because movieCrud.ply.ts loads ply
+        // how to handle this?
+        const ply = new Ply({ ...options, verbose: true });
         const suites = await ply.loadCases(['test/ply/cases/movieCrud.ply.ts']);
         assert.equal(suites.length, 1);
         const suite = suites[0];
-        let testCase = suites[0].get('retrieve movie') as PlyCase;
 
+        const values = { "baseUrl": "https://ply-ct.com/demo/api" };
+        const result = await suite.run('add new movie', values);
 
-        const globalValues = {};
-
-        const result = await suite.run('retrieve movie', globalValues);
-        const outcome = result.outcomes[0];
-        assert.equal(outcome.response.status.code, 200);
-        assert.equal(outcome.response.headers['content-type'], 'application/json');
+        // const outcome = result.outcomes[0];
+        // assert.equal(outcome.response.status.code, 200);
+        // assert.equal(outcome.response.headers['content-type'], 'application/json');
     });
 });

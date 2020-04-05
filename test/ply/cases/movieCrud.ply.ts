@@ -16,10 +16,13 @@ export class MovieCrud {
     }
 
     @test('add new movie')
-    async createMovie() {
-        ply.logger.debug('add new movie');
+    async createMovie(values: object) {
+        console.log("HERE I AM");
+        ply.logger.info('add new movie');
+        ply.logger.debug('values: ' + JSON.stringify(values));
         const requestSuite = await ply.loadRequestSuite('test/ply/requests/movies-api.ply.yaml');
-        var postRequest = requestSuite.get('createMovie');
+        requestSuite.run('createMovie', values);
+        // var postRequest = requestSuite.get('createMovie');
 
         // post.run();
     }

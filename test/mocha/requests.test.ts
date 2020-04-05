@@ -38,7 +38,7 @@ describe('Requests', async () => {
 
     it('can run one', async () => {
         const options: PlyOptions = new Config().options;
-        const ply = new Ply(options);
+        const ply = new Ply({...options, verbose: true});
         const suites = await ply.loadRequests(['test/ply/requests/movie-queries.ply.yaml']);
         let suite = suites[0];
 

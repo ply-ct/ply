@@ -10,3 +10,5 @@ caseFiles:
 # these are the headers we care about matching
 responseHeaders:
   - 'content-type'
+
+verbose: true

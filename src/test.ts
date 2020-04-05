@@ -6,6 +6,7 @@ export type TestType = 'request' | 'case' | 'workflow';
 export interface Test {
 
     name: string;
+    type: TestType;
 
     /**
      * zero-based

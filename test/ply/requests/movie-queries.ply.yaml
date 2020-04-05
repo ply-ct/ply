@@ -9,6 +9,7 @@ moviesByYearAndRating:
   method: GET
   headers:
     Accept: application/json
+    Authorization: myauth
 
 # general purpose query
 moviesQuery:
