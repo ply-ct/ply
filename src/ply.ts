@@ -34,7 +34,16 @@ export class Ply {
      * Load request suites.
      * @param locations can be URLs or file paths
      */
-    async loadRequests(locations: string[]): Promise<Suite<Request>[]> {
+    async loadRequests(location: string): Promise<Suite<Request>[]>;
+    async loadRequests(...locations: string[]): Promise<Suite<Request>[]>;
+    async loadRequests(locations: string[], ...moreLocations: string[]): Promise<Suite<Request>[]>;
+    async loadRequests(locations: string | string[], ...moreLocations: string[]): Promise<Suite<Request>[]> {
+        if (typeof locations === 'string') {
+            locations = [locations];
+        }
+        if (moreLocations) {
+            locations = locations.concat(moreLocations);
+        }
         const requestLoader = new RequestLoader(locations, this.options, this.logger);
         return requestLoader.load();
     }
@@ -50,8 +59,20 @@ export class Ply {
         return requestSuites[0];
     }
 
-    async loadCases(files: string[]): Promise<Suite<Case>[]> {
+    async loadSuite(location: string): Promise<Suite<Request>> {
+        return this.loadRequestSuite(location);
+    }
 
+    async loadCases(file: string): Promise<Suite<Case>[]>;
+    async loadCases(...files: string[]): Promise<Suite<Case>[]>;
+    async loadCases(files: string[], ...moreFiles: string[]): Promise<Suite<Case>[]>;
+    async loadCases(files: string | string[], ...moreFiles: string[]): Promise<Suite<Case>[]> {
+        if (typeof files === 'string') {
+            files = [files];
+        }
+        if (moreFiles) {
+            files = files.concat(moreFiles);
+        }
         const configPath = ts.findConfigFile(this.options.testsLocation, ts.sys.fileExists, "tsconfig.json");
         if (!configPath) {
             throw new Error("Could not find a valid 'tsconfig.json' from " + this.options.testsLocation);
@@ -64,13 +85,5 @@ export class Ply {
 
         const suites = caseLoader.load();
         return suites;
-    }
-
-    async loadCaseSuite(file: string): Promise<Suite<Case>> {
-        const caseSuites = await this.loadCases([file]);
-        if (caseSuites.length === 0) {
-            throw new Error(`No case suite found in: ${file}`);
-        }
-        return caseSuites[0];
     }
 }

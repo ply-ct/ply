@@ -34,8 +34,9 @@ export class Suite<T extends Test> {
         readonly name: string,
         readonly type: TestType,
         readonly path: string,
-        readonly runtime: Runtime,
-        readonly line: number = 0,
+        private readonly runtime: Runtime,
+        readonly startLine: number = 0,
+        readonly endLine: number,
         tests: T[] = []) {
             for (const test of tests) {
                 this.tests[test.name] = test;
@@ -84,7 +85,7 @@ export class Suite<T extends Test> {
      * Tests are run sequentially.
      * @param tests
      */
-    async runTests(tests: T[], values: object): Promise<Result> {
+    private async runTests(tests: T[], values: object): Promise<Result> {
         this.runtime.values = values;
         this.runtime.actual.remove();
 
@@ -92,7 +93,9 @@ export class Suite<T extends Test> {
         // tests are run sequentially
         for (const test of tests) {
             result = await test.run(this.runtime);
-            this.runtime.actual.append(this.buildResultYaml(result));
+            if (test.type === 'request') {
+                this.runtime.actual.append(this.buildResultYaml(result));
+            }
         }
 
         // TODO accumulate result

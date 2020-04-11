@@ -32,14 +32,21 @@ export class Retrieval {
      * If end is not supplied, read to end of file.
      */
     async readLines(start: number, end?: number): Promise<string[] | undefined> {
-        let contents = await this.read();
-        if (contents) {
-            return contents.split(/\r?\n/).reduce((lines: string[], line: string, i: number) => {
+        const lines = await this.lines();
+        if (lines) {
+            return lines.reduce((lines: string[], line: string, i: number) => {
                 if (i >= start && (!end || i <= end)) {
                     lines.push(line);
                 }
                 return lines;
             }, new Array<string>());
+        }
+    }
+
+    async lines(): Promise<string[] | undefined> {
+        const contents = await this.read();
+        if (contents) {
+            return contents.split(/\r?\n/);
         }
     }
 

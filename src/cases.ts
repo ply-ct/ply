@@ -38,8 +38,8 @@ export class CaseLoader {
         const suites: Suite<Case>[] = [];
 
         for (const sourceFile of this.program.getSourceFiles()) {
-            let suiteDecoration = this.findSuite(sourceFile);
-            if (suiteDecoration) {
+            let suiteDecorations = this.findSuites(sourceFile);
+            if (suiteDecorations) {
                 let retrieval = new Retrieval(sourceFile.fileName);
                 const relPath = retrieval.location.relativeTo(this.options.testsLocation);
                 const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
@@ -52,48 +52,47 @@ export class CaseLoader {
                     new Storage(this.options.actualLocation + '/' + resultFilePath)
                 );
 
-                const suite = new Suite<Case>(
-                    suiteDecoration.name,
-                    'case',
-                    relPath,
-                    runtime,
-                    sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getStart()).line
-                );
-
-                for (let caseDecoration of this.findCases(suiteDecoration)) {
-                    let c = new PlyCase(
-                        caseDecoration.name,
-                        suiteDecoration.className,
-                        caseDecoration.methodName,
-                        sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getStart()).line,
-                        sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getEnd()).line
+                for (let suiteDecoration of suiteDecorations) {
+                    let suite = new Suite<Case>(
+                        suiteDecoration.name,
+                        'case',
+                        relPath,
+                        runtime,
+                        sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getStart()).line,
+                        sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getEnd()).line
                     );
-                    suite.add(c);
+
+                    for (let caseDecoration of this.findCases(suiteDecoration)) {
+                        let c = new PlyCase(
+                            caseDecoration.name,
+                            suiteDecoration.className,
+                            caseDecoration.methodName,
+                            sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getStart()).line,
+                            sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getEnd()).line
+                        );
+                        suite.add(c);
+                    }
+                    suites.push(suite);
                 }
-                suites.push(suite);
             }
         }
 
         return suites;
     }
 
-    private findSuite(sourceFile: ts.SourceFile): SuiteDecoration | undefined {
+    private findSuites(sourceFile: ts.SourceFile): SuiteDecoration[] {
+        let suites: SuiteDecoration[] = [];
         if (!sourceFile.isDeclarationFile) {
-            let suite: SuiteDecoration | undefined;
             ts.forEachChild(sourceFile, node => {
                 if (ts.isClassDeclaration(node) && node.name && this.isExported(node)) {
                     let suiteDecoration = this.findSuiteDecoration(node as ts.ClassDeclaration);
                     if (suiteDecoration) {
-                        if (suite) {
-                            throw new Error(`Source file ${sourceFile.fileName} cannot contain more than one suite
-                                    (${suite.name}, ${node.name.text})`);
-                        }
-                        suite = suiteDecoration;
+                        suites.push(suiteDecoration);
                     }
                 }
             });
-            return suite;
         }
+        return suites;
     }
 
     private findSuiteDecoration(classDeclaration: ts.ClassDeclaration): SuiteDecoration | undefined {
@@ -101,19 +100,26 @@ export class CaseLoader {
         if (classSymbol && classDeclaration.decorators) {
             for (const decorator of classDeclaration.decorators) {
                 if (decorator.expression) {
+                    let decoratorSymbol: ts.Symbol | undefined;
                     const firstToken = decorator.expression.getFirstToken();
                     if (firstToken) {
-                        let decoratorSymbol = this.checker.getSymbolAtLocation(firstToken);
-                        if (decoratorSymbol && this.checker.getAliasedSymbol(decoratorSymbol).name === 'suite') {
-                            if (decorator.expression.getChildCount() >= 3) {
-                                const text = decorator.expression.getChildAt(2).getText();
-                                return {
-                                    name: text.substring(1, text.length - 1),
-                                    classDeclaration: classDeclaration,
-                                    className: classSymbol.name
-                                };
-                            }
+                        decoratorSymbol = this.checker.getSymbolAtLocation(firstToken);
+                    }
+                    else {
+                        decoratorSymbol = this.checker.getSymbolAtLocation(decorator.expression);
+                    }
+                    if (decoratorSymbol && this.checker.getAliasedSymbol(decoratorSymbol).name === 'suite') {
+                        let suiteName = classSymbol.name;
+                        if (decorator.expression.getChildCount() >= 3) {
+                            // suite name arg
+                            const text = decorator.expression.getChildAt(2).getText();
+                            suiteName = text.substring(1, text.length - 1);
                         }
+                        return {
+                            name: suiteName,
+                            classDeclaration: classDeclaration,
+                            className: classSymbol.name
+                        };
                     }
                 }
             }

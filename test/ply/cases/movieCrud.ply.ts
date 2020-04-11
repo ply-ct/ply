@@ -9,19 +9,40 @@ export class MovieCrud {
 
 
     /**
-     * Static before() is called just once before any test case runs.
+     * TODO: @before annotation
      */
-    static async before() {
-        // TODO: clean up leftover movie
+    // @before()
+    async before(values: any) {
+        console.log("STATIC BEFORE");
+        const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
+
+        // TODO results not captured for requests run from before or after
+        requestSuite.run('deleteMovie', values);
+
+        // cleanup
+        const deleteRequest = requestSuite.get('deleteMovie');
     }
 
     @test('add new movie')
-    async createMovie(values: object) {
-        console.log("HERE I AM");
+    async createMovie(values: any) {
+        console.log("DURING");
         ply.logger.info('add new movie');
-        ply.logger.debug('values: ' + JSON.stringify(values));
-        const requestSuite = await ply.loadRequestSuite('test/ply/requests/movies-api.ply.yaml');
-        requestSuite.run('createMovie', values);
+
+        // const values = { "baseUrl": "https://ply-ct.com/demo/api" };
+        values.custom = 'my custom value';
+        // ply.logger.debug('values: ' + JSON.stringify(values));
+
+        // direct way through ply
+        // await ply.run('test/ply/requests/movies-api.ply.yaml#createMovie', values);
+
+        // through suite
+        const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
+        // one way
+        await requestSuite.run('createMovie', values);
+        // other way
+        // await requestSuite.runTest(requestSuite.get())
+
+
         // var postRequest = requestSuite.get('createMovie');
 
         // post.run();
@@ -38,6 +59,8 @@ export class MovieCrud {
         // two requests: delete and confirm
     }
 
-    after() {
-    }
+    // @after
+    // async after() {
+    //     console.log("INSTANCE AFTER");
+    // }
 }

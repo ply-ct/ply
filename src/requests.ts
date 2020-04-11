@@ -43,7 +43,9 @@ export class RequestLoader {
             retrieval.location.base,
             'request',
             relPath,
-            runtime
+            runtime,
+            0,
+            contents.split(/\r?\n/).length - 1
         );
 
         const obj = yaml.load(retrieval.location.path, contents);

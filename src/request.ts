@@ -28,25 +28,32 @@ export class PlyRequest implements Request {
      * @param obj object to parse for contents
      */
     constructor(readonly name: string, obj: Request) {
-        this.url = obj['url'].trim();
-        this.method = obj['method'].toUpperCase().trim();
-        this.headers = obj['headers'] || {};
-        this.body = obj['body'];
-        this.startLine = obj['startLine'] || 0;
+        if (!obj.url) {
+            throw new Error("Request is missing 'url'");
+        }
+        this.url = obj.url.trim();
+        if (!obj.method) {
+            throw new Error("Request is missing 'method'");
+        }
+        this.method = obj.method.trim();
+        this.headers = obj.headers || {};
+        this.body = obj.body;
+        this.startLine = obj.startLine || 0;
     }
 
-    isSupportedMethod(method: string): boolean {
+    getSupportedMethod(method: string): string | undefined {
         const upperCase = method.toUpperCase().trim();
-        return (upperCase.startsWith('${') && upperCase.endsWith('}'))
-            || upperCase === 'GET'
-            || upperCase === 'HEAD'
-            || upperCase === 'POST'
-            || upperCase === 'PUT'
-            || upperCase === 'DELETE'
-            || upperCase === 'CONNECT'
-            || upperCase === 'OPTIONS'
-            || upperCase === 'TRACE'
-            || upperCase === 'PATCH';
+        if (upperCase === 'GET'
+              || upperCase === 'HEAD'
+              || upperCase === 'POST'
+              || upperCase === 'PUT'
+              || upperCase === 'DELETE'
+              || upperCase === 'CONNECT'
+              || upperCase === 'OPTIONS'
+              || upperCase === 'TRACE'
+              || upperCase === 'PATCH') {
+            return upperCase;
+        }
     }
 
     get fetch(): any {
@@ -85,8 +92,8 @@ export class PlyRequest implements Request {
         if (!url.startsWith('http://') && !url.startsWith('https://')) {
             throw new Error('Invalid url: ' + url);
         }
-        const method = subst.replace(this.method, values);
-        if (!this.isSupportedMethod(method)) {
+        const method = subst.replace(this.method, values).toUpperCase();
+        if (!this.getSupportedMethod(method)) {
             throw new Error('Unsupported method: ' + method);
         }
         const { Authorization: _auth, ...headers } = this.headers;
@@ -110,6 +117,13 @@ export class PlyRequest implements Request {
         return obj;
     }
 
+    /**
+     * Run the request but do not write actual or compare with expected.
+     * To produce actual result file, call one of Suite.run()'s overloads.
+     * Call this directly from a case when you want perform housekeeping actions
+     * like cleanup, but don't want to capture or verify results.
+     * @returns result with request outcomes and status of 'Pending'
+     */
     async run(runtime: Runtime): Promise<Result> {
         this.submitted = new Date();
         runtime.logger.info(`Request '${this.name}' submitted at ${this.submitted.timestamp(runtime.locale)}`);

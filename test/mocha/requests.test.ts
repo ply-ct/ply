@@ -8,14 +8,12 @@ describe('Requests', async () => {
     it('is loaded from yaml', async () => {
         const options: PlyOptions = new Config().options;
         const ply = new Ply(options);
-        const suites = await ply.loadRequests([
+        const suites = await ply.loadRequests(
             'test/ply/requests/movie-queries.ply.yaml',
             'test/ply/requests/movies-api.ply.yaml'
-        ]);
+        );
 
         assert.equal(suites.length, 2);
-        assert.equal(suites[0].runtime.actual.location.path,
-            'test/ply/results/actual/requests/movie-queries.ply.yaml');
 
         let request = suites[0].get('moviesByYearAndRating') as PlyRequest;
         assert.equal(request.name, 'moviesByYearAndRating');
@@ -23,23 +21,25 @@ describe('Requests', async () => {
         let headers = request.headers;
         assert.equal(headers['Accept'], 'application/json');
         assert.equal(request.startLine, 6);
-        assert.equal(request.endLine, 10);
+        assert.equal(request.endLine, 11);
     });
 
     it('rejects missing url', async () => {
         const options: PlyOptions = new Config().options;
         const ply = new Ply(options);
-        assert.rejects(async () => {
-            await ply.loadRequests([
-                'test/ply/requests/bad-request.ply.yaml'
-            ]);
-        }, Error, "'requests/bad-request.ply.yaml#missingUrl' -> Bad request url: undefined");
+        await assert.rejects(async () => {
+            return ply.loadRequests(['test/ply/requests/bad-requests.ply.yaml']);
+        },
+        {
+            name: 'Error',
+            message: "Request is missing 'url'"
+        });
     });
 
     it('can run one', async () => {
         const options: PlyOptions = new Config().options;
         const ply = new Ply({...options, verbose: true});
-        const suites = await ply.loadRequests(['test/ply/requests/movie-queries.ply.yaml']);
+        const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');
         let suite = suites[0];
 
         const values = {
