@@ -144,19 +144,25 @@ export class CaseLoader {
         if (methodSymbol && methodDeclaration.decorators) {
             for (const decorator of methodDeclaration.decorators) {
                 if (decorator.expression) {
+                    let decoratorSymbol: ts.Symbol | undefined;
                     const firstToken = decorator.expression.getFirstToken();
                     if (firstToken) {
-                        let decoratorSymbol = this.checker.getSymbolAtLocation(firstToken);
-                        if (decoratorSymbol && this.checker.getAliasedSymbol(decoratorSymbol).name === 'test') {
-                            if (decorator.expression.getChildCount() >= 3) {
-                                const text = decorator.expression.getChildAt(2).getText();
-                                return {
-                                    name: text.substring(1, text.length - 1),
-                                    methodDeclaration: methodDeclaration,
-                                    methodName: methodSymbol.name
-                                };
-                            }
+                        decoratorSymbol = this.checker.getSymbolAtLocation(firstToken);
+                    }
+                    else {
+                        decoratorSymbol = this.checker.getSymbolAtLocation(decorator.expression);
+                    }
+                    if (decoratorSymbol && this.checker.getAliasedSymbol(decoratorSymbol).name === 'test') {
+                        let testName = methodSymbol.name;
+                        if (decorator.expression.getChildCount() >= 3) {
+                            const text = decorator.expression.getChildAt(2).getText();
+                            testName = text.substring(1, text.length - 1);
                         }
+                        return {
+                            name: testName,
+                            methodDeclaration: methodDeclaration,
+                            methodName: methodSymbol.name
+                        };
                     }
                 }
             }

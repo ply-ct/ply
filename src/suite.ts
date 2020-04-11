@@ -4,6 +4,8 @@ import { Result } from './result';
 import { Runtime } from './runtime';
 import * as yaml from './yaml';
 import './date';
+import { TEST_PREFIX, BEFORE_PREFIX, AFTER_PREFIX, SUITE_PREFIX } from './decorators';
+import { TestSuite, TestCase, Before, After } from './decorators';
 
 interface Tests<T extends Test> {
     [key: string]: T
@@ -142,3 +144,48 @@ export class Suite<T extends Test> {
     }
 }
 
+/**
+ * Applicable for Cases (and soon Workflows)
+ */
+export class DecoratedSuite {
+
+    testSuite: TestSuite;
+    testCases: TestCase[] = [];
+    befores: Before[] = [];
+    afters: After[] = [];
+
+    /**
+     * @param instance runtime instance of a suite
+     */
+    constructor(instance: any) {
+        this.testSuite = instance.constructor[SUITE_PREFIX];
+        Object.getOwnPropertyNames(instance.constructor.prototype).forEach(propName => {
+            try {
+                if (typeof instance.constructor.prototype[propName] === 'function') {
+                    const method = instance.constructor.prototype[propName];
+                    if (method[TEST_PREFIX]) {
+                        let testCase = method[TEST_PREFIX];
+                        if (!this.testCases.find(tc => tc.name === testCase.name)) {
+                            this.testCases.push({ ...testCase, method });
+                        }
+                    }
+                    if (method[BEFORE_PREFIX]) {
+                        let before = method[BEFORE_PREFIX];
+                        if (!this.befores.find(b => b.name === before.name)) {
+                            this.befores.push({ ...before, method });
+                        }
+                    }
+                    if (method[AFTER_PREFIX]) {
+                        let after = method[AFTER_PREFIX];
+                        if (!this.afters.find(a => a.name === after.name)) {
+                            this.afters.push({ ...after, method });
+                        }
+                    }
+                }
+            }
+            catch (_ignored) {
+                // getter or setter before constructor?
+            }
+        });
+    }
+}

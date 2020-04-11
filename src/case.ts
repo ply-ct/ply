@@ -28,6 +28,8 @@ export class PlyCase implements Case {
         }
 
         const inst = new mod[clsName]();
+
+
         const method = inst[this.method];
         if (!method) {
             throw new Error(`Case method ${this.method} not found in suite class ${runtime.retrieval.location}`);
@@ -36,34 +38,5 @@ export class PlyCase implements Case {
         await method.call(inst, runtime.values);
 
         return new Result();
-
-        // const injector = new Injector(cls);
-        // const inst = injector.create();
-
-        // const meth = "retrieveMovie";
-
-        // console.log("INST[meth]: " + inst[meth]);
-
-        // const before = inst['before'];
-        // if (before) {
-        //     before.call(inst);
-        // }
-
-        // let method = inst[meth];
-        // // inst[meth] = inst[meth].bind(inst);
-
-
-        // Promise.resolve(method.call(inst, values))
-        //     .then(x => {
-        //         console.log("X: " + x);
-        //     })
-        //     .catch(err => {
-        //         console.log(err);
-        //         throw err;
-        //     });
-
-
-        // let cls: any = constructor;
-        // let inst = new cls();
     }
 }
