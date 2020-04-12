@@ -1,26 +1,18 @@
 import ply from '../../../src/index';
-import { suite, test } from '../../../src/index';
+import { suite, test, before, after } from '../../../src/index';
 
 @suite('movie crud')
 export class MovieCrud {
 
-    constructor() {
-    }
-
-
     /**
-     * TODO: @before annotation
+     * Cleanup
      */
-    // @before()
-    async before(values: any) {
-        console.log("STATIC BEFORE");
+    @before
+    async beforeAll(values: any) {
+        console.log("BEFORE ALL");
         const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
-
         // TODO results not captured for requests run from before or after
         requestSuite.run('deleteMovie', values);
-
-        // cleanup
-        const deleteRequest = requestSuite.get('deleteMovie');
     }
 
     @test('add new movie')
@@ -59,8 +51,8 @@ export class MovieCrud {
         // two requests: delete and confirm
     }
 
-    // @after
-    // async after() {
-    //     console.log("INSTANCE AFTER");
-    // }
+    @after
+    afterAll() {
+        console.log("AFTER ALL");
+    }
 }

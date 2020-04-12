@@ -31,6 +31,7 @@
   "dependencies": {
     "find-up": "^4.1.0",
     "js-yaml": "^3.13.1",
+    "minimatch": "^3.0.4",
     "mkdirp": "^1.0.3",
     "node-fetch": "^2.6.0",
     "os-locale": "^5.0.0",
@@ -42,6 +43,7 @@
     "@babel/preset-env": "^7.8.3",
     "@babel/register": "^7.8.3",
     "@types/js-yaml": "^3.12.2",
+    "@types/minimatch": "^3.0.3",
     "@types/mocha": "^7.0.1",
     "@types/node": "^13.7.4",
     "@types/node-fetch": "^2.5.5",

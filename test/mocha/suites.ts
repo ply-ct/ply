@@ -1,6 +1,8 @@
 import { suite, test, before, after } from '../../src/decorators';
 
-// decorators are applied when module is loaded (imported)
+const sleep = (millis: number) => {
+    return new Promise(resolve => setTimeout(resolve, millis));
+};
 
 @suite
 export class UnnamedSuite {
@@ -8,6 +10,7 @@ export class UnnamedSuite {
     beforeCount = 0;
     afterCount = 0;
     aValue: any;
+    testsRun: string[] = [];
 
     @before
     beforeAll() {
@@ -15,13 +18,15 @@ export class UnnamedSuite {
     }
 
     @test
-    unnamedCaseNoValues() {
-
+    async unnamedCaseNoValues() {
+        this.testsRun.push('unnamedCaseNoValues');
     }
 
     @test
-    unnamedCaseWithValues(values: any) {
+    async unnamedCaseWithValues(values: any) {
         this.aValue = values.myValue;
+        await sleep(500);
+        this.testsRun.push('unnamedCaseWithValues');
     }
 
     @after
@@ -36,9 +41,10 @@ export class NamedSuite {
     beforeCount = 0;
     afterCount = 0;
     aValue: any;
+    testsRun: string[] = [];
 
     @before
-    beforeAll() {
+    async beforeAll() {
         this.beforeCount++;
     }
 
@@ -49,16 +55,18 @@ export class NamedSuite {
 
     @test('first case')
     namedCaseNoValues() {
-
+        this.testsRun.push('namedCaseNoValues');
     }
 
     @test('second case')
-    namedCaseWithValues(values: any) {
+    async namedCaseWithValues(values: any) {
         this.aValue = values.myValue;
+        await sleep(300);
+        this.testsRun.push('namedCaseWithValues');
     }
 
     @after('*')
-    afterEach() {
+    async afterEach() {
         this.afterCount++;
     }
 

@@ -9,8 +9,9 @@ type ClassTarget = {
     name: string
 };
 
-export interface TestSuite extends ClassTarget{
-
+export interface TestSuite {
+    name: string;
+    className: string;
 }
 
 /**
@@ -65,12 +66,13 @@ export function test(nameOrTarget: string | any, propertyKey?: string, _descript
 export interface Before {
     name: string,
     tests?: string,
-    method: Function
+    method: Function,
+    hasRun: boolean
 }
 
 /**
  * Invoked before tests.
- * @param tests pattern for test names before which function will be called (* = each, omitted = once before all)
+ * @param tests glob pattern for test names before which function will be called (* = each, omitted = once before all)
  */
 export function before(target: any, propertyKey: string, descriptor: PropertyDescriptor): void;
 export function before(tests: string): (target: any, propertyKey: string, descriptor: PropertyDescriptor) => void;
@@ -88,12 +90,13 @@ export function before(testsOrTarget: string | any, propertyKey?: string, _descr
 export interface After {
     name: string,
     tests?: string,
-    method: Function
+    method: Function,
+    hasRun: boolean
 }
 
 /**
  * Invoked after tests.
- * @param tests pattern for test names after which function will be called (* = each, omitted = once after all)
+ * @param tests glob pattern for test names after which function will be called (* = each, omitted = once after all)
  */
 export function after(target: any, propertyKey: string, descriptor: PropertyDescriptor): void;
 export function after(tests: string): (target: any, propertyKey: string, descriptor: PropertyDescriptor) => void;

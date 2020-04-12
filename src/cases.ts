@@ -43,29 +43,31 @@ export class CaseLoader {
                 let retrieval = new Retrieval(sourceFile.fileName);
                 const relPath = retrieval.location.relativeTo(this.options.testsLocation);
                 const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
-                const runtime = new Runtime(
-                    await osLocale(),
-                    this.options,
-                    this.logger,
-                    retrieval,
-                    new Retrieval(this.options.expectedLocation + '/' + resultFilePath),
-                    new Storage(this.options.actualLocation + '/' + resultFilePath)
-                );
 
                 for (let suiteDecoration of suiteDecorations) {
+                    // every suite instance gets its own runtime
+                    const runtime = new Runtime(
+                        await osLocale(),
+                        this.options,
+                        this.logger,
+                        retrieval,
+                        new Retrieval(this.options.expectedLocation + '/' + resultFilePath),
+                        new Storage(this.options.actualLocation + '/' + resultFilePath)
+                    );
+
                     let suite = new Suite<Case>(
                         suiteDecoration.name,
                         'case',
                         relPath,
                         runtime,
                         sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getStart()).line,
-                        sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getEnd()).line
+                        sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getEnd()).line,
+                        suiteDecoration.className
                     );
 
                     for (let caseDecoration of this.findCases(suiteDecoration)) {
                         let c = new PlyCase(
                             caseDecoration.name,
-                            suiteDecoration.className,
                             caseDecoration.methodName,
                             sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getStart()).line,
                             sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getEnd()).line

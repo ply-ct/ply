@@ -1,11 +1,9 @@
 import * as os from 'os';
 import { TestType, Test } from './test';
 import { Result } from './result';
-import { Runtime } from './runtime';
+import { Runtime, DecoratedSuite } from './runtime';
 import * as yaml from './yaml';
 import './date';
-import { TEST_PREFIX, BEFORE_PREFIX, AFTER_PREFIX, SUITE_PREFIX } from './decorators';
-import { TestSuite, TestCase, Before, After } from './decorators';
 
 interface Tests<T extends Test> {
     [key: string]: T
@@ -30,7 +28,7 @@ export class Suite<T extends Test> {
      * @param retrieval suite retrieval
      * @param expected expected results retrieval
      * @param actual actual results storage
-     * @param tests? requests/cases/workflows
+     * @param className? className for decorated suites
      */
     constructor(
         readonly name: string,
@@ -39,11 +37,8 @@ export class Suite<T extends Test> {
         private readonly runtime: Runtime,
         readonly startLine: number = 0,
         readonly endLine: number,
-        tests: T[] = []) {
-            for (const test of tests) {
-                this.tests[test.name] = test;
-            }
-    }
+        readonly className?: string
+    ) {}
 
     add(test: T) {
         this.tests[test.name] = test;
@@ -90,6 +85,19 @@ export class Suite<T extends Test> {
     private async runTests(tests: T[], values: object): Promise<Result> {
         this.runtime.values = values;
         this.runtime.actual.remove();
+
+        if (this.className) {
+            // initialize the decorated suite
+            const testFile = this.runtime.testsLocation.toString() + '/' + this.runtime.suitePath;
+            const mod = await import(testFile);
+            const clsName = Object.keys(mod).find(key => key === this.className);
+            if (!clsName) {
+                throw new Error(`Suite class ${this.className} not found in ${testFile}`);
+            }
+
+            const inst = new mod[clsName]();
+            this.runtime.decoratedSuite = new DecoratedSuite(inst);
+        }
 
         let result = new Result();
         // tests are run sequentially
@@ -141,51 +149,5 @@ export class Suite<T extends Test> {
         yml = ymlLines.join(os.EOL);
 
         return yml;
-    }
-}
-
-/**
- * Applicable for Cases (and soon Workflows)
- */
-export class DecoratedSuite {
-
-    testSuite: TestSuite;
-    testCases: TestCase[] = [];
-    befores: Before[] = [];
-    afters: After[] = [];
-
-    /**
-     * @param instance runtime instance of a suite
-     */
-    constructor(instance: any) {
-        this.testSuite = instance.constructor[SUITE_PREFIX];
-        Object.getOwnPropertyNames(instance.constructor.prototype).forEach(propName => {
-            try {
-                if (typeof instance.constructor.prototype[propName] === 'function') {
-                    const method = instance.constructor.prototype[propName];
-                    if (method[TEST_PREFIX]) {
-                        let testCase = method[TEST_PREFIX];
-                        if (!this.testCases.find(tc => tc.name === testCase.name)) {
-                            this.testCases.push({ ...testCase, method });
-                        }
-                    }
-                    if (method[BEFORE_PREFIX]) {
-                        let before = method[BEFORE_PREFIX];
-                        if (!this.befores.find(b => b.name === before.name)) {
-                            this.befores.push({ ...before, method });
-                        }
-                    }
-                    if (method[AFTER_PREFIX]) {
-                        let after = method[AFTER_PREFIX];
-                        if (!this.afters.find(a => a.name === after.name)) {
-                            this.afters.push({ ...after, method });
-                        }
-                    }
-                }
-            }
-            catch (_ignored) {
-                // getter or setter before constructor?
-            }
-        });
     }
 }

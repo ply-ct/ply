@@ -9,7 +9,7 @@ export { Options, PlyOptions, Defaults, Config } from './options';
 export { Retrieval } from './retrieval';
 export { Storage } from './storage';
 export { Suite } from './Suite';
-export { suite, test } from './decorators';
+export { suite, test, before, after } from './decorators';
 
 // TODO temp retain API for vscode-ply
 export { cli } from './cli';
