@@ -18,7 +18,7 @@ export class RequestLoader {
         const retrievals = this.locations.map(loc => new Retrieval(loc));
         // load request files in parallel
         const promises = retrievals.map(retr => this.loadSuite(retr));
-        return Promise.all(promises);
+        return await Promise.all(promises);
     }
 
     async loadSuite(retrieval: Retrieval): Promise<Suite<Request>> {
@@ -62,7 +62,6 @@ export class RequestLoader {
         if (lastRequest && lastRequest.startLine) {
             lastRequest.endLine = await this.getEndLine(retrieval, lastRequest.startLine);
         }
-
 
         return suite;
     }

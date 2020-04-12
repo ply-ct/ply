@@ -13,12 +13,8 @@ export interface Test {
      */
     startLine?: number;
     endLine?: number;
-
-    /**
-     * Run the test but do not write actual or compare with expected.
-     * To produce actual result file, call one of Suite.run()'s overloads.
-     * @returns result with request outcomes and status of 'Pending'
-     */
-    run(runtime: Runtime): Promise<Result>;
 }
 
+export interface PlyTest {
+    invoke(runtime: Runtime): Promise<Result>;
+}

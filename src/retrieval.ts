@@ -15,15 +15,13 @@ export class Retrieval {
         this.location = new Location(location);
     }
 
-    read(): Promise<string | undefined> {
+    async read(): Promise<string | undefined> {
         if (this.storage) {
             return Promise.resolve(this.storage.read());
         }
         else {
-            return this.fetch(this.location.path)
-            .then((response: Response) => {
-                return response.text();
-            });
+            const response = await this.fetch(this.location.path);
+            return await response.text();
         }
     }
 

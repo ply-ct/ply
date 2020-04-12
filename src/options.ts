@@ -52,18 +52,6 @@ export interface Options {
      */
     prettyIndent?: number;
     /**
-     * Retain log (false) between executions
-     */
-    retainLog?: boolean;
-    /**
-     * Capture result (true)
-     */
-    captureResult?: boolean;
-    /**
-     * Retain result (false)
-     */
-    retainResult?: boolean;
-    /**
      * Response headers to be considered in verifying results, ordered as they should appear in results (['content-type']).
      * If not specified, all headers are included in output yaml in alphabetical order.
      */
@@ -85,9 +73,6 @@ export interface PlyOptions extends Options {
     bail: boolean;
     formatResponseBody: boolean;
     prettyIndent: number;
-    retainLog: boolean;
-    captureResult: boolean;
-    retainResult: boolean;
     responseHeaders?: string[];
 }
 
@@ -103,9 +88,6 @@ export class Defaults implements PlyOptions {
     bail = false;
     formatResponseBody = true;
     prettyIndent = 2;
-    retainLog = false;
-    captureResult = true;
-    retainResult = false;
     responseHeaders = ['content-type'];
 }
 

@@ -1,5 +1,5 @@
 import * as os from 'os';
-import { TestType, Test } from './test';
+import { TestType, Test, PlyTest } from './test';
 import { Result } from './result';
 import { Runtime, DecoratedSuite } from './runtime';
 import * as yaml from './yaml';
@@ -63,7 +63,7 @@ export class Suite<T extends Test> {
     async run(namesOrValues: object | string | string[], values?: object): Promise<Result> {
         if (typeof namesOrValues === 'object') {
             // run all tests
-            return this.runTests(this.all(), namesOrValues);
+            return await this.runTests(this.all(), namesOrValues);
         }
         else {
             const names = typeof namesOrValues === 'string' ? [namesOrValues] : namesOrValues;
@@ -74,7 +74,7 @@ export class Suite<T extends Test> {
                 }
                 return test;
             }, this);
-            return this.runTests(tests, values || {});
+            return await this.runTests(tests, values || {});
         }
     }
 
@@ -102,7 +102,7 @@ export class Suite<T extends Test> {
         let result = new Result();
         // tests are run sequentially
         for (const test of tests) {
-            result = await test.run(this.runtime);
+            result = await (test as unknown as PlyTest).invoke(this.runtime);
             if (test.type === 'request') {
                 this.runtime.actual.append(this.buildResultYaml(result));
             }

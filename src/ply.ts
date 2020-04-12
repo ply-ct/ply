@@ -16,6 +16,8 @@ export function create(): Ply {
     return new Ply(options);
 }
 
+// TODO: direct run?
+// await ply.run('test/ply/requests/movies-api.ply.yaml#createMovie', values);
 export class Ply {
 
     readonly options: PlyOptions;
@@ -45,7 +47,7 @@ export class Ply {
             locations = locations.concat(moreLocations);
         }
         const requestLoader = new RequestLoader(locations, this.options, this.logger);
-        return requestLoader.load();
+        return await requestLoader.load();
     }
 
     /**
@@ -60,7 +62,7 @@ export class Ply {
     }
 
     async loadSuite(location: string): Promise<Suite<Request>> {
-        return this.loadRequestSuite(location);
+        return await this.loadRequestSuite(location);
     }
 
     async loadCases(file: string): Promise<Suite<Case>[]>;
@@ -83,7 +85,7 @@ export class Ply {
 
         const caseLoader = new CaseLoader(files, this.options, this.logger, compilerOptions as ts.CompilerOptions);
 
-        const suites = caseLoader.load();
+        const suites = await caseLoader.load();
         return suites;
     }
 }

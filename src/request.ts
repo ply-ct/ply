@@ -1,4 +1,4 @@
-import { TestType, Test } from './test';
+import { TestType, Test, PlyTest } from './test';
 import { Response, PlyResponse } from './response';
 import { Runtime } from './runtime';
 import { Result, Outcome } from './result';
@@ -11,9 +11,10 @@ export interface Request extends Test {
     headers: object;
     body: string | undefined;
     submitted?: Date;
+    submit(values: object): Promise<Response>;
 }
 
-export class PlyRequest implements Request {
+export class PlyRequest implements Request, PlyTest {
     type = 'request' as TestType;
     url: string;
     method: string;
@@ -65,11 +66,17 @@ export class PlyRequest implements Request {
         }
     }
 
+    /**
+     * Call submit() to send the request without producing actual results
+     * or comparing with expected.  Useful for cleaning up or restoring
+     * REST resources before/after testing (see Case.before()/after()).
+     * @param values
+     */
     async submit(values: object): Promise<Response> {
-        return this.doSubmit(this.requestObject(values));
+        return await this.doSubmit(this.requestObject(values));
     }
 
-    private async doSubmit(requestObj: Request) {
+    private async doSubmit(requestObj: Request): Promise<PlyResponse> {
         const before = new Date().getTime();
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { url, ...fetchRequest } = requestObj;
@@ -105,7 +112,7 @@ export class PlyRequest implements Request {
             headers,
             body: this.body ? subst.replace(this.body, values) : undefined,
             submitted: this.submitted,
-            run: () => { throw new Error('Not implemented'); }
+            submit: () => { throw new Error('Not implemented'); }
          };
     }
 
@@ -118,13 +125,12 @@ export class PlyRequest implements Request {
     }
 
     /**
-     * Run the request but do not write actual or compare with expected.
-     * To produce actual result file, call one of Suite.run()'s overloads.
-     * Call this directly from a case when you want perform housekeeping actions
-     * like cleanup, but don't want to capture or verify results.
+     * Only to be called in the context of a Suite (hence 'runtime').
+     * To execute a test programmatically, call one the Suite.run() overloads.
+     * Or to send a request without testing, call submit().
      * @returns result with request outcomes and status of 'Pending'
      */
-    async run(runtime: Runtime): Promise<Result> {
+    async invoke(runtime: Runtime): Promise<Result> {
         this.submitted = new Date();
         runtime.logger.info(`Request '${this.name}' submitted at ${this.submitted.timestamp(runtime.locale)}`);
         const requestObject = this.requestObject(runtime.values);

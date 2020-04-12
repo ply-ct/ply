@@ -98,10 +98,14 @@ export class DecoratedSuite {
     }
 
     async runBefores(test: string, values: object) {
-        this.befores.forEach(before => this.runIfMatch(before, test, values));
+        for (const before of this.befores) {
+            await this.runIfMatch(before, test, values);
+        }
     }
 
     async runAfters(test: string, values: object) {
-        this.afters.forEach(after => this.runIfMatch(after, test, values));
+        for (const after of this.afters) {
+            await this.runIfMatch(after, test, values);
+        }
     }
 }
