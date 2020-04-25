@@ -2,6 +2,9 @@ import * as os from 'os';
 import { TestType, Test, PlyTest } from './test';
 import { Result } from './result';
 import { Runtime, DecoratedSuite } from './runtime';
+import { Retrieval } from './retrieval';
+import { Location } from './location';
+import { Storage } from './storage';
 import * as yaml from './yaml';
 import './date';
 
@@ -22,7 +25,7 @@ export class Suite<T extends Test> {
 
     /**
      * @param name suite name
-     * @param type request/case/workflow
+     * @param type request|case|workflow
      * @param path relative path from tests location (forward slashes)
      * @param runtime info
      * @param retrieval suite retrieval
@@ -100,7 +103,8 @@ export class Suite<T extends Test> {
         }
 
         let result = new Result();
-        let callingCase = await this.getCallingCaseFile();
+        let callingCaseActual = await this.getCallingCaseActual();
+        console.log("Calling case actual: " + JSON.stringify(callingCaseActual, null, 2));
         // tests are run sequentially
         for (const test of tests) {
             result = await (test as unknown as PlyTest).invoke(this.runtime);
@@ -114,16 +118,18 @@ export class Suite<T extends Test> {
         return result;
     }
 
-    private async getCallingCaseFile(): Promise<string | undefined> {
+    private async getCallingCaseActual(): Promise<Storage | undefined> {
         const stacktracey = 'stacktracey';
         const StackTracey = await import(stacktracey);
         const stack = new StackTracey();
-        for (const item of stack) {
-            if (item.callee === 'PlyCase.invoke') {
-                return '';
-            }
+        const plyCaseInvoke = stack.findIndex((elem: {callee: string;}) => elem.callee === 'PlyCase.invoke');
+        if (plyCaseInvoke > 0) {
+            const element = stack[plyCaseInvoke - 1];
+            let retrieval = new Retrieval(element.file);
+            const relPath = retrieval.location.relativeTo(this.runtime.options.testsLocation);
+            const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
+            return new Storage(this.runtime.options.actualLocation + '/' + resultFilePath);
         }
-        return '';
     }
 
     private buildResultYaml(result: Result): string {

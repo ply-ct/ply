@@ -1,11 +1,9 @@
 import * as ts from 'typescript';
 import * as osLocale from 'os-locale';
 import { PlyOptions } from './options';
-import { Location } from './location';
 import { Suite } from './suite';
 import { Case, PlyCase } from './case';
 import { Retrieval } from './retrieval';
-import { Storage } from './storage';
 import { Logger } from './logger';
 import { Runtime } from './runtime';
 
@@ -41,8 +39,6 @@ export class CaseLoader {
             let suiteDecorations = this.findSuites(sourceFile);
             if (suiteDecorations) {
                 let retrieval = new Retrieval(sourceFile.fileName);
-                const relPath = retrieval.location.relativeTo(this.options.testsLocation);
-                const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
 
                 for (let suiteDecoration of suiteDecorations) {
                     // every suite instance gets its own runtime
@@ -50,15 +46,13 @@ export class CaseLoader {
                         await osLocale(),
                         this.options,
                         this.logger,
-                        retrieval,
-                        new Retrieval(this.options.expectedLocation + '/' + resultFilePath),
-                        new Storage(this.options.actualLocation + '/' + resultFilePath)
+                        retrieval
                     );
 
                     let suite = new Suite<Case>(
                         suiteDecoration.name,
                         'case',
-                        relPath,
+                        retrieval.location.relativeTo(this.options.testsLocation),
                         runtime,
                         sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getStart()).line,
                         sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getEnd()).line,

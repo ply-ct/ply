@@ -12,6 +12,9 @@ import { TestSuite, TestCase, Before, After } from './decorators';
 export class Runtime {
 
     testsLocation: Location;
+    expected: Retrieval;
+    actual: Storage;
+
     decoratedSuite?: DecoratedSuite;
     values: object = {};
 
@@ -19,9 +22,7 @@ export class Runtime {
         readonly locale: string,
         readonly options: PlyOptions,
         readonly logger: Logger,
-        readonly retrieval: Retrieval,
-        readonly expected: Retrieval,
-        readonly actual: Storage) {
+        readonly retrieval: Retrieval) {
 
         if (path.isAbsolute(this.options.testsLocation)) {
             this.testsLocation = new Location(this.options.testsLocation);
@@ -29,11 +30,23 @@ export class Runtime {
         else {
             this.testsLocation = new Location(path.resolve(process.cwd() + '/' + this.options.testsLocation));
         }
+
+        const relPath = retrieval.location.relativeTo(this.options.testsLocation);
+        const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
+        this.expected = new Retrieval(this.options.expectedLocation + '/' + resultFilePath);
+        this.actual = new Storage(this.options.actualLocation + '/' + resultFilePath);
     }
 
     get suitePath(): string {
         return this.retrieval.location.relativeTo(this.options.testsLocation);
     }
+
+    get resultFilePath(): string {
+        const relPath = this.retrieval.location.relativeTo(this.options.testsLocation);
+        return new Location(relPath).parent + '/' + this.retrieval.location.base + '.' + this.retrieval.location.ext;
+    }
+
+
 }
 
 /**

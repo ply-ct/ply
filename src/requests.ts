@@ -1,10 +1,8 @@
 import * as osLocale from 'os-locale';
 import { PlyOptions } from './options';
 import { Suite } from './suite';
-import { Location } from './location';
 import { Retrieval } from './retrieval';
 import { Request, PlyRequest } from './request';
-import { Storage } from './storage';
 import { Runtime } from './runtime';
 import { Logger } from './logger';
 import * as yaml from './yaml';
@@ -28,21 +26,17 @@ export class RequestLoader {
             throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
         }
 
-        const relPath = retrieval.location.relativeTo(this.options.testsLocation);
-        const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
         const runtime = new Runtime(
             await osLocale(),
             this.options,
             this.logger,
-            retrieval,
-            new Retrieval(this.options.expectedLocation + '/' + resultFilePath),
-            new Storage(this.options.actualLocation + '/' + resultFilePath)
+            retrieval
         );
 
         const suite = new Suite<Request>(
             retrieval.location.base,
             'request',
-            relPath,
+            retrieval.location.relativeTo(this.options.testsLocation),
             runtime,
             0,
             contents.split(/\r?\n/).length - 1
