@@ -100,6 +100,7 @@ export class Suite<T extends Test> {
         }
 
         let result = new Result();
+        let callingCase = await this.getCallingCaseFile();
         // tests are run sequentially
         for (const test of tests) {
             result = await (test as unknown as PlyTest).invoke(this.runtime);
@@ -113,7 +114,19 @@ export class Suite<T extends Test> {
         return result;
     }
 
-    buildResultYaml(result: Result): string {
+    private async getCallingCaseFile(): Promise<string | undefined> {
+        const stacktracey = 'stacktracey';
+        const StackTracey = await import(stacktracey);
+        const stack = new StackTracey();
+        for (const item of stack) {
+            if (item.callee === 'PlyCase.invoke') {
+                return '';
+            }
+        }
+        return '';
+    }
+
+    private buildResultYaml(result: Result): string {
 
 
         // TODO named outcomesObject == case run

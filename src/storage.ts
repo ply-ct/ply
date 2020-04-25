@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as mkdirp from 'mkdirp';
 import { Location } from './location';
 
 /**
@@ -46,7 +47,9 @@ export class Storage {
             this.localStorage.setItem(this.location.path, contents);
         }
         else {
-            require('mkdirp').sync(this.location.parent);
+            if (this.location.parent) {
+                mkdirp.sync(this.location.parent);
+            }
             fs.writeFileSync(this.location.path, contents);
         }
     }
@@ -57,7 +60,9 @@ export class Storage {
             this.localStorage.setItem(this.location.path, exist ? exist + contents : contents);
         }
         else {
-            require('mkdirp').sync(this.location.parent);
+            if (this.location.parent) {
+                mkdirp.sync(this.location.parent);
+            }
             fs.appendFileSync(this.location.path, contents);
         }
     }

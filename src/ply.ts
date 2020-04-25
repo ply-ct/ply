@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import ts = require('typescript');
+import * as ts from 'typescript';
 import { Options, Config, PlyOptions, Defaults } from './options';
 import { Suite } from './suite';
 import { Request } from './request';

@@ -126,7 +126,7 @@ export class PlyRequest implements Request, PlyTest {
 
     /**
      * Only to be called in the context of a Suite (hence 'runtime').
-     * To execute a test programmatically, call one the Suite.run() overloads.
+     * To execute a test programmatically, call one of the Suite.run() overloads.
      * Or to send a request without testing, call submit().
      * @returns result with request outcomes and status of 'Pending'
      */

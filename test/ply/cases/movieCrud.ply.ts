@@ -5,6 +5,8 @@ import { suite, test, before, after } from '../../../src/index';
 @suite('movie crud')
 export class MovieCrud {
 
+    movieId?: string;
+
     /**
      * Cleanup movie left over from previous tests.
      */
@@ -23,24 +25,31 @@ export class MovieCrud {
 
     @test('add new movie')
     async createMovie(values: any) {
-        ply.logger.info('adding new movie');
-
-        values.custom = 'my custom value';
-        ply.logger.debug('values: ' + JSON.stringify(values));
-
         const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
-        await requestSuite.run('createMovie', values);
+        const result = await requestSuite.run('createMovie', values);
+        // TODO simplify the api for getting response body
+        this.movieId = JSON.parse(result.outcomes[0].response.body!).id;
+        ply.logger.info(`Created movie: id=${this.movieId}`);
     }
 
     @test('update rating')
-    async updateRating() {
-        // two requests: update and confirm
-
+    async updateRating(values: any) {
+        const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
+        // update movie rating
+        values.id = this.movieId;
+        values.rating = 4.5;
+        await requestSuite.run('updateMovie', values);
+        // confirm the update
+        await requestSuite.run('retrieveMovie', values);
     }
 
     @test('removeMovie')
-    async deleteMovie() {
-        // two requests: delete and confirm
+    async deleteMovie(values: any) {
+        const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
+        // delete movie
+        await requestSuite.run('deleteMovie', values);
+        // confirm the delete
+        await requestSuite.run('retrieveMovie', values);
     }
 
     @after
