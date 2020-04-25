@@ -11,4 +11,4 @@ caseFiles:
 responseHeaders:
   - 'content-type'
 
-verbose: true
+verbose: false

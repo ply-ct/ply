@@ -43,7 +43,7 @@ describe('Requests', async () => {
         let suite = suites[0];
 
         const values = {
-            "baseUrl": "https://ply-ct.com/demo/api",
+            "baseUrl": "http://localhost:8080/ply-demo/api",
             "year": 1931,
             "rating": 5
         };

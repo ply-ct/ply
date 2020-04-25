@@ -38,36 +38,43 @@ export class Logger {
     log(level: LogLevel, message: string, obj: any) {
         if (level <= (this.options.level || LogLevel.info)) {
             if (level === LogLevel.error) {
-                console.error(message);
                 if (obj) {
                     if (obj.stack) {
+                        console.error(message);
                         console.error(obj);
                     }
                     else {
-                        console.error(JSON.stringify(obj, null, this.options.prettyIndent));
+                        console.error(message + ': ' + JSON.stringify(obj, null, this.options.prettyIndent));
                     }
+                }
+                else {
+                    console.error(message);
                 }
             }
             else {
-                console.log(message);
                 if (obj) {
                     if (obj.stack) {
+                        console.log(message);
                         console.log(obj);
                     }
                     else {
-                        console.log(JSON.stringify(obj, null, this.options.prettyIndent));
+                        console.log(message + ': ' + JSON.stringify(obj, null, this.options.prettyIndent));
                     }
+                }
+                else {
+                    console.log(message);
                 }
             }
             if (this.storage) {
-                this.storage.append(message + '\n');
+                this.storage.append(message);
                 if (obj) {
                     if (obj.stack) {
-                        this.storage.append(obj.stack + '\n');
+                        this.storage.append('\n' + obj.stack);
                     } else {
-                        this.storage.append(JSON.stringify(obj, null, this.options.prettyIndent) + '\n');
+                        this.storage.append(': ' + JSON.stringify(obj, null, this.options.prettyIndent));
                     }
                 }
+                this.storage.append('\n');
             }
         }
     }

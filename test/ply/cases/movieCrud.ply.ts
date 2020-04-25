@@ -1,4 +1,5 @@
 import ply from '../../../src/index';
+import { assert } from 'chai';
 import { suite, test, before, after } from '../../../src/index';
 
 @suite('movie crud')
@@ -14,8 +15,10 @@ export class MovieCrud {
         if (!deleteMovie) {
             throw new Error('Request deleteMovie not found');
         }
-        ply.logger.info('Cleaning up...');
-        await deleteMovie.submit(values);
+        const response = await deleteMovie.submit(values);
+        ply.logger.info('Cleanup response status code', response.status.code);
+        // response status should either be 200 or 404 (we don't care which during cleanup)
+        assert.ok(response.status.code === 200 || response.status.code === 404);
     }
 
     @test('add new movie')

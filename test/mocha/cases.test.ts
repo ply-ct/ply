@@ -66,8 +66,11 @@ describe('Cases', async () => {
         assert.equal(suites.length, 1);
         const suite = suites[0];
 
-        const values = { "baseUrl": "https://ply-ct.com/demo/api" };
-        const result = await suite.run('add new movie', values);
+        const values = {
+            baseUrl: 'http://localhost:8080/ply-demo/api',
+            id: '435b30ad'
+        };
+        const result = await suite.run(values);
 
         // const outcome = result.outcomes[0];
         // assert.equal(outcome.response.status.code, 200);
