@@ -3,7 +3,7 @@ import { PlyOptions } from './options';
 import { Suite } from './suite';
 import { Retrieval } from './retrieval';
 import { Request, PlyRequest } from './request';
-import { Runtime } from './runtime';
+import { ResultPaths, Runtime } from './runtime';
 import { Logger } from './logger';
 import * as yaml from './yaml';
 
@@ -26,11 +26,14 @@ export class RequestLoader {
             throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
         }
 
+        let results = await ResultPaths.create(this.options, retrieval.location.base, retrieval);
+
         const runtime = new Runtime(
             await osLocale(),
             this.options,
             this.logger,
-            retrieval
+            retrieval,
+            results
         );
 
         const suite = new Suite<Request>(

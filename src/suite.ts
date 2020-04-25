@@ -1,9 +1,9 @@
 import * as os from 'os';
 import { TestType, Test, PlyTest } from './test';
 import { Result } from './result';
-import { Runtime, DecoratedSuite } from './runtime';
+import { Runtime, DecoratedSuite, ResultPaths } from './runtime';
+import { SUITE_PREFIX } from './decorators';
 import { Retrieval } from './retrieval';
-import { Location } from './location';
 import { Storage } from './storage';
 import * as yaml from './yaml';
 import './date';
@@ -87,11 +87,11 @@ export class Suite<T extends Test> {
      */
     private async runTests(tests: T[], values: object): Promise<Result> {
         this.runtime.values = values;
-        this.runtime.actual.remove();
+        this.runtime.results.actual.remove();
 
         if (this.className) {
             // initialize the decorated suite
-            const testFile = this.runtime.testsLocation.toString() + '/' + this.runtime.suitePath;
+            const testFile = this.runtime.testsLocation.toString() + '/' + this.path;
             const mod = await import(testFile);
             const clsName = Object.keys(mod).find(key => key === this.className);
             if (!clsName) {
@@ -103,13 +103,15 @@ export class Suite<T extends Test> {
         }
 
         let result = new Result();
-        let callingCaseActual = await this.getCallingCaseActual();
-        console.log("Calling case actual: " + JSON.stringify(callingCaseActual, null, 2));
+        let callingCaseResultPaths = await this.getCallingCaseResultPaths();
+        if (callingCaseResultPaths) {
+            this.runtime.results = callingCaseResultPaths;
+        }
         // tests are run sequentially
         for (const test of tests) {
             result = await (test as unknown as PlyTest).invoke(this.runtime);
             if (test.type === 'request') {
-                this.runtime.actual.append(this.buildResultYaml(result));
+                this.runtime.results.actual.append(this.buildResultYaml(result));
             }
         }
 
@@ -118,17 +120,18 @@ export class Suite<T extends Test> {
         return result;
     }
 
-    private async getCallingCaseActual(): Promise<Storage | undefined> {
+    private async getCallingCaseResultPaths(): Promise<ResultPaths | undefined> {
         const stacktracey = 'stacktracey';
         const StackTracey = await import(stacktracey);
         const stack = new StackTracey();
         const plyCaseInvoke = stack.findIndex((elem: {callee: string;}) => elem.callee === 'PlyCase.invoke');
         if (plyCaseInvoke > 0) {
             const element = stack[plyCaseInvoke - 1];
-            let retrieval = new Retrieval(element.file);
-            const relPath = retrieval.location.relativeTo(this.runtime.options.testsLocation);
-            const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
-            return new Storage(this.runtime.options.actualLocation + '/' + resultFilePath);
+            const clsName = element.callee.substring(0, element.callee.indexOf('.'));
+            const mod = await import(element.file);
+            const cls = mod[clsName];
+            const suiteName = cls[SUITE_PREFIX].name;
+            return await ResultPaths.create(this.runtime.options, suiteName, new Retrieval(element.file));
         }
     }
 
@@ -147,7 +150,7 @@ export class Suite<T extends Test> {
         let yml = yaml.dump(outcomesObject, this.runtime.options.prettyIndent);
 
         // parse for line numbers
-        const baseName = this.runtime.actual.location.base;
+        const baseName = this.runtime.results.actual.location.base;
         outcomesObject = yaml.load(baseName, yml);
         const ymlLines = yml.split('\n');
         Object.keys(outcomesObject).forEach(name => {

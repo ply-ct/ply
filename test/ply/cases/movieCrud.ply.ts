@@ -2,7 +2,7 @@ import ply from '../../../src/index';
 import { assert } from 'chai';
 import { suite, test, before, after } from '../../../src/index';
 
-@suite('movie crud')
+@suite('movie-crud')
 export class MovieCrud {
 
     movieId?: string;

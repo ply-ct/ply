@@ -5,7 +5,7 @@ import { Suite } from './suite';
 import { Case, PlyCase } from './case';
 import { Retrieval } from './retrieval';
 import { Logger } from './logger';
-import { Runtime } from './runtime';
+import { ResultPaths, Runtime } from './runtime';
 
 interface SuiteDecoration {
     name: string;
@@ -42,11 +42,14 @@ export class CaseLoader {
 
                 for (let suiteDecoration of suiteDecorations) {
                     // every suite instance gets its own runtime
+
+                    let results = await ResultPaths.create(this.options, suiteDecoration.name, retrieval);
                     const runtime = new Runtime(
                         await osLocale(),
                         this.options,
                         this.logger,
-                        retrieval
+                        retrieval,
+                        results
                     );
 
                     let suite = new Suite<Case>(

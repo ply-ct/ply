@@ -9,11 +9,45 @@ import { PlyOptions } from './options';
 import { TEST_PREFIX, BEFORE_PREFIX, AFTER_PREFIX, SUITE_PREFIX } from './decorators';
 import { TestSuite, TestCase, Before, After } from './decorators';
 
+export class ResultPaths {
+    expected: Retrieval;
+    actual: Storage;
+
+    /**
+     * Constructs with default results extension
+     */
+    private constructor(options: PlyOptions, retrieval: Retrieval) {
+        const relPath = retrieval.location.relativeTo(options.testsLocation);
+        const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.yml';
+        this.expected = new Retrieval(options.expectedLocation + '/' + resultFilePath);
+        this.actual = new Storage(options.actualLocation + '/' + resultFilePath);
+    }
+
+    /**
+     * Figures out the file extension for results.
+     */
+    static async create(options: PlyOptions, suiteName: string, retrieval: Retrieval): Promise<ResultPaths> {
+        const resultPaths = new ResultPaths(options, retrieval);
+        const relPath = retrieval.location.relativeTo(options.testsLocation);
+        let resultFilePath = new Location(relPath).parent + '/' + suiteName;
+        let ext = '.yml';
+        if (!await new Retrieval(options.expectedLocation + '/' + resultFilePath + '.yml').exists) {
+            if (await new Retrieval(options.expectedLocation + '/' + resultFilePath + '.yaml').exists || retrieval.location.ext === '.yaml') {
+                ext = '.yaml';
+            }
+        }
+        resultPaths.expected = new Retrieval(options.expectedLocation + '/' + resultFilePath + ext);
+        resultPaths.actual = new Storage(options.actualLocation + '/' + resultFilePath + ext);
+        return resultPaths;
+    }
+}
+
+/**
+ * Runtime information for a test suite.
+ */
 export class Runtime {
 
     testsLocation: Location;
-    expected: Retrieval;
-    actual: Storage;
 
     decoratedSuite?: DecoratedSuite;
     values: object = {};
@@ -22,7 +56,8 @@ export class Runtime {
         readonly locale: string,
         readonly options: PlyOptions,
         readonly logger: Logger,
-        readonly retrieval: Retrieval) {
+        readonly retrieval: Retrieval,
+        public results: ResultPaths) {
 
         if (path.isAbsolute(this.options.testsLocation)) {
             this.testsLocation = new Location(this.options.testsLocation);
@@ -30,23 +65,11 @@ export class Runtime {
         else {
             this.testsLocation = new Location(path.resolve(process.cwd() + '/' + this.options.testsLocation));
         }
-
-        const relPath = retrieval.location.relativeTo(this.options.testsLocation);
-        const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.' + retrieval.location.ext;
-        this.expected = new Retrieval(this.options.expectedLocation + '/' + resultFilePath);
-        this.actual = new Storage(this.options.actualLocation + '/' + resultFilePath);
     }
 
     get suitePath(): string {
         return this.retrieval.location.relativeTo(this.options.testsLocation);
     }
-
-    get resultFilePath(): string {
-        const relPath = this.retrieval.location.relativeTo(this.options.testsLocation);
-        return new Location(relPath).parent + '/' + this.retrieval.location.base + '.' + this.retrieval.location.ext;
-    }
-
-
 }
 
 /**
