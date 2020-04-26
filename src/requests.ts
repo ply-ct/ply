@@ -26,7 +26,11 @@ export class RequestLoader {
             throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
         }
 
-        let results = await ResultPaths.create(this.options, retrieval.location.base, retrieval);
+        let suiteName = retrieval.location.base;
+        if (suiteName.endsWith('.ply')) {
+            suiteName = suiteName.substring(0, suiteName.length - 4);
+        }
+        let results = await ResultPaths.create(this.options, suiteName, retrieval);
 
         const runtime = new Runtime(
             await osLocale(),

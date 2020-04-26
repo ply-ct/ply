@@ -58,4 +58,22 @@ describe('Requests', async () => {
         const movies = JSON.parse(responseBody!).movies;
         assert.equal(movies[0].title, 'Dracula');
     });
+
+    it('can run suite', async () => {
+        const options: PlyOptions = new Config().options;
+        const ply = new Ply({ ...options, verbose: true });
+        const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');
+        let suite = suites[0];
+
+        const values = {
+            baseUrl: "http://localhost:8080/ply-demo/api",
+            year: 1931,
+            rating: 5,
+            id: 'eec22a97',
+            query: 'year=1935&rating=>4&sort=rating&descending=true'
+        };
+
+        const result = await suite.run(values);
+        console.log("RESULT: " + JSON.stringify(result, null, 2));
+    });
 });

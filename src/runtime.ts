@@ -16,7 +16,7 @@ export class ResultPaths {
     /**
      * Constructs with default results extension
      */
-    private constructor(options: PlyOptions, retrieval: Retrieval) {
+    private constructor(options: PlyOptions, readonly retrieval: Retrieval) {
         const relPath = retrieval.location.relativeTo(options.testsLocation);
         const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.yml';
         this.expected = new Retrieval(options.expectedLocation + '/' + resultFilePath);

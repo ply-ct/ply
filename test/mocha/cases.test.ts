@@ -57,7 +57,7 @@ describe('Cases', async () => {
         assert.equal(instance.afterCount, 3);
     });
 
-    it('can run real one', async () => {
+    it('can run suite', async () => {
         const options: PlyOptions = new Config().options;
         // options not used because movieCrud.ply.ts loads ply
         // how to handle this?

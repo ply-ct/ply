@@ -1,4 +1,4 @@
-'add new movie':
+add new movie:
   createMovie:
     request:
       url: '${baseUrl}/movies'
@@ -86,7 +86,7 @@
           },
           "year": 1934
         }
-'update rating':
+update rating:
   updateMovie:
     request:
       url: '${baseUrl}/movies/${id}'
@@ -195,7 +195,7 @@
           },
           "year": 1934
         }
-'remove movie':
+remove movie:
   deleteMovie:
     request:
       url: '${baseUrl}/movies/${id}'
