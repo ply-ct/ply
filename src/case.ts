@@ -1,6 +1,6 @@
 import { TestType, Test, PlyTest } from './test';
 import { Runtime } from './runtime';
-import { Result } from './result';
+import { PlyResult } from './result';
 
 export interface Case extends Test {
     readonly method: string;
@@ -12,8 +12,8 @@ export class PlyCase implements Case, PlyTest {
     constructor(
         readonly name: string,
         readonly method: string,
-        readonly startLine?: number,
-        readonly endLine?: number) {
+        readonly start?: number,
+        readonly end?: number) {
     }
 
     /**
@@ -22,7 +22,7 @@ export class PlyCase implements Case, PlyTest {
      * Or to send a request without testing, call submit().
      * @returns result with request outcomes and status of 'Pending'
      */
-    async invoke(runtime: Runtime): Promise<Result> {
+    async invoke(runtime: Runtime): Promise<PlyResult> {
         const decoratedSuite = runtime.decoratedSuite;
         if (!decoratedSuite) {
             throw new Error(`Missing decorators for suite '${runtime.suitePath}'`);
@@ -41,6 +41,6 @@ export class PlyCase implements Case, PlyTest {
 
         await decoratedSuite.runAfters(this.name, values);
 
-        return new Result();
+        return new PlyResult();
     }
 }

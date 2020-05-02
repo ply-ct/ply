@@ -55,28 +55,28 @@ describe('Decorators', async () => {
 
         assert.equal(suites[0].name, 'UnnamedSuite');
         assert.equal(suites[0].className, 'UnnamedSuite');
-        assert.equal(suites[0].startLine, 6);
-        assert.equal(suites[0].endLine, 35);
+        assert.equal(suites[0].start, 6);
+        assert.equal(suites[0].end, 35);
         const unnamedTests = suites[0].tests;
         assert.equal(Object.keys(unnamedTests).length, 2);
         const unnamedCaseNoValues = suites[0].tests['unnamedCaseNoValues'];
         assert.equal(unnamedCaseNoValues.name, 'unnamedCaseNoValues');
         assert.equal(unnamedCaseNoValues.method, 'unnamedCaseNoValues');
-        assert.equal(unnamedCaseNoValues.startLine, 19);
-        assert.equal(unnamedCaseNoValues.endLine, 22);
+        assert.equal(unnamedCaseNoValues.start, 19);
+        assert.equal(unnamedCaseNoValues.end, 22);
         const unnamedCaseWithValues = suites[0].tests['unnamedCaseWithValues'];
         assert.equal(unnamedCaseWithValues.name, 'unnamedCaseWithValues');
         assert.equal(unnamedCaseWithValues.method, 'unnamedCaseWithValues');
 
         assert.equal(suites[1].name, 'my suite name');
         assert.equal(suites[1].className, 'NamedSuite');
-        assert.equal(suites[1].startLine, 37);
-        assert.equal(suites[1].endLine, 76);
+        assert.equal(suites[1].start, 37);
+        assert.equal(suites[1].end, 76);
         const namedCaseNoValues = suites[1].tests['first case'];
         assert.equal(namedCaseNoValues.name, 'first case');
         assert.equal(namedCaseNoValues.method, 'namedCaseNoValues');
-        assert.equal(namedCaseNoValues.startLine, 55);
-        assert.equal(namedCaseNoValues.endLine, 58);
+        assert.equal(namedCaseNoValues.start, 55);
+        assert.equal(namedCaseNoValues.end, 58);
         const namedCaseWithValues = suites[1].tests['second case'];
         assert.equal(namedCaseWithValues.name, 'second case');
         assert.equal(namedCaseWithValues.method, 'namedCaseWithValues');

@@ -6,6 +6,7 @@ import { Request, PlyRequest } from './request';
 import { ResultPaths, Runtime } from './runtime';
 import { Logger } from './logger';
 import * as yaml from './yaml';
+import { Z_DEFAULT_STRATEGY } from 'zlib';
 
 export class RequestLoader {
 
@@ -49,39 +50,16 @@ export class RequestLoader {
             contents.split(/\r?\n/).length - 1
         );
 
-        const obj = yaml.load(retrieval.location.path, contents);
-        let lastRequest: Request | undefined = undefined;
+        const obj = yaml.load(retrieval.location.path, contents, true);
         for (const key of Object.keys(obj)) {
-            let startLine = obj[key].__line;
-            let request = new PlyRequest(key, Object.assign(obj[key], {startLine, __line: undefined}) as Request);
-            if (lastRequest && lastRequest.startLine && request.startLine) {
-                lastRequest.endLine = await this.getEndLine(retrieval, lastRequest.startLine, request.startLine - 1);
+            let val = obj[key];
+            if (typeof val === 'object') {
+                let startEnd = { start: val.__start, end: val.__end };
+                let { __start, __end, ...cleanObj} = val;
+                let request = new PlyRequest(key, { ...startEnd, ...cleanObj } as Request);
+                suite.add(request);
             }
-            lastRequest = request;
-            suite.add(request);
         }
-        if (lastRequest && lastRequest.startLine) {
-            lastRequest.endLine = await this.getEndLine(retrieval, lastRequest.startLine);
-        }
-
         return suite;
-    }
-
-    async getEndLine(retrieval: Retrieval, start: number, end: number | undefined = undefined): Promise<number | undefined> {
-        let lines = await retrieval.readLines(start, end);
-        if (lines) {
-            lines.reverse();
-            let endLine = end || (start + lines.length - 1);
-            for (let i = 0; i < lines.length; i++) {
-                let line = lines[i].trim();
-                if (!line || line.startsWith('#')) {
-                    endLine--;
-                }
-                else {
-                    break;
-                }
-            }
-            return endLine;
-        }
     }
 }

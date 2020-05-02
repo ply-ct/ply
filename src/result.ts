@@ -32,10 +32,25 @@ export class Outcome {
     }
 }
 
-export class Result {
+export interface Result {
+    status: 'Pending' | 'Passed' | 'Failed' | 'Errored'
+    message: string
+    /**
+     * One-based, relative to starting line of test
+     */
+    line: number
+    /**
+     * Diff message
+     */
+    diff?: string
+}
+
+export class PlyResult implements Result {
 
     status: 'Pending' | 'Passed' | 'Failed' | 'Errored' = 'Pending';
-    message?: string;
+    message: string = '';
+    line: number = 0;
+    diff?: string;
 
     readonly outcomes: Outcome[] = [];
 

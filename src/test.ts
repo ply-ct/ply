@@ -1,5 +1,5 @@
 import { Runtime } from './runtime';
-import { Result } from './result';
+import { PlyResult } from './result';
 
 export type TestType = 'request' | 'case' | 'workflow';
 
@@ -9,12 +9,19 @@ export interface Test {
     type: TestType;
 
     /**
-     * zero-based
+     * zero-based start line
      */
-    startLine?: number;
-    endLine?: number;
+    start?: number;
+    /**
+     * zero-based end line
+     */
+    end?: number;
 }
 
-export interface PlyTest {
-    invoke(runtime: Runtime): Promise<Result>;
+export interface PlyTest extends Test {
+    /**
+     * Promises a result with status of 'Pending'
+     * @returns result with request outcomes and status of 'Pending'
+     */
+    invoke(runtime: Runtime): Promise<PlyResult>;
 }

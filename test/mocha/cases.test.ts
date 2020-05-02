@@ -17,14 +17,14 @@ describe('Cases', async () => {
         assert.equal(suites[0].className, 'MovieCrud');
         assert.equal(suites[0].type, 'case');
         assert.equal(suites[0].path, 'cases/movieCrud.ply.ts');
-        assert.equal(suites[0].startLine, 4);
+        assert.equal(suites[0].start, 4);
 
         const create = suites[0].get('add new movie') as PlyCase;
         const c2 = suites[0].tests['add new movie'];
         assert.deepEqual(create, c2);
         assert.equal(create.method, 'createMovie');
         assert.equal(create.type, 'case');
-        assert.equal(create.startLine, 25);
+        assert.equal(create.start, 25);
     });
 
     it('can run unnamed suite', async () => {

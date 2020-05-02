@@ -1,7 +1,7 @@
 import { TestType, Test, PlyTest } from './test';
 import { Response, PlyResponse } from './response';
 import { Runtime } from './runtime';
-import { Result, Outcome } from './result';
+import { PlyResult, Outcome } from './result';
 import * as subst from './subst';
 import './date';
 
@@ -20,8 +20,8 @@ export class PlyRequest implements Request, PlyTest {
     method: string;
     headers: any;
     body: string | undefined;
-    startLine?: number;
-    endLine?: number;
+    start?: number;
+    end?: number;
     submitted?: Date;
 
     /**
@@ -39,7 +39,8 @@ export class PlyRequest implements Request, PlyTest {
         this.method = obj.method.trim();
         this.headers = obj.headers || {};
         this.body = obj.body;
-        this.startLine = obj.startLine || 0;
+        this.start = obj.start || 0;
+        this.end = obj.end;
     }
 
     getSupportedMethod(method: string): string | undefined {
@@ -130,14 +131,14 @@ export class PlyRequest implements Request, PlyTest {
      * Or to send a request without testing, call submit().
      * @returns result with request outcomes and status of 'Pending'
      */
-    async invoke(runtime: Runtime): Promise<Result> {
+    async invoke(runtime: Runtime): Promise<PlyResult> {
         this.submitted = new Date();
         runtime.logger.info(`Request '${this.name}' submitted at ${this.submitted.timestamp(runtime.locale)}`);
         const requestObject = this.requestObject(runtime.values);
         runtime.logger.debug('Request:', requestObject);
         const response = await this.doSubmit(requestObject);
         runtime.logger.debug('Response:', response);
-        const result = new Result();
+        const result = new PlyResult();
         const outcome = new Outcome(
             this.name,
             requestObject,

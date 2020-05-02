@@ -27,9 +27,9 @@ export class MovieCrud {
     async createMovie(values: any) {
         const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
         const result = await requestSuite.run('createMovie', values);
-        // TODO simplify the api for getting response body
-        this.movieId = JSON.parse(result.outcomes[0].response.body!).id;
-        ply.logger.info(`Created movie: id=${this.movieId}`);
+        // TODO simplify the api for getting response body (and expressions in downstream requests)
+        // this.movieId = JSON.parse(result.outcomes[0].response.body!).id;
+        // ply.logger.info(`Created movie: id=${this.movieId}`);
     }
 
     @test('update rating')

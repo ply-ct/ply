@@ -1,11 +1,12 @@
 import * as os from 'os';
 import { TestType, Test, PlyTest } from './test';
-import { Result } from './result';
+import { Result, PlyResult } from './result';
 import { Runtime, DecoratedSuite, ResultPaths } from './runtime';
 import { SUITE_PREFIX, TEST_PREFIX } from './decorators';
 import { Retrieval } from './retrieval';
 import * as yaml from './yaml';
 import './date';
+import { verify } from './verify';
 
 interface Tests<T extends Test> {
     [key: string]: T
@@ -43,8 +44,14 @@ export class Suite<T extends Test> {
         readonly type: TestType,
         readonly path: string,
         private readonly runtime: Runtime,
-        readonly startLine: number = 0,
-        readonly endLine: number,
+        /**
+         * zero-based start line
+         */
+        readonly start: number = 0,
+        /**
+         * zero-based end line
+         */
+        readonly end: number,
         readonly className?: string
     ) {}
 
@@ -65,10 +72,10 @@ export class Suite<T extends Test> {
      * @param values runtime values for substitution
      * @returns result indicating outcome
      */
-    async run(values: object): Promise<Result>;
-    async run(name: string, values: object): Promise<Result>;
-    async run(names: string[], values: object): Promise<Result>;
-    async run(namesOrValues: object | string | string[], values?: object): Promise<Result> {
+    async run(values: object): Promise<Result[]>;
+    async run(name: string, values: object): Promise<Result[]>;
+    async run(names: string[], values: object): Promise<Result[]>;
+    async run(namesOrValues: object | string | string[], values?: object): Promise<Result[]> {
         if (typeof namesOrValues === 'object') {
             // run all tests
             return await this.runTests(this.all(), namesOrValues);
@@ -90,7 +97,7 @@ export class Suite<T extends Test> {
      * Tests are run sequentially.
      * @param tests
      */
-    private async runTests(tests: T[], values: object): Promise<Result> {
+    private async runTests(tests: T[], values: object): Promise<Result[]> {
         this.runtime.values = values;
 
         let callingCaseInfo: CallingCaseInfo | undefined;
@@ -119,22 +126,39 @@ export class Suite<T extends Test> {
             }
         }
 
-        let result = new Result();
+        let results: Result[] = [];
         // tests are run sequentially
         for (const test of tests) {
             if (test.type === 'case') {
                 this.runtime.results.actual.append(test.name + ':' + os.EOL);
             }
-            result = await (test as unknown as PlyTest).invoke(this.runtime);
+            let plyTest = test as unknown as PlyTest;
+            let plyResult = await plyTest.invoke(this.runtime);
             if (test.type === 'request') {
                 let indent = callingCaseInfo ? this.runtime.options.prettyIndent : 0;
-                this.runtime.results.actual.append(this.buildResultYaml(result, indent));
+                const actualYaml = this.buildResultYaml(plyResult, indent);
+                this.runtime.results.actual.append(actualYaml);
+                const expected = await this.runtime.results.expected.read();
+                if (!expected) {
+                    throw new Error(`Expected result not found: ${this.runtime.results.expected}`);
+                }
+                let result: Result = { status: 'Passed', message: 'Test succeeded', line: 0 };
+                // const expectedYaml = yaml.load(this.runtime.results.expected.toString(), expected, true);
+                // this.runtime.logger.debug(`Comparing: ${expectedYaml}\n  with: ${actualYaml}`);
+
+                // let result = await verify(expectedYaml, actualYaml, values);
+                // if (result.status === 'Passed') {
+                //     this.runtime.logger.info(`Test ${test.name} PASSED`);
+                // }
+                // else {
+                //     this.runtime.logger.error(`Test ${test.name} FAILED: Results differ from line ${result.line}`, result.diff);
+                // }
+
+                results.push(result);
             }
         }
 
-        // TODO accumulate result
-        // TODO compare actual vs expected
-        return result;
+        return results;
     }
 
     /**
@@ -162,7 +186,7 @@ export class Suite<T extends Test> {
         }
     }
 
-    private buildResultYaml(result: Result, indent: number): string {
+    private buildResultYaml(result: PlyResult, indent: number): string {
 
 
         // (see test/ply/results/expected/cases/movie-crud.yaml)
@@ -176,7 +200,7 @@ export class Suite<T extends Test> {
 
         // parse for line numbers
         const baseName = this.runtime.results.actual.location.base;
-        outcomesObject = yaml.load(baseName, yml);
+        outcomesObject = yaml.load(baseName, yml, true);
         let ymlLines = yml.split('\n');
         if (indent) {
             ymlLines = ymlLines.map((line, i) => {
@@ -191,8 +215,8 @@ export class Suite<T extends Test> {
         Object.keys(outcomesObject).forEach(name => {
             let outcome = result.outcomes.find(o => o.name === name);
             let outcomeObject = outcomesObject[name];
-            if (typeof outcomeObject.__line !== 'undefined') {
-                let outcomeLine = outcomeObject.__line;
+            if (typeof outcomeObject.__start !== 'undefined') {
+                let outcomeLine = outcomeObject.__start;
                 if (outcome?.request.submitted) {
                     ymlLines[outcomeLine] += `  # ${outcome.request.submitted.timestamp(this.runtime.locale)}`;
                 }
