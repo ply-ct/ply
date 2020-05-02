@@ -1,11 +1,11 @@
 import * as jsYaml from 'js-yaml';
 
-export function dump(obj, indent) {
+export function dump(obj: object, indent: number) {
     return jsYaml.safeDump(obj, { noCompatMode: true, skipInvalid: true, indent, lineWidth: -1 });
 }
 
-export function load(file, contents) {
-    const lines = {};
+export function load(file: string, contents: string) {
+    const lines: any = {};
     const obj = jsYaml.safeLoad(contents, {
         filename: file,
         listener: function (op, state) {

@@ -13,7 +13,7 @@ describe('Cases', async () => {
         const suites = await ply.loadCases('test/ply/cases/movieCrud.ply.ts');
 
         assert.ok(suites.length === 1);
-        assert.equal(suites[0].name, 'movie crud');
+        assert.equal(suites[0].name, 'movie-crud');
         assert.equal(suites[0].className, 'MovieCrud');
         assert.equal(suites[0].type, 'case');
         assert.equal(suites[0].path, 'cases/movieCrud.ply.ts');
