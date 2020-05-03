@@ -142,17 +142,18 @@ export class Suite<T extends Test> {
                 if (!expected) {
                     throw new Error(`Expected result not found: ${this.runtime.results.expected}`);
                 }
-                let result: Result = { status: 'Passed', message: 'Test succeeded', line: 0 };
-                // const expectedYaml = yaml.load(this.runtime.results.expected.toString(), expected, true);
-                // this.runtime.logger.debug(`Comparing: ${expectedYaml}\n  with: ${actualYaml}`);
+                const expectedObj = yaml.load(this.runtime.results.expected.toString(), expected, true)[test.name];
+                const expectedLines = expected.split(/\r?\n/);
+                const expectedYaml = expectedLines.slice(expectedObj.__start, expectedObj.__end + 1).join('\n');
+                this.runtime.logger.debug(`Comparing:\n${expectedYaml}\n  with:\n${actualYaml}`);
 
-                // let result = await verify(expectedYaml, actualYaml, values);
-                // if (result.status === 'Passed') {
-                //     this.runtime.logger.info(`Test ${test.name} PASSED`);
-                // }
-                // else {
-                //     this.runtime.logger.error(`Test ${test.name} FAILED: Results differ from line ${result.line}`, result.diff);
-                // }
+                let result = await verify(expectedYaml, actualYaml, values);
+                if (result.status === 'Passed') {
+                    this.runtime.logger.info(`Test ${test.name} PASSED`);
+                }
+                else {
+                    this.runtime.logger.error(`Test ${test.name} FAILED: Results differ from line ${result.line}\n${result.diff}`);
+                }
 
                 results.push(result);
             }

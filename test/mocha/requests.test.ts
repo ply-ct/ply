@@ -39,9 +39,9 @@ describe('Requests', async () => {
         });
     });
 
-    it('can run one', async () => {
+    it('can handle success', async () => {
         const options: PlyOptions = new Config().options;
-        const ply = new Ply({...options, verbose: true});
+        const ply = new Ply({...options, verbose: false});
         const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');
         let suite = suites[0];
 
@@ -51,16 +51,9 @@ describe('Requests', async () => {
             "rating": 5
         };
 
-        const result = await suite.run('moviesByYearAndRating', values);
-        console.log("RES:" + JSON.stringify(result, null, 2));
-        // const outcome = result.outcomes[0];
-        // assert.equal(outcome.name, 'moviesByYearAndRating');
-        // assert.equal(outcome.response.status.code, 200);
-        // assert.equal(outcome.response.headers['content-type'], 'application/json');
-        // const responseBody = outcome.response.body;
-        // assert.ok(responseBody);
-        // const movies = JSON.parse(responseBody!).movies;
-        // assert.equal(movies[0].title, 'Dracula');
+        const results = await suite.run('moviesByYearAndRating', values);
+        assert.equal(results[0].status, 'Passed');
+        assert.equal(results[0].message, 'Test succeeded');
     });
 
     it('can run suite', async () => {

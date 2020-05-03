@@ -2,9 +2,12 @@ import * as subst from './subst';
 import { Compare } from './compare';
 import { Result } from './result';
 
+/**
+ * Verify expected vs actual results yaml.
+ */
 export function verify(expectedYaml: string, actualYaml: string, values: object, startLine: number = 0): Result {
-    const expected = subst.trimComments(expectedYaml.replace(/\r/g, ''));
-    const actual = subst.trimComments(actualYaml);
+    const expected = subst.trimComments(expectedYaml.trimRight().replace(/\r/g, '') + '\n');
+    const actual = subst.trimComments(actualYaml.trimRight().replace(/\r/g, '') + '\n');
     const diffs = new Compare().diffLines(subst.extractCode(expected), subst.extractCode(actual), values);
     var firstDiffLine = 0;
     var diffMsg = '';
