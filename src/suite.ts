@@ -1,12 +1,13 @@
 import * as os from 'os';
 import { TestType, Test, PlyTest } from './test';
 import { Result, PlyResult } from './result';
+import { Logger } from './logger';
 import { Runtime, DecoratedSuite, ResultPaths } from './runtime';
 import { SUITE_PREFIX, TEST_PREFIX } from './decorators';
 import { Retrieval } from './retrieval';
 import * as yaml from './yaml';
 import './date';
-import { verify } from './verify';
+import verify from './verify';
 
 interface Tests<T extends Test> {
     [key: string]: T
@@ -43,6 +44,7 @@ export class Suite<T extends Test> {
         readonly name: string,
         readonly type: TestType,
         readonly path: string,
+        readonly logger: Logger,
         private readonly runtime: Runtime,
         /**
          * zero-based start line
@@ -128,6 +130,7 @@ export class Suite<T extends Test> {
 
         let results: Result[] = [];
         // tests are run sequentially
+        let prevResult: PlyResult | undefined = undefined;
         for (const test of tests) {
             if (test.type === 'case') {
                 this.runtime.results.actual.append(test.name + ':' + os.EOL);
@@ -142,21 +145,30 @@ export class Suite<T extends Test> {
                 if (!expected) {
                     throw new Error(`Expected result not found: ${this.runtime.results.expected}`);
                 }
-                const expectedObj = yaml.load(this.runtime.results.expected.toString(), expected, true)[test.name];
+                const name = callingCaseInfo ? callingCaseInfo.caseName : test.name;
+                const expectedObj = yaml.load(this.runtime.results.expected.toString(), expected, true)[name];
                 const expectedLines = expected.split(/\r?\n/);
                 const expectedYaml = expectedLines.slice(expectedObj.__start, expectedObj.__end + 1).join('\n');
-                this.runtime.logger.debug(`Comparing:\n${expectedYaml}\n  with:\n${actualYaml}`);
+                this.logger.debug(`Comparing:\n${expectedYaml}\n  with:\n${actualYaml}`);
 
-                let result = await verify(expectedYaml, actualYaml, values);
+                let verifyVals = { ...values };
+                if (prevResult) {
+                    verifyVals = { ...verifyVals,
+                        '__request': plyResult.outcomes[0].request,
+                        '__response': plyResult.outcomes[0].response
+                    };
+                }
+
+                let result = await verify(expectedYaml, actualYaml, verifyVals, this.logger);
                 if (result.status === 'Passed') {
-                    this.runtime.logger.info(`Test ${test.name} PASSED`);
+                    this.logger.info(`Test ${test.name} PASSED`);
                 }
                 else {
-                    this.runtime.logger.error(`Test ${test.name} FAILED: Results differ from line ${result.line}\n${result.diff}`);
+                    this.logger.error(`Test ${test.name} FAILED: Results differ from line ${result.line}\n${result.diff}`);
                 }
-
                 results.push(result);
             }
+            prevResult = plyResult;
         }
 
         return results;
@@ -188,9 +200,6 @@ export class Suite<T extends Test> {
     }
 
     private buildResultYaml(result: PlyResult, indent: number): string {
-
-
-        // (see test/ply/results/expected/cases/movie-crud.yaml)
 
         let outcomesObject: any = {};
         for (const outcome of result.outcomes) {

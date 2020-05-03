@@ -47,7 +47,6 @@ export class CaseLoader {
                     const runtime = new Runtime(
                         await osLocale(),
                         this.options,
-                        this.logger,
                         retrieval,
                         results
                     );
@@ -56,6 +55,7 @@ export class CaseLoader {
                         suiteDecoration.name,
                         'case',
                         retrieval.location.relativeTo(this.options.testsLocation),
+                        this.logger,
                         runtime,
                         sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getStart()).line,
                         sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getEnd()).line,
@@ -67,7 +67,8 @@ export class CaseLoader {
                             caseDecoration.name,
                             caseDecoration.methodName,
                             sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getStart()).line,
-                            sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getEnd()).line
+                            sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getEnd()).line,
+                            this.logger
                         );
                         suite.add(c);
                     }

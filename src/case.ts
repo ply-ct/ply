@@ -1,4 +1,5 @@
 import { TestType, Test, PlyTest } from './test';
+import { Logger } from './logger';
 import { Runtime } from './runtime';
 import { PlyResult } from './result';
 
@@ -12,8 +13,9 @@ export class PlyCase implements Case, PlyTest {
     constructor(
         readonly name: string,
         readonly method: string,
-        readonly start?: number,
-        readonly end?: number) {
+        readonly start: number,
+        readonly end: number,
+        readonly logger: Logger) {
     }
 
     /**
@@ -29,7 +31,7 @@ export class PlyCase implements Case, PlyTest {
         }
 
         const values = { ...runtime.values };
-        runtime.logger.info(`Running '${this.name}'`);
+        this.logger.info(`Running '${this.name}'`);
         await decoratedSuite.runBefores(this.name, values);
 
 

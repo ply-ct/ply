@@ -1,5 +1,6 @@
 import { TestType, Test, PlyTest } from './test';
 import { Response, PlyResponse } from './response';
+import { Logger } from './logger';
 import { Runtime } from './runtime';
 import { PlyResult, Outcome } from './result';
 import * as subst from './subst';
@@ -28,7 +29,7 @@ export class PlyRequest implements Request, PlyTest {
      * @param name test name
      * @param obj object to parse for contents
      */
-    constructor(readonly name: string, obj: Request) {
+    constructor(readonly name: string, obj: Request, readonly logger: Logger) {
         if (!obj.url) {
             throw new Error("Request is missing 'url'");
         }
@@ -95,12 +96,12 @@ export class PlyRequest implements Request, PlyTest {
     /**
      * Request object with substituted values
      */
-    private requestObject(values?: object): Request {
-        const url = subst.replace(this.url, values);
+    private requestObject(values: object): Request {
+        const url = subst.replace(this.url, values, this.logger);
         if (!url.startsWith('http://') && !url.startsWith('https://')) {
             throw new Error('Invalid url: ' + url);
         }
-        const method = subst.replace(this.method, values).toUpperCase();
+        const method = subst.replace(this.method, values, this.logger).toUpperCase();
         if (!this.getSupportedMethod(method)) {
             throw new Error('Unsupported method: ' + method);
         }
@@ -111,7 +112,7 @@ export class PlyRequest implements Request, PlyTest {
             url,
             method,
             headers,
-            body: this.body ? subst.replace(this.body, values) : undefined,
+            body: this.body ? subst.replace(this.body, values, this.logger) : undefined,
             submitted: this.submitted,
             submit: () => { throw new Error('Not implemented'); }
          };
@@ -133,11 +134,11 @@ export class PlyRequest implements Request, PlyTest {
      */
     async invoke(runtime: Runtime): Promise<PlyResult> {
         this.submitted = new Date();
-        runtime.logger.info(`Request '${this.name}' submitted at ${this.submitted.timestamp(runtime.locale)}`);
+        this.logger.info(`Request '${this.name}' submitted at ${this.submitted.timestamp(runtime.locale)}`);
         const requestObject = this.requestObject(runtime.values);
-        runtime.logger.debug('Request:', requestObject);
+        this.logger.debug('Request:', requestObject);
         const response = await this.doSubmit(requestObject);
-        runtime.logger.debug('Response:', response);
+        this.logger.debug('Response:', response);
         const result = new PlyResult();
         const outcome = new Outcome(
             this.name,

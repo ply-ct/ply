@@ -2,7 +2,7 @@ import * as assert from 'assert';
 import * as yaml from '../../src/yaml';
 import { Retrieval } from '../../src/retrieval';
 
-describe('Yaml', () => {
+describe('yaml', () => {
 
     it('reads line numbers', async () => {
 

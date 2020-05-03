@@ -1,4 +1,5 @@
 import { diff_match_patch as DiffMatchPatch, Diff as DmpDiff } from 'diff-match-patch';
+import { Logger } from './logger';
 import * as subst from './subst';
 
 /**
@@ -19,6 +20,8 @@ export type Marker = {
 }
 
 export class Compare {
+
+    constructor(readonly logger: Logger) {}
 
     diffLines(expected: string, actual: string, values: object) {
         const dmp = new DiffMatchPatch();
@@ -58,15 +61,19 @@ export class Compare {
         return jsdiffs;
     }
 
+    /**
+     * Handles regex and @request/@response.
+     */
     private markIgnored(diffs: Diff[], values: object) {
         for (let i = 0; i < diffs.length; i++) {
             if (diffs[i].removed && diffs.length > i + 1 && diffs[i + 1].added) {
-                var exp = subst.replace(diffs[i].value, values);
+                var exp = subst.replace(diffs[i].value, values, this.logger);
                 var act = diffs[i + 1].value;
                 if (exp === act) {
                     diffs[i].ignored = diffs[i + 1].ignored = true;
                 }
                 else if (exp.indexOf('${~') >= 0) {
+                    // regex
                     var regex = exp.replace(/\$\{~.+?}/g, (match) => {
                         return '(' + match.substr(3, match.length - 4) + ')';
                     });

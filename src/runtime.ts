@@ -55,7 +55,6 @@ export class Runtime {
     constructor(
         readonly locale: string,
         readonly options: PlyOptions,
-        readonly logger: Logger,
         readonly retrieval: Retrieval,
         public results: ResultPaths) {
 
