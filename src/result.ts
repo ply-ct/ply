@@ -2,9 +2,9 @@ import { Request } from './request';
 import { Response } from './response';
 
 /**
- * Outcome from submitting a single request
+ * Request/response couplet from a single submit.
  */
-export class Outcome {
+export class Invocation {
 
     constructor(
         /**
@@ -20,16 +20,6 @@ export class Outcome {
          */
         readonly response: Response
     ) { }
-
-    outcomeObject(): object {
-        const { name: _name, type: _type, submitted: _submitted, ...leanRequest } = this.request;
-        delete (leanRequest.headers as any).Authorization;
-        const { time: _time, ...leanResponse } = this.response;
-        return {
-            request: leanRequest,
-            response: leanResponse
-        };
-    }
 }
 
 export interface Result {
@@ -52,12 +42,24 @@ export class PlyResult implements Result {
     line: number = 0;
     diff?: string;
 
-    readonly outcomes: Outcome[] = [];
+    constructor(readonly invocation: Invocation) {}
 
-    resultObject(): object {
+    getResult(): object {
         return {
             status: this.status,
             message: this.message
+        };
+    }
+
+    getInvocation(): object {
+        const { name: _name, type: _type, submitted: _submitted, ...leanRequest } = this.invocation.request;
+        delete (leanRequest.headers as any).Authorization;
+        const { time: _time, ...leanResponse } = this.invocation.response;
+        return {
+            [this.invocation.name]: {
+                request: leanRequest,
+                response: leanResponse
+            }
         };
     }
 }

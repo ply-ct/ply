@@ -130,14 +130,15 @@ export class Suite<T extends Test> {
 
         let results: Result[] = [];
         // tests are run sequentially
-        let prevResult: PlyResult | undefined = undefined;
+        // let prevResult: PlyResult | undefined = undefined;
         for (const test of tests) {
             if (test.type === 'case') {
                 this.runtime.results.actual.append(test.name + ':' + os.EOL);
             }
             let plyTest = test as unknown as PlyTest;
-            let plyResult = await plyTest.invoke(this.runtime);
+            let result = await plyTest.invoke(this.runtime);
             if (test.type === 'request') {
+                let plyResult = result as PlyResult;
                 let indent = callingCaseInfo ? this.runtime.options.prettyIndent : 0;
                 const actualYaml = this.buildResultYaml(plyResult, indent);
                 this.runtime.results.actual.append(actualYaml);
@@ -152,14 +153,15 @@ export class Suite<T extends Test> {
                 this.logger.debug(`Comparing:\n${expectedYaml}\n  with:\n${actualYaml}`);
 
                 let verifyVals = { ...values };
-                if (prevResult) {
-                    verifyVals = { ...verifyVals,
-                        '__request': plyResult.outcomes[0].request,
-                        '__response': plyResult.outcomes[0].response
-                    };
-                }
+                // if (prevResult) {
+                //     verifyVals = { ...verifyVals,
+                //         '__request': plyResult.invocation.request,
+                //         '__response': plyResult.invocation.response
+                //     };
+                // }
 
-                let result = await verify(expectedYaml, actualYaml, verifyVals, this.logger);
+                // TODO reassigning result?
+                result = await verify(expectedYaml, actualYaml, verifyVals, this.logger);
                 if (result.status === 'Passed') {
                     this.logger.info(`Test ${test.name} PASSED`);
                 }
@@ -168,7 +170,7 @@ export class Suite<T extends Test> {
                 }
                 results.push(result);
             }
-            prevResult = plyResult;
+            // prevResult = plyResult;
         }
 
         return results;
@@ -199,18 +201,19 @@ export class Suite<T extends Test> {
         }
     }
 
+    private buildResultsYaml(results: PlyResult[], indent: number): string {
+        return  '';
+    }
+
     private buildResultYaml(result: PlyResult, indent: number): string {
 
-        let outcomesObject: any = {};
-        for (const outcome of result.outcomes) {
-            outcomesObject[outcome.name] = outcome.outcomeObject();
-        }
+        let invocationObject: any = result.getInvocation();
 
-        let yml = yaml.dump(outcomesObject, this.runtime.options.prettyIndent);
+        let yml = yaml.dump(invocationObject, this.runtime.options.prettyIndent);
 
         // parse for line numbers
         const baseName = this.runtime.results.actual.location.base;
-        outcomesObject = yaml.load(baseName, yml, true);
+        invocationObject = yaml.load(baseName, yml, true);
         let ymlLines = yml.split('\n');
         if (indent) {
             ymlLines = ymlLines.map((line, i) => {
@@ -222,21 +225,18 @@ export class Suite<T extends Test> {
                 }
             });
         }
-        Object.keys(outcomesObject).forEach(name => {
-            let outcome = result.outcomes.find(o => o.name === name);
-            let outcomeObject = outcomesObject[name];
-            if (typeof outcomeObject.__start !== 'undefined') {
-                let outcomeLine = outcomeObject.__start;
-                if (outcome?.request.submitted) {
-                    ymlLines[outcomeLine] += `  # ${outcome.request.submitted.timestamp(this.runtime.locale)}`;
-                }
-                if (typeof outcome?.response.time !== 'undefined') {
-                    let responseMs = outcome.response.time + ' ms';
-                    let requestYml = yaml.dump({ request: outcomeObject.request }, this.runtime.options.prettyIndent);
-                    ymlLines[outcomeLine + requestYml.split('\n').length] += `  # ${responseMs}`;
-                }
+        let outcomeObject = invocationObject[result.invocation.name] as any;
+        if (typeof outcomeObject.__start !== 'undefined') {
+            let outcomeLine = outcomeObject.__start;
+            if (result.invocation.request.submitted) {
+                ymlLines[outcomeLine] += `  # ${result.invocation.request.submitted.timestamp(this.runtime.locale)}`;
             }
-        });
+            if (typeof result.invocation.response.time !== 'undefined') {
+                let responseMs = result.invocation.response.time + ' ms';
+                let requestYml = yaml.dump({ request: outcomeObject.request }, this.runtime.options.prettyIndent);
+                ymlLines[outcomeLine + requestYml.split('\n').length] += `  # ${responseMs}`;
+            }
+        }
         yml = ymlLines.join(os.EOL);
 
         return yml;

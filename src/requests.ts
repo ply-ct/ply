@@ -6,7 +6,6 @@ import { Request, PlyRequest } from './request';
 import { ResultPaths, Runtime } from './runtime';
 import { Logger } from './logger';
 import * as yaml from './yaml';
-import { Z_DEFAULT_STRATEGY } from 'zlib';
 
 export class RequestLoader {
 
@@ -61,5 +60,9 @@ export class RequestLoader {
             }
         }
         return suite;
+    }
+
+    async run(requests: Request[]) {
+
     }
 }

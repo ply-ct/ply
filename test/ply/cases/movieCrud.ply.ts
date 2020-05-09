@@ -27,8 +27,10 @@ export class MovieCrud {
     async createMovie(values: any) {
         const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
         const result = await requestSuite.run('createMovie', values);
+
+
         // TODO simplify the api for getting response body (and expressions in downstream requests)
-        // this.movieId = JSON.parse(result.outcomes[0].response.body!).id;
+        // this.movieId = result.invocation.response.body!).id;
         // ply.logger.info(`Created movie: id=${this.movieId}`);
     }
 
@@ -36,9 +38,12 @@ export class MovieCrud {
     async updateRating(values: any) {
         const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
         // update movie rating
-        values.id = this.movieId;
+        values.id = '435b30ad'; // TODO TODO TODO this.movieId;
         values.rating = 4.5;
-        await requestSuite.run('updateMovie', values);
+        const result = await requestSuite.run('updateMovie', values);
+
+        // check the response programmatically
+
         // confirm the update
         await requestSuite.run('retrieveMovie', values);
     }

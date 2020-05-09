@@ -1,5 +1,5 @@
 import { Runtime } from './runtime';
-import { PlyResult } from './result';
+import { Result } from './result';
 
 export type TestType = 'request' | 'case' | 'workflow';
 
@@ -23,5 +23,5 @@ export interface PlyTest extends Test {
      * Promises a result with status of 'Pending'
      * @returns result with request outcomes and status of 'Pending'
      */
-    invoke(runtime: Runtime): Promise<PlyResult>;
+    invoke(runtime: Runtime): Promise<Result>;
 }

@@ -24,7 +24,7 @@ export class PlyResponse implements Response {
     /**
      * Strips ignored headers and orders body object keys.
      */
-    responseObject(options: Options): Response {
+    getResponse(options: Options): Response {
         const headerNames = Object.keys(this.headers).sort();
         const wanted = options.responseHeaders || headerNames;
         const headers: any = {};

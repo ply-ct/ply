@@ -61,7 +61,7 @@ describe('Cases', async () => {
         const options: PlyOptions = new Config().options;
         // options not used because movieCrud.ply.ts loads ply
         // how to handle this?
-        const ply = new Ply({ ...options, verbose: true });
+        const ply = new Ply({ ...options, verbose: false });
         const suites = await ply.loadCases(['test/ply/cases/movieCrud.ply.ts']);
         assert.equal(suites.length, 1);
         const suite = suites[0];

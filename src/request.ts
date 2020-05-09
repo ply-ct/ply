@@ -2,7 +2,7 @@ import { TestType, Test, PlyTest } from './test';
 import { Response, PlyResponse } from './response';
 import { Logger } from './logger';
 import { Runtime } from './runtime';
-import { PlyResult, Outcome } from './result';
+import { PlyResult, Invocation } from './result';
 import * as subst from './subst';
 import './date';
 
@@ -75,7 +75,7 @@ export class PlyRequest implements Request, PlyTest {
      * @param values
      */
     async submit(values: object): Promise<Response> {
-        return await this.doSubmit(this.requestObject(values));
+        return await this.doSubmit(this.getRequest(values));
     }
 
     private async doSubmit(requestObj: Request): Promise<PlyResponse> {
@@ -96,7 +96,7 @@ export class PlyRequest implements Request, PlyTest {
     /**
      * Request object with substituted values
      */
-    private requestObject(values: object): Request {
+    private getRequest(values: object): Request {
         const url = subst.replace(this.url, values, this.logger);
         if (!url.startsWith('http://') && !url.startsWith('https://')) {
             throw new Error('Invalid url: ' + url);
@@ -135,17 +135,15 @@ export class PlyRequest implements Request, PlyTest {
     async invoke(runtime: Runtime): Promise<PlyResult> {
         this.submitted = new Date();
         this.logger.info(`Request '${this.name}' submitted at ${this.submitted.timestamp(runtime.locale)}`);
-        const requestObject = this.requestObject(runtime.values);
+        const requestObject = this.getRequest(runtime.values);
         this.logger.debug('Request:', requestObject);
         const response = await this.doSubmit(requestObject);
         this.logger.debug('Response:', response);
-        const result = new PlyResult();
-        const outcome = new Outcome(
+        const result = new PlyResult(new Invocation(
             this.name,
             requestObject,
-            response.responseObject(runtime.options)
-        );
-        result.outcomes.push(outcome);
+            response.getResponse(runtime.options)
+        ));
         return result;
     }
 }
