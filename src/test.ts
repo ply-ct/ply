@@ -20,8 +20,7 @@ export interface Test {
 
 export interface PlyTest extends Test {
     /**
-     * Promises a result with status of 'Pending'
-     * @returns result with request outcomes and status of 'Pending'
+     * Invokes.
      */
-    invoke(runtime: Runtime): Promise<Result>;
+    run(runtime: Runtime): Promise<Result>;
 }

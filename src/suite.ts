@@ -2,7 +2,7 @@ import * as os from 'os';
 import { TestType, Test, PlyTest } from './test';
 import { Result, PlyResult } from './result';
 import { Logger } from './logger';
-import { Runtime, DecoratedSuite, ResultPaths } from './runtime';
+import { Runtime, DecoratedSuite, ResultPaths, CallingCaseInfo } from './runtime';
 import { SUITE_PREFIX, TEST_PREFIX } from './decorators';
 import { Retrieval } from './retrieval';
 import * as yaml from './yaml';
@@ -12,12 +12,6 @@ import verify from './verify';
 interface Tests<T extends Test> {
     [key: string]: T
 }
-
-type CallingCaseInfo = {
-    results: ResultPaths,
-    suiteName: string,
-    caseName: string
-};
 
 /**
  * A suite represents one ply requests file (.ply.yaml), one ply case file (.ply.ts),
@@ -100,11 +94,12 @@ export class Suite<T extends Test> {
      * @param tests
      */
     private async runTests(tests: T[], values: object): Promise<Result[]> {
-        this.runtime.values = values;
+        // runtime values is a copy
+        this.runtime.values = { ...values };
 
         let callingCaseInfo: CallingCaseInfo | undefined;
         if (this.className) {
-            // running a case
+            // running a case suite
             // initialize the decorated suite
             const testFile = this.runtime.testsLocation.toString() + '/' + this.path;
             const mod = await import(testFile);
@@ -118,7 +113,7 @@ export class Suite<T extends Test> {
             this.runtime.results.actual.remove();
         }
         else {
-            // running a request
+            // running a request suite
             callingCaseInfo = await this.getCallingCaseInfo();
             if (callingCaseInfo) {
                 this.runtime.results = callingCaseInfo.results;
@@ -130,47 +125,45 @@ export class Suite<T extends Test> {
 
         let results: Result[] = [];
         // tests are run sequentially
-        // let prevResult: PlyResult | undefined = undefined;
         for (const test of tests) {
-            if (test.type === 'case') {
+            if (test.type === 'case' || test.type === 'workflow') {
                 this.runtime.results.actual.append(test.name + ':' + os.EOL);
             }
-            let plyTest = test as unknown as PlyTest;
-            let result = await plyTest.invoke(this.runtime);
+            let result = await (test as unknown as PlyTest).run(this.runtime);
+
             if (test.type === 'request') {
                 let plyResult = result as PlyResult;
                 let indent = callingCaseInfo ? this.runtime.options.prettyIndent : 0;
                 const actualYaml = this.buildResultYaml(plyResult, indent);
                 this.runtime.results.actual.append(actualYaml);
-                const expected = await this.runtime.results.expected.read();
-                if (!expected) {
-                    throw new Error(`Expected result not found: ${this.runtime.results.expected}`);
+                if (!callingCaseInfo) {
+                    // verify request result (otherwise wait until case/workflow is complete)
+                    const expected = await this.runtime.results.expected.read();
+                    if (!expected) {
+                        throw new Error(`Expected result not found: ${this.runtime.results.expected}`);
+                    }
+                    const expectedObj = yaml.load(this.runtime.results.expected.toString(), expected, true)[test.name];
+                    const expectedLines = expected.split(/\r?\n/);
+                    const expectedYaml = expectedLines.slice(expectedObj.__start, expectedObj.__end + 1).join('\n');
+                    this.logger.debug(`Comparing:\n${expectedYaml}\n  with:\n${actualYaml}`);
+                    // TODO reassigning result?
+                    // TODO request/response in values
+                    result = await verify(expectedYaml, actualYaml, values, this.logger);
+                    if (result.status === 'Passed') {
+                        this.logger.info(`Test ${test.name} PASSED`);
+                    }
+                    else {
+                        this.logger.error(`Test ${test.name} FAILED: Results differ from line ${result.line}\n${result.diff}`);
+                    }
+                    results.push(result);
                 }
-                const name = callingCaseInfo ? callingCaseInfo.caseName : test.name;
-                const expectedObj = yaml.load(this.runtime.results.expected.toString(), expected, true)[name];
-                const expectedLines = expected.split(/\r?\n/);
-                const expectedYaml = expectedLines.slice(expectedObj.__start, expectedObj.__end + 1).join('\n');
-                this.logger.debug(`Comparing:\n${expectedYaml}\n  with:\n${actualYaml}`);
-
-                let verifyVals = { ...values };
-                // if (prevResult) {
-                //     verifyVals = { ...verifyVals,
-                //         '__request': plyResult.invocation.request,
-                //         '__response': plyResult.invocation.response
-                //     };
-                // }
-
-                // TODO reassigning result?
-                result = await verify(expectedYaml, actualYaml, verifyVals, this.logger);
-                if (result.status === 'Passed') {
-                    this.logger.info(`Test ${test.name} PASSED`);
-                }
-                else {
-                    this.logger.error(`Test ${test.name} FAILED: Results differ from line ${result.line}\n${result.diff}`);
-                }
-                results.push(result);
             }
-            // prevResult = plyResult;
+            else {
+                // case/workflow
+                // TODO verify, add result
+
+
+            }
         }
 
         return results;
@@ -183,7 +176,7 @@ export class Suite<T extends Test> {
         const stacktracey = 'stacktracey';
         const StackTracey = await import(stacktracey);
         const stack = new StackTracey();
-        const plyCaseInvoke = stack.findIndex((elem: {callee: string;}) => elem.callee === 'PlyCase.invoke');
+        const plyCaseInvoke = stack.findIndex((elem: {callee: string;}) => elem.callee === 'PlyCase.run');
         if (plyCaseInvoke > 0) {
             const element = stack[plyCaseInvoke - 1];
             const dot = element.callee.indexOf('.');
@@ -199,10 +192,6 @@ export class Suite<T extends Test> {
                 return { results, suiteName, caseName };
             }
         }
-    }
-
-    private buildResultsYaml(results: PlyResult[], indent: number): string {
-        return  '';
     }
 
     private buildResultYaml(result: PlyResult, indent: number): string {

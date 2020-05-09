@@ -2,7 +2,6 @@ import * as path from 'path';
 import * as process from 'process';
 import * as minimatch from 'minimatch';
 import { Location } from './location';
-import { Logger } from './logger';
 import { Retrieval } from './retrieval';
 import { Storage } from './storage';
 import { PlyOptions } from './options';
@@ -41,6 +40,12 @@ export class ResultPaths {
         return resultPaths;
     }
 }
+
+export type CallingCaseInfo = {
+    results: ResultPaths,
+    suiteName: string,
+    caseName: string
+};
 
 /**
  * Runtime information for a test suite.

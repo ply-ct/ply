@@ -24,7 +24,7 @@ export class PlyCase implements Case, PlyTest {
      * Or to send a request without testing, call submit().
      * @returns result with request outcomes and status of 'Pending'
      */
-    async invoke(runtime: Runtime): Promise<Result> {
+    async run(runtime: Runtime): Promise<Result> {
         const decoratedSuite = runtime.decoratedSuite;
         if (!decoratedSuite) {
             throw new Error(`Missing decorators for suite '${runtime.suitePath}'`);

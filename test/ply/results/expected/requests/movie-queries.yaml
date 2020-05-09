@@ -144,8 +144,7 @@ movieById:
       }
 moviesQuery:
   request:
-    url: >-
-      ${baseUrl}/movies?${query}
+    url: '${baseUrl}/movies?${query}'
     method: GET
     headers:
       Accept: application/json

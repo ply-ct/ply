@@ -46,9 +46,9 @@ describe('Requests', async () => {
         let suite = suites[0];
 
         const values = {
-            "baseUrl": "http://localhost:8080/ply-demo/api",
-            "year": 1931,
-            "rating": 5
+            baseUrl: "http://localhost:8080/ply-demo/api",
+            year: 1931,
+            rating: 5
         };
 
         const results = await suite.run('moviesByYearAndRating', values);
@@ -56,9 +56,26 @@ describe('Requests', async () => {
         assert.equal(results[0].message, 'Test succeeded');
     });
 
+    it('can handle failure', async () => {
+        const options: PlyOptions = new Config().options;
+        const ply = new Ply({ ...options, verbose: false });
+        const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');
+        let suite = suites[0];
+
+        const values = {
+            baseUrl: "http://localhost:8080/ply-demo/api",
+            id: 'xxxxxx'
+        };
+
+        const results = await suite.run('movieById', values);
+        assert.equal(results[0].status, 'Failed');
+        // TODO pad actual
+        assert.equal(results[0].message, 'Results differ from line 9');
+    });
+
     it('can run suite', async () => {
         const options: PlyOptions = new Config().options;
-        const ply = new Ply({ ...options, verbose: true });
+        const ply = new Ply({ ...options, verbose: false });
         const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');
         let suite = suites[0];
 

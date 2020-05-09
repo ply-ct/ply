@@ -62,7 +62,4 @@ export class RequestLoader {
         return suite;
     }
 
-    async run(requests: Request[]) {
-
-    }
 }

@@ -1,3 +1,4 @@
+import * as os from 'os';
 import { TestType, Test, PlyTest } from './test';
 import { Response, PlyResponse } from './response';
 import { Logger } from './logger';
@@ -130,9 +131,9 @@ export class PlyRequest implements Request, PlyTest {
      * Only to be called in the context of a Suite (hence 'runtime').
      * To execute a test programmatically, call one of the Suite.run() overloads.
      * Or to send a request without testing, call submit().
-     * @returns result with request outcomes and status of 'Pending'
+     * @returns result with request invocation and status of 'Pending'
      */
-    async invoke(runtime: Runtime): Promise<PlyResult> {
+    async run(runtime: Runtime): Promise<PlyResult> {
         this.submitted = new Date();
         this.logger.info(`Request '${this.name}' submitted at ${this.submitted.timestamp(runtime.locale)}`);
         const requestObject = this.getRequest(runtime.values);
