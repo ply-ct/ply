@@ -30,17 +30,16 @@ export class PlyCase implements Case, PlyTest {
             throw new Error(`Missing decorators for suite '${runtime.suitePath}'`);
         }
 
-        const values = { ...runtime.values };
         this.logger.info(`Running '${this.name}'`);
-        await decoratedSuite.runBefores(this.name, values);
+        await decoratedSuite.runBefores(this.name, runtime.values);
 
         const method = decoratedSuite.instance[this.method];
         if (!method) {
             throw new Error(`Case method ${this.method} not found in suite class ${runtime.retrieval.location}`);
         }
-        await method.call(decoratedSuite.instance, values);
+        await method.call(decoratedSuite.instance, runtime.values);
 
-        await decoratedSuite.runAfters(this.name, values);
+        await decoratedSuite.runAfters(this.name, runtime.values);
 
         return {
             status: 'Pending',

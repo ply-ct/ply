@@ -7,6 +7,7 @@ import { Result } from './result';
  * Verify expected vs actual results yaml after substituting values.
  */
 export default function verify(expectedYaml: string, actualYaml: string, values: object, logger: Logger, startLine: number = 0): Result {
+    logger.debug(`Comparing:\n${expectedYaml}\nWith:\n${actualYaml}\n`);
     const expected = subst.trimComments(expectedYaml.trimRight().replace(/\r/g, '') + '\n');
     const actual = subst.trimComments(actualYaml.trimRight().replace(/\r/g, '') + '\n');
     const diffs = new Compare(logger).diffLines(subst.extractCode(expected), subst.extractCode(actual), values);

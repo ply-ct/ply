@@ -7,6 +7,7 @@ import { Storage } from './storage';
 import { PlyOptions } from './options';
 import { TEST_PREFIX, BEFORE_PREFIX, AFTER_PREFIX, SUITE_PREFIX } from './decorators';
 import { TestSuite, TestCase, Before, After } from './decorators';
+import * as yaml from './yaml';
 
 export class ResultPaths {
     expected: Retrieval;
@@ -38,6 +39,32 @@ export class ResultPaths {
         resultPaths.expected = new Retrieval(options.expectedLocation + '/' + resultFilePath + ext);
         resultPaths.actual = new Storage(options.actualLocation + '/' + resultFilePath + ext);
         return resultPaths;
+    }
+
+    async getExpectedYaml(name: string): Promise<string> {
+        const expected = await this.expected.read();
+        if (!expected) {
+            throw new Error(`Expected result not found: ${this.expected}`);
+        }
+        const expectedObj = yaml.load(this.expected.toString(), expected, true)[name];
+        if (!expectedObj) {
+            throw new Error(`Expected result not found: ${this.expected}#${name}`);
+        }
+        const expectedLines = expected.split(/\r?\n/);
+        return expectedLines.slice(expectedObj.__start, expectedObj.__end + 1).join('\n');
+    }
+
+    getActualYaml(name: string): string {
+        const actual = this.actual.read();
+        if (!actual) {
+            throw new Error(`Actual result not found: ${this.actual}`);
+        }
+        const actualObj = yaml.load(this.actual.toString(), actual, true)[name];
+        if (!actualObj) {
+            throw new Error(`Actual result not found: ${this.actual}#${name}`);
+        }
+        const actualLines = actual.split(/\r?\n/);
+        return actualLines.slice(actualObj.__start, actualObj.__end + 1).join('\n');
     }
 }
 

@@ -26,7 +26,7 @@ export class MovieCrud {
     @test('add new movie')
     async createMovie(values: any) {
         const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
-        const result = await requestSuite.run('createMovie', values);
+        const results = await requestSuite.run('createMovie', values);
 
 
         // TODO simplify the api for getting response body (and expressions in downstream requests)
@@ -41,14 +41,11 @@ export class MovieCrud {
         values.id = '435b30ad'; // TODO TODO TODO this.movieId;
         values.rating = 4.5;
         const result = await requestSuite.run('updateMovie', values);
-
-        // check the response programmatically
-
         // confirm the update
         await requestSuite.run('retrieveMovie', values);
     }
 
-    @test('removeMovie')
+    @test('remove movie')
     async deleteMovie(values: any) {
         const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
         // delete movie

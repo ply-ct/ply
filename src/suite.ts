@@ -94,12 +94,10 @@ export class Suite<T extends Test> {
      * @param tests
      */
     private async runTests(tests: T[], values: object): Promise<Result[]> {
-        // runtime values is a copy
-        this.runtime.values = { ...values };
 
         let callingCaseInfo: CallingCaseInfo | undefined;
         if (this.className) {
-            // running a case suite
+            // running a case suite --
             // initialize the decorated suite
             const testFile = this.runtime.testsLocation.toString() + '/' + this.path;
             const mod = await import(testFile);
@@ -123,6 +121,9 @@ export class Suite<T extends Test> {
             }
         }
 
+        // runtime values is a copy
+        this.runtime.values = values;
+
         let results: Result[] = [];
         // tests are run sequentially
         for (const test of tests) {
@@ -134,39 +135,40 @@ export class Suite<T extends Test> {
             if (test.type === 'request') {
                 let plyResult = result as PlyResult;
                 let indent = callingCaseInfo ? this.runtime.options.prettyIndent : 0;
-                const actualYaml = this.buildResultYaml(plyResult, indent);
+                let actualYaml = this.buildResultYaml(plyResult, indent);
                 this.runtime.results.actual.append(actualYaml);
                 if (!callingCaseInfo) {
-                    // verify request result (otherwise wait until case/workflow is complete)
-                    const expected = await this.runtime.results.expected.read();
-                    if (!expected) {
-                        throw new Error(`Expected result not found: ${this.runtime.results.expected}`);
-                    }
-                    const expectedObj = yaml.load(this.runtime.results.expected.toString(), expected, true)[test.name];
-                    const expectedLines = expected.split(/\r?\n/);
-                    const expectedYaml = expectedLines.slice(expectedObj.__start, expectedObj.__end + 1).join('\n');
-                    this.logger.debug(`Comparing:\n${expectedYaml}\n  with:\n${actualYaml}`);
-                    // TODO reassigning result?
                     // TODO request/response in values
-                    result = await verify(expectedYaml, actualYaml, values, this.logger);
-                    if (result.status === 'Passed') {
-                        this.logger.info(`Test ${test.name} PASSED`);
-                    }
-                    else {
-                        this.logger.error(`Test ${test.name} FAILED: Results differ from line ${result.line}\n${result.diff}`);
-                    }
+
+                    // verify request result (otherwise wait until case/workflow is complete)
+                    let expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
+                    // TODO reassigning result
+                    result = verify(expectedYaml, actualYaml, values, this.logger);
+                    this.logResult(test.name, result);
                     results.push(result);
                 }
             }
             else {
-                // case/workflow
-                // TODO verify, add result
-
-
+                // case/workflow run complete -- verify result
+                let actualYaml = this.runtime.results.getActualYaml(test.name);
+                let expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
+                // TODO reassigning result?
+                result = verify(expectedYaml, actualYaml, values, this.logger);
+                this.logResult(test.name, result);
+                results.push(result);
             }
         }
 
         return results;
+    }
+
+    private logResult(name: string, result: Result) {
+        if (result.status === 'Passed') {
+            this.logger.info(`Test '${name}' PASSED`);
+        }
+        else {
+            this.logger.error(`Test '${name}' FAILED: Results differ from line ${result.line}\n${result.diff}`);
+        }
     }
 
     /**
@@ -214,15 +216,15 @@ export class Suite<T extends Test> {
                 }
             });
         }
-        let outcomeObject = invocationObject[result.invocation.name] as any;
-        if (typeof outcomeObject.__start !== 'undefined') {
-            let outcomeLine = outcomeObject.__start;
+        let invocation = invocationObject[result.invocation.name] as any;
+        if (typeof invocation.__start !== 'undefined') {
+            let outcomeLine = invocation.__start;
             if (result.invocation.request.submitted) {
                 ymlLines[outcomeLine] += `  # ${result.invocation.request.submitted.timestamp(this.runtime.locale)}`;
             }
             if (typeof result.invocation.response.time !== 'undefined') {
                 let responseMs = result.invocation.response.time + ' ms';
-                let requestYml = yaml.dump({ request: outcomeObject.request }, this.runtime.options.prettyIndent);
+                let requestYml = yaml.dump({ request: invocation.request }, this.runtime.options.prettyIndent);
                 ymlLines[outcomeLine + requestYml.split('\n').length] += `  # ${responseMs}`;
             }
         }
