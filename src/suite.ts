@@ -121,9 +121,7 @@ export class Suite<T extends Test> {
             }
         }
 
-        // runtime values is a copy
         this.runtime.values = values;
-
         let results: Result[] = [];
         // tests are run sequentially
         for (const test of tests) {
@@ -145,7 +143,6 @@ export class Suite<T extends Test> {
                     // TODO reassigning result
                     result = verify(expectedYaml, actualYaml, values, this.logger);
                     this.logResult(test.name, result);
-                    results.push(result);
                 }
             }
             else {
@@ -155,8 +152,8 @@ export class Suite<T extends Test> {
                 // TODO reassigning result?
                 result = verify(expectedYaml, actualYaml, values, this.logger);
                 this.logResult(test.name, result);
-                results.push(result);
             }
+            results.push(result);
         }
 
         return results;

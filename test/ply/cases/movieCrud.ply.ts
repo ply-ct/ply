@@ -40,9 +40,9 @@ export class MovieCrud {
         // update movie rating
         values.id = '435b30ad'; // TODO TODO TODO this.movieId;
         values.rating = 4.5;
-        const result = await requestSuite.run('updateMovie', values);
+        let results = await requestSuite.run('updateMovie', values);
         // confirm the update
-        await requestSuite.run('retrieveMovie', values);
+        results = await requestSuite.run('retrieveMovie', values);
     }
 
     @test('remove movie')
