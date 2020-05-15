@@ -1,0 +1,19 @@
+
+# input for yaml line assignment test
+foo:
+  url: '${baseUrl}/movies/${id}'
+  method: PUT
+  headers:
+    Accept: application/json
+    Content-Type: application/json
+  body: |-
+    {
+      "greeting": "I'm single!"
+    }
+
+# empty item
+bar:
+
+# no trailing newline
+baz:
+  something: else

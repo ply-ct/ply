@@ -28,7 +28,11 @@ describe('Cases', async () => {
     });
 
     it('can run unnamed suite', async () => {
-        const options: PlyOptions = new Config().options;
+        const options: PlyOptions = {
+            ...new Config().options,
+            expectedLocation: 'test/mocha/results/expected',
+            actualLocation: 'test/mocha/results/actual'
+        };
         const ply = new Ply(options);
         const suites = await ply.loadCases('test/mocha/suites.ts');
         const unnamedSuite = suites[0];
@@ -43,7 +47,11 @@ describe('Cases', async () => {
     });
 
     it('can run named suite', async () => {
-        const options: PlyOptions = new Config().options;
+        const options: PlyOptions = {
+            ...new Config().options,
+            expectedLocation: 'test/mocha/results/expected',
+            actualLocation: 'test/mocha/results/actual'
+        };
         const ply = new Ply(options);
         const suites = await ply.loadCases('test/mocha/suites.ts');
         const unnamedSuite = suites[1];

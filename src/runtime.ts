@@ -10,41 +10,45 @@ import { TestSuite, TestCase, Before, After } from './decorators';
 import * as yaml from './yaml';
 
 export class ResultPaths {
-    expected: Retrieval;
-    actual: Storage;
 
-    /**
-     * Constructs with default results extension
-     */
-    private constructor(options: PlyOptions, readonly retrieval: Retrieval) {
-        const relPath = retrieval.location.relativeTo(options.testsLocation);
-        const resultFilePath = new Location(relPath).parent + '/' + retrieval.location.base + '.yml';
-        this.expected = new Retrieval(options.expectedLocation + '/' + resultFilePath);
-        this.actual = new Storage(options.actualLocation + '/' + resultFilePath);
-    }
+    private constructor(readonly expected: Retrieval, readonly actual: Storage) {
+  }
 
     /**
      * Figures out the file extension for results.
      */
     static async create(options: PlyOptions, suiteName: string, retrieval: Retrieval): Promise<ResultPaths> {
-        const resultPaths = new ResultPaths(options, retrieval);
-        const relPath = retrieval.location.relativeTo(options.testsLocation);
-        let resultFilePath = new Location(relPath).parent + '/' + suiteName;
+
+        let expectedPath;
+        let actualPath;
+
+        if (retrieval.location.isChildOf(options.testsLocation)) {
+            const relPath = retrieval.location.relativeTo(options.testsLocation);
+            const resultFilePath = new Location(relPath).parent + '/' + suiteName;
+            expectedPath = options.expectedLocation + '/' + resultFilePath;
+            actualPath = options.actualLocation + '/' + resultFilePath;
+        }
+        else {
+            // can't determine results relative path; use specified
+            expectedPath = options.expectedLocation + '/' + suiteName;
+            actualPath = options.actualLocation + '/' + suiteName;
+        }
+
         let ext = '.yml';
-        if (!await new Retrieval(options.expectedLocation + '/' + resultFilePath + '.yml').exists) {
-            if (await new Retrieval(options.expectedLocation + '/' + resultFilePath + '.yaml').exists || retrieval.location.ext === '.yaml') {
+        if (!await new Retrieval(expectedPath + '.yml').exists) {
+            if (await new Retrieval(expectedPath + '.yaml').exists || retrieval.location.ext === '.yaml') {
                 ext = '.yaml';
             }
         }
-        resultPaths.expected = new Retrieval(options.expectedLocation + '/' + resultFilePath + ext);
-        resultPaths.actual = new Storage(options.actualLocation + '/' + resultFilePath + ext);
-        return resultPaths;
+        const expected = new Retrieval(expectedPath + ext);
+        const actual = new Storage(actualPath + ext);
+        return new ResultPaths(expected, actual);
     }
 
     async getExpectedYaml(name: string): Promise<string> {
         const expected = await this.expected.read();
         if (!expected) {
-            throw new Error(`Expected result not found: ${this.expected}`);
+            throw new Error(`Expected result file not found: ${this.expected}`);
         }
         const expectedObj = yaml.load(this.expected.toString(), expected, true)[name];
         if (!expectedObj) {
@@ -57,7 +61,7 @@ export class ResultPaths {
     getActualYaml(name: string): string {
         const actual = this.actual.read();
         if (!actual) {
-            throw new Error(`Actual result not found: ${this.actual}`);
+            throw new Error(`Actual result file not found: ${this.actual}`);
         }
         const actualObj = yaml.load(this.actual.toString(), actual, true)[name];
         if (!actualObj) {

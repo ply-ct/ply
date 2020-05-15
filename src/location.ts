@@ -71,11 +71,16 @@ export class Location {
         return path.normalize(path.resolve(this.path)).replace(/\\/g, '/');
     }
 
-    relativeTo(root: string): string {
-        return path.normalize(path.relative(root, this.path)).replace(/\\/g, '/');
+    relativeTo(parent: string): string {
+        return path.normalize(path.relative(parent, this.path)).replace(/\\/g, '/');
     }
 
     toString(): string {
         return this.path;
+    }
+
+    isChildOf(parent: string): boolean {
+        const relative = this.relativeTo(parent);
+        return relative.length > 0 && !relative.startsWith('..') && !path.isAbsolute(relative);
     }
 }

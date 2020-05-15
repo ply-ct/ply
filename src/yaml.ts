@@ -20,6 +20,9 @@ export function load(file: string, contents: string, assignLines = false) {
         Object.keys(obj).forEach(key => {
             let line = lines[key];
             if (typeof line !== 'undefined' && typeof obj[key] === 'object') {
+                if (!obj[key]) {
+                    obj[key] = {};
+                }
                 let objProp = obj[key];
                 objProp.__start = line;
                 if (lastObjProp && typeof lastObjProp.__start !== 'undefined' && typeof objProp.__start !== 'undefined') {
@@ -37,8 +40,8 @@ export function load(file: string, contents: string, assignLines = false) {
 
 function getEndLine(contentLines: string[], start: number, end: number | undefined = undefined): number {
     const reversedLines = getLines(contentLines, start, end).reverse();
-    let endLine = end || (start + reversedLines.length - 1);
-    for (let i = 0; i < reversedLines.length; i++) {
+    let endLine = typeof end === 'undefined' ? (start + reversedLines.length - 1) : end;
+    for (let i = 0; i < reversedLines.length && endLine > start; i++) {
         let line = reversedLines[i].trim();
         if (!line || line.startsWith('#')) {
             endLine--;

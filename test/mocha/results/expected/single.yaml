@@ -1,0 +1,11 @@
+aSingle:
+  url: '${baseUrl}/movies/${id}'
+  method: PUT
+  headers:
+    Accept: application/json
+    Content-Type: application/json
+    Authorization: ${authorization}
+  body: |-
+    {
+      "greeting": "I'm single!"
+    }
