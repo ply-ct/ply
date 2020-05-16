@@ -65,7 +65,7 @@ export interface PlyOptions extends Options {
     testsLocation: string;
     expectedLocation: string;
     actualLocation: string;
-    logLocation: string;
+    logLocation?: string;
     requestFiles: string[];
     caseFiles: string[];
     excludes: string[];
@@ -96,7 +96,12 @@ export class Config {
     public options: PlyOptions;
 
     constructor(private readonly defaults: PlyOptions = new Defaults()) {
+        const logEqualsActual = defaults.actualLocation === defaults.logLocation;
         this.options = this.load(defaults);
+        if (logEqualsActual) {
+            // in case yargs adjusted actualLocation per cwd
+            this.options.logLocation = this.options.actualLocation;
+        }
     }
 
     private load(defaults: PlyOptions) : PlyOptions {

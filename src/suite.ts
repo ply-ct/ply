@@ -29,17 +29,17 @@ export class Suite<T extends Test> {
      * @param type request|case|workflow
      * @param path relative path from tests location (forward slashes)
      * @param runtime info
-     * @param retrieval suite retrieval
-     * @param expected expected results retrieval
-     * @param actual actual results storage
+     * @param logger
+     * @param start zero-based start line
+     * @param end zero-based end line
      * @param className? className for decorated suites
      */
     constructor(
         readonly name: string,
         readonly type: TestType,
         readonly path: string,
-        readonly logger: Logger,
         private readonly runtime: Runtime,
+        readonly logger: Logger,
         /**
          * zero-based start line
          */
@@ -49,7 +49,7 @@ export class Suite<T extends Test> {
          */
         readonly end: number,
         readonly className?: string
-    ) {}
+    ) { }
 
     add(test: T) {
         this.tests[test.name] = test;
@@ -61,6 +61,10 @@ export class Suite<T extends Test> {
 
     all(): T[] {
         return Object.values(this.tests);
+    }
+
+    get log(): Logger {
+        return this.logger;
     }
 
     /**
@@ -136,6 +140,7 @@ export class Suite<T extends Test> {
             callingCaseInfo = await this.getCallingCaseInfo();
             if (callingCaseInfo) {
                 this.runtime.results = callingCaseInfo.results;
+                this.logger.storage = callingCaseInfo.results.log;
             }
             else {
                 this.runtime.results.actual.remove();

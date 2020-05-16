@@ -4,8 +4,8 @@ import { PlyOptions } from './options';
 import { Suite } from './suite';
 import { Case, PlyCase } from './case';
 import { Retrieval } from './retrieval';
-import { Logger } from './logger';
 import { ResultPaths, Runtime } from './runtime';
+import { Logger, LogLevel } from './logger';
 
 interface SuiteDecoration {
     name: string;
@@ -26,7 +26,11 @@ export class CaseLoader {
     private program: ts.Program;
     private checker: ts.TypeChecker;
 
-    constructor(sourceFiles: string[], private options: PlyOptions, private logger: Logger, compilerOptions: ts.CompilerOptions) {
+    constructor(
+        sourceFiles: string[],
+        private options: PlyOptions,
+        compilerOptions: ts.CompilerOptions) {
+
         this.program = ts.createProgram(sourceFiles, compilerOptions);
         this.checker = this.program.getTypeChecker();
     }
@@ -51,12 +55,17 @@ export class CaseLoader {
                         results
                     );
 
+                    let logger = new Logger({
+                        level: this.options.verbose ? LogLevel.debug : LogLevel.info,
+                        prettyIndent: this.options.prettyIndent
+                    }, runtime.results.log);
+
                     let suite = new Suite<Case>(
                         suiteDecoration.name,
                         'case',
                         retrieval.location.relativeTo(this.options.testsLocation),
-                        this.logger,
                         runtime,
+                        logger,
                         sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getStart()).line,
                         sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getEnd()).line,
                         suiteDecoration.className
@@ -68,7 +77,7 @@ export class CaseLoader {
                             caseDecoration.methodName,
                             sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getStart()).line,
                             sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getEnd()).line,
-                            this.logger
+                            logger
                         );
                         suite.add(c);
                     }

@@ -4,13 +4,15 @@ import { Suite } from './suite';
 import { Retrieval } from './retrieval';
 import { Request, PlyRequest } from './request';
 import { ResultPaths, Runtime } from './runtime';
-import { Logger } from './logger';
+import { Logger, LogLevel } from './logger';
 import * as yaml from './yaml';
 
 export class RequestLoader {
 
-    constructor(readonly locations: string[], private options: PlyOptions, private logger: Logger) {
-    }
+    constructor(
+        readonly locations: string[],
+        private options: PlyOptions
+    ) { }
 
     async load(): Promise<Suite<Request>[]> {
         const retrievals = this.locations.map(loc => new Retrieval(loc));
@@ -39,12 +41,17 @@ export class RequestLoader {
             results
         );
 
+        let logger = new Logger({
+            level: this.options.verbose ? LogLevel.debug : LogLevel.info,
+            prettyIndent: this.options.prettyIndent
+        }, runtime.results.log);
+
         const suite = new Suite<Request>(
             retrieval.location.base,
             'request',
             retrieval.location.relativeTo(this.options.testsLocation),
-            this.logger,
             runtime,
+            logger,
             0,
             contents.split(/\r?\n/).length - 1
         );
@@ -55,7 +62,7 @@ export class RequestLoader {
             if (typeof val === 'object') {
                 let startEnd = { start: val.__start, end: val.__end };
                 let { __start, __end, ...cleanObj} = val;
-                let request = new PlyRequest(key, { ...startEnd, ...cleanObj } as Request, this.logger);
+                let request = new PlyRequest(key, { ...startEnd, ...cleanObj } as Request, logger);
                 suite.add(request);
             }
         }

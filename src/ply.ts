@@ -6,7 +6,6 @@ import { Request } from './request';
 import { Case } from './case';
 import { CaseLoader } from './cases';
 import { RequestLoader } from './requests';
-import { Logger, LogLevel } from './logger';
 
 /**
  * Create with options from config file.
@@ -21,15 +20,9 @@ export function create(): Ply {
 export class Ply {
 
     readonly options: PlyOptions;
-    readonly logger: Logger;
 
     constructor(options: Options) {
         this.options = Object.assign({}, new Defaults(), options);
-        this.logger = new Logger({
-            level: options.verbose ? LogLevel.debug : LogLevel.info,
-            location: options.logLocation,
-            prettyIndent: this.options.prettyIndent
-        });
     }
 
     /**
@@ -46,7 +39,7 @@ export class Ply {
         if (moreLocations) {
             locations = locations.concat(moreLocations);
         }
-        const requestLoader = new RequestLoader(locations, this.options, this.logger);
+        const requestLoader = new RequestLoader(locations, this.options);
         return await requestLoader.load();
     }
 
@@ -83,7 +76,7 @@ export class Ply {
         const configContents = fs.readFileSync(configPath).toString();
         const compilerOptions = ts.parseConfigFileTextToJson(configPath, configContents);
 
-        const caseLoader = new CaseLoader(files, this.options, this.logger, compilerOptions as ts.CompilerOptions);
+        const caseLoader = new CaseLoader(files, this.options, compilerOptions as ts.CompilerOptions);
 
         const suites = await caseLoader.load();
         return suites;

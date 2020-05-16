@@ -11,8 +11,10 @@ import * as yaml from './yaml';
 
 export class ResultPaths {
 
-    private constructor(readonly expected: Retrieval, readonly actual: Storage) {
-  }
+    private constructor(
+        readonly expected: Retrieval,
+        readonly actual: Storage,
+        readonly log?: Storage) { }
 
     /**
      * Figures out the file extension for results.
@@ -21,17 +23,24 @@ export class ResultPaths {
 
         let expectedPath;
         let actualPath;
+        let log;
 
         if (retrieval.location.isChildOf(options.testsLocation)) {
             const relPath = retrieval.location.relativeTo(options.testsLocation);
             const resultFilePath = new Location(relPath).parent + '/' + suiteName;
             expectedPath = options.expectedLocation + '/' + resultFilePath;
             actualPath = options.actualLocation + '/' + resultFilePath;
+            if (options.logLocation) {
+                log = new Storage(options.logLocation + '/' + resultFilePath + '.log');
+            }
         }
         else {
             // can't determine results relative path; use specified
             expectedPath = options.expectedLocation + '/' + suiteName;
             actualPath = options.actualLocation + '/' + suiteName;
+            if (options.logLocation) {
+                log = new Storage(options.logLocation + '/' + suiteName + '.log');
+            }
         }
 
         let ext = '.yml';
@@ -42,7 +51,7 @@ export class ResultPaths {
         }
         const expected = new Retrieval(expectedPath + ext);
         const actual = new Storage(actualPath + ext);
-        return new ResultPaths(expected, actual);
+        return new ResultPaths(expected, actual, log);
     }
 
     async getExpectedYaml(name: string): Promise<string> {

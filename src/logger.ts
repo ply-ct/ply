@@ -6,32 +6,24 @@ export enum LogLevel {
     debug
 }
 
-export interface LogOptions {
-    level?: LogLevel;
-    retain?: boolean;
-    location?: string;
-    name?: string;
-    prettyIndent?: number;
+export class LogOptions {
+    level: LogLevel = LogLevel.info;
+    prettyIndent: number = 0;
 }
 
 export class Logger {
 
     private options: LogOptions = {
         level: LogLevel.info,
-        retain: true
+        prettyIndent: 0
     }
 
-    private readonly storage?: Storage;
-
-    constructor(options?: LogOptions) {
+    constructor(options?: LogOptions, public storage?: Storage, append = false) {
         if (options) {
-            this.options = Object.assign({}, this.options, options);
+            this.options = { ...this.options, ...options };
         }
-        if (this.options.location && this.options.name) {
-            this.storage = new Storage(this.options.location + '/' + this.options.name);
-            if (!this.options.retain) {
-                this.storage.remove();
-            }
+        if (storage && !append) {
+            storage.remove();
         }
     }
 

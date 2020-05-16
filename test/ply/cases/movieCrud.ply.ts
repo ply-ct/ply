@@ -12,14 +12,11 @@ export class MovieCrud {
      */
     @before
     async beforeAll(values: any) {
-
         const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
         const deleteMovie = requestSuite.get('deleteMovie');
-        if (!deleteMovie) {
-            throw new Error('Request deleteMovie not found');
-        }
-        const response = await deleteMovie.submit(values);
-        ply.logger.info('Cleanup response status code', response.status.code);
+        assert.exists(deleteMovie);
+        const response = await deleteMovie!.submit(values);
+        requestSuite.log.info('Cleanup response status code', response.status.code);
         // response status should either be 200 or 404 (we don't care which during cleanup)
         assert.ok(response.status.code === 200 || response.status.code === 404);
     }
@@ -28,26 +25,20 @@ export class MovieCrud {
     async createMovie(values: any) {
         const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
         const result = await requestSuite.run('createMovie', values);
-
-        // result.request has substituted values (except auth)
-        // this.movieId = result.response?.body?.id;
-        // console.log("RESULTS: " + JSON.stringify(results, null, 2));
-
-
-        // TODO simplify the api for getting response body (and expressions in downstream requests)
-        // this.movieId = result.invocation.response.body!).id;
-        // ply.logger.info(`Created movie: id=${this.movieId}`);
+        assert.exists(result.response.body);
+        this.movieId = JSON.parse(result.response.body!).id;
+        requestSuite.log.info(`Created movie: id=${this.movieId}`);
     }
 
     @test('update rating')
     async updateRating(values: any) {
         const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
-        // update movie rating
-        values.id = '435b30ad'; // TODO TODO TODO this.movieId;
+        // update movie rating -- using id returned from createMovie request
+        values.id = this.movieId;
         values.rating = 4.5;
-        let results = await requestSuite.run('updateMovie', values);
+        await requestSuite.run('updateMovie', values);
         // confirm the update
-        results = await requestSuite.run('retrieveMovie', values);
+        await requestSuite.run('retrieveMovie', values);
     }
 
     @test('remove movie')

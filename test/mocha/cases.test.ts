@@ -24,7 +24,7 @@ describe('Cases', async () => {
         assert.deepEqual(create, c2);
         assert.equal(create.method, 'createMovie');
         assert.equal(create.type, 'case');
-        assert.equal(create.start, 25);
+        assert.equal(create.start, 23);
     });
 
     it('can run unnamed suite', async () => {
