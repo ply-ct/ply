@@ -1,28 +1,10 @@
 import { Request } from './request';
 import { Response } from './response';
 
-/**
- * Request/response couplet from a single submit.
- */
-export class Invocation {
-
-    constructor(
-        /**
-         * request name
-         */
-        readonly name: string,
-        /**
-         * request with runtime substitutions
-         */
-        readonly request: Request,
-        /**
-         * response with ignore headers removed, and formatted/sorted body content
-         */
-        readonly response: Response
-    ) { }
-}
-
-export interface Result {
+export interface Outcome {
+    /**
+     * Status of test execution
+     */
     status: 'Pending' | 'Passed' | 'Failed' | 'Errored'
     message: string
     /**
@@ -35,6 +17,21 @@ export interface Result {
     diff?: string
 }
 
+export interface Result extends Outcome {
+    /**
+     * Request name
+     */
+    readonly name: string,
+    /**
+     * Request with runtime substitutions, minus Authorization header
+     */
+    readonly request: Request,
+    /**
+     * Response with ignore headers removed, and formatted/sorted body content (per options)
+     */
+    readonly response: Response
+}
+
 export class PlyResult implements Result {
 
     status: 'Pending' | 'Passed' | 'Failed' | 'Errored' = 'Pending';
@@ -42,24 +39,14 @@ export class PlyResult implements Result {
     line: number = 0;
     diff?: string;
 
-    constructor(readonly invocation: Invocation) {}
-
-    getResult(): object {
-        return {
-            status: this.status,
-            message: this.message
-        };
-    }
-
-    getInvocation(): object {
-        const { name: _name, type: _type, submitted: _submitted, ...leanRequest } = this.invocation.request;
-        delete (leanRequest.headers as any).Authorization;
-        const { time: _time, ...leanResponse } = this.invocation.response;
-        return {
-            [this.invocation.name]: {
-                request: leanRequest,
-                response: leanResponse
+    request: Request;
+    constructor(readonly name: string, request: Request, readonly response: Response) {
+        this.request = { ... request };
+        this.request.headers = { };
+        Object.keys(request.headers).forEach( key => {
+            if (key !== 'Authorization') {
+                this.request.headers[key] = request.headers[key];
             }
-        };
+        });
     }
 }

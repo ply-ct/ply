@@ -1,12 +1,12 @@
 import * as subst from './subst';
 import { Logger } from './logger';
 import { Compare } from './compare';
-import { Result } from './result';
+import { Outcome } from './result';
 
 /**
  * Verify expected vs actual results yaml after substituting values.
  */
-export default function verify(expectedYaml: string, actualYaml: string, values: object, logger: Logger, startLine: number = 0): Result {
+export default function verify(expectedYaml: string, actualYaml: string, values: object, logger: Logger, startLine: number = 0): Outcome {
     logger.debug(`Comparing:\n${expectedYaml}\nWith:\n${actualYaml}\n`);
     const expected = subst.trimComments(expectedYaml.trimRight().replace(/\r/g, '') + '\n');
     const actual = subst.trimComments(actualYaml.trimRight().replace(/\r/g, '') + '\n');

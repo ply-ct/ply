@@ -1,16 +1,15 @@
-import * as os from 'os';
 import { TestType, Test, PlyTest } from './test';
 import { Response, PlyResponse } from './response';
 import { Logger } from './logger';
 import { Runtime } from './runtime';
-import { PlyResult, Invocation } from './result';
+import { PlyResult } from './result';
 import * as subst from './subst';
 import './date';
 
 export interface Request extends Test {
     url: string;
     method: string;
-    headers: object;
+    headers: any;
     body: string | undefined;
     submitted?: Date;
     submit(values: object): Promise<Response>;
@@ -140,11 +139,11 @@ export class PlyRequest implements Request, PlyTest {
         this.logger.debug('Request:', requestObject);
         const response = await this.doSubmit(requestObject);
         this.logger.debug('Response:', response);
-        const result = new PlyResult(new Invocation(
+        const result = new PlyResult(
             this.name,
             requestObject,
             response.getResponse(runtime.options)
-        ));
+        );
         return result;
     }
 }

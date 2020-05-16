@@ -12,6 +12,7 @@ export class MovieCrud {
      */
     @before
     async beforeAll(values: any) {
+
         const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
         const deleteMovie = requestSuite.get('deleteMovie');
         if (!deleteMovie) {
@@ -26,7 +27,11 @@ export class MovieCrud {
     @test('add new movie')
     async createMovie(values: any) {
         const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
-        const results = await requestSuite.run('createMovie', values);
+        const result = await requestSuite.run('createMovie', values);
+
+        // result.request has substituted values (except auth)
+        // this.movieId = result.response?.body?.id;
+        // console.log("RESULTS: " + JSON.stringify(results, null, 2));
 
 
         // TODO simplify the api for getting response body (and expressions in downstream requests)

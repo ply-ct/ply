@@ -51,9 +51,9 @@ describe('Requests', async () => {
             rating: 5
         };
 
-        const results = await suite.run('moviesByYearAndRating', values);
-        assert.equal(results[0].status, 'Passed');
-        assert.equal(results[0].message, 'Test succeeded');
+        const result = await suite.run('moviesByYearAndRating', values);
+        assert.equal(result.status, 'Passed');
+        assert.equal(result.message, 'Test succeeded');
     });
 
     it('can handle failure', async () => {
@@ -67,10 +67,10 @@ describe('Requests', async () => {
             id: 'xxxxxx'
         };
 
-        const results = await suite.run('movieById', values);
-        assert.equal(results[0].status, 'Failed');
+        const result = await suite.run('movieById', values);
+        assert.equal(result.status, 'Failed');
         // TODO pad actual
-        assert.equal(results[0].message, 'Results differ from line 9');
+        assert.equal(result.message, 'Results differ from line 9');
     });
 
     it('can run suite', async () => {

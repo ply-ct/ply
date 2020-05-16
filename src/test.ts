@@ -22,5 +22,5 @@ export interface PlyTest extends Test {
     /**
      * Invokes.
      */
-    run(runtime: Runtime): Promise<Result>;
+    run(runtime: Runtime): Promise<Result | void>;
 }

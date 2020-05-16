@@ -1,6 +1,6 @@
 import * as os from 'os';
 import { TestType, Test, PlyTest } from './test';
-import { Result, PlyResult } from './result';
+import { Result, Outcome } from './result';
 import { Logger } from './logger';
 import { Runtime, DecoratedSuite, ResultPaths, CallingCaseInfo } from './runtime';
 import { SUITE_PREFIX, TEST_PREFIX } from './decorators';
@@ -64,28 +64,49 @@ export class Suite<T extends Test> {
     }
 
     /**
-     * Run test(s), write request/response to actual results, and verify vs expected.
+     * Run all tests, write actual results, and verify vs expected.
+     * @param values runtime values for substitution
+     * @returns result array indicating outcomes
+     */
+    async run(values: object): Promise<Result[]>;
+    /**
+     * Run one test, write actual result, and verify vs expected.
      * @param values runtime values for substitution
      * @returns result indicating outcome
      */
-    async run(values: object): Promise<Result[]>;
-    async run(name: string, values: object): Promise<Result[]>;
+    async run(name: string, values: object): Promise<Result>;
+    /**
+     * Run specified tests, write actual results, and verify vs expected.
+     * @param values runtime values for substitution
+     * @returns result array indicating outcomes
+     */
     async run(names: string[], values: object): Promise<Result[]>;
-    async run(namesOrValues: object | string | string[], values?: object): Promise<Result[]> {
+    async run(namesOrValues: object | string | string[], values?: object): Promise<Result | Result[]> {
         if (typeof namesOrValues === 'object') {
             // run all tests
             return await this.runTests(this.all(), namesOrValues);
         }
         else {
-            const names = typeof namesOrValues === 'string' ? [namesOrValues] : namesOrValues;
-            const tests = names.map(name => {
+            if (typeof namesOrValues === 'string') {
+                const name = namesOrValues;
                 let test = this.get(name);
                 if (!test) {
                     throw new Error(`Test not found: ${name}`);
                 }
-                return test;
-            }, this);
-            return await this.runTests(tests, values || {});
+                let results = await this.runTests([test], values || {});
+                return results[0];
+            }
+            else {
+                const names = typeof namesOrValues === 'string' ? [namesOrValues] : namesOrValues;
+                const tests = names.map(name => {
+                    let test = this.get(name);
+                    if (!test) {
+                        throw new Error(`Test not found: ${name}`);
+                    }
+                    return test;
+                }, this);
+                return await this.runTests(tests, values || {});
+            }
         }
     }
 
@@ -131,40 +152,41 @@ export class Suite<T extends Test> {
             let result = await (test as unknown as PlyTest).run(this.runtime);
 
             if (test.type === 'request') {
-                let plyResult = result as PlyResult;
+                result = result as Result;
                 let indent = callingCaseInfo ? this.runtime.options.prettyIndent : 0;
-                let actualYaml = this.buildResultYaml(plyResult, indent);
+                let actualYaml = this.buildResultYaml(result, indent);
                 this.runtime.results.actual.append(actualYaml);
                 if (!callingCaseInfo) {
                     // TODO request/response in values
 
                     // verify request result (otherwise wait until case/workflow is complete)
                     let expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
-                    // TODO reassigning result
-                    result = verify(expectedYaml, actualYaml, values, this.logger);
-                    this.logResult(test.name, result);
+                    const outcome = verify(expectedYaml, actualYaml, values, this.logger);
+                    result = { ...result, ...outcome };
+                    this.logOutcome(test.name, result);
                 }
             }
             else {
                 // case/workflow run complete -- verify result
                 let actualYaml = this.runtime.results.getActualYaml(test.name);
                 let expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
-                // TODO reassigning result?
-                result = verify(expectedYaml, actualYaml, values, this.logger);
-                this.logResult(test.name, result);
+                const outcome = verify(expectedYaml, actualYaml, values, this.logger);
+                this.logOutcome(test.name, outcome);
             }
-            results.push(result);
+            if (result) {
+                results.push(result);
+            }
         }
 
         return results;
     }
 
-    private logResult(name: string, result: Result) {
-        if (result.status === 'Passed') {
+    private logOutcome(name: string, outcome: Outcome) {
+        if (outcome.status === 'Passed') {
             this.logger.info(`Test '${name}' PASSED`);
         }
         else {
-            this.logger.error(`Test '${name}' FAILED: Results differ from line ${result.line}\n${result.diff}`);
+            this.logger.error(`Test '${name}' FAILED: Results differ from line ${outcome.line}\n${outcome.diff}`);
         }
     }
 
@@ -193,9 +215,17 @@ export class Suite<T extends Test> {
         }
     }
 
-    private buildResultYaml(result: PlyResult, indent: number): string {
+    private buildResultYaml(result: Result, indent: number): string {
 
-        let invocationObject: any = result.getInvocation();
+        const { name: _name, type: _type, submitted: _submitted, ...leanRequest } = result.request;
+        const { time: _time, ...leanResponse } = result.response;
+
+        let invocationObject = {
+            [result.name]: {
+                request: leanRequest,
+                response: leanResponse
+            }
+        };
 
         let yml = yaml.dump(invocationObject, this.runtime.options.prettyIndent);
 
@@ -213,14 +243,14 @@ export class Suite<T extends Test> {
                 }
             });
         }
-        let invocation = invocationObject[result.invocation.name] as any;
+        let invocation = invocationObject[result.name] as any;
         if (typeof invocation.__start !== 'undefined') {
             let outcomeLine = invocation.__start;
-            if (result.invocation.request.submitted) {
-                ymlLines[outcomeLine] += `  # ${result.invocation.request.submitted.timestamp(this.runtime.locale)}`;
+            if (result.request.submitted) {
+                ymlLines[outcomeLine] += `  # ${result.request.submitted.timestamp(this.runtime.locale)}`;
             }
-            if (typeof result.invocation.response.time !== 'undefined') {
-                let responseMs = result.invocation.response.time + ' ms';
+            if (typeof result.response.time !== 'undefined') {
+                let responseMs = result.response.time + ' ms';
                 let requestYml = yaml.dump({ request: invocation.request }, this.runtime.options.prettyIndent);
                 ymlLines[outcomeLine + requestYml.split('\n').length] += `  # ${responseMs}`;
             }
