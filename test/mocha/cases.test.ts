@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { PlyOptions, Config } from '../../src/options';
+import { Config } from '../../src/options';
 import { Ply } from '../../src/ply';
 import { PlyCase } from '../../src/case';
 import { Runtime } from '../../src/runtime';
@@ -8,8 +8,7 @@ import { UnnamedSuite } from './suites';
 describe('Cases', async () => {
 
     it('is loaded from ts', async () => {
-        const options: PlyOptions = new Config().options;
-        const ply = new Ply(options);
+        const ply = new Ply();
         const suites = await ply.loadCases('test/ply/cases/movieCrud.ply.ts');
 
         assert.ok(suites.length === 1);
@@ -28,12 +27,11 @@ describe('Cases', async () => {
     });
 
     it('can run unnamed suite', async () => {
-        const options: PlyOptions = {
+        const ply = new Ply({
             ...new Config().options,
             expectedLocation: 'test/mocha/results/expected',
             actualLocation: 'test/mocha/results/actual'
-        };
-        const ply = new Ply(options);
+        });
         const suites = await ply.loadCases('test/mocha/suites.ts');
         const unnamedSuite = suites[0];
         const values = { myValue: 'foo', otherValue: 'bar' };
@@ -47,12 +45,11 @@ describe('Cases', async () => {
     });
 
     it('can run named suite', async () => {
-        const options: PlyOptions = {
+        const ply = new Ply({
             ...new Config().options,
             expectedLocation: 'test/mocha/results/expected',
             actualLocation: 'test/mocha/results/actual'
-        };
-        const ply = new Ply(options);
+        });
         const suites = await ply.loadCases('test/mocha/suites.ts');
         const unnamedSuite = suites[1];
         const values = { myValue: 'zero', otherValue: 'bar' };
@@ -66,10 +63,10 @@ describe('Cases', async () => {
     });
 
     it('can run suite', async () => {
-        const options: PlyOptions = new Config().options;
-        // options not used because movieCrud.ply.ts loads ply
-        // how to handle this?
-        const ply = new Ply({ ...options, verbose: false });
+        const ply = new Ply({
+            ...new Config().options,
+            verbose: true
+        });
         const suites = await ply.loadCases(['test/ply/cases/movieCrud.ply.ts']);
         assert.equal(suites.length, 1);
         const suite = suites[0];

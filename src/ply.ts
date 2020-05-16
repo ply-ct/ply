@@ -7,22 +7,14 @@ import { Case } from './case';
 import { CaseLoader } from './cases';
 import { RequestLoader } from './requests';
 
-/**
- * Create with options from config file.
- */
-export function create(): Ply {
-    const options = new Config().options;
-    return new Ply(options);
-}
-
 // TODO: direct run?
 // await ply.run('test/ply/requests/movies-api.ply.yaml#createMovie', values);
 export class Ply {
 
     readonly options: PlyOptions;
 
-    constructor(options: Options) {
-        this.options = Object.assign({}, new Defaults(), options);
+    constructor(options?: Options) {
+        this.options = Object.assign({}, new Defaults(), options || new Config().options);
     }
 
     /**

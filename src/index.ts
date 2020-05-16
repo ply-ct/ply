@@ -1,4 +1,5 @@
-import { create } from './ply';
+import { Ply } from './ply';
+
 export { Ply } from './ply';
 export { Test } from './test';
 export { Request as Request } from './request';
@@ -11,10 +12,8 @@ export { Storage } from './storage';
 export { Suite } from './Suite';
 export { suite, test, before, after } from './decorators';
 
-// TODO temp retain API for vscode-ply
+// TODO temp retaining API for vscode-ply
 export { cli } from './cli';
 export { PlyEvent, Result } from './event';
 
-
-const ply = create();
-export default ply;
+export default new Ply();
