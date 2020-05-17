@@ -1,13 +1,11 @@
 import * as assert from 'assert';
-import { PlyOptions, Config } from '../../src/options';
 import { Ply } from '../../src/ply';
 import { PlyRequest } from '../../src/request';
 
 describe('Requests', async () => {
 
     it('is loaded from yaml', async () => {
-        const options: PlyOptions = new Config().options;
-        const ply = new Ply(options);
+        const ply = new Ply();
         const suites = await ply.loadRequests(
             'test/ply/requests/movie-queries.ply.yaml',
             'test/ply/requests/movies-api.ply.yaml'
@@ -28,8 +26,7 @@ describe('Requests', async () => {
     });
 
     it('rejects missing url', async () => {
-        const options: PlyOptions = new Config().options;
-        const ply = new Ply(options);
+        const ply = new Ply();
         await assert.rejects(async () => {
             return ply.loadRequests(['test/ply/requests/bad-requests.ply.yaml']);
         },
@@ -40,8 +37,7 @@ describe('Requests', async () => {
     });
 
     it('can handle success', async () => {
-        const options: PlyOptions = new Config().options;
-        const ply = new Ply({...options, verbose: false});
+        const ply = new Ply();
         const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');
         let suite = suites[0];
 
@@ -57,8 +53,7 @@ describe('Requests', async () => {
     });
 
     it('can handle failure', async () => {
-        const options: PlyOptions = new Config().options;
-        const ply = new Ply({ ...options, verbose: false });
+        const ply = new Ply();
         const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');
         let suite = suites[0];
 
@@ -74,8 +69,7 @@ describe('Requests', async () => {
     });
 
     it('can run suite', async () => {
-        const options: PlyOptions = new Config().options;
-        const ply = new Ply({ ...options, verbose: false });
+        const ply = new Ply();
         const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');
         let suite = suites[0];
 
@@ -87,7 +81,6 @@ describe('Requests', async () => {
             query: 'year=1935&rating=>4&sort=rating&descending=true'
         };
 
-        const result = await suite.run(values);
-        console.log("RESULT: " + JSON.stringify(result, null, 2));
+        await suite.run(values);
     });
 });

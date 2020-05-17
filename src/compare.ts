@@ -1,4 +1,5 @@
 import { diff_match_patch as DiffMatchPatch, Diff as DmpDiff } from 'diff-match-patch';
+import { CodeLine } from './code';
 import { Logger } from './logger';
 import * as subst from './subst';
 
@@ -141,7 +142,7 @@ export class Compare {
         return markers;
     }
 
-    getMarkers(diffs: Diff[], lines: subst.CodeLine[]) {
+    getMarkers(diffs: Diff[], lines: CodeLine[]) {
         var markers: Marker[] = [];
         if (diffs) {
             var idx = 0;

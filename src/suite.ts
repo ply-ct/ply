@@ -1,13 +1,12 @@
 import * as os from 'os';
 import { TestType, Test, PlyTest } from './test';
-import { Result, Outcome } from './result';
+import { Result, Outcome, Verifier } from './result';
 import { Logger } from './logger';
 import { Runtime, DecoratedSuite, ResultPaths, CallingCaseInfo } from './runtime';
 import { SUITE_PREFIX, TEST_PREFIX } from './decorators';
 import { Retrieval } from './retrieval';
 import * as yaml from './yaml';
 import './date';
-import verify from './verify';
 
 interface Tests<T extends Test> {
     [key: string]: T
@@ -162,20 +161,22 @@ export class Suite<T extends Test> {
                 let actualYaml = this.buildResultYaml(result, indent);
                 this.runtime.results.actual.append(actualYaml);
                 if (!callingCaseInfo) {
-                    // TODO request/response in values
-
                     // verify request result (otherwise wait until case/workflow is complete)
-                    let expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
-                    const outcome = verify(expectedYaml, actualYaml, values, this.logger);
+                    let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, 0);
+                    let outcome = verifier.verify(actualYaml, {
+                        __ply_request: result.request,
+                        __ply_response: result.response,
+                        ...values
+                    });
                     result = { ...result, ...outcome };
-                    this.logOutcome(test.name, result);
+                    this.logOutcome(test.name, outcome);
                 }
             }
             else {
                 // case/workflow run complete -- verify result
                 let actualYaml = this.runtime.results.getActualYaml(test.name);
-                let expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
-                const outcome = verify(expectedYaml, actualYaml, values, this.logger);
+                let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, 0);
+                let outcome = verifier.verify(actualYaml, values);
                 this.logOutcome(test.name, outcome);
             }
             if (result) {
