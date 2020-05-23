@@ -68,6 +68,19 @@ describe('Requests', async () => {
         assert.equal(result.message, 'Results differ from line 9');
     });
 
+    it('can iterate suite', async () => {
+        const ply = new Ply();
+        const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');
+        let suite = suites[0];
+        let requests = [];
+        for (const request of suite) {
+            requests.push(request);
+        }
+        assert.equal(requests[0].name, 'moviesByYearAndRating');
+        assert.equal(requests[1].name, 'movieById');
+        assert.equal(requests[2].name, 'moviesQuery');
+    });
+
     it('can run suite', async () => {
         const ply = new Ply();
         const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');

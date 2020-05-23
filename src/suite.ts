@@ -62,6 +62,10 @@ export class Suite<T extends Test> {
         return Object.values(this.tests);
     }
 
+    *[Symbol.iterator]() {
+        yield* this.all()[Symbol.iterator]();
+    }
+
     get log(): Logger {
         return this.logger;
     }
