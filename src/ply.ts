@@ -1,14 +1,14 @@
 import * as fs from 'fs';
 import * as ts from 'typescript';
+import { EventEmitter } from 'events';
 import { Options, Config, PlyOptions, Defaults } from './options';
 import { Suite } from './suite';
 import { Request } from './request';
 import { Case } from './case';
 import { CaseLoader } from './cases';
 import { RequestLoader } from './requests';
+import { Result } from './result';
 
-// TODO: direct run?
-// await ply.run('test/ply/requests/movies-api.ply.yaml#createMovie', values);
 export class Ply {
 
     readonly options: PlyOptions;
@@ -72,5 +72,107 @@ export class Ply {
 
         const suites = await caseLoader.load();
         return suites;
+    }
+}
+
+/**
+ * Format: <suite_file>#<test_name>
+ * eg: c:\ply\ply\test\ply\requests\movie-queries.ply.yaml#moviesByYearAndRating
+ * or: /Users/donaldoakes/ply/ply/test/ply/cases/movieCrud.ply.ts#movie-crud^add new movie
+ * (TODO: handle caseFile#suite^case)
+ */
+export class Plyee {
+    private hash: number;
+    private hat: number;;
+
+    constructor(readonly path: string) {
+        this.hash = path.indexOf('#');
+        if (this.hash < 1 || this.hash > path.length - 2) {
+            throw new Error('Invalid path: ${path}');
+        }
+        this.hat = path.lastIndexOf('^');
+        if (this.hat < this.hash || this.hat < this.path.length - 1) {
+            this.hat = -1;
+        }
+    }
+
+    get location(): string {
+        return this.path.substring(0, this.hash);
+    }
+
+    get suite(): string {
+        if (this.hat > 0) {
+            return this.path.substring(this.hash + 1, this.hat);
+        }
+        else {
+            return this.location;
+        }
+    }
+
+    get test(): string {
+        if (this.hat > 0) {
+            return this.path.substring(this.hat + 1);
+        }
+        else {
+            return this.path.substring(this.hash + 1);
+        }
+    }
+
+    static requests(paths: string[]): Map<string, Plyee[]> {
+        return this.collect(paths, plyee => {
+            return plyee.location.endsWith('.yml') || plyee.location.endsWith('.yaml');
+        });
+    }
+
+    static cases(paths: string[]): Map<string, Plyee[]> {
+        return this.collect(paths, plyee => plyee.location.endsWith('.ts'));
+    }
+    /**
+     * Returns a map of unique location to Plyee[]
+     */
+    static collect(paths: string[], test?: (plyee: Plyee) => boolean): Map<string, Plyee[]> {
+        const map = new Map<string, Plyee[]>();
+        for (const path of paths) {
+            let plyee = new Plyee(path);
+            if (!test || test(plyee)) {
+                let plyees = map.get(plyee.location);
+                if (!plyees) {
+                    plyees = [];
+                    map.set(plyee.location, plyees);
+                }
+                plyees.push(plyee);
+            }
+        }
+        return map;
+    }
+}
+
+export class Plyer extends EventEmitter {
+    private ply: Ply;
+    constructor(options?: Options) {
+        super({ captureRejections: true });
+        this.ply = new Ply(options);
+    }
+
+    async run(plyees: string[], values: object): Promise<Result[]> {
+        const promises: Promise<Result[]>[] = [];
+        for (const [loc, requestPlyee] of Plyee.requests(plyees)) {
+            const tests = requestPlyee.map(plyee => plyee.test);
+            this.ply.loadRequestSuite(loc)
+            .then(requestSuite => {
+                promises.push(requestSuite.run(tests, values));
+            });
+        }
+        // TODO cases
+
+        let allResults: Result[] = [];
+        for (const results of await Promise.all(promises)) {
+            allResults = allResults.concat(results);
+        }
+        return allResults;
+    }
+
+    on(event: string | symbol, listener: (...args: any[]) => void): this {
+        return super.on(event, listener);
     }
 }

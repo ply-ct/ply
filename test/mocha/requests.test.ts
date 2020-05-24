@@ -1,6 +1,14 @@
 import * as assert from 'assert';
-import { Ply } from '../../src/ply';
+import { Ply, Plyer } from '../../src/ply';
 import { PlyRequest } from '../../src/request';
+
+const values = {
+    baseUrl: 'http://localhost:8080/ply-demo/api',
+    year: 1931,
+    rating: 5,
+    id: 'eec22a97',
+    query: 'year=1935&rating=>4&sort=rating&descending=true'
+};
 
 describe('Requests', async () => {
 
@@ -81,19 +89,17 @@ describe('Requests', async () => {
         assert.equal(requests[2].name, 'moviesQuery');
     });
 
+    it('can run plyees', async () => {
+        const plyer = new Plyer();
+        plyer.run(['test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating'], values);
+        // assert.equal(results[0].status, 'Passed');
+        // assert.equal(result[0].message, 'Test succeeded');
+    });
+
     it('can run suite', async () => {
         const ply = new Ply();
         const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');
         let suite = suites[0];
-
-        const values = {
-            baseUrl: "http://localhost:8080/ply-demo/api",
-            year: 1931,
-            rating: 5,
-            id: 'eec22a97',
-            query: 'year=1935&rating=>4&sort=rating&descending=true'
-        };
-
         await suite.run(values);
     });
 });

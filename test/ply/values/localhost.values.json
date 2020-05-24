@@ -1,0 +1,7 @@
+{
+    "baseUrl": "http://localhost:8080/ply-demo/api",
+    "year": 1931,
+    "rating": 5,
+    "id": "eec22a97",
+    "query": "year=1935&rating=>4&sort=rating&descending=true"
+}

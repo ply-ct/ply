@@ -28,11 +28,11 @@ export interface Result extends Outcome {
     /**
      * Request with runtime substitutions, minus Authorization header
      */
-    readonly request: Request,
+    readonly request?: Request,
     /**
      * Response with ignore headers removed, and formatted/sorted body content (per options)
      */
-    readonly response: Response
+    readonly response?: Response
 }
 
 export class PlyResult implements Result {
@@ -41,9 +41,10 @@ export class PlyResult implements Result {
     message: string = '';
     line: number = 0;
     diff?: string;
-
     request: Request;
-    constructor(readonly name: string, request: Request, readonly response: Response) {
+    response: Response;
+
+    constructor(readonly name: string, request: Request, response: Response) {
         this.request = { ... request };
         this.request.headers = { };
         Object.keys(request.headers).forEach( key => {
@@ -51,6 +52,7 @@ export class PlyResult implements Result {
                 this.request.headers[key] = request.headers[key];
             }
         });
+        this.response = response;
     }
 }
 

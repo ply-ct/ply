@@ -1,35 +1,16 @@
-// TODO temp retain API for vscode-ply
-import { Request } from './request';
-
-export interface Status {
-    code: number;
-    message: string;
-}
-
-export interface Response {
-    /**
-     * Response time in ms.
-     */
-    time: number;
-    status: Status;
-    headers: object | undefined;
-    body: string | undefined;
-}
-
-export interface Result {
-    status: 'Passed' | 'Failed' | 'Errored';
-    message: string;
-}
+// Browser may require https://www.npmjs.com/package/events
+import { Result } from './result';
 
 /**
  * Event type is 'start' or 'outcome'.
- * Event id is the request id or case id.
+ * Event plyee is the unique test path.
  */
 export interface PlyEvent {
-    type: string;
-    id: string;
-    request: Request | undefined;
-    response: Response | undefined;
-    result: Result | undefined;
-    error: Error | undefined;
+    plyee: string
 }
+
+export interface ResultEvent extends PlyEvent {
+    result: Result
+}
+
+export type PlyEventListener = (e: PlyEvent) => void;

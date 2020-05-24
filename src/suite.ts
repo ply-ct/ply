@@ -1,6 +1,6 @@
 import * as os from 'os';
 import { TestType, Test, PlyTest } from './test';
-import { Result, Outcome, Verifier } from './result';
+import { Result, Outcome, Verifier, PlyResult } from './result';
 import { Logger } from './logger';
 import { Runtime, DecoratedSuite, ResultPaths, CallingCaseInfo } from './runtime';
 import { SUITE_PREFIX, TEST_PREFIX } from './decorators';
@@ -89,31 +89,29 @@ export class Suite<T extends Test> {
      */
     async run(names: string[], values: object): Promise<Result[]>;
     async run(namesOrValues: object | string | string[], values?: object): Promise<Result | Result[]> {
-        if (typeof namesOrValues === 'object') {
-            // run all tests
-            return await this.runTests(this.all(), namesOrValues);
+        if (typeof namesOrValues === 'string') {
+            const name = namesOrValues;
+            let test = this.get(name);
+            if (!test) {
+                throw new Error(`Test not found: ${name}`);
+            }
+            let results = await this.runTests([test], values || {});
+            return results[0];
         }
-        else {
-            if (typeof namesOrValues === 'string') {
-                const name = namesOrValues;
+        else if (Array.isArray(namesOrValues)) {
+            const names = typeof namesOrValues === 'string' ? [namesOrValues] : namesOrValues;
+            const tests = names.map(name => {
                 let test = this.get(name);
                 if (!test) {
                     throw new Error(`Test not found: ${name}`);
                 }
-                let results = await this.runTests([test], values || {});
-                return results[0];
-            }
-            else {
-                const names = typeof namesOrValues === 'string' ? [namesOrValues] : namesOrValues;
-                const tests = names.map(name => {
-                    let test = this.get(name);
-                    if (!test) {
-                        throw new Error(`Test not found: ${name}`);
-                    }
-                    return test;
-                }, this);
-                return await this.runTests(tests, values || {});
-            }
+                return test;
+            }, this);
+            return await this.runTests(tests, values || {});
+        }
+        else {
+            // run all tests
+            return await this.runTests(this.all(), namesOrValues);
         }
     }
 
@@ -157,34 +155,50 @@ export class Suite<T extends Test> {
             if (test.type === 'case' || test.type === 'workflow') {
                 this.runtime.results.actual.append(test.name + ':' + os.EOL);
             }
-            let result = await (test as unknown as PlyTest).run(this.runtime);
-
-            if (test.type === 'request') {
-                result = result as Result;
-                let indent = callingCaseInfo ? this.runtime.options.prettyIndent : 0;
-                let actualYaml = this.buildResultYaml(result, indent);
-                this.runtime.results.actual.append(actualYaml);
-                if (!callingCaseInfo) {
-                    // verify request result (otherwise wait until case/workflow is complete)
+            let result: Result;
+            try {
+                this.logger.info(`Running ${test.type}: ${test.name}`);
+                result = await (test as unknown as PlyTest).run(this.runtime);
+                if (test.type === 'request') {
+                    let plyResult = result as PlyResult;
+                    let indent = callingCaseInfo ? this.runtime.options.prettyIndent : 0;
+                    let actualYaml = this.buildResultYaml(plyResult, indent);
+                    this.runtime.results.actual.append(actualYaml);
+                    if (!callingCaseInfo) {
+                        // verify request result (otherwise wait until case/workflow is complete)
+                        let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, 0);
+                        let outcome = verifier.verify(actualYaml, {
+                            __ply_request: plyResult.request,
+                            __ply_response: plyResult.response,
+                            ...values
+                        });
+                        result = { ...result as Result, ...outcome };
+                        this.logOutcome(test.name, outcome);
+                    }
+                }
+                else {
+                    // case/workflow run complete -- verify result
+                    let actualYaml = this.runtime.results.getActualYaml(test.name);
                     let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, 0);
-                    let outcome = verifier.verify(actualYaml, {
-                        __ply_request: result.request,
-                        __ply_response: result.response,
-                        ...values
-                    });
-                    result = { ...result, ...outcome };
+                    let outcome = verifier.verify(actualYaml, values);
                     this.logOutcome(test.name, outcome);
                 }
             }
-            else {
-                // case/workflow run complete -- verify result
-                let actualYaml = this.runtime.results.getActualYaml(test.name);
-                let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, 0);
-                let outcome = verifier.verify(actualYaml, values);
-                this.logOutcome(test.name, outcome);
+            catch (err) {
+                this.logger.error(err);
+                result = {
+                    name: test.name,
+                    status: 'Errored',
+                    message: err.message
+                };
             }
-            if (result) {
+
+            if (test.type === 'request') {
                 results.push(result);
+            }
+
+            if (this.runtime.options.bail && result.status !== 'Passed') {
+                break;
             }
         }
 
@@ -225,7 +239,7 @@ export class Suite<T extends Test> {
         }
     }
 
-    private buildResultYaml(result: Result, indent: number): string {
+    private buildResultYaml(result: PlyResult, indent: number): string {
 
         const { name: _name, type: _type, submitted: _submitted, ...leanRequest } = result.request;
         const { time: _time, ...leanResponse } = result.response;
