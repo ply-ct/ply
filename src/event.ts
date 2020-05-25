@@ -1,16 +1,22 @@
 // Browser may require https://www.npmjs.com/package/events
-import { Result } from './result';
+import { Outcome } from './result';
 
 /**
- * Event type is 'start' or 'outcome'.
- * Event plyee is the unique test path.
+ * Event for 'start' listeners.
  */
+
 export interface PlyEvent {
+    /**
+     * Unique test path
+     */
     plyee: string
 }
 
-export interface ResultEvent extends PlyEvent {
-    result: Result
+/**
+ * Event for 'outcome' listeners.
+ */
+export interface OutcomeEvent extends PlyEvent {
+    outcome: Outcome
 }
 
 export type PlyEventListener = (e: PlyEvent) => void;

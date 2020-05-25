@@ -11,6 +11,6 @@ export { Retrieval } from './retrieval';
 export { Storage } from './storage';
 export { Suite } from './Suite';
 export { suite, test, before, after } from './decorators';
-export { PlyEvent, ResultEvent } from './event';
+export { PlyEvent, OutcomeEvent } from './event';
 
 export default new Ply();

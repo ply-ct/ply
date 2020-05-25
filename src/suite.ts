@@ -7,6 +7,9 @@ import { SUITE_PREFIX, TEST_PREFIX } from './decorators';
 import { Retrieval } from './retrieval';
 import * as yaml from './yaml';
 import './date';
+import { EventEmitter } from 'events';
+import { Plyee } from './ply';
+import { PlyEvent, OutcomeEvent } from './event';
 
 interface Tests<T extends Test> {
     [key: string]: T
@@ -22,6 +25,7 @@ interface Tests<T extends Test> {
 export class Suite<T extends Test> {
 
     readonly tests: Tests<T> = {};
+    emitter?: EventEmitter;
 
     /**
      * @param name suite name
@@ -150,7 +154,7 @@ export class Suite<T extends Test> {
 
         this.runtime.values = values;
         let results: Result[] = [];
-        // tests are run sequentially
+        // within a suite, tests are run sequentially
         for (const test of tests) {
             if (test.type === 'case' || test.type === 'workflow') {
                 this.runtime.results.actual.append(test.name + ':' + os.EOL);
@@ -158,6 +162,11 @@ export class Suite<T extends Test> {
             let result: Result;
             try {
                 this.logger.info(`Running ${test.type}: ${test.name}`);
+                if (this.emitter) {
+                    this.emitter.emit('start', {
+                        plyee: new Plyee(this.runtime.options.testsLocation + '/' + this.path, test).path
+                    } as PlyEvent );
+                }
                 result = await (test as unknown as PlyTest).run(this.runtime);
                 if (test.type === 'request') {
                     let plyResult = result as PlyResult;
@@ -173,7 +182,7 @@ export class Suite<T extends Test> {
                             ...values
                         });
                         result = { ...result as Result, ...outcome };
-                        this.logOutcome(test.name, outcome);
+                        this.logOutcome(test, outcome);
                     }
                 }
                 else {
@@ -181,7 +190,7 @@ export class Suite<T extends Test> {
                     let actualYaml = this.runtime.results.getActualYaml(test.name);
                     let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, 0);
                     let outcome = verifier.verify(actualYaml, values);
-                    this.logOutcome(test.name, outcome);
+                    this.logOutcome(test, outcome);
                 }
             }
             catch (err) {
@@ -191,6 +200,7 @@ export class Suite<T extends Test> {
                     status: 'Errored',
                     message: err.message
                 };
+                this.logOutcome(test, result);
             }
 
             if (test.type === 'request') {
@@ -205,12 +215,22 @@ export class Suite<T extends Test> {
         return results;
     }
 
-    private logOutcome(name: string, outcome: Outcome) {
+    private logOutcome(test: Test, outcome: Outcome) {
         if (outcome.status === 'Passed') {
-            this.logger.info(`Test '${name}' PASSED`);
+            this.logger.info(`Test '${test.name}' PASSED`);
         }
-        else {
-            this.logger.error(`Test '${name}' FAILED: Results differ from line ${outcome.line}\n${outcome.diff}`);
+        else if (outcome.status === 'Failed') {
+            const diff = outcome.diff ? '\n' + outcome.diff : '';
+            this.logger.error(`Test '${test.name}' FAILED: ${outcome.message}${diff}`);
+        }
+        else if (outcome.status === 'Errored') {
+            this.logger.error(`Test '${test.name}' ERRORED: ${outcome.message}`);
+        }
+        if (this.emitter) {
+            this.emitter.emit('outcome', {
+                plyee: new Plyee(this.runtime.options.testsLocation + '/' + this.path, test).path,
+                outcome
+            } as OutcomeEvent);
         }
     }
 

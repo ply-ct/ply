@@ -1,8 +1,10 @@
 import * as fs from 'fs';
-import * as ts from 'typescript';
+import * as path from 'path';
 import { EventEmitter } from 'events';
+import * as ts from 'typescript';
 import { Options, Config, PlyOptions, Defaults } from './options';
 import { Suite } from './suite';
+import { Test } from './test';
 import { Request } from './request';
 import { Case } from './case';
 import { CaseLoader } from './cases';
@@ -76,21 +78,30 @@ export class Ply {
 }
 
 /**
- * Format: <suite_file>#<test_name>
- * eg: c:\ply\ply\test\ply\requests\movie-queries.ply.yaml#moviesByYearAndRating
+ * Format: <absolute_suite_file_forward_slashes>#<optional_case_suite>~<test_name>
+ * eg: c:/ply/ply/test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating
  * or: /Users/donaldoakes/ply/ply/test/ply/cases/movieCrud.ply.ts#movie-crud^add new movie
  * (TODO: handle caseFile#suite^case)
  */
 export class Plyee {
+    readonly path: string;
     private hash: number;
     private hat: number;;
 
-    constructor(readonly path: string) {
-        this.hash = path.indexOf('#');
-        if (this.hash < 1 || this.hash > path.length - 2) {
+    constructor(suite: string, test: Test);
+    constructor(path: string);
+    constructor(pathOrSuite: string, test?: Test) {
+        if (test) {
+            this.path = path.normalize(path.resolve(`${pathOrSuite}#${test.name}`)).replace(/\\/g, '/');
+        }
+        else {
+            this.path = path.normalize(path.resolve(pathOrSuite)).replace(/\\/g, '/');
+        }
+        this.hash = this.path.indexOf('#');
+        if (this.hash < 1 || this.hash > this.path.length - 2) {
             throw new Error('Invalid path: ${path}');
         }
-        this.hat = path.lastIndexOf('^');
+        this.hat = this.path.lastIndexOf('^');
         if (this.hat < this.hash || this.hat < this.path.length - 1) {
             this.hat = -1;
         }
@@ -116,6 +127,10 @@ export class Plyee {
         else {
             return this.path.substring(this.hash + 1);
         }
+    }
+
+    toString(): string {
+        return this.path;
     }
 
     static requests(paths: string[]): Map<string, Plyee[]> {
@@ -157,22 +172,17 @@ export class Plyer extends EventEmitter {
     async run(plyees: string[], values: object): Promise<Result[]> {
         const promises: Promise<Result[]>[] = [];
         for (const [loc, requestPlyee] of Plyee.requests(plyees)) {
-            const tests = requestPlyee.map(plyee => plyee.test);
-            this.ply.loadRequestSuite(loc)
-            .then(requestSuite => {
-                promises.push(requestSuite.run(tests, values));
-            });
+            let tests = requestPlyee.map(plyee => plyee.test);
+            let requestSuite = await this.ply.loadRequestSuite(loc);
+            requestSuite.emitter = this;
+            promises.push(requestSuite.run(tests, values));
         }
         // TODO cases
 
-        let allResults: Result[] = [];
+        let combined: Result[] = [];
         for (const results of await Promise.all(promises)) {
-            allResults = allResults.concat(results);
+            combined = combined.concat(results);
         }
-        return allResults;
-    }
-
-    on(event: string | symbol, listener: (...args: any[]) => void): this {
-        return super.on(event, listener);
+        return combined;
     }
 }

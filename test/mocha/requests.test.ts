@@ -1,5 +1,6 @@
 import * as assert from 'assert';
 import { Ply, Plyer } from '../../src/ply';
+import { Config } from '../../src/options';
 import { PlyRequest } from '../../src/request';
 
 const values = {
@@ -76,6 +77,16 @@ describe('Requests', async () => {
         assert.equal(result.message, 'Results differ from line 9');
     });
 
+    it('can handle error', async () => {
+        const ply = new Ply({
+            ...new Config().options,
+            expectedLocation: 'test/ply/results/expected-not-exist'
+        });
+        const suite = (await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml'))[0];
+        const result = await suite.run('movieById', values);
+        assert.equal(result.status, 'Errored');
+    });
+
     it('can iterate suite', async () => {
         const ply = new Ply();
         const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');
@@ -91,9 +102,9 @@ describe('Requests', async () => {
 
     it('can run plyees', async () => {
         const plyer = new Plyer();
-        plyer.run(['test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating'], values);
-        // assert.equal(results[0].status, 'Passed');
-        // assert.equal(result[0].message, 'Test succeeded');
+        let results = await plyer.run(['test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating'], values);
+        assert.equal(results[0].status, 'Passed');
+        assert.equal(results[0].message, 'Test succeeded');
     });
 
     it('can run suite', async () => {
