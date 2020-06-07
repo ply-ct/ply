@@ -58,7 +58,7 @@ export class Logger {
                 }
             }
             if (this.storage) {
-                this.storage.append(message);
+                this.storage.append('' + message);
                 if (obj) {
                     if (obj.stack) {
                         this.storage.append('\n' + obj.stack);
@@ -76,7 +76,13 @@ export class Logger {
     }
 
     error(message: string, obj?: any) {
-        this.log(LogLevel.error, message, obj);
+        if (!obj && (message as any).message && (message as any).stack) {
+            const err = message as any;
+            this.log(LogLevel.error, err.message, err);
+        }
+        else {
+            this.log(LogLevel.error, message, obj);
+        }
     }
 
     debug(message: string, obj?: any) {

@@ -194,7 +194,7 @@ export class Suite<T extends Test> {
                 }
             }
             catch (err) {
-                this.logger.error(err);
+                this.logger.error(err.message, err);
                 result = {
                     name: test.name,
                     status: 'Errored',

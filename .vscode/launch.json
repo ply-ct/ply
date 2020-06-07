@@ -7,20 +7,6 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Doc Gen",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "${workspaceFolder}/dist/src/docGenerator.js",
-            "args": ["test/ply/cases/MovieCrud.ts"],
-            "preLaunchTask": "tsc: build - tsconfig.json",
-            "outFiles": [
-                "${workspaceFolder}/dist/**/*.js"
-            ]
-        },
-        {
-            "type": "node",
-            "request": "launch",
             "name": "Temp",
             "skipFiles": [
                 "<node_internals>/**"
