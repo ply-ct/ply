@@ -86,7 +86,7 @@ export class Ply {
 export class Plyee {
     readonly path: string;
     private hash: number;
-    private hat: number;;
+    private hat: number;
 
     constructor(suite: string, test: Test);
     constructor(path: string);
@@ -142,6 +142,7 @@ export class Plyee {
     static cases(paths: string[]): Map<string, Plyee[]> {
         return this.collect(paths, plyee => plyee.location.endsWith('.ts'));
     }
+
     /**
      * Returns a map of unique location to Plyee[]
      */
