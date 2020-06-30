@@ -2,6 +2,6 @@
 
 ## REST API Automated Testing
 
-## Reappearing Soon
-Ply is undergoing a significant revamp.  Check back in a few weeks.
+## Reappearing Very Soon
+Ply's revamp is almost complete.  Check back in a week or two for updated docs.
 
