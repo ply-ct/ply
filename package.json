@@ -27,7 +27,8 @@
     "build": "tsc",
     "pretest": "ply-movies start &",
     "test": "mocha --require ts-node/register test/mocha/**/*.ts",
-    "posttest": "ply-movies stop"
+    "posttest": "ply-movies stop",
+    "temp": "./node_modules/ply-movies/dist/cli.js start &"
   },
   "homepage": "https://github.com/ply-ct/ply#readme",
   "dependencies": {
