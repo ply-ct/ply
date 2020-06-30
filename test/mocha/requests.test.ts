@@ -4,7 +4,7 @@ import { Config } from '../../src/options';
 import { PlyRequest } from '../../src/request';
 
 const values = {
-    baseUrl: 'http://localhost:8080/ply-demo/api',
+    baseUrl: 'http://localhost:3000/movies',
     year: 1931,
     rating: 5,
     id: 'eec22a97',
@@ -51,7 +51,7 @@ describe('Requests', async () => {
         let suite = suites[0];
 
         const values = {
-            baseUrl: "http://localhost:8080/ply-demo/api",
+            baseUrl: "http://localhost:3000/movies",
             year: 1931,
             rating: 5
         };
@@ -67,7 +67,7 @@ describe('Requests', async () => {
         let suite = suites[0];
 
         const values = {
-            baseUrl: "http://localhost:8080/ply-demo/api",
+            baseUrl: "http://localhost:3000/movies",
             id: 'xxxxxx'
         };
 

@@ -72,7 +72,7 @@ describe('Cases', async () => {
         const suite = suites[0];
 
         const values = {
-            baseUrl: 'http://localhost:8080/ply-demo/api',
+            baseUrl: 'http://localhost:3000/movies',
             id: '435b30ad'
         };
         const result = await suite.run(values);

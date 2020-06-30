@@ -1,6 +1,6 @@
 moviesByYearAndRating:
   request:
-    url: '${baseUrl}/movies?year=${year}&rating=${rating}'
+    url: '${baseUrl}?year=${year}&rating=${rating}'
     method: GET
     headers:
       Accept: application/json
@@ -9,7 +9,7 @@ moviesByYearAndRating:
       code: 200
       message: OK
     headers:
-      content-type: application/json
+      content-type: application/json${~.*}  # charset is optional (regex)
     body: |-
       {
         "movies": [
@@ -93,7 +93,7 @@ moviesByYearAndRating:
       }
 movieById:
   request:
-    url: '${baseUrl}/movies/${id}'
+    url: '${baseUrl}/${id}'
     method: GET
     headers:
       Accept: application/json
@@ -102,7 +102,7 @@ movieById:
       code: 200
       message: OK
     headers:
-      content-type: application/json
+      content-type: application/json${~.*}  # charset is optional (regex)
     body: |-
       {
         "credits": [
@@ -144,7 +144,7 @@ movieById:
       }
 moviesQuery:
   request:
-    url: '${baseUrl}/movies?${query}'
+    url: '${baseUrl}?${query}'
     method: GET
     headers:
       Accept: application/json
@@ -153,7 +153,7 @@ moviesQuery:
       code: 200
       message: OK
     headers:
-      content-type: application/json
+      content-type: application/json${~.*}  # charset is optional (regex)
     body: |-
       {
         "movies": [
