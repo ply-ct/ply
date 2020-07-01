@@ -17,7 +17,9 @@ export class ResultPaths {
         readonly log?: Storage) { }
 
     /**
-     * Figures out the file extension for results.
+     * Figures out locations and file extensions for results.
+     * Result file path relative to configured result location is the same as retrieval relative
+     * to configured tests location.
      */
     static async create(options: PlyOptions, suiteName: string, retrieval: Retrieval): Promise<ResultPaths> {
 

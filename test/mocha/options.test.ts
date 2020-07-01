@@ -6,6 +6,6 @@ describe('Options', () => {
     it('is loaded from config', () => {
         const options: Options = new Config().options;
         assert.equal(options.testsLocation, 'test/ply');
-        assert.deepEqual(options.requestFiles, ['**/*.ply.yaml']);
+        assert.equal(options.requestFiles, '**/*.ply.yaml');
     });
 });

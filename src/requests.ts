@@ -62,7 +62,7 @@ export class RequestLoader {
             if (typeof val === 'object') {
                 let startEnd = { start: val.__start, end: val.__end };
                 let { __start, __end, ...cleanObj} = val;
-                let request = new PlyRequest(key, { ...startEnd, ...cleanObj } as Request, logger);
+                let request = new PlyRequest(key, { ...startEnd, ...cleanObj } as Request, logger, retrieval);
                 suite.add(request);
             }
         }

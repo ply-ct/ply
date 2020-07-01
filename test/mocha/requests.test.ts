@@ -41,7 +41,7 @@ describe('Requests', async () => {
         },
         {
             name: 'Error',
-            message: "Request missingUrl is missing 'url'"
+            message: "Request missingUrl in test/ply/requests/bad-requests.ply.yaml is missing 'url'"
         });
     });
 

@@ -1,6 +1,7 @@
 import { TestType, Test, PlyTest } from './test';
 import { Response, PlyResponse } from './response';
 import { Logger } from './logger';
+import { Retrieval } from './retrieval';
 import { Runtime } from './runtime';
 import { PlyResult } from './result';
 import * as subst from './subst';
@@ -29,13 +30,13 @@ export class PlyRequest implements Request, PlyTest {
      * @param name test name
      * @param obj object to parse for contents
      */
-    constructor(readonly name: string, obj: Request, readonly logger: Logger) {
+    constructor(readonly name: string, obj: Request, readonly logger: Logger, retrieval: Retrieval) {
         if (!obj.url) {
-            throw new Error(`Request ${name} is missing 'url'`);
+            throw new Error(`Request ${name} in ${retrieval} is missing 'url'`);
         }
         this.url = obj.url.trim();
         if (!obj.method) {
-            throw new Error(`Request ${name} is missing 'method'`);
+            throw new Error(`Request ${name} in ${retrieval} is missing 'method'`);
         }
         this.method = obj.method.trim();
         this.headers = obj.headers || {};

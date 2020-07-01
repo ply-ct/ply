@@ -12,6 +12,18 @@ export interface Options {
      */
     testsLocation?: string;
     /**
+     * Request file(s) glob patterns ('**\/*.{ply.yaml,ply.yml}')
+     */
+    requestFiles?: string;
+    /**
+     * Case files(s) glob pattern ('**\/*.ply.ts')
+     */
+    caseFiles?: string;
+    /**
+     * Exclude file pattern (['**\/{node_modules,bin,dist,out}\/**'])
+     */
+    excludes?: string;
+    /**
      * Expected results base dir (testsLocation + '/results/expected')
      */
     expectedLocation?: string;
@@ -23,18 +35,6 @@ export interface Options {
      * Log file base dir (this.actualLocation)
      */
     logLocation?: string;
-    /**
-     * Request file(s) glob patterns (['**\/*.ply.yaml', ' **\/*.ply.yml'])
-     */
-    requestFiles?: string[];
-    /**
-     * Case files(s) glob patterns (['**\/*.ply.ts'])
-     */
-    caseFiles?: string[];
-    /**
-     * Exclude file patterns (['**\/{ node_modules, bin, dist, out }\/**'])
-     */
-    excludes?: string[];
     /**
      * Verbose output (false)
      */
@@ -63,12 +63,12 @@ export interface Options {
  */
 export interface PlyOptions extends Options {
     testsLocation: string;
+    requestFiles: string;
+    caseFiles: string;
+    excludes: string;
     expectedLocation: string;
     actualLocation: string;
     logLocation?: string;
-    requestFiles: string[];
-    caseFiles: string[];
-    excludes: string[];
     verbose: boolean;
     bail: boolean;
     formatResponseBody: boolean;
@@ -78,12 +78,12 @@ export interface PlyOptions extends Options {
 
 export class Defaults implements PlyOptions {
     constructor(readonly testsLocation: string = '.') {}
+    requestFiles = '**/*.{ply.yaml,ply.yml}';
+    caseFiles = '**/*.ply.ts';
+    excludes = '**/{node_modules,bin,dist,out}/**';
     expectedLocation = this.testsLocation + '/results/expected';
     actualLocation = this.testsLocation + '/results/actual';
     logLocation = this.actualLocation;
-    requestFiles = ['**/*.ply.yaml', '**/*.ply.yml'];
-    caseFiles = ['**/*.ply.ts'];
-    excludes = ['**/{node_modules,bin,dist,out}/**'];
     verbose = false;
     bail = false;
     formatResponseBody = true;
