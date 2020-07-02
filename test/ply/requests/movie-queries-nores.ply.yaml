@@ -1,0 +1,21 @@
+moviesByYearAndRating:
+  url: '${baseUrl}?year=${year}&rating=${rating}'
+  method: GET
+  headers:
+    Accept: application/json
+    Authorization: myauth
+
+# TODO uses id from above response
+movieById:
+  url:  '${baseUrl}/${id}' # '${baseUrl}/${@movieByYearAndRating.response.body.movies[0].id}' # accessing id from previous response
+  method: GET
+  headers:
+    Accept: application/json
+
+# general purpose query
+moviesQuery:
+  url: '${baseUrl}?${query}'
+  method: GET
+  headers:
+    Accept: application/json
+

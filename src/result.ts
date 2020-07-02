@@ -4,6 +4,16 @@ import { Logger } from './logger';
 import { CodeLine, Code } from './code';
 import { Compare } from './compare';
 
+export enum OutcomeCode {
+    NoExpectedResult = 1
+}
+
+export class OutcomeError extends Error {
+    constructor(message: string, readonly code?: OutcomeCode) {
+        super(message);
+    }
+}
+
 export interface Outcome {
     /**
      * Status of test execution
@@ -18,6 +28,8 @@ export interface Outcome {
      * Diff message
      */
     diff?: string
+
+    code?: OutcomeCode
 }
 
 export interface Result extends Outcome {
