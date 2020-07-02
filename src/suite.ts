@@ -2,7 +2,7 @@ import * as os from 'os';
 import { TestType, Test, PlyTest } from './test';
 import { Result, Outcome, Verifier, PlyResult } from './result';
 import { Logger } from './logger';
-import { Runtime, DecoratedSuite, ResultPaths, CallingCaseInfo } from './runtime';
+import { Runtime, RunOptions, DecoratedSuite, ResultPaths, CallingCaseInfo } from './runtime';
 import { SUITE_PREFIX, TEST_PREFIX } from './decorators';
 import { Retrieval } from './retrieval';
 import * as yaml from './yaml';
@@ -41,7 +41,7 @@ export class Suite<T extends Test> {
         readonly name: string,
         readonly type: TestType,
         readonly path: string,
-        private readonly runtime: Runtime,
+        readonly runtime: Runtime,
         readonly logger: Logger,
         /**
          * zero-based start line
@@ -79,27 +79,27 @@ export class Suite<T extends Test> {
      * @param values runtime values for substitution
      * @returns result array indicating outcomes
      */
-    async run(values: object): Promise<Result[]>;
+    async run(values: object, runOptions?: RunOptions): Promise<Result[]>;
     /**
      * Run one test, write actual result, and verify vs expected.
      * @param values runtime values for substitution
      * @returns result indicating outcome
      */
-    async run(name: string, values: object): Promise<Result>;
+    async run(name: string, values: object, runOptions?: RunOptions): Promise<Result>;
     /**
      * Run specified tests, write actual results, and verify vs expected.
      * @param values runtime values for substitution
      * @returns result array indicating outcomes
      */
-    async run(names: string[], values: object): Promise<Result[]>;
-    async run(namesOrValues: object | string | string[], values?: object): Promise<Result | Result[]> {
+    async run(names: string[], values: object, runOptions?: RunOptions): Promise<Result[]>;
+    async run(namesOrValues: object | string | string[], values?: object, runOptions?: RunOptions): Promise<Result | Result[]> {
         if (typeof namesOrValues === 'string') {
             const name = namesOrValues;
             let test = this.get(name);
             if (!test) {
                 throw new Error(`Test not found: ${name}`);
             }
-            let results = await this.runTests([test], values || {});
+            let results = await this.runTests([test], values || {}, runOptions);
             return results[0];
         }
         else if (Array.isArray(namesOrValues)) {
@@ -111,11 +111,11 @@ export class Suite<T extends Test> {
                 }
                 return test;
             }, this);
-            return await this.runTests(tests, values || {});
+            return await this.runTests(tests, values || {}, runOptions);
         }
         else {
             // run all tests
-            return await this.runTests(this.all(), namesOrValues);
+            return await this.runTests(this.all(), namesOrValues, runOptions);
         }
     }
 
@@ -123,7 +123,7 @@ export class Suite<T extends Test> {
      * Tests are run sequentially.
      * @param tests
      */
-    private async runTests(tests: T[], values: object): Promise<Result[]> {
+    private async runTests(tests: T[], values: object, runOptions?: RunOptions): Promise<Result[]> {
 
         let callingCaseInfo: CallingCaseInfo | undefined;
         if (this.className) {

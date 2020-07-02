@@ -1,9 +1,12 @@
 import * as path from 'path';
+import * as os from 'os';
 
 /**
  * Abstraction for a URL or file location.
  */
 export class Location {
+
+    static NEWLINE = os.EOL;
 
     readonly path: string;
 

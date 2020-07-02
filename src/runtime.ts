@@ -89,6 +89,25 @@ export type CallingCaseInfo = {
     caseName: string
 };
 
+export enum NoExpectedResultDispensation {
+    /**
+     * Proceed and verify (let test fail).
+     * This is the default behavior if not specified.
+     */
+    Proceed = 1,
+    /**
+     * Run test requests but don't verify outcomes.
+     */
+    NoVerify = 2,
+    /**
+     * Create expected from actual and verify based on that.
+     */
+    CreateExpected = 3
+}
+export interface RunOptions {
+    noExpectedResult?: NoExpectedResultDispensation
+}
+
 /**
  * Runtime information for a test suite.
  */

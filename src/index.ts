@@ -9,8 +9,9 @@ export { Logger } from './logger';
 export { Options, PlyOptions, Defaults, Config } from './options';
 export { Retrieval } from './retrieval';
 export { Storage } from './storage';
-export { Suite } from './Suite';
-export { suite, test, before, after } from './decorators';
+export { Suite } from './suite';
 export { PlyEvent, OutcomeEvent } from './event';
+export { RunOptions, NoExpectedResultDispensation } from './runtime';
+export { suite, test, before, after } from './decorators';
 
 export default new Ply();

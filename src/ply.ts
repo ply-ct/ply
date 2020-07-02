@@ -10,6 +10,7 @@ import { Case } from './case';
 import { CaseLoader } from './cases';
 import { RequestLoader } from './requests';
 import { Result } from './result';
+import { RunOptions } from './runtime';
 
 export class Ply {
 
@@ -133,6 +134,9 @@ export class Plyee {
         return this.path;
     }
 
+    /**
+     * Maps plyee paths to Plyee by Suite.
+     */
     static requests(paths: string[]): Map<string, Plyee[]> {
         return this.collect(paths, plyee => {
             return plyee.location.endsWith('.yml') || plyee.location.endsWith('.yaml');
@@ -170,14 +174,16 @@ export class Plyer extends EventEmitter {
         this.ply = new Ply(options);
     }
 
-    async run(plyees: string[], values: object): Promise<Result[]> {
+    async run(plyees: string[], values: object, runOptions?: RunOptions): Promise<Result[]> {
         const promises: Promise<Result[]>[] = [];
+        // requests
         for (const [loc, requestPlyee] of Plyee.requests(plyees)) {
             let tests = requestPlyee.map(plyee => plyee.test);
             let requestSuite = await this.ply.loadRequestSuite(loc);
             requestSuite.emitter = this;
-            promises.push(requestSuite.run(tests, values));
+            promises.push(requestSuite.run(tests, values, runOptions));
         }
+
         // TODO cases
 
         let combined: Result[] = [];
