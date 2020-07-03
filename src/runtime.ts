@@ -8,6 +8,7 @@ import { PlyOptions } from './options';
 import { TEST_PREFIX, BEFORE_PREFIX, AFTER_PREFIX, SUITE_PREFIX } from './decorators';
 import { TestSuite, TestCase, Before, After } from './decorators';
 import * as yaml from './yaml';
+import { OutcomeError, OutcomeCode } from './result';
 
 export class ResultPaths {
 
@@ -59,7 +60,7 @@ export class ResultPaths {
     async getExpectedYaml(name: string): Promise<string> {
         const expected = await this.expected.read();
         if (!expected) {
-            throw new Error(`Expected result file not found: ${this.expected}`);
+            throw new OutcomeError(`Expected result file not found: ${this.expected}`, OutcomeCode.NoExpectedResult);
         }
         const expectedObj = yaml.load(this.expected.toString(), expected, true)[name];
         if (!expectedObj) {

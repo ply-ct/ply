@@ -205,6 +205,9 @@ export class Suite<T extends Test> {
                     status: 'Errored',
                     message: err.message
                 };
+                if (err.code) {
+                    result.code = err.code;
+                }
                 this.logOutcome(test, result);
             }
 
