@@ -67,7 +67,7 @@ export class Verifier {
      * Verify expected vs actual results yaml after substituting values.
      */
     verify(actualYaml: string, values: object): Outcome {
-        this.logger.debug(`Comparing:\n${this.expectedYaml}\nWith:\n${actualYaml}\n`);
+        this.logger.debug(`Expected:\n${this.expectedYaml}\nActual:\n${actualYaml}\n`);
         const expected = new Code(this.expectedYaml);
         const actual = new Code(actualYaml);
         const diffs = new Compare(this.logger).diffLines(expected.extractCode(), actual.extractCode(), values);

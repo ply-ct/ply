@@ -1,6 +1,6 @@
-import * as os from 'os';
 import { TestType, Test, PlyTest } from './test';
 import { Result, Outcome, Verifier, PlyResult } from './result';
+import { Location } from './location';
 import { Logger } from './logger';
 import { Runtime, RunOptions, DecoratedSuite, ResultPaths, CallingCaseInfo } from './runtime';
 import { SUITE_PREFIX, TEST_PREFIX } from './decorators';
@@ -158,7 +158,7 @@ export class Suite<T extends Test> {
         // within a suite, tests are run sequentially
         for (const test of tests) {
             if (test.type === 'case' || test.type === 'workflow') {
-                this.runtime.results.actual.append(test.name + ':' + os.EOL);
+                this.runtime.results.actual.append(test.name + ':' + Location.NEWLINE);
             }
             let result: Result;
             try {
@@ -177,6 +177,7 @@ export class Suite<T extends Test> {
                     if (!callingCaseInfo) {
                         // verify request result (otherwise wait until case/workflow is complete)
                         let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, 0);
+                        this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
                         let outcome = verifier.verify(actualYaml, {
                             __ply_request: plyResult.request,
                             __ply_response: plyResult.response,
@@ -190,7 +191,10 @@ export class Suite<T extends Test> {
                     // case/workflow run complete -- verify result
                     let actualYaml = this.runtime.results.getActualYaml(test.name);
                     let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, 0);
+                    this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
                     let outcome = verifier.verify(actualYaml, values);
+                    result = { ...result as Result, ...outcome };
+                    results.push(result);
                     this.logOutcome(test, outcome);
                 }
             }
@@ -300,7 +304,7 @@ export class Suite<T extends Test> {
                 ymlLines[outcomeLine + requestYml.split('\n').length] += `  # ${responseMs}`;
             }
         }
-        yml = ymlLines.join(os.EOL);
+        yml = ymlLines.join(Location.NEWLINE);
 
         return yml;
     }

@@ -1,7 +1,7 @@
 add new movie:
   createMovie:
     request:
-      url: '${baseUrl}/movies'
+      url: '${baseUrl}'
       method: POST
       headers:
         Accept: application/json
@@ -48,7 +48,7 @@ add new movie:
         message: Created
       headers:
         content-type: application/json${~.*}  # charset is optional (regex)
-        location: '${baseUrl}/movies/${id}'
+        location: '${baseUrl}/${id}'
       body: |-
         {
           "credits": [
@@ -89,7 +89,7 @@ add new movie:
 update rating:
   updateMovie:
     request:
-      url: '${baseUrl}/movies/${id}'
+      url: '${baseUrl}/${id}'
       method: PUT
       headers:
         Accept: application/json
@@ -147,7 +147,7 @@ update rating:
         }
   retrieveMovie:
     request:
-      url: '${baseUrl}/movies/${id}'
+      url: '${baseUrl}/${id}'
       method: GET
       headers:
         Accept: application/json
@@ -198,7 +198,7 @@ update rating:
 remove movie:
   deleteMovie:
     request:
-      url: '${baseUrl}/movies/${id}'
+      url: '${baseUrl}/${id}'
       method: DELETE
       headers:
         Accept: application/json
@@ -217,7 +217,7 @@ remove movie:
         }
   retrieveMovie:
     request:
-      url: '${baseUrl}/movies/${id}'
+      url: '${baseUrl}/${id}'
       method: GET
       headers:
         Accept: application/json

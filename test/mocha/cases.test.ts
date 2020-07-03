@@ -36,13 +36,17 @@ describe('Cases', async () => {
         const unnamedSuite = suites[0];
         const values = { myValue: 'foo', otherValue: 'bar' };
         const results = await unnamedSuite.run(values);
-        // TODO cases run should return results?
 
         const instance = ((unnamedSuite as any).runtime as Runtime).decoratedSuite!.instance as UnnamedSuite;
         assert.equal(instance.beforeCount, 1);
         assert.deepEqual(instance.testsRun, ['unnamedCaseNoValues', 'unnamedCaseWithValues']);
         assert.equal(instance.aValue, 'foo');
         assert.equal(instance.afterCount, 1);
+
+        assert.equal(results[0].name, 'unnamedCaseNoValues');
+        assert.equal(results[0].status, 'Passed');
+        assert.equal(results[1].name, 'unnamedCaseWithValues');
+        assert.equal(results[1].status, 'Passed');
     });
 
     it('can run named suite', async () => {
@@ -55,19 +59,23 @@ describe('Cases', async () => {
         const unnamedSuite = suites[1];
         const values = { myValue: 'zero', otherValue: 'bar' };
         const results = await unnamedSuite.run(values);
-        // TODO cases run should return results?
 
         const instance = ((unnamedSuite as any).runtime as Runtime).decoratedSuite!.instance as UnnamedSuite;
         assert.equal(instance.beforeCount, 3);
         assert.deepEqual(instance.testsRun, ['namedCaseNoValues', 'namedCaseWithValues']);
         assert.equal(instance.aValue, 'zero');
         assert.equal(instance.afterCount, 3);
+
+        assert.equal(results[0].name, 'first case');
+        assert.equal(results[0].status, 'Passed');
+        assert.equal(results[1].name, 'second case');
+        assert.equal(results[1].status, 'Passed');
     });
 
     it('can run suite', async () => {
         const ply = new Ply({
             ...new Config().options,
-            verbose: true
+            verbose: false
         });
         const suites = await ply.loadCases(['test/ply/cases/movieCrud.ply.ts']);
         assert.equal(suites.length, 1);
@@ -78,8 +86,20 @@ describe('Cases', async () => {
             id: '435b30ad'
         };
         const results = await suite.run(values);
+
+        assert.equal(results[0].name, 'add new movie');
+        assert.equal(results[0].status, 'Passed');
+        assert.equal(results[1].name, 'update rating');
+        assert.equal(results[1].status, 'Passed');
+        assert.equal(results[2].name, 'remove movie');
+        assert.equal(results[2].status, 'Passed');
+
+
+
+        console.log("RESULTS: " + JSON.stringify(results, null, 2));
+
         // TODO cases run should return results?
-        // HOW DO I KNOW THIS FAILED (TEST PASSES)
+        // HOW DO I KNOW THIS FAILED (TEST PASSES ANYWAY)
 
         // const outcome = result.outcomes[0];
         // assert.equal(outcome.response.status.code, 200);
