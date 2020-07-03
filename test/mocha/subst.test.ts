@@ -5,7 +5,7 @@ import * as subst from '../../src/subst';
 
 describe('subst', () => {
 
-    it('ignores unmatched expressions', async () => {
+    it('ignores unmatched expressions', () => {
 
         let logger = new Logger({
             ...new LogOptions(),
@@ -22,4 +22,5 @@ describe('subst', () => {
         const res = subst.replace(template, values, logger);
         console.log("RES: " + res);
     });
+
 });

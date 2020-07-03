@@ -24,7 +24,7 @@ export class Compare {
 
     constructor(readonly logger: Logger) {}
 
-    diffLines(expected: string, actual: string, values: object) {
+    diffLines(expected: string, actual: string, values: object): Diff[] {
         const dmp = new DiffMatchPatch();
         var a = dmp.diff_linesToChars_(expected, actual);
         var lineText1 = a.chars1;

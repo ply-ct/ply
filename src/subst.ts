@@ -21,8 +21,9 @@ function get(template: string, context: object, logger: Logger): string {
 
 /**
  * Replaces template expressions with values from context.
+ * Ignores regular expressions starting with ${~
  */
 export function replace(template: string, context: object, logger: Logger) {
-    return get(template, context, logger);
+    return get(template.replace(/\${~/g, '\\${~'), context, logger);
 }
 

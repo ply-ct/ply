@@ -83,7 +83,7 @@ describe('Cases', async () => {
 
         const values = {
             baseUrl: 'http://localhost:3000/movies',
-            id: '435b30ad'
+            id: '435b30ad'  // TODO expected should reference location header or body.id
         };
         const results = await suite.run(values);
 
@@ -94,15 +94,6 @@ describe('Cases', async () => {
         assert.equal(results[2].name, 'remove movie');
         assert.equal(results[2].status, 'Passed');
 
-
-
-        console.log("RESULTS: " + JSON.stringify(results, null, 2));
-
-        // TODO cases run should return results?
-        // HOW DO I KNOW THIS FAILED (TEST PASSES ANYWAY)
-
-        // const outcome = result.outcomes[0];
-        // assert.equal(outcome.response.status.code, 200);
-        // assert.equal(outcome.response.headers['content-type'], 'application/json');
+        // TODO this case won't pass until body properties are ordered
     });
 });
