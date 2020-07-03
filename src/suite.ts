@@ -26,6 +26,7 @@ export class Suite<T extends Test> {
 
     readonly tests: Tests<T> = {};
     emitter?: EventEmitter;
+    ignored = false;
 
     /**
      * @param name suite name

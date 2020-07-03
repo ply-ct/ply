@@ -47,7 +47,7 @@ add new movie:
         code: 201
         message: Created
       headers:
-        content-type: application/json
+        content-type: application/json${~.*}  # charset is optional (regex)
         location: '${baseUrl}/movies/${id}'
       body: |-
         {
@@ -137,7 +137,7 @@ update rating:
         code: 200
         message: OK
       headers:
-        content-type: application/json
+        content-type: application/json${~.*}  # charset is optional (regex)
       body: |-
         {
           "status": {
@@ -156,7 +156,7 @@ update rating:
         code: 200
         message: OK
       headers:
-        content-type: application/json
+        content-type: application/json${~.*}  # charset is optional (regex)
       body: |-
         {
           "credits": [
@@ -207,7 +207,7 @@ remove movie:
         code: 200
         message: OK
       headers:
-        content-type: application/json
+        content-type: application/json${~.*}  # charset is optional (regex)
       body: |-
         {
           "status": {
@@ -226,7 +226,7 @@ remove movie:
         code: 404
         message: Not Found
       headers:
-        content-type: application/json;charset=ISO-8859-1
+        content-type: application/json${~.*}  # charset is optional (regex)
       body: |-
         {
           "status": {

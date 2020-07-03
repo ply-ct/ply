@@ -35,7 +35,8 @@ describe('Cases', async () => {
         const suites = await ply.loadCases('test/mocha/suites.ts');
         const unnamedSuite = suites[0];
         const values = { myValue: 'foo', otherValue: 'bar' };
-        const result = await unnamedSuite.run(values);
+        const results = await unnamedSuite.run(values);
+        // TODO cases run should return results?
 
         const instance = ((unnamedSuite as any).runtime as Runtime).decoratedSuite!.instance as UnnamedSuite;
         assert.equal(instance.beforeCount, 1);
@@ -53,7 +54,8 @@ describe('Cases', async () => {
         const suites = await ply.loadCases('test/mocha/suites.ts');
         const unnamedSuite = suites[1];
         const values = { myValue: 'zero', otherValue: 'bar' };
-        const result = await unnamedSuite.run(values);
+        const results = await unnamedSuite.run(values);
+        // TODO cases run should return results?
 
         const instance = ((unnamedSuite as any).runtime as Runtime).decoratedSuite!.instance as UnnamedSuite;
         assert.equal(instance.beforeCount, 3);
@@ -75,7 +77,9 @@ describe('Cases', async () => {
             baseUrl: 'http://localhost:3000/movies',
             id: '435b30ad'
         };
-        const result = await suite.run(values);
+        const results = await suite.run(values);
+        // TODO cases run should return results?
+        // HOW DO I KNOW THIS FAILED (TEST PASSES)
 
         // const outcome = result.outcomes[0];
         // assert.equal(outcome.response.status.code, 200);

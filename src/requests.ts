@@ -5,14 +5,19 @@ import { Retrieval } from './retrieval';
 import { Request, PlyRequest } from './request';
 import { ResultPaths, Runtime } from './runtime';
 import { Logger, LogLevel } from './logger';
+import { PlyIgnore } from './ignore';
 import * as yaml from './yaml';
 
 export class RequestLoader {
 
+    private ignore: PlyIgnore;
+
     constructor(
         readonly locations: string[],
         private options: PlyOptions
-    ) { }
+    ) {
+        this.ignore = new PlyIgnore(options.testsLocation);
+    }
 
     async load(): Promise<Suite<Request>[]> {
         const retrievals = this.locations.map(loc => new Retrieval(loc));
@@ -66,6 +71,12 @@ export class RequestLoader {
                 suite.add(request);
             }
         }
+
+        // mark if ignored
+        if (this.ignore.isExcluded(suite.path)) {
+            suite.ignored = true;
+        }
+
         return suite;
     }
 

@@ -6,6 +6,7 @@ import { Case, PlyCase } from './case';
 import { Retrieval } from './retrieval';
 import { ResultPaths, Runtime } from './runtime';
 import { Logger, LogLevel } from './logger';
+import { PlyIgnore } from './ignore';
 
 interface SuiteDecoration {
     name: string;
@@ -25,6 +26,7 @@ export class CaseLoader {
 
     private program: ts.Program;
     private checker: ts.TypeChecker;
+    private ignore: PlyIgnore;
 
     constructor(
         sourceFiles: string[],
@@ -33,6 +35,8 @@ export class CaseLoader {
 
         this.program = ts.createProgram(sourceFiles, compilerOptions);
         this.checker = this.program.getTypeChecker();
+
+        this.ignore = new PlyIgnore(options.testsLocation);
     }
 
     async load(): Promise<Suite<Case>[]> {
@@ -81,6 +85,12 @@ export class CaseLoader {
                         );
                         suite.add(c);
                     }
+
+                    // mark if ignored
+                    if (this.ignore.isExcluded(suite.path)) {
+                        suite.ignored = true;
+                    }
+
                     suites.push(suite);
                 }
             }
