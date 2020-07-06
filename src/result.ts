@@ -4,21 +4,11 @@ import { Logger } from './logger';
 import { CodeLine, Code } from './code';
 import { Compare } from './compare';
 
-export enum OutcomeCode {
-    NoExpectedResult = 1
-}
-
-export class OutcomeError extends Error {
-    constructor(message: string, readonly code?: OutcomeCode) {
-        super(message);
-    }
-}
-
 export interface Outcome {
     /**
      * Status of test execution
      */
-    status: 'Pending' | 'Passed' | 'Failed' | 'Errored'
+    status: 'Pending' | 'Passed' | 'Failed' | 'Errored' | 'Not Verified'
     message: string
     /**
      * One-based, relative to starting line of test
@@ -28,8 +18,6 @@ export interface Outcome {
      * Diff message
      */
     diff?: string
-
-    code?: OutcomeCode
 }
 
 export interface Result extends Outcome {
@@ -49,7 +37,7 @@ export interface Result extends Outcome {
 
 export class PlyResult implements Result {
 
-    status: 'Pending' | 'Passed' | 'Failed' | 'Errored' = 'Pending';
+    status: 'Pending' | 'Passed' | 'Failed' | 'Errored' | 'Not Verified' = 'Pending';
     message: string = '';
     line: number = 0;
     diff?: string;

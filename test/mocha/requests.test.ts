@@ -2,6 +2,8 @@ import * as assert from 'assert';
 import { Ply, Plyer } from '../../src/ply';
 import { Config } from '../../src/options';
 import { PlyRequest } from '../../src/request';
+import { Storage } from '../../src/storage';
+import { NoExpectedResultDispensation } from '../../src/runtime';
 
 const values = {
     baseUrl: 'http://localhost:3000/movies',
@@ -12,6 +14,13 @@ const values = {
 };
 
 describe('Requests', async () => {
+
+    beforeEach(() => {
+        let missingExpected = new Storage('test/mocha/results/expected/requests/movie-queries.yaml');
+        if (missingExpected.exists) {
+            missingExpected.remove();
+        }
+    });
 
     it('is loaded from yaml', async () => {
         const ply = new Ply();
@@ -111,6 +120,49 @@ describe('Requests', async () => {
         const ply = new Ply();
         const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');
         let suite = suites[0];
-        await suite.run(values);
+        let results = await suite.run(values);
+
+        assert.equal(results[0].status, 'Passed');
+        assert.equal(results[1].status, 'Passed');
+        assert.equal(results[2].status, 'Passed');
+    });
+
+    it('honors NoVerify', async () => {
+        const ply = new Ply({
+            ...new Config().options,
+            // expected results don't live here -- triggering NoExpectedResultDispensation
+            expectedLocation: 'test/mocha/results/expected',
+            actualLocation: 'test/mocha/results/actual'
+        });
+
+        const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');
+        let suite = suites[0];
+        let runOptions = { noExpectedResult: NoExpectedResultDispensation.NoVerify };
+        let results = await suite.run(values, runOptions);
+
+        assert.equal(results[0].status, 'Not Verified');
+        assert.equal(results[1].status, 'Not Verified');
+        assert.equal(results[2].status, 'Not Verified');
+    });
+
+    it('honors CreateExpected', async () => {
+        const ply = new Ply({
+            ...new Config().options,
+            // expected results don't live here -- triggering NoExpectedResultDispensation
+            expectedLocation: 'test/mocha/results/expected',
+            actualLocation: 'test/mocha/results/actual'
+        });
+
+        const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');
+        let suite = suites[0];
+        let runOptions = { noExpectedResult: NoExpectedResultDispensation.CreateExpected };
+        let results = await suite.run(values, runOptions);
+
+        assert.equal(results[0].status, 'Passed');
+        assert.equal(results[1].status, 'Passed');
+        assert.equal(results[2].status, 'Passed');
+
+        let expected = new Storage('test/mocha/results/expected/requests/movie-queries.yaml');
+        assert.ok(expected.exists);
     });
 });

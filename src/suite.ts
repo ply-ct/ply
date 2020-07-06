@@ -1,8 +1,9 @@
 import { TestType, Test, PlyTest } from './test';
 import { Result, Outcome, Verifier, PlyResult } from './result';
 import { Location } from './location';
+import { Storage } from './storage';
 import { Logger } from './logger';
-import { Runtime, RunOptions, DecoratedSuite, ResultPaths, CallingCaseInfo } from './runtime';
+import { Runtime, RunOptions, DecoratedSuite, ResultPaths, CallingCaseInfo, NoExpectedResultDispensation } from './runtime';
 import { SUITE_PREFIX, TEST_PREFIX } from './decorators';
 import { Retrieval } from './retrieval';
 import * as yaml from './yaml';
@@ -93,14 +94,14 @@ export class Suite<T extends Test> {
      * @returns result array indicating outcomes
      */
     async run(names: string[], values: object, runOptions?: RunOptions): Promise<Result[]>;
-    async run(namesOrValues: object | string | string[], values?: object, runOptions?: RunOptions): Promise<Result | Result[]> {
+    async run(namesOrValues: object | string | string[], valuesOrRunOptions?: object | RunOptions, runOptions?: RunOptions): Promise<Result | Result[]> {
         if (typeof namesOrValues === 'string') {
             const name = namesOrValues;
             let test = this.get(name);
             if (!test) {
                 throw new Error(`Test not found: ${name}`);
             }
-            let results = await this.runTests([test], values || {}, runOptions);
+            let results = await this.runTests([test], valuesOrRunOptions || {}, runOptions);
             return results[0];
         }
         else if (Array.isArray(namesOrValues)) {
@@ -112,11 +113,11 @@ export class Suite<T extends Test> {
                 }
                 return test;
             }, this);
-            return await this.runTests(tests, values || {}, runOptions);
+            return await this.runTests(tests, valuesOrRunOptions || {}, runOptions);
         }
         else {
             // run all tests
-            return await this.runTests(this.all(), namesOrValues, runOptions);
+            return await this.runTests(this.all(), namesOrValues, valuesOrRunOptions);
         }
     }
 
@@ -153,10 +154,13 @@ export class Suite<T extends Test> {
             }
         }
 
+        let expectedExists = await this.runtime.results.expected.exists;
+
         this.runtime.values = values;
         let results: Result[] = [];
         // within a suite, tests are run sequentially
-        for (const test of tests) {
+        for (let i = 0; i < tests.length; i++) {
+            let test = tests[i];
             if (test.type === 'case' || test.type === 'workflow') {
                 this.runtime.results.actual.append(test.name + ':' + Location.NEWLINE);
             }
@@ -175,16 +179,38 @@ export class Suite<T extends Test> {
                     let actualYaml = this.buildResultYaml(plyResult, indent);
                     this.runtime.results.actual.append(actualYaml);
                     if (!callingCaseInfo) {
-                        // verify request result (otherwise wait until case/workflow is complete)
-                        let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, 0);
-                        this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
-                        let outcome = verifier.verify(actualYaml, {
-                            __ply_request: plyResult.request,
-                            __ply_response: plyResult.response,
-                            ...values
-                        });
-                        result = { ...result as Result, ...outcome };
-                        this.logOutcome(test, outcome);
+                        if (!expectedExists) {
+                            let dispensation = runOptions?.noExpectedResult;
+                            if (dispensation === NoExpectedResultDispensation.NoVerify) {
+                                result = { ...result, status: 'Not Verified', message: 'Verification skipped' };
+                                this.logOutcome(test, result);
+                            }
+                            else if (dispensation === NoExpectedResultDispensation.CreateExpected) {
+                                if (this.runtime.results.expected.location.isUrl) {
+                                    throw new Error('Dispensation CreatedExpected not supported for remote results');
+                                }
+                                let expected = new Storage(this.runtime.results.expected.location.toString());
+                                if (i === 0) {
+                                    this.log.info(`Creating expected result: ${expected}`);
+                                    expected.write(actualYaml);
+                                }
+                                else {
+                                    expected.append(actualYaml);
+                                }
+                            }
+                        }
+                        if (result.status === 'Pending') {
+                            // verify request result (otherwise wait until case/workflow is complete)
+                            let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, 0);
+                            this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
+                            let outcome = verifier.verify(actualYaml, {
+                                __ply_request: plyResult.request,
+                                __ply_response: plyResult.response,
+                                ...values
+                            });
+                            result = { ...result as Result, ...outcome };
+                            this.logOutcome(test, outcome);
+                        }
                     }
                 }
                 else {
@@ -197,17 +223,13 @@ export class Suite<T extends Test> {
                     results.push(result);
                     this.logOutcome(test, outcome);
                 }
-            }
-            catch (err) {
+            } catch (err) {
                 this.logger.error(err.message, err);
                 result = {
                     name: test.name,
                     status: 'Errored',
                     message: err.message
                 };
-                if (err.code) {
-                    result.code = err.code;
-                }
                 this.logOutcome(test, result);
             }
 
@@ -233,6 +255,9 @@ export class Suite<T extends Test> {
         }
         else if (outcome.status === 'Errored') {
             this.logger.error(`Test '${test.name}' ERRORED: ${outcome.message}`);
+        }
+        else if (outcome.status === 'Not Verified') {
+            this.logger.error(`Test '${test.name}' NOT VERIFIED: ${outcome.message}`);
         }
         if (this.emitter) {
             this.emitter.emit('outcome', {
