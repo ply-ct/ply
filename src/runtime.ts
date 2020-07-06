@@ -69,6 +69,9 @@ export class ResultPaths {
         return expectedLines.slice(expectedObj.__start, expectedObj.__end + 1).join('\n');
     }
 
+    /**
+     * Newlines are always \n.  Trailing \n is appended.
+     */
     getActualYaml(name: string): string {
         const actual = this.actual.read();
         if (!actual) {
@@ -79,7 +82,7 @@ export class ResultPaths {
             throw new Error(`Actual result not found: ${this.actual}#${name}`);
         }
         const actualLines = actual.split(/\r?\n/);
-        return actualLines.slice(actualObj.__start, actualObj.__end + 1).join('\n');
+        return actualLines.slice(actualObj.__start, actualObj.__end + 1).join('\n') + '\n';
     }
 }
 

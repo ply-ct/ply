@@ -89,9 +89,9 @@ export class Verifier {
                             diffMsg += '-' + (line + this.startLine + diff.count - 1);
                         }
                         diffMsg += '\n';
-                        diffMsg += this.prefix(diff.value, '- ', expected.lines, line + this.startLine - 1);
+                        diffMsg += this.prefix(diff.value, '- ', expected.lines, line);
                         if (correspondingAdd) {
-                            diffMsg += this.prefix(correspondingAdd.value, '+ ', actual.lines, actLine + this.startLine - 1);
+                            diffMsg += this.prefix(correspondingAdd.value, '+ ', actual.lines, actLine);
                         }
                         diffMsg += '===\n';
                     }
@@ -108,7 +108,7 @@ export class Verifier {
                             firstDiffLine = line + this.startLine;
                         }
                         diffMsg += line + '\n';
-                        diffMsg += this.prefix(diff.value, '+ ', actual.lines, actLine + this.startLine - 1);
+                        diffMsg += this.prefix(diff.value, '+ ', actual.lines, actLine);
                         diffMsg += '===\n';
                     }
                     actLine += diff.count;

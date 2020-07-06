@@ -137,9 +137,9 @@ export class PlyRequest implements Request, PlyTest {
         this.submitted = new Date();
         this.logger.info(`Request '${this.name}' submitted at ${this.submitted.timestamp(runtime.locale)}`);
         const requestObject = this.getRequest(runtime.values);
-        this.logger.debug('Request:', requestObject);
+        this.logger.debug('Request', requestObject);
         const response = await this.doSubmit(requestObject);
-        this.logger.debug('Response:', response);
+        this.logger.debug('Response', response);
         const result = new PlyResult(
             this.name,
             requestObject,

@@ -155,6 +155,7 @@ export class Suite<T extends Test> {
         }
 
         let expectedExists = await this.runtime.results.expected.exists;
+        let resultsStartLine = 0;
 
         this.runtime.values = values;
         let results: Result[] = [];
@@ -173,10 +174,11 @@ export class Suite<T extends Test> {
                     } as PlyEvent );
                 }
                 result = await (test as unknown as PlyTest).run(this.runtime);
+                let actualYaml: string;
                 if (test.type === 'request') {
                     let plyResult = result as PlyResult;
                     let indent = callingCaseInfo ? this.runtime.options.prettyIndent : 0;
-                    let actualYaml = this.buildResultYaml(plyResult, indent);
+                    actualYaml = this.buildResultYaml(plyResult, indent);
                     this.runtime.results.actual.append(actualYaml);
                     if (!callingCaseInfo) {
                         if (!expectedExists) {
@@ -201,7 +203,7 @@ export class Suite<T extends Test> {
                         }
                         if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/workflow is complete)
-                            let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, 0);
+                            let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
                             this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
                             let outcome = verifier.verify(actualYaml, {
                                 __ply_request: plyResult.request,
@@ -215,14 +217,15 @@ export class Suite<T extends Test> {
                 }
                 else {
                     // case/workflow run complete -- verify result
-                    let actualYaml = this.runtime.results.getActualYaml(test.name);
-                    let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, 0);
+                    actualYaml = this.runtime.results.getActualYaml(test.name);
+                    let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
                     this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
                     let outcome = verifier.verify(actualYaml, values);
                     result = { ...result as Result, ...outcome };
                     results.push(result);
                     this.logOutcome(test, outcome);
                 }
+                resultsStartLine += actualYaml.split('\n').length - 1;
             } catch (err) {
                 this.logger.error(err.message, err);
                 result = {
@@ -292,6 +295,9 @@ export class Suite<T extends Test> {
         }
     }
 
+    /**
+     * Includes trailing newlin.
+     */
     private buildResultYaml(result: PlyResult, indent: number): string {
 
         const { name: _name, type: _type, submitted: _submitted, ...leanRequest } = result.request;

@@ -142,7 +142,7 @@ update rating:
         {
           "status": {
             "code": 200,
-            "message": "Movie updated: ${id}"
+            "message": "OK"
           }
         }
   retrieveMovie:
@@ -212,7 +212,7 @@ remove movie:
         {
           "status": {
             "code": 200,
-            "message": "Movie deleted: ${id}"
+            "message": "OK"
           }
         }
   retrieveMovie:
@@ -231,6 +231,6 @@ remove movie:
         {
           "status": {
             "code": 404,
-            "message": "Movie not found with id: ${id}"
+            "message": "Movie not found: ${id}"
           }
         }

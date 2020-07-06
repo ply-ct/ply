@@ -1,4 +1,5 @@
 import { Options } from './options';
+import * as stringify from 'json-stable-stringify';
 
 export interface Status {
     code: number;
@@ -22,7 +23,7 @@ export class PlyResponse implements Response {
     }
 
     /**
-     * Strips ignored headers and orders body object keys.
+     * Strips ignored headers and orders body object keys unless suppressed.
      */
     getResponse(options: Options): Response {
         const headerNames = Object.keys(this.headers).sort();
@@ -34,8 +35,7 @@ export class PlyResponse implements Response {
 
         let body = this.body;
         if (body && options.formatResponseBody && body.startsWith('{')) {
-            body = JSON.stringify(JSON.parse(body), this.replacer, options.prettyIndent);
-
+            body = stringify(JSON.parse(body), { space: ''.padStart(options.prettyIndent || 0, ' ') });
         }
 
         return {
@@ -45,12 +45,4 @@ export class PlyResponse implements Response {
             time: this.time
         };
     }
-
-    /**
-     * TODO ordering of keys
-     */
-    replacer(key: string, value: any): any {
-        return value;
-    }
-
 }
