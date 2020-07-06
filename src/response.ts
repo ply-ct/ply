@@ -34,8 +34,13 @@ export class PlyResponse implements Response {
         });
 
         let body = this.body;
-        if (body && options.formatResponseBody && body.startsWith('{')) {
-            body = stringify(JSON.parse(body), { space: ''.padStart(options.prettyIndent || 0, ' ') });
+        if (body && body?.startsWith('{')) {
+            if (options.responseBodySortedKeys) {
+                body = stringify(JSON.parse(body), { space: ''.padStart(options.prettyIndent || 0, ' ') });
+            }
+            else {
+                body = JSON.stringify(JSON.parse(body), null, options.prettyIndent);
+            }
         }
 
         return {

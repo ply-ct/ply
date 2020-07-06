@@ -44,9 +44,9 @@ export interface Options {
      */
     bail?: boolean;
     /**
-     * Prettify response body and sort JSON properties by name -- needed for verification (true)
+     * Predictable ordering of response body JSON property keys -- needed for verification (true)
      */
-    formatResponseBody?: boolean;
+    responseBodySortedKeys?: boolean;
     /**
      * Prettification indent for yaml and response body (2)
      */
@@ -71,7 +71,7 @@ export interface PlyOptions extends Options {
     logLocation?: string;
     verbose: boolean;
     bail: boolean;
-    formatResponseBody: boolean;
+    responseBodySortedKeys: boolean;
     prettyIndent: number;
     responseHeaders?: string[];
 }
@@ -86,7 +86,7 @@ export class Defaults implements PlyOptions {
     logLocation = this.actualLocation;
     verbose = false;
     bail = false;
-    formatResponseBody = true;
+    responseBodySortedKeys = true;
     prettyIndent = 2;
     responseHeaders = ['content-type'];
 }
