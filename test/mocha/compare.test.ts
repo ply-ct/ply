@@ -37,7 +37,7 @@ describe('Compare', () => {
         const expected = 'before\n' +
           'headers:\n' +
           '  content-type: application/json${~.*}\n' +
-          '  location: \'${baseUrl}/${id}\'\n';
+          '  location: \'${baseUrl}/${~[0-9a-f]+}\'\n';
           'after\n';
 
         const actual = 'before\n' +
@@ -47,18 +47,17 @@ describe('Compare', () => {
         'after\n';
 
         const values = {
-            baseUrl: 'http://localhost:3000/movies',
-            id: '435b30ad'
+            baseUrl: 'http://localhost:3000/movies'
         };
 
         const diffs = compare.diffLines(expected, actual, values);
 
         assert.equal(diffs[1].count, 2);
         assert.equal(diffs[1].removed, true);
-        assert.equal(diffs[1].ignored, true);
+        assert.equal(!!diffs[1].ignored, true);
         assert.equal(diffs[2].count, 2);
         assert.equal(diffs[2].added, true);
-        assert.equal(diffs[2].ignored, true);
+        assert.equal(!!diffs[2].ignored, true);
     });
 
     it('handles regex with unmatched value', () => {
