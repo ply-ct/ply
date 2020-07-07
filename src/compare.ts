@@ -24,6 +24,9 @@ export class Compare {
 
     constructor(readonly logger: Logger) {}
 
+    /**
+     * Diff results always contain \n newlines
+     */
     diffLines(expected: string, actual: string, values: object): Diff[] {
         const dmp = new DiffMatchPatch();
         var a = dmp.diff_linesToChars_(expected, actual);
@@ -41,11 +44,14 @@ export class Compare {
         }
     }
 
+    /**
+     * Diffs always have \n newlines
+     */
     private convertToJsDiff(diffs: DmpDiff[]): Diff[] {
         var jsdiffs: Diff[] = [];
         diffs.forEach(diff => {
             let jsdiff: Diff = {
-                value: diff[1],
+                value: diff[1].replace(/\r\n/g, '\n'),
                 count: diff[1].split(/\r\n|\r|\n/).length
             };
             if (diff[0] === -1) {

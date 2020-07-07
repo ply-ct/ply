@@ -26,6 +26,9 @@ export class Code {
         return lines;
     }
 
+    /**
+     * All newlines are \n
+     */
     extractCode(withComments = false): string {
         return this.lines.reduce((acc, line, i, lines) => {
             return acc + line.code + (line.comment && withComments ? line.comment : '') + (i < lines.length - 1 ? '\n' : '');

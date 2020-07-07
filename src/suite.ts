@@ -1,6 +1,5 @@
 import { TestType, Test, PlyTest } from './test';
 import { Result, Outcome, Verifier, PlyResult } from './result';
-import { Location } from './location';
 import { Storage } from './storage';
 import { Logger } from './logger';
 import { Runtime, RunOptions, DecoratedSuite, ResultPaths, CallingCaseInfo, NoExpectedResultDispensation } from './runtime';
@@ -163,7 +162,7 @@ export class Suite<T extends Test> {
         for (let i = 0; i < tests.length; i++) {
             let test = tests[i];
             if (test.type === 'case' || test.type === 'workflow') {
-                this.runtime.results.actual.append(test.name + ':' + Location.NEWLINE);
+                this.runtime.results.actual.append(test.name + ':\n');
             }
             let result: Result;
             try {
@@ -226,6 +225,10 @@ export class Suite<T extends Test> {
                     this.logOutcome(test, outcome);
                 }
                 resultsStartLine += actualYaml.split('\n').length - 1;
+
+                if (test.type === 'request') {
+                    results.push(result);
+                }
             } catch (err) {
                 this.logger.error(err.message, err);
                 result = {
@@ -233,11 +236,9 @@ export class Suite<T extends Test> {
                     status: 'Errored',
                     message: err.message
                 };
-                this.logOutcome(test, result);
-            }
-
-            if (test.type === 'request') {
                 results.push(result);
+
+                this.logOutcome(test, result);
             }
 
             if (this.runtime.options.bail && result.status !== 'Passed') {
@@ -296,7 +297,7 @@ export class Suite<T extends Test> {
     }
 
     /**
-     * Includes trailing newlin.
+     * Always contains \n newlines.  Includes trailing newline.
      */
     private buildResultYaml(result: PlyResult, indent: number): string {
 
@@ -338,7 +339,7 @@ export class Suite<T extends Test> {
                 ymlLines[outcomeLine + requestYml.split('\n').length] += `  # ${responseMs}`;
             }
         }
-        yml = ymlLines.join(Location.NEWLINE);
+        yml = ymlLines.join('\n');
 
         return yml;
     }

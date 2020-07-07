@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as os from 'os';
 import * as mkdirp from 'mkdirp';
 import { Location } from './location';
 
@@ -42,6 +43,9 @@ export class Storage {
         }
     }
 
+    /**
+     * For file system storage, all newlines are replaced with OS-appropriate
+     */
     write(contents: string) {
         if (this.localStorage) {
             this.localStorage.setItem(this.location.path, contents);
@@ -50,10 +54,13 @@ export class Storage {
             if (this.location.parent) {
                 mkdirp.sync(this.location.parent);
             }
-            fs.writeFileSync(this.location.path, contents);
+            fs.writeFileSync(this.location.path, contents.replace(/\r?\n/, os.EOL));
         }
     }
 
+    /**
+     * For file system storage, all newlines are replaced with OS-appropriate
+     */
     append(contents: string) {
         if (this.localStorage) {
             const exist = this.localStorage.getItem(this.location.path);
@@ -63,7 +70,7 @@ export class Storage {
             if (this.location.parent) {
                 mkdirp.sync(this.location.parent);
             }
-            fs.appendFileSync(this.location.path, contents);
+            fs.appendFileSync(this.location.path, contents.replace(/\r?\n/, os.EOL));
         }
     }
 

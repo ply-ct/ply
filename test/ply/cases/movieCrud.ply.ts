@@ -8,14 +8,14 @@ export class MovieCrud {
     movieId?: string;
 
     /**
-     * Cleanup movie left over from previous tests.
+     * Cleanup movie left over from previous failed tests.
      */
     @before
     async beforeAll(values: any) {
         const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
         const deleteMovie = requestSuite.get('deleteMovie');
         assert.exists(deleteMovie);
-        const response = await deleteMovie!.submit(values);
+        const response = await deleteMovie!.submit({...values, id: '435b30ad'});
         requestSuite.log.info('Cleanup response status code', response.status.code);
         // response status should either be 200 or 404 (we don't care which during cleanup)
         assert.ok(response.status.code === 200 || response.status.code === 404);

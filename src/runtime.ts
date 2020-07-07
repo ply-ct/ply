@@ -56,6 +56,9 @@ export class ResultPaths {
         return new ResultPaths(expected, actual, log);
     }
 
+    /**
+     * Newlines are always \n.
+     */
     async getExpectedYaml(name: string): Promise<string> {
         const expected = await this.expected.read();
         if (!expected) {

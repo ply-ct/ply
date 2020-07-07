@@ -3,9 +3,22 @@ import { Config } from '../../src/options';
 import { Ply } from '../../src/ply';
 import { PlyCase } from '../../src/case';
 import { Runtime } from '../../src/runtime';
+import { Storage } from '../../src/storage';
 import { UnnamedSuite } from './suites';
+import { NoExpectedResultDispensation } from '../../src/runtime';
+
+const values = {
+    baseUrl: 'http://localhost:3000/movies'
+};
 
 describe('Cases', async () => {
+
+    beforeEach(() => {
+        let missingExpected = new Storage('test/mocha/results/expected/cases/movie-crud.yaml');
+        if (missingExpected.exists) {
+            missingExpected.remove();
+        }
+    });
 
     it('is loaded from ts', async () => {
         const ply = new Ply();
@@ -34,8 +47,7 @@ describe('Cases', async () => {
         });
         const suites = await ply.loadCases('test/mocha/suites.ts');
         const unnamedSuite = suites[0];
-        const values = { myValue: 'foo', otherValue: 'bar' };
-        const results = await unnamedSuite.run(values);
+        const results = await unnamedSuite.run({ myValue: 'foo', otherValue: 'bar' });
 
         const instance = ((unnamedSuite as any).runtime as Runtime).decoratedSuite!.instance as UnnamedSuite;
         assert.equal(instance.beforeCount, 1);
@@ -57,8 +69,7 @@ describe('Cases', async () => {
         });
         const suites = await ply.loadCases('test/mocha/suites.ts');
         const unnamedSuite = suites[1];
-        const values = { myValue: 'zero', otherValue: 'bar' };
-        const results = await unnamedSuite.run(values);
+        const results = await unnamedSuite.run({ myValue: 'zero', otherValue: 'bar' });
 
         const instance = ((unnamedSuite as any).runtime as Runtime).decoratedSuite!.instance as UnnamedSuite;
         assert.equal(instance.beforeCount, 3);
@@ -81,10 +92,6 @@ describe('Cases', async () => {
         assert.equal(suites.length, 1);
         const suite = suites[0];
 
-        const values = {
-            baseUrl: 'http://localhost:3000/movies',
-            id: '435b30ad'  // TODO expected should reference location header or body.id
-        };
         const results = await suite.run(values);
 
         assert.equal(results[0].name, 'add new movie');
@@ -93,7 +100,62 @@ describe('Cases', async () => {
         assert.equal(results[1].status, 'Passed');
         assert.equal(results[2].name, 'remove movie');
         assert.equal(results[2].status, 'Passed');
-
-        // TODO this case won't pass until body properties are ordered
     });
+
+    it('can handle error', async () => {
+        const ply = new Ply({
+            ...new Config().options,
+            // real expected results don't live here -- triggering NoExpectedResultDispensation
+            expectedLocation: 'test/mocha/results/expected',
+            actualLocation: 'test/mocha/results/actual'
+        });
+
+        const suites = await ply.loadCases(['test/ply/cases/movieCrud.ply.ts']);
+        const suite = suites[0];
+        let results = await suite.run(values);
+
+        assert.equal(results[0].status, 'Errored');
+        assert.equal(results[1].status, 'Errored');
+        assert.equal(results[2].status, 'Errored');
+    });
+
+    it('honors NoVerify', async () => {
+        const ply = new Ply({
+            ...new Config().options,
+            // real expected results don't live here -- triggering NoExpectedResultDispensation
+            expectedLocation: 'test/mocha/results/expected',
+            actualLocation: 'test/mocha/results/actual'
+        });
+
+        const suites = await ply.loadCases(['test/ply/cases/movieCrud.ply.ts']);
+        const suite = suites[0];
+        let runOptions = { noExpectedResult: NoExpectedResultDispensation.NoVerify };
+        let results = await suite.run(values, runOptions);
+
+        assert.equal(results[0].status, 'Not Verified');
+        assert.equal(results[1].status, 'Not Verified');
+        assert.equal(results[2].status, 'Not Verified');
+    });
+
+    it('honors CreateExpected', async () => {
+        const ply = new Ply({
+            ...new Config().options,
+            // expected results don't live here -- triggering NoExpectedResultDispensation
+            expectedLocation: 'test/mocha/results/expected',
+            actualLocation: 'test/mocha/results/actual'
+        });
+
+        const suites = await ply.loadCases(['test/ply/cases/movieCrud.ply.ts']);
+        const suite = suites[0];
+        let runOptions = { noExpectedResult: NoExpectedResultDispensation.CreateExpected };
+        let results = await suite.run(values, runOptions);
+
+        assert.equal(results[0].status, 'Passed');
+        assert.equal(results[1].status, 'Passed');
+        assert.equal(results[2].status, 'Passed');
+
+        let expected = new Storage('test/mocha/results/expected/cases/movie-crud.yaml');
+        assert.ok(expected.exists);
+    });
+
 });
