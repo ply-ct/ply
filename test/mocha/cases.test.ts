@@ -137,25 +137,4 @@ describe('Cases', async () => {
         assert.equal(results[2].status, 'Not Verified');
     });
 
-    it('honors CreateExpected', async () => {
-        const ply = new Ply({
-            ...new Config().options,
-            // expected results don't live here -- triggering NoExpectedResultDispensation
-            expectedLocation: 'test/mocha/results/expected',
-            actualLocation: 'test/mocha/results/actual'
-        });
-
-        const suites = await ply.loadCases(['test/ply/cases/movieCrud.ply.ts']);
-        const suite = suites[0];
-        let runOptions = { noExpectedResult: NoExpectedResultDispensation.CreateExpected };
-        let results = await suite.run(values, runOptions);
-
-        assert.equal(results[0].status, 'Passed');
-        assert.equal(results[1].status, 'Passed');
-        assert.equal(results[2].status, 'Passed');
-
-        let expected = new Storage('test/mocha/results/expected/cases/movie-crud.yaml');
-        assert.ok(expected.exists);
-    });
-
 });

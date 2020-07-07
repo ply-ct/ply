@@ -181,25 +181,9 @@ export class Suite<T extends Test> {
                     this.runtime.results.actual.append(actualYaml);
                     if (!callingCaseInfo) {
                         if (!expectedExists) {
-                            let dispensation = runOptions?.noExpectedResult;
-                            if (dispensation === NoExpectedResultDispensation.NoVerify) {
-                                result = { ...result, status: 'Not Verified', message: 'Verification skipped' };
-                                this.logOutcome(test, result);
-                            }
-                            else if (dispensation === NoExpectedResultDispensation.CreateExpected) {
-                                if (this.runtime.results.expected.location.isUrl) {
-                                    throw new Error('Dispensation CreatedExpected not supported for remote results');
-                                }
-                                let expected = new Storage(this.runtime.results.expected.location.toString());
-                                if (i === 0) {
-                                    this.log.info(`Creating expected result: ${expected}`);
-                                    expected.write(actualYaml);
-                                }
-                                else {
-                                    expected.append(actualYaml);
-                                }
-                            }
+                            result = this.handleNoExpected(test, actualYaml, i === 0, runOptions) || result;
                         }
+                        // status could be 'Not Verified' if runOptions so specify
                         if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/workflow is complete)
                             let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
@@ -213,22 +197,26 @@ export class Suite<T extends Test> {
                             this.logOutcome(test, outcome);
                         }
                     }
+                    results.push(result);
                 }
                 else {
                     // case/workflow run complete -- verify result
                     actualYaml = this.runtime.results.getActualYaml(test.name);
-                    let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
-                    this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
-                    let outcome = verifier.verify(actualYaml, values);
-                    result = { ...result as Result, ...outcome };
+                    if (!expectedExists) {
+                        result = this.handleNoExpected(test, actualYaml, i === 0, runOptions) || result;
+                    }
+                        // status could be 'Not Verified' if runOptions so specify
+                    if (result.status === 'Pending') {
+                        let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
+                        this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
+                        let outcome = verifier.verify(actualYaml, values);
+                        result = { ...result as Result, ...outcome };
+                        this.logOutcome(test, outcome);
+                    }
                     results.push(result);
-                    this.logOutcome(test, outcome);
                 }
                 resultsStartLine += actualYaml.split('\n').length - 1;
 
-                if (test.type === 'request') {
-                    results.push(result);
-                }
             } catch (err) {
                 this.logger.error(err.message, err);
                 result = {
@@ -247,6 +235,28 @@ export class Suite<T extends Test> {
         }
 
         return results;
+    }
+
+    private handleNoExpected(test: T, actualYaml: string, isFirst: boolean, runOptions?: RunOptions): Result | undefined {
+        let dispensation = runOptions?.noExpectedResult;
+        if (dispensation === NoExpectedResultDispensation.NoVerify) {
+            const result = { name: test.name, status: 'Not Verified', message: 'Verification skipped' } as Result;
+            this.logOutcome(test, result);
+            return result;
+        }
+        else if (dispensation === NoExpectedResultDispensation.CreateExpected) {
+            if (this.runtime.results.expected.location.isUrl) {
+                throw new Error('Dispensation CreatedExpected not supported for remote results');
+            }
+            let expected = new Storage(this.runtime.results.expected.location.toString());
+            if (isFirst) {
+                this.log.info(`Creating expected result: ${expected}`);
+                expected.write(actualYaml);
+            }
+            else {
+                expected.append(actualYaml);
+            }
+        }
     }
 
     private logOutcome(test: Test, outcome: Outcome) {

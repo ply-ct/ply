@@ -1,4 +1,3 @@
 actual/
 # for testing missing expected results files -- not versioned
 expected/requests/
-expected/cases/
