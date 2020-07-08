@@ -11,19 +11,19 @@ export interface Request extends Test {
     url: string;
     method: string;
     headers: any;
-    body: string | undefined;
+    body?: any;
     submitted?: Date;
     submit(values: object): Promise<Response>;
 }
 
 export class PlyRequest implements Request, PlyTest {
-    type = 'request' as TestType;
-    url: string;
-    method: string;
-    headers: any;
-    body: string | undefined;
-    start?: number;
-    end?: number;
+    readonly type = 'request' as TestType;
+    readonly url: string;
+    readonly method: string;
+    readonly headers: any;
+    readonly body?: any;
+    readonly start?: number;
+    readonly end?: number;
     submitted?: Date;
 
     /**
@@ -80,9 +80,11 @@ export class PlyRequest implements Request, PlyTest {
     }
 
     private async doSubmit(requestObj: Request): Promise<PlyResponse> {
+
         const before = new Date().getTime();
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { url, ...fetchRequest } = requestObj;
+        this.logger.debug('Request', requestObj);
+
+        const { url: _url, ...fetchRequest } = requestObj;
         if (this.headers.Authorization) {
             (fetchRequest.headers as any).Authorization = this.headers.Authorization;
         }
@@ -91,7 +93,9 @@ export class PlyRequest implements Request, PlyTest {
         const headers = this.responseHeaders(response.headers);
         const body = await response.text();
         const time = new Date().getTime() - before;
-        return new PlyResponse(status, headers, body, time);
+        const plyResponse = new PlyResponse(status, headers, body, time);
+        this.logger.debug('Response', plyResponse);
+        return plyResponse;
     }
 
     /**
@@ -137,9 +141,7 @@ export class PlyRequest implements Request, PlyTest {
         this.submitted = new Date();
         this.logger.info(`Request '${this.name}' submitted at ${this.submitted.timestamp(runtime.locale)}`);
         const requestObject = this.getRequest(runtime.values);
-        this.logger.debug('Request', requestObject);
         const response = await this.doSubmit(requestObject);
-        this.logger.debug('Response', response);
         const result = new PlyResult(
             this.name,
             requestObject,

@@ -26,9 +26,10 @@ export class MovieCrud {
         const requestSuite = await ply.loadSuite('test/ply/requests/movies-api.ply.yaml');
         const result = await requestSuite.run('createMovie', values);
         assert.exists(result.response);
-        assert.exists(result.response!.body);
+        assert.exists(result.response?.body);
         // capture movie id from response -- used in downstream values
-        this.movieId = JSON.parse(result.response!.body!).id;
+        // this.movieId = JSON.parse(result.response!.body!).id;
+        this.movieId = result.response?.body?.id;
         requestSuite.log.info(`Created movie: id=${this.movieId}`);
     }
 

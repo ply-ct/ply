@@ -11,12 +11,10 @@ const logger = new Logger({
 describe('subst', () => {
 
     it('ignores unmatched expression lines', () => {
-
         const values = {
             x: 'foo',
             y: 'bar'
         };
-
         // note windows newline converted to \n
         const template = 'here is z: ${x.something()},\r\nand here is y: ${y}';
         const res = subst.replace(template, values, logger);

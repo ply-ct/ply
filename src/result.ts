@@ -1,5 +1,6 @@
 import { Request } from './request';
-import { Response } from './response';
+import { Response, PlyResponse } from './response';
+import { Options } from './options';
 import { Logger } from './logger';
 import { CodeLine, Code } from './code';
 import { Compare } from './compare';
@@ -42,9 +43,9 @@ export class PlyResult implements Result {
     line: number = 0;
     diff?: string;
     request: Request;
-    response: Response;
+    response: PlyResponse;
 
-    constructor(readonly name: string, request: Request, response: Response) {
+    constructor(readonly name: string, request: Request, response: PlyResponse) {
         this.request = { ... request };
         this.request.headers = { };
         Object.keys(request.headers).forEach( key => {
@@ -53,6 +54,17 @@ export class PlyResult implements Result {
             }
         });
         this.response = response;
+    }
+
+    /**
+     * Returns the result with request/response bodies as objects (if parseable).
+     */
+    getResult(options: Options): Result {
+        return new PlyResult(
+            this.name,
+            this.request,
+            this.response.getResponse(options, false)
+        );
     }
 }
 

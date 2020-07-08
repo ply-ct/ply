@@ -205,7 +205,7 @@ export class Suite<T extends Test> {
                     if (!expectedExists) {
                         result = this.handleNoExpected(test, actualYaml, i === 0, runOptions) || result;
                     }
-                        // status could be 'Not Verified' if runOptions so specify
+                    // status could be 'Not Verified' if runOptions so specify
                     if (result.status === 'Pending') {
                         let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
                         this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
@@ -234,7 +234,15 @@ export class Suite<T extends Test> {
             }
         }
 
-        return results;
+        // tranlate request/response bodies to objects
+        return results.map(result => {
+            if (result instanceof PlyResult) {
+                return result.getResult(this.runtime.options);
+            }
+            else {
+                return result;
+            }
+        });
     }
 
     private handleNoExpected(test: T, actualYaml: string, isFirst: boolean, runOptions?: RunOptions): Result | undefined {
