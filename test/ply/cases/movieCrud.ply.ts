@@ -28,7 +28,6 @@ export class MovieCrud {
         assert.exists(result.response);
         assert.exists(result.response?.body);
         // capture movie id from response -- used in downstream values
-        // this.movieId = JSON.parse(result.response!.body!).id;
         this.movieId = result.response?.body?.id;
         requestSuite.log.info(`Created movie: id=${this.movieId}`);
     }
