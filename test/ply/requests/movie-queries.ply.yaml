@@ -5,9 +5,9 @@ moviesByYearAndRating:
     Accept: application/json
     Authorization: myauth
 
-# TODO uses id from above response
 movieById:
-  url:  '${baseUrl}/${id}' # '${baseUrl}/${@movieByYearAndRating.response.body.movies[0].id}' # accessing id from previous response
+  # id comes from previous response body
+  url:  '${baseUrl}/${@moviesByYearAndRating.response.body.movies[1].id}'
   method: GET
   headers:
     Accept: application/json

@@ -5,7 +5,7 @@ import { Location } from './location';
 import { Retrieval } from './retrieval';
 import { Storage } from './storage';
 import { PlyOptions } from './options';
-import { TEST_PREFIX, BEFORE_PREFIX, AFTER_PREFIX, SUITE_PREFIX } from './decorators';
+import { TEST, BEFORE, AFTER, SUITE } from './names';
 import { TestSuite, TestCase, Before, After } from './decorators';
 import * as yaml from './yaml';
 
@@ -157,7 +157,7 @@ export class DecoratedSuite {
      * @param instance runtime instance of a suite
      */
     constructor(readonly instance: any) {
-        this.testSuite = instance.constructor[SUITE_PREFIX];
+        this.testSuite = instance.constructor[SUITE];
         if (this.testSuite) {
             this.testSuite = { ...this.testSuite, className: this.testSuite.name };
         }
@@ -165,20 +165,20 @@ export class DecoratedSuite {
             try {
                 if (typeof instance.constructor.prototype[propName] === 'function') {
                     const method = instance.constructor.prototype[propName];
-                    if (method[TEST_PREFIX]) {
-                        let testCase = method[TEST_PREFIX];
+                    if (method[TEST]) {
+                        let testCase = method[TEST];
                         if (!this.testCases.find(tc => tc.name === testCase.name)) {
                             this.testCases.push({ ...testCase, method });
                         }
                     }
-                    if (method[BEFORE_PREFIX]) {
-                        let before = method[BEFORE_PREFIX];
+                    if (method[BEFORE]) {
+                        let before = method[BEFORE];
                         if (!this.befores.find(b => b.name === before.name)) {
                             this.befores.push({ ...before, method });
                         }
                     }
-                    if (method[AFTER_PREFIX]) {
-                        let after = method[AFTER_PREFIX];
+                    if (method[AFTER]) {
+                        let after = method[AFTER];
                         if (!this.afters.find(a => a.name === after.name)) {
                             this.afters.push({ ...after, method });
                         }

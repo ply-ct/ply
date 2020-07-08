@@ -3,13 +3,14 @@ import { Result, Outcome, Verifier, PlyResult } from './result';
 import { Storage } from './storage';
 import { Logger } from './logger';
 import { Runtime, RunOptions, DecoratedSuite, ResultPaths, CallingCaseInfo, NoExpectedResultDispensation } from './runtime';
-import { SUITE_PREFIX, TEST_PREFIX } from './decorators';
+import { SUITE, TEST, RESULTS } from './names';
 import { Retrieval } from './retrieval';
 import * as yaml from './yaml';
 import './date';
 import { EventEmitter } from 'events';
 import { Plyee } from './ply';
 import { PlyEvent, OutcomeEvent } from './event';
+import { PlyResponse } from './response';
 
 interface Tests<T extends Test> {
     [key: string]: T
@@ -183,7 +184,7 @@ export class Suite<T extends Test> {
                     this.runtime.results.actual.append(actualYaml);
                     if (!callingCaseInfo) {
                         if (!expectedExists) {
-                            result = this.handleNoExpected(test, actualYaml, i === 0, runOptions) || result;
+                            result = this.handleNoExpected(test, result, actualYaml, i === 0, runOptions) || result;
                         }
                         // status could be 'Not Verified' if runOptions so specify
                         if (result.status === 'Pending') {
@@ -201,7 +202,7 @@ export class Suite<T extends Test> {
                     // case/workflow run complete -- verify result
                     actualYaml = this.runtime.results.getActualYaml(test.name);
                     if (!expectedExists) {
-                        result = this.handleNoExpected(test, actualYaml, i === 0, runOptions) || result;
+                        result = this.handleNoExpected(test, result, actualYaml, i === 0, runOptions) || result;
                     }
                     // status could be 'Not Verified' if runOptions so specify
                     if (result.status === 'Pending') {
@@ -218,8 +219,8 @@ export class Suite<T extends Test> {
                     }
                     this.addResult(results, result);
                 }
+
                 resultsStartLine += actualYaml.split('\n').length - 1;
-                // set values for request/response
 
             } catch (err) {
                 this.logger.error(err.message, err);
@@ -248,20 +249,38 @@ export class Suite<T extends Test> {
      * @param result
      */
     private addResult(results: Result[], result: Result) {
+        let plyResult;
         if (result instanceof PlyResult) {
-            results.push(result.getResult(this.runtime.options));
+            plyResult = result as PlyResult;
         }
-        else {
-            results.push(result);
+        else if (result.request && result.response instanceof PlyResponse) {
+            plyResult = new PlyResult(result.name, result.request, result.response);
+            plyResult.merge(result);
         }
+        if (plyResult) {
+            result = plyResult.getResult(this.runtime.options);
+        }
+        let resultsVal = (this.runtime.values as any)[RESULTS];
+        if (!resultsVal) {
+            resultsVal = {};
+            (this.runtime.values as any)[RESULTS] = resultsVal;
+        }
+        resultsVal[result.name] = result;
+        results.push(result);
     }
 
-    private handleNoExpected(test: T, actualYaml: string, isFirst: boolean, runOptions?: RunOptions): Result | undefined {
+    private handleNoExpected(test: T, result: Result, actualYaml: string, isFirst: boolean, runOptions?: RunOptions): Result | undefined {
         let dispensation = runOptions?.noExpectedResult;
         if (dispensation === NoExpectedResultDispensation.NoVerify) {
-            const result = { name: test.name, status: 'Not Verified', message: 'Verification skipped' } as Result;
-            this.logOutcome(test, result);
-            return result;
+            const res = {
+                name: test.name,
+                status: 'Not Verified',
+                message: 'Verification skipped',
+                request: result.request,
+                response: result.response
+            } as Result;
+            this.logOutcome(test, res);
+            return res;
         }
         else if (dispensation === NoExpectedResultDispensation.CreateExpected) {
             if (this.runtime.results.expected.location.isUrl) {
@@ -315,10 +334,10 @@ export class Suite<T extends Test> {
                 const clsName = element.callee.substring(0, dot);
                 const mod = await import(element.file);
                 const cls = mod[clsName];
-                const suiteName = cls[SUITE_PREFIX].name;
+                const suiteName = cls[SUITE].name;
                 const mthName = element.callee.substring(dot + 1);
                 const mth = cls.prototype[mthName];
-                const caseName = mth[TEST_PREFIX].name;
+                const caseName = mth[TEST].name;
                 const results = await ResultPaths.create(this.runtime.options, suiteName, new Retrieval(element.file));
                 return { results, suiteName, caseName };
             }

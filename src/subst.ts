@@ -1,4 +1,5 @@
-import { Logger, LogLevel } from './logger';
+import { Logger } from './logger';
+import { RESULTS } from './names';
 
 /**
  * Evaluate the input expression vs context.
@@ -28,8 +29,13 @@ export function replace(template: string, context: object, logger: Logger, expla
     const lines: string[] = [];
     for (const line of template.split(/\r?\n/)) {
         try {
-            lines.push(get(line.replace(/\${~/g, '\\${~'), context, logger, explain));
+            let l = line.replace(/\${~/g, '\\${~');  // escape regex
+            l = l.replace(/\${@/g, '${' + RESULTS + '.');
+            lines.push(get(l, context, logger, explain));
         } catch (err) {
+            if (err.message === `${RESULTS} is not defined`) {
+                err.message = 'No results found';
+            }
             logger.error(`Error in expression:\n${line}\n** ${err.message} **`);
             logger.debug(err);
             lines.push(line);

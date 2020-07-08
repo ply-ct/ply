@@ -13,7 +13,7 @@ describe('yaml', () => {
 
         assert.equal(obj['moviesByYearAndRating'].__start, 0);
         assert.equal(obj['moviesByYearAndRating'].__end, 5);
-        assert.equal(obj['movieById'].__start, 8);
+        assert.equal(obj['movieById'].__start, 7);
         assert.equal(obj['movieById'].__end, 12);
         assert.equal(obj['moviesQuery'].__start, 15);
         assert.equal(obj['moviesQuery'].__end, 19);

@@ -1,8 +1,4 @@
-const PLY_PREFIX = '__ply';
-export const SUITE_PREFIX = `${PLY_PREFIX}_suite`;
-export const TEST_PREFIX = `${PLY_PREFIX}_test`;
-export const BEFORE_PREFIX = `${PLY_PREFIX}_before`;
-export const AFTER_PREFIX = `${PLY_PREFIX}_after`;
+import { TEST, BEFORE, AFTER, SUITE } from './names';
 
 type ClassTarget = {
     new(...args: any[]): any,
@@ -25,18 +21,18 @@ export function suite(nameOrTarget: string | ClassTarget) {
         // with decorator args: function params are dec args, return callback taking Target
         return function (target: ClassTarget) {
             // class name is target.name
-            if ((target as any)[SUITE_PREFIX]) {
+            if ((target as any)[SUITE]) {
                 throw new Error(`@suite ${target.name} must not extend another @suite-decorated class.`);
             }
-            (target as any)[SUITE_PREFIX] = { name: nameOrTarget };
+            (target as any)[SUITE] = { name: nameOrTarget };
         };
     }
     else {
         // no decorator args: first function param is ClassTarget
-        if ((nameOrTarget as any)[SUITE_PREFIX]) {
+        if ((nameOrTarget as any)[SUITE]) {
             throw new Error(`@suite ${nameOrTarget.name} must not extend another @suite-decorated class.`);
         }
-        (nameOrTarget as any)[SUITE_PREFIX] = { name: nameOrTarget.name };
+        (nameOrTarget as any)[SUITE] = { name: nameOrTarget.name };
     }
 }
 
@@ -54,12 +50,12 @@ export function test(nameOrTarget: string | any, propertyKey?: string, _descript
     if (typeof nameOrTarget === 'string') {
         return function (target: any, propertyKey: string, _descriptor: PropertyDescriptor) {
             // with decorator args: function params are dec args, return callback taking Target, etc
-            target[propertyKey][TEST_PREFIX] = { name: nameOrTarget };
+            target[propertyKey][TEST] = { name: nameOrTarget };
         };
     }
     else {
         // no decorator args: first function param is target, second is propKey, etc
-        nameOrTarget[propertyKey!][TEST_PREFIX] = { name: propertyKey };
+        nameOrTarget[propertyKey!][TEST] = { name: propertyKey };
     }
 }
 
@@ -79,11 +75,11 @@ export function before(tests: string): (target: any, propertyKey: string, descri
 export function before(testsOrTarget: string | any, propertyKey?: string, _descriptor?: PropertyDescriptor) {
     if (typeof testsOrTarget === 'string') {
         return function (target: any, propertyKey: string, _descriptor: PropertyDescriptor) {
-            target[propertyKey][BEFORE_PREFIX] = { name: propertyKey, tests: testsOrTarget };
+            target[propertyKey][BEFORE] = { name: propertyKey, tests: testsOrTarget };
         };
     }
     else {
-        testsOrTarget[propertyKey!][BEFORE_PREFIX] = { name: propertyKey };
+        testsOrTarget[propertyKey!][BEFORE] = { name: propertyKey };
     }
 }
 
@@ -103,11 +99,11 @@ export function after(tests: string): (target: any, propertyKey: string, descrip
 export function after(testsOrTarget: string | any, propertyKey?: string, _descriptor?: PropertyDescriptor) {
     if (typeof testsOrTarget === 'string') {
         return function (target: any, propertyKey: string, _descriptor: PropertyDescriptor) {
-            target[propertyKey][AFTER_PREFIX] = { name: propertyKey, tests: testsOrTarget };
+            target[propertyKey][AFTER] = { name: propertyKey, tests: testsOrTarget };
         };
     }
     else {
-        testsOrTarget[propertyKey!][AFTER_PREFIX] = { name: propertyKey };
+        testsOrTarget[propertyKey!][AFTER] = { name: propertyKey };
     }
 }
 

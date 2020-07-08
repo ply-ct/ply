@@ -66,8 +66,15 @@ export class PlyResult implements Result {
             status: this.status,
             message: this.message,
             request: this.request,
-            response: this.response.getResponse(options, false)
+            response: this.response?.getResponse(options, false)
         };
+    }
+
+    merge(outcome: Outcome) {
+        this.status = outcome.status;
+        this.message = outcome.message;
+        this.line = outcome.line || 0;
+        this.diff = outcome.diff;
     }
 }
 

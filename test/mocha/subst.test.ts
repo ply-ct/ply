@@ -20,4 +20,27 @@ describe('subst', () => {
         const res = subst.replace(template, values, logger);
         assert.equal(res, 'here is z: ${x.something()},\nand here is y: bar');
     });
+
+    it('handles result values', () => {
+        const values = {
+            baseUrl: 'http://localhost:3000/movies',
+            __ply_results: {
+                moviesByYearAndRating: {
+                    response: {
+                        body: {
+                            movies: [
+                                { id: '8f180e68' },
+                                { id: 'eec22a97' }
+                            ]
+                        }
+                    }
+                }
+            }
+        };
+
+        const template = '${baseUrl}/${@moviesByYearAndRating.response.body.movies[1].id}';
+        const res = subst.replace(template, values, logger);
+        assert.equal(res, 'http://localhost:3000/movies/eec22a97');
+    });
+
 });

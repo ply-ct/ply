@@ -9,7 +9,6 @@ const values = {
     baseUrl: 'http://localhost:3000/movies',
     year: 1931,
     rating: 5,
-    id: 'eec22a97',
     query: 'year=1935&rating=>4&sort=rating&descending=true'
 };
 
@@ -39,7 +38,7 @@ describe('Requests', async () => {
         assert.equal(request.method, 'GET');
         let headers = request.headers;
         assert.equal(headers['Accept'], 'application/json');
-        assert.equal(request.start, 8);
+        assert.equal(request.start, 7);
         assert.equal(request.end, 12);
     });
 
@@ -77,13 +76,13 @@ describe('Requests', async () => {
 
         const values = {
             baseUrl: "http://localhost:3000/movies",
-            id: 'xxxxxx'
+            year: 1932,  // instead of 1931
+            rating: 5
         };
 
-        const result = await suite.run('movieById', values);
+        const result = await suite.run('moviesByYearAndRating', values);
         assert.equal(result.status, 'Failed');
-        // TODO pad actual
-        assert.equal(result.message, 'Results differ from line 9');
+        assert.equal(result.message, 'Results differ from line 19');
     });
 
     it('can handle error', async () => {
