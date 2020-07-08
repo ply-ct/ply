@@ -126,6 +126,9 @@ export class Suite<T extends Test> {
      */
     private async runTests(tests: T[], values: object, runOptions?: RunOptions): Promise<Result[]> {
 
+        // runtime values are a deep copy of passed values
+        this.runtime.values = JSON.parse(JSON.stringify(values));
+
         let callingCaseInfo: CallingCaseInfo | undefined;
         if (this.className) {
             // running a case suite --
@@ -156,7 +159,6 @@ export class Suite<T extends Test> {
         let expectedExists = await this.runtime.results.expected.exists;
         let resultsStartLine = 0;
 
-        this.runtime.values = values;
         let results: Result[] = [];
         // within a suite, tests are run sequentially
         for (let i = 0; i < tests.length; i++) {
@@ -188,16 +190,12 @@ export class Suite<T extends Test> {
                             // verify request result (otherwise wait until case/workflow is complete)
                             let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
                             this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
-                            let outcome = verifier.verify(actualYaml, {
-                                __ply_request: plyResult.request,
-                                __ply_response: plyResult.response,
-                                ...values
-                            });
+                            let outcome = verifier.verify(actualYaml, this.runtime.values);
                             result = { ...result as Result, ...outcome };
                             this.logOutcome(test, outcome);
                         }
                     }
-                    results.push(result);
+                    this.addResult(results, result);
                 }
                 else {
                     // case/workflow run complete -- verify result
@@ -209,13 +207,19 @@ export class Suite<T extends Test> {
                     if (result.status === 'Pending') {
                         let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
                         this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
-                        let outcome = verifier.verify(actualYaml, values);
+                        // NOTE: By using this.runtime.values we're unadvisedly taking advantage the prototype's shared runtime object property
+                        // (https://stackoverflow.com/questions/17088635/javascript-object-properties-shared-across-instances).
+                        // This allows us to accumulate programmatic values changes like those in updateRating() in movieCrud.ply.ts
+                        // so that they can be accessed when verifying here, even though the changes are not present the passed 'values' parameter.
+                        // TODO: Revisit when implementing a comprehensive values specification mechanism.
+                        let outcome = verifier.verify(actualYaml, this.runtime.values);
                         result = { ...result as Result, ...outcome };
                         this.logOutcome(test, outcome);
                     }
-                    results.push(result);
+                    this.addResult(results, result);
                 }
                 resultsStartLine += actualYaml.split('\n').length - 1;
+                // set values for request/response
 
             } catch (err) {
                 this.logger.error(err.message, err);
@@ -224,7 +228,7 @@ export class Suite<T extends Test> {
                     status: 'Errored',
                     message: err.message
                 };
-                results.push(result);
+                this.addResult(results, result);
 
                 this.logOutcome(test, result);
             }
@@ -234,15 +238,22 @@ export class Suite<T extends Test> {
             }
         }
 
-        // tranlate request/response bodies to objects
-        return results.map(result => {
-            if (result instanceof PlyResult) {
-                return result.getResult(this.runtime.options);
-            }
-            else {
-                return result;
-            }
-        });
+        return results;
+    }
+
+    /**
+     * Translates request/response bodies to objects and
+     * adds to array.  Also adds to values object for downstream access.
+     * @param results
+     * @param result
+     */
+    private addResult(results: Result[], result: Result) {
+        if (result instanceof PlyResult) {
+            results.push(result.getResult(this.runtime.options));
+        }
+        else {
+            results.push(result);
+        }
     }
 
     private handleNoExpected(test: T, actualYaml: string, isFirst: boolean, runOptions?: RunOptions): Result | undefined {

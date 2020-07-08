@@ -60,11 +60,14 @@ export class PlyResult implements Result {
      * Returns the result with request/response bodies as objects (if parseable).
      */
     getResult(options: Options): Result {
-        return new PlyResult(
-            this.name,
-            this.request,
-            this.response.getResponse(options, false)
-        );
+        // TODO: request
+        return {
+            name: this.name,
+            status: this.status,
+            message: this.message,
+            request: this.request,
+            response: this.response.getResponse(options, false)
+        };
     }
 }
 

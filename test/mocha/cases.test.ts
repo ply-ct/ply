@@ -85,8 +85,7 @@ describe('Cases', async () => {
 
     it('can run suite', async () => {
         const ply = new Ply({
-            ...new Config().options,
-            verbose: false
+            ...new Config().options
         });
         const suites = await ply.loadCases(['test/ply/cases/movieCrud.ply.ts']);
         assert.equal(suites.length, 1);

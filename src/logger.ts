@@ -89,6 +89,10 @@ export class Logger {
         this.log(LogLevel.debug, message, obj);
     }
 
+    get level(): LogLevel {
+        return this.options.level;
+    }
+
     toString(): string {
         return this.options.level + ': ' + (this.storage ? this.storage : 'console');
     }

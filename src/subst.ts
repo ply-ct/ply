@@ -1,4 +1,4 @@
-import { Logger } from './logger';
+import { Logger, LogLevel } from './logger';
 
 /**
  * Evaluate the input expression vs context.
@@ -31,7 +31,7 @@ export function replace(template: string, context: object, logger: Logger, expla
             lines.push(get(line.replace(/\${~/g, '\\${~'), context, logger, explain));
         } catch (err) {
             logger.error(`Error in expression:\n${line}\n** ${err.message} **`);
-            logger.debug(err.stack);
+            logger.debug(err);
             lines.push(line);
         }
     }
