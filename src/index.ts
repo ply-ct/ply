@@ -1,6 +1,6 @@
 import { Ply } from './ply';
 
-export { Ply, Plyee, Plyer } from './ply';
+export { Ply, Plyee, Plier } from './ply';
 export { Test } from './test';
 export { Request as Request } from './request';
 export { Case as Case } from './case';

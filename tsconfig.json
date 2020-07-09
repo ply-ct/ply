@@ -14,9 +14,9 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-    "exclude": [
-        "dist",
-        "node_modules",
-        "notes"
-    ]
+  "exclude": [
+    "dist",
+    "node_modules",
+    "notes"
+  ]
 }

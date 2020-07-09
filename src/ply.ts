@@ -49,6 +49,17 @@ export class Ply {
         return requestSuites[0];
     }
 
+    /**
+     * Throws if location or suite not found
+     */
+    async loadCaseSuites(location: string): Promise<Suite<Case>[]> {
+        const caseSuites = await this.loadCases([location]);
+        if (caseSuites.length === 0) {
+            throw new Error(`No case suite found in: ${location}`);
+        }
+        return caseSuites;
+    }
+
     async loadSuite(location: string): Promise<Suite<Request>> {
         return await this.loadRequestSuite(location);
     }
@@ -100,7 +111,7 @@ export class Plyee {
         }
         this.hash = this.path.indexOf('#');
         if (this.hash < 1 || this.hash > this.path.length - 2) {
-            throw new Error('Invalid path: ${path}');
+            throw new Error(`Invalid path: ${this.path}`);
         }
         this.hat = this.path.lastIndexOf('^');
         if (this.hat < this.hash || this.hat < this.path.length - 1) {
@@ -167,7 +178,7 @@ export class Plyee {
     }
 }
 
-export class Plyer extends EventEmitter {
+export class Plier extends EventEmitter {
     private ply: Ply;
     constructor(options?: Options) {
         super({ captureRejections: true });
@@ -184,7 +195,15 @@ export class Plyer extends EventEmitter {
             promises.push(requestSuite.run(tests, values, runOptions));
         }
 
-        // TODO cases
+        // cases
+        for (const [loc, casePlyee] of Plyee.cases(plyees)) {
+            let tests = casePlyee.map(plyee => plyee.test);
+            let caseSuites = await this.ply.loadCaseSuites(loc);
+            for (const caseSuite of caseSuites) {
+                caseSuite.emitter = this;
+                promises.push(caseSuite.run(tests, values, runOptions));
+            }
+        }
 
         let combined: Result[] = [];
         for (const results of await Promise.all(promises)) {

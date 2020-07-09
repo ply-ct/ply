@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import { Config } from '../../src/options';
-import { Ply } from '../../src/ply';
+import { Ply, Plier } from '../../src/ply';
 import { PlyCase } from '../../src/case';
 import { Runtime } from '../../src/runtime';
 import { Storage } from '../../src/storage';
@@ -99,6 +99,28 @@ describe('Cases', async () => {
         assert.equal(results[1].status, 'Passed');
         assert.equal(results[2].name, 'remove movie');
         assert.equal(results[2].status, 'Passed');
+    });
+
+    it('can run plyee', async () => {
+        const plier = new Plier();
+        let results = await plier.run(['test/ply/cases/movieCrud.ply.ts#add new movie'], values);
+        assert.equal(results[0].status, 'Passed');
+        assert.equal(results[0].message, 'Test succeeded');
+    });
+
+    it('can run plyees', async () => {
+        const plier = new Plier();
+        let results = await plier.run([
+            '/Users/donald/ply/ply/test/ply/cases/movieCrud.ply.ts#add new movie',
+            '/Users/donald/ply/ply/test/ply/cases/movieCrud.ply.ts#update rating',
+            '/Users/donald/ply/ply/test/ply/cases/movieCrud.ply.ts#remove movie'
+          ], values);
+        assert.equal(results[0].status, 'Passed');
+        assert.equal(results[0].message, 'Test succeeded');
+        assert.equal(results[1].status, 'Passed');
+        assert.equal(results[1].message, 'Test succeeded');
+        assert.equal(results[2].status, 'Passed');
+        assert.equal(results[2].message, 'Test succeeded');
     });
 
     it('can handle error', async () => {

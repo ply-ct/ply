@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import { Ply, Plyer } from '../../src/ply';
+import { Ply, Plier } from '../../src/ply';
 import { Config } from '../../src/options';
 import { PlyRequest } from '../../src/request';
 import { Storage } from '../../src/storage';
@@ -108,11 +108,26 @@ describe('Requests', async () => {
         assert.equal(requests[2].name, 'moviesQuery');
     });
 
-    it('can run plyees', async () => {
-        const plyer = new Plyer();
-        let results = await plyer.run(['test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating'], values);
+    it('can run plyee', async () => {
+        const plier = new Plier();
+        let results = await plier.run(['test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating'], values);
         assert.equal(results[0].status, 'Passed');
         assert.equal(results[0].message, 'Test succeeded');
+    });
+
+    it('can run plyees', async () => {
+        const plier = new Plier();
+        let results = await plier.run([
+            '/Users/donald/ply/ply/test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating',
+            '/Users/donald/ply/ply/test/ply/requests/movie-queries.ply.yaml#movieById',
+            '/Users/donald/ply/ply/test/ply/requests/movie-queries.ply.yaml#moviesQuery'
+          ], values);
+        assert.equal(results[0].status, 'Passed');
+        assert.equal(results[0].message, 'Test succeeded');
+        assert.equal(results[1].status, 'Passed');
+        assert.equal(results[1].message, 'Test succeeded');
+        assert.equal(results[2].status, 'Passed');
+        assert.equal(results[2].message, 'Test succeeded');
     });
 
     it('can run suite', async () => {

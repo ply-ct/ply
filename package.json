@@ -1,6 +1,6 @@
 {
   "name": "ply-ct",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "REST API Automated Testing",
   "main": "dist/src",
   "files": [
