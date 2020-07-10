@@ -2,4 +2,4 @@ extension:
   - ts
 spec: test/**/*.test.ts
 require: 'ts-node/register'
-timeout: 3000
+timeout: 5000
