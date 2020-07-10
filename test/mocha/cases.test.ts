@@ -1,6 +1,10 @@
+import * as fs from 'fs';
+import * as ts from 'typescript';
 import * as assert from 'assert';
 import { Config } from '../../src/options';
+import { Location } from '../../src/location';
 import { Ply, Plier } from '../../src/ply';
+import { CaseLoader } from '../../src/cases';
 import { PlyCase } from '../../src/case';
 import { Runtime } from '../../src/runtime';
 import { Storage } from '../../src/storage';
@@ -18,6 +22,27 @@ describe('Cases', async () => {
         if (missingExpected.exists) {
             missingExpected.remove();
         }
+    });
+
+    it('is found by case loader', async () => {
+        const options = new Config().options;
+        const configPath = ts.findConfigFile(options.testsLocation, ts.sys.fileExists, "tsconfig.json");
+        if (!configPath) {
+            throw new Error("Could not find a valid 'tsconfig.json' from " + options.testsLocation);
+        }
+
+        const configContents = fs.readFileSync(configPath).toString();
+        const compilerOptions = ts.parseConfigFileTextToJson(configPath, configContents);
+
+        const files = ['test/ply/cases/movieCrud.ply.ts' ];
+        const caseLoader = new CaseLoader(files, options, compilerOptions as ts.CompilerOptions);
+        let suites = await caseLoader.load();
+
+        assert.equal(suites[0].name, 'movie-crud');
+        assert.equal(suites[0].className, 'MovieCrud');
+        assert.equal(suites[0].type, 'case');
+        assert.equal(suites[0].path, 'cases/movieCrud.ply.ts');
+        assert.equal(suites[0].outFile, new Location('dist/test/ply/cases/movieCrud.ply.js').absolute);
     });
 
     it('is loaded from ts', async () => {

@@ -112,6 +112,10 @@ export enum NoExpectedResultDispensation {
 }
 export interface RunOptions {
     noExpectedResult?: NoExpectedResultDispensation
+    /**
+     * Import suite modules from .ts instead of generated .js (default = false)
+     */
+    importCaseModulesFromSource?: boolean
 }
 
 /**

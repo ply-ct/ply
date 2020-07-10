@@ -38,6 +38,7 @@ export class Suite<T extends Test> {
      * @param start zero-based start line
      * @param end zero-based end line
      * @param className? className for decorated suites
+     * @param outFile? outputFile for decorated suites (absolute)
      */
     constructor(
         readonly name: string,
@@ -45,15 +46,10 @@ export class Suite<T extends Test> {
         readonly path: string,
         readonly runtime: Runtime,
         readonly logger: Logger,
-        /**
-         * zero-based start line
-         */
         readonly start: number = 0,
-        /**
-         * zero-based end line
-         */
         readonly end: number,
-        readonly className?: string
+        readonly className?: string,
+        readonly outFile?: string
     ) { }
 
     add(test: T) {
@@ -134,7 +130,13 @@ export class Suite<T extends Test> {
         if (this.className) {
             // running a case suite --
             // initialize the decorated suite
-            const testFile = this.runtime.testsLocation.toString() + '/' + this.path;
+            let testFile;
+            if (runOptions?.importCaseModulesFromSource || !this.outFile) {
+                testFile = this.runtime.testsLocation.toString() + '/' + this.path;
+            }
+            else {
+                testFile = this.outFile;
+            }
             const mod = await import(testFile);
             const clsName = Object.keys(mod).find(key => key === this.className);
             if (!clsName) {
@@ -147,7 +149,7 @@ export class Suite<T extends Test> {
         }
         else {
             // running a request suite
-            callingCaseInfo = await this.getCallingCaseInfo();
+            callingCaseInfo = await this.getCallingCaseInfo(runOptions);
             if (callingCaseInfo) {
                 this.runtime.results = callingCaseInfo.results;
                 this.logger.storage = callingCaseInfo.results.log;
@@ -320,25 +322,40 @@ export class Suite<T extends Test> {
     }
 
     /**
-     * TODO fragile, needs thorough testing through vscode-ply
+     * Use stack trace to find calling case info (if any) for request.
      */
-    private async getCallingCaseInfo(): Promise<CallingCaseInfo | undefined> {
+    private async getCallingCaseInfo(runOptions?: RunOptions): Promise<CallingCaseInfo | undefined> {
         const stacktracey = 'stacktracey';
         const StackTracey = await import(stacktracey);
         const stack = new StackTracey();
-        const plyCaseInvoke = stack.findIndex((elem: {callee: string;}) => elem.callee === 'PlyCase.run');
+        const plyCaseInvoke = stack.findIndex((elem: {callee: string;}) => {
+            return elem.callee === 'PlyCase.run' || elem.callee === 'async PlyCase.run';
+        });
         if (plyCaseInvoke > 0) {
             const element = stack[plyCaseInvoke - 1];
             const dot = element.callee.indexOf('.');
             if (dot > 0 && dot < element.callee.length - 1) {
-                const clsName = element.callee.substring(0, dot);
+                let clsName = element.callee.substring(0, dot);
+                if (clsName.startsWith('async ')) {
+                    clsName = clsName.substring(6);
+                }
+
                 const mod = await import(element.file);
                 const cls = mod[clsName];
                 const suiteName = cls[SUITE].name;
                 const mthName = element.callee.substring(dot + 1);
                 const mth = cls.prototype[mthName];
                 const caseName = mth[TEST].name;
-                const results = await ResultPaths.create(this.runtime.options, suiteName, new Retrieval(element.file));
+
+                // TODO hardcoded source file
+                let source = 'test/ply/cases/movieCrud.ply.ts'
+                // let sourcex = CaseLoader.suiteNameToPath.get(suiteName);
+                if (runOptions?.importCaseModulesFromSource || !source) {
+                     source = element.file;
+                }
+
+                const results = await ResultPaths.create(this.runtime.options, suiteName, new Retrieval(source));
+
                 return { results, suiteName, caseName };
             }
         }

@@ -4,6 +4,7 @@ import { PlyOptions } from './options';
 import { Suite } from './suite';
 import { Case, PlyCase } from './case';
 import { Retrieval } from './retrieval';
+import { Location } from './location';
 import { ResultPaths, Runtime } from './runtime';
 import { Logger, LogLevel } from './logger';
 import { PlyIgnore } from './ignore';
@@ -28,13 +29,22 @@ export class CaseLoader {
     private checker: ts.TypeChecker;
     private ignore: PlyIgnore;
 
+    private outDir?: string;
+    private outFile?: string;
+
     constructor(
         sourceFiles: string[],
         private options: PlyOptions,
-        compilerOptions: ts.CompilerOptions) {
+        private compilerOptions: ts.CompilerOptions) {
 
         this.program = ts.createProgram(sourceFiles, compilerOptions);
         this.checker = this.program.getTypeChecker();
+
+        const config = this.compilerOptions.config as any;
+        if (config) {
+            this.outDir = config.compilerOptions?.outDir;
+            this.outFile = config.compilerOptions?.outFile;
+        }
 
         this.ignore = new PlyIgnore(options.testsLocation);
     }
@@ -44,9 +54,11 @@ export class CaseLoader {
         const suites: Suite<Case>[] = [];
 
         for (const sourceFile of this.program.getSourceFiles()) {
+
             let suiteDecorations = this.findSuites(sourceFile);
             if (suiteDecorations) {
                 let retrieval = new Retrieval(sourceFile.fileName);
+                let suitePath = retrieval.location.relativeTo(this.options.testsLocation);
 
                 for (let suiteDecoration of suiteDecorations) {
                     // every suite instance gets its own runtime
@@ -64,15 +76,28 @@ export class CaseLoader {
                         prettyIndent: this.options.prettyIndent
                     }, runtime.results.log);
 
+                    let outFile = this.outFile;
+                    if (!outFile) {
+                        if (!this.outDir) {
+                            throw new Error('Neither outDir nor outFile found in compiler options');
+                        }
+                        let suiteLoc = new Location(this.options.testsLocation + '/' + suitePath);
+                        if (suiteLoc.isAbsolute) {
+                            suiteLoc = new Location(suiteLoc.relativeTo('.'));
+                        }
+                        outFile = new Location(new Location(this.outDir).absolute + '/' + suiteLoc.parent + '/' + suiteLoc.base + '.js').path;
+                    }
+
                     let suite = new Suite<Case>(
                         suiteDecoration.name,
                         'case',
-                        retrieval.location.relativeTo(this.options.testsLocation),
+                        suitePath,
                         runtime,
                         logger,
                         sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getStart()).line,
                         sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getEnd()).line,
-                        suiteDecoration.className
+                        suiteDecoration.className,
+                        outFile
                     );
 
                     for (let caseDecoration of this.findCases(suiteDecoration)) {

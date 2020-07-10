@@ -67,6 +67,10 @@ export class Location {
         return this.path.startsWith('https://') || this.path.startsWith('http://');
     }
 
+    get isAbsolute(): boolean {
+        return path.isAbsolute(this.path);
+    }
+
     get absolute(): string {
         return path.normalize(path.resolve(this.path)).replace(/\\/g, '/');
     }
