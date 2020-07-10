@@ -1,5 +1,6 @@
 import { TestType, Test, PlyTest } from './test';
 import { Result, Outcome, Verifier, PlyResult } from './result';
+import { Location } from './location';
 import { Storage } from './storage';
 import { Logger } from './logger';
 import { Runtime, RunOptions, DecoratedSuite, ResultPaths, CallingCaseInfo, NoExpectedResultDispensation } from './runtime';
@@ -11,6 +12,7 @@ import { EventEmitter } from 'events';
 import { Plyee } from './ply';
 import { PlyEvent, OutcomeEvent } from './event';
 import { PlyResponse } from './response';
+import { TsCompileOptions } from './compile';
 
 interface Tests<T extends Test> {
     [key: string]: T
@@ -347,9 +349,10 @@ export class Suite<T extends Test> {
                 const mth = cls.prototype[mthName];
                 const caseName = mth[TEST].name;
 
-                // TODO hardcoded source file
-                let source = 'test/ply/cases/movieCrud.ply.ts'
-                // let sourcex = CaseLoader.suiteNameToPath.get(suiteName);
+                // TODO this doesn't work with ts compiler option outFile (relies on outDir)
+                let outDir = new TsCompileOptions(this.runtime.options).outDir;
+                let relLoc = new Location(new Location(element.file).relativeTo(outDir));
+                let source = relLoc.parent + '/' + relLoc.base + '.ts';
                 if (runOptions?.importCaseModulesFromSource || !source) {
                      source = element.file;
                 }

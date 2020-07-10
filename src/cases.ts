@@ -1,6 +1,7 @@
 import * as ts from 'typescript';
 import * as osLocale from 'os-locale';
 import { PlyOptions } from './options';
+import { TsCompileOptions } from './compile';
 import { Suite } from './suite';
 import { Case, PlyCase } from './case';
 import { Retrieval } from './retrieval';
@@ -29,22 +30,13 @@ export class CaseLoader {
     private checker: ts.TypeChecker;
     private ignore: PlyIgnore;
 
-    private outDir?: string;
-    private outFile?: string;
-
     constructor(
         sourceFiles: string[],
         private options: PlyOptions,
-        private compilerOptions: ts.CompilerOptions) {
+        private compileOptions: TsCompileOptions) {
 
-        this.program = ts.createProgram(sourceFiles, compilerOptions);
+        this.program = ts.createProgram(sourceFiles, compileOptions.compilerOptions);
         this.checker = this.program.getTypeChecker();
-
-        const config = this.compilerOptions.config as any;
-        if (config) {
-            this.outDir = config.compilerOptions?.outDir;
-            this.outFile = config.compilerOptions?.outFile;
-        }
 
         this.ignore = new PlyIgnore(options.testsLocation);
     }
@@ -76,16 +68,13 @@ export class CaseLoader {
                         prettyIndent: this.options.prettyIndent
                     }, runtime.results.log);
 
-                    let outFile = this.outFile;
+                    let outFile = this.compileOptions.outFile;
                     if (!outFile) {
-                        if (!this.outDir) {
-                            throw new Error('Neither outDir nor outFile found in compiler options');
-                        }
                         let suiteLoc = new Location(this.options.testsLocation + '/' + suitePath);
                         if (suiteLoc.isAbsolute) {
                             suiteLoc = new Location(suiteLoc.relativeTo('.'));
                         }
-                        outFile = new Location(new Location(this.outDir).absolute + '/' + suiteLoc.parent + '/' + suiteLoc.base + '.js').path;
+                        outFile = new Location(new Location(this.compileOptions.outDir).absolute + '/' + suiteLoc.parent + '/' + suiteLoc.base + '.js').path;
                     }
 
                     let suite = new Suite<Case>(

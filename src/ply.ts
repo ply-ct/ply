@@ -1,7 +1,5 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import { EventEmitter } from 'events';
-import * as ts from 'typescript';
 import { Options, Config, PlyOptions, Defaults } from './options';
 import { Suite } from './suite';
 import { Test } from './test';
@@ -11,6 +9,7 @@ import { CaseLoader } from './cases';
 import { RequestLoader } from './requests';
 import { Result } from './result';
 import { RunOptions } from './runtime';
+import { TsCompileOptions } from './compile';
 
 export class Ply {
 
@@ -74,15 +73,8 @@ export class Ply {
         if (moreFiles) {
             files = files.concat(moreFiles);
         }
-        const configPath = ts.findConfigFile(this.options.testsLocation, ts.sys.fileExists, "tsconfig.json");
-        if (!configPath) {
-            throw new Error("Could not find a valid 'tsconfig.json' from " + this.options.testsLocation);
-        }
-
-        const configContents = fs.readFileSync(configPath).toString();
-        const compilerOptions = ts.parseConfigFileTextToJson(configPath, configContents);
-
-        const caseLoader = new CaseLoader(files, this.options, compilerOptions as ts.CompilerOptions);
+        const compileOptions = new TsCompileOptions(this.options);
+        const caseLoader = new CaseLoader(files, this.options, compileOptions);
 
         const suites = await caseLoader.load();
         return suites;
