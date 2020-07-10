@@ -41,6 +41,7 @@
     "node-fetch": "^2.6.0",
     "os-locale": "^5.0.0",
     "stacktracey": "^1.2.127",
+    "ts-node": "^8.6.2",
     "typescript": "^3.9.6",
     "yargs": "^15.3.1"
   },
@@ -61,7 +62,6 @@
     "chai": "^4.2.0",
     "eslint": "^6.8.0",
     "mocha": "^7.1.2",
-    "ply-movies": "^1.0.3",
-    "ts-node": "^8.6.2"
+    "ply-movies": "^1.0.3"
   }
 }

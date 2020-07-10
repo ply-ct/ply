@@ -14,4 +14,5 @@ export { PlyEvent, OutcomeEvent } from './event';
 export { RunOptions, NoExpectedResultDispensation } from './runtime';
 export { suite, test, before, after } from './decorators';
 
+require('ts-node/register');
 export default new Ply();

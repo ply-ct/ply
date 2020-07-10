@@ -95,6 +95,19 @@ export type CallingCaseInfo = {
     caseName: string
 };
 
+export interface RunOptions {
+    /**
+     * How to handle missing expected result file(s).
+     */
+    noExpectedResult?: NoExpectedResultDispensation
+    /**
+     * Import case suite modules from generated .js instead of .ts source (default = false).
+     * This runOption needs to be set in your case's calls to Suite.run (for requests),
+     * and also in originating the call to Suite.run (for the case(s)).
+     */
+    importCaseModulesFromBuilt?: boolean
+}
+
 export enum NoExpectedResultDispensation {
     /**
      * Proceed and verify (let test fail).
@@ -109,13 +122,6 @@ export enum NoExpectedResultDispensation {
      * Create expected from actual and verify based on that.
      */
     CreateExpected = 3
-}
-export interface RunOptions {
-    noExpectedResult?: NoExpectedResultDispensation
-    /**
-     * Import suite modules from .ts instead of generated .js (default = false)
-     */
-    importCaseModulesFromSource?: boolean
 }
 
 /**

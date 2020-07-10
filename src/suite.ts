@@ -120,7 +120,7 @@ export class Suite<T extends Test> {
     }
 
     /**
-     * Tests are run sequentially.
+     * Tests within a suite are run sequentially.
      * @param tests
      */
     private async runTests(tests: T[], values: object, runOptions?: RunOptions): Promise<Result[]> {
@@ -133,11 +133,11 @@ export class Suite<T extends Test> {
             // running a case suite --
             // initialize the decorated suite
             let testFile;
-            if (runOptions?.importCaseModulesFromSource || !this.outFile) {
-                testFile = this.runtime.testsLocation.toString() + '/' + this.path;
+            if (runOptions?.importCaseModulesFromBuilt && this.outFile) {
+                testFile = this.outFile;
             }
             else {
-                testFile = this.outFile;
+                testFile = this.runtime.testsLocation.toString() + '/' + this.path;
             }
             const mod = await import(testFile);
             const clsName = Object.keys(mod).find(key => key === this.className);
@@ -349,12 +349,12 @@ export class Suite<T extends Test> {
                 const mth = cls.prototype[mthName];
                 const caseName = mth[TEST].name;
 
-                // TODO this doesn't work with ts compiler option outFile (relies on outDir)
-                let outDir = new TsCompileOptions(this.runtime.options).outDir;
-                let relLoc = new Location(new Location(element.file).relativeTo(outDir));
-                let source = relLoc.parent + '/' + relLoc.base + '.ts';
-                if (runOptions?.importCaseModulesFromSource || !source) {
-                     source = element.file;
+                let source = element.file;
+                if (runOptions?.importCaseModulesFromBuilt || !source) {
+                    // Note: this doesn't work with ts compiler option outFile (relies on outDir)
+                    let outDir = new TsCompileOptions(this.runtime.options).outDir;
+                    let relLoc = new Location(new Location(element.file).relativeTo(outDir));
+                    source = relLoc.parent + '/' + relLoc.base + '.ts';
                 }
 
                 const results = await ResultPaths.create(this.runtime.options, suiteName, new Retrieval(source));
