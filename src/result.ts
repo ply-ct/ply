@@ -95,15 +95,15 @@ export class Verifier {
         const expected = new Code(this.expectedYaml);
         const actual = new Code(actualYaml);
         const diffs = new Compare(this.logger).diffLines(expected.extractCode(), actual.extractCode(), values);
-        var firstDiffLine = 0;
-        var diffMsg = '';
+        let firstDiffLine = 0;
+        let diffMsg = '';
         if (diffs) {
             let line = 1;
             let actLine = 1;
             for (let i = 0; i < diffs.length; i++) {
-                let diff = diffs[i];
+                const diff = diffs[i];
                 if (diff.removed) {
-                    let correspondingAdd = (i < diffs.length - 1 && diffs[i + 1].added) ? diffs[i + 1] : null;
+                    const correspondingAdd = (i < diffs.length - 1 && diffs[i + 1].added) ? diffs[i + 1] : null;
                     if (!diff.ignored) {
                         if (!firstDiffLine) {
                             firstDiffLine = line + this.startLine;
@@ -165,10 +165,10 @@ export class Verifier {
      */
     private prefix(str: string, pre: string, codeLines: CodeLine[], start: number): string {
         return str.replace(/\r\n/g, '\n').split(/\n/).reduce((a, seg, i, arr) => {
-            var line = i === arr.length - 1 && seg.length === 0 ? '' : pre + seg;
+            let line = i === arr.length - 1 && seg.length === 0 ? '' : pre + seg;
             if (line) {
                 if (codeLines) {
-                    var codeLine = codeLines[start + i];
+                    const codeLine = codeLines[start + i];
                     if (codeLine.comment) {
                         line += codeLine.comment;
                     }

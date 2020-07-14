@@ -63,8 +63,17 @@ export class Location {
         return this.ext === 'yaml' || this.ext === 'yml';
     }
 
+    get scheme(): string | undefined {
+        if (this.path.startsWith('https://')) {
+            return 'https';
+        }
+        else if (this.path.startsWith('http://')) {
+            return 'http';
+        }
+    }
+
     get isUrl(): boolean {
-        return this.path.startsWith('https://') || this.path.startsWith('http://');
+        return !!this.scheme;
     }
 
     get isAbsolute(): boolean {

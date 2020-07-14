@@ -17,7 +17,7 @@ const values = {
 describe('Cases', async () => {
 
     beforeEach(() => {
-        let missingExpected = new Storage('test/mocha/results/expected/cases/movie-crud.yaml');
+        const missingExpected = new Storage('test/mocha/results/expected/cases/movie-crud.yaml');
         if (missingExpected.exists) {
             missingExpected.remove();
         }
@@ -28,7 +28,7 @@ describe('Cases', async () => {
         const files = ['test/ply/cases/movieCrud.ply.ts'];
         const compileOptions = new TsCompileOptions(options);
         const caseLoader = new CaseLoader(files, options, compileOptions);
-        let suites = await caseLoader.load();
+        const suites = await caseLoader.load();
 
         assert.equal(suites[0].name, 'movie-crud');
         assert.equal(suites[0].className, 'MovieCrud');
@@ -120,14 +120,14 @@ describe('Cases', async () => {
 
     it('can run plyee', async () => {
         const plier = new Plier();
-        let results = await plier.run(['test/ply/cases/movieCrud.ply.ts#add new movie'], values);
+        const results = await plier.run(['test/ply/cases/movieCrud.ply.ts#add new movie'], values);
         assert.equal(results[0].status, 'Passed');
         assert.equal(results[0].message, 'Test succeeded');
     });
 
     it('can run plyees', async () => {
         const plier = new Plier();
-        let results = await plier.run([
+        const results = await plier.run([
             '/Users/donald/ply/ply/test/ply/cases/movieCrud.ply.ts#add new movie',
             '/Users/donald/ply/ply/test/ply/cases/movieCrud.ply.ts#update rating',
             '/Users/donald/ply/ply/test/ply/cases/movieCrud.ply.ts#remove movie'
@@ -150,7 +150,7 @@ describe('Cases', async () => {
 
         const suites = await ply.loadCases(['test/ply/cases/movieCrud.ply.ts']);
         const suite = suites[0];
-        let results = await suite.run(values);
+        const results = await suite.run(values);
 
         assert.equal(results[0].status, 'Errored');
         assert.equal(results[1].status, 'Errored');
@@ -167,8 +167,8 @@ describe('Cases', async () => {
 
         const suites = await ply.loadCases(['test/ply/cases/movieCrud.ply.ts']);
         const suite = suites[0];
-        let runOptions = { noExpectedResult: NoExpectedResultDispensation.NoVerify };
-        let results = await suite.run(values, runOptions);
+        const runOptions = { noExpectedResult: NoExpectedResultDispensation.NoVerify };
+        const results = await suite.run(values, runOptions);
 
         assert.equal(results[0].status, 'Not Verified');
         assert.equal(results[1].status, 'Not Verified');

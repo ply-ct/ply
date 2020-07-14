@@ -16,8 +16,8 @@ export class Code {
         const lines: CodeLine[] = [];
         const regex = new RegExp('(\\s*' + delim + ')', 'g');
         code.replace(/\r/g, '').split(/\n/).forEach(line => {
-            var segs = line.split(regex);
-            var ln: CodeLine = { code: segs[0] };
+            const segs = line.split(regex);
+            const ln: CodeLine = { code: segs[0] };
             if (segs.length > 1) {
                 ln.comment = segs.reduce((c, seg, i) => i > 1 ? c + seg : seg, '');
             }

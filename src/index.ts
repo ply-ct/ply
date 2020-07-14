@@ -13,6 +13,7 @@ export { Suite } from './suite';
 export { PlyEvent, OutcomeEvent } from './event';
 export { RunOptions, NoExpectedResultDispensation } from './runtime';
 export { suite, test, before, after } from './decorators';
+export { load as loadYaml } from './yaml';
 
 require('ts-node/register');
 export default new Ply();

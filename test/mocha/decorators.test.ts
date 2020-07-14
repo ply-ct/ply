@@ -7,14 +7,14 @@ describe('Decorators', async () => {
 
     it('reads unnamed @suite', async () => {
 
-        let unnamed = new UnnamedSuite();
-        let decorated = new DecoratedSuite(unnamed);
+        const unnamed = new UnnamedSuite();
+        const decorated = new DecoratedSuite(unnamed);
         assert.equal(decorated.testSuite.name, 'UnnamedSuite');
         assert.equal(decorated.befores.length, 1);
         assert.equal(decorated.befores[0].name, 'beforeAll');
         assert.ok(!decorated.befores[0].tests);
 
-        let testCases = decorated.testCases;
+        const testCases = decorated.testCases;
         assert.equal(testCases.length, 2);
         assert.equal(testCases[0].name, 'unnamedCaseNoValues');
         assert.equal(testCases[1].name, 'unnamedCaseWithValues');
@@ -26,8 +26,8 @@ describe('Decorators', async () => {
 
     it('reads named @suite', async () => {
 
-        let named = new NamedSuite();
-        let decorated = new DecoratedSuite(named);
+        const named = new NamedSuite();
+        const decorated = new DecoratedSuite(named);
         assert.equal(decorated.testSuite.name, 'my suite name');
         assert.equal(decorated.befores.length, 2);
         assert.equal(decorated.befores[0].name, 'beforeAll');
@@ -35,7 +35,7 @@ describe('Decorators', async () => {
         assert.equal(decorated.befores[1].name, 'beforeEach');
         assert.equal(decorated.befores[1].tests, '*');
 
-        let testCases = decorated.testCases;
+        const testCases = decorated.testCases;
         assert.equal(testCases.length, 2);
         assert.equal(testCases[0].name, 'first case');
         assert.equal(testCases[0].method.name, 'namedCaseNoValues');

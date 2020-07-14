@@ -47,15 +47,15 @@ export class CaseLoader {
 
         for (const sourceFile of this.program.getSourceFiles()) {
 
-            let suiteDecorations = this.findSuites(sourceFile);
+            const suiteDecorations = this.findSuites(sourceFile);
             if (suiteDecorations) {
-                let retrieval = new Retrieval(sourceFile.fileName);
-                let suitePath = retrieval.location.relativeTo(this.options.testsLocation);
+                const retrieval = new Retrieval(sourceFile.fileName);
+                const suitePath = retrieval.location.relativeTo(this.options.testsLocation);
 
-                for (let suiteDecoration of suiteDecorations) {
+                for (const suiteDecoration of suiteDecorations) {
                     // every suite instance gets its own runtime
 
-                    let results = await ResultPaths.create(this.options, suiteDecoration.name, retrieval);
+                    const results = await ResultPaths.create(this.options, suiteDecoration.name, retrieval);
                     const runtime = new Runtime(
                         await osLocale(),
                         this.options,
@@ -63,7 +63,7 @@ export class CaseLoader {
                         results
                     );
 
-                    let logger = new Logger({
+                    const logger = new Logger({
                         level: this.options.verbose ? LogLevel.debug : LogLevel.info,
                         prettyIndent: this.options.prettyIndent
                     }, runtime.results.log);
@@ -77,7 +77,7 @@ export class CaseLoader {
                         outFile = new Location(new Location(this.compileOptions.outDir).absolute + '/' + suiteLoc.parent + '/' + suiteLoc.base + '.js').path;
                     }
 
-                    let suite = new Suite<Case>(
+                    const suite = new Suite<Case>(
                         suiteDecoration.name,
                         'case',
                         suitePath,
@@ -89,8 +89,8 @@ export class CaseLoader {
                         outFile
                     );
 
-                    for (let caseDecoration of this.findCases(suiteDecoration)) {
-                        let c = new PlyCase(
+                    for (const caseDecoration of this.findCases(suiteDecoration)) {
+                        const c = new PlyCase(
                             caseDecoration.name,
                             caseDecoration.methodName,
                             sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getStart()).line,
@@ -114,11 +114,11 @@ export class CaseLoader {
     }
 
     private findSuites(sourceFile: ts.SourceFile): SuiteDecoration[] {
-        let suites: SuiteDecoration[] = [];
+        const suites: SuiteDecoration[] = [];
         if (!sourceFile.isDeclarationFile) {
             ts.forEachChild(sourceFile, node => {
                 if (ts.isClassDeclaration(node) && node.name && this.isExported(node)) {
-                    let suiteDecoration = this.findSuiteDecoration(node as ts.ClassDeclaration);
+                    const suiteDecoration = this.findSuiteDecoration(node as ts.ClassDeclaration);
                     if (suiteDecoration) {
                         suites.push(suiteDecoration);
                     }
@@ -129,7 +129,7 @@ export class CaseLoader {
     }
 
     private findSuiteDecoration(classDeclaration: ts.ClassDeclaration): SuiteDecoration | undefined {
-        let classSymbol = this.checker.getSymbolAtLocation(<ts.Node>classDeclaration.name);
+        const classSymbol = this.checker.getSymbolAtLocation(<ts.Node>classDeclaration.name);
         if (classSymbol && classDeclaration.decorators) {
             for (const decorator of classDeclaration.decorators) {
                 if (decorator.expression) {
@@ -163,7 +163,7 @@ export class CaseLoader {
         const cases: CaseDecoration[] = [];
         suiteDecoration.classDeclaration.forEachChild(node => {
             if (ts.isMethodDeclaration(node) && node.name && !ts.isPrivateIdentifier(node)) {
-                let caseDecoration = this.findCaseDecoration(node as ts.MethodDeclaration);
+                const caseDecoration = this.findCaseDecoration(node as ts.MethodDeclaration);
                 if (caseDecoration) {
                     cases.push(caseDecoration);
                 }
@@ -173,7 +173,7 @@ export class CaseLoader {
     }
 
     private findCaseDecoration(methodDeclaration: ts.MethodDeclaration): CaseDecoration | undefined {
-        let methodSymbol = this.checker.getSymbolAtLocation(<ts.Node>methodDeclaration.name);
+        const methodSymbol = this.checker.getSymbolAtLocation(<ts.Node>methodDeclaration.name);
         if (methodSymbol && methodDeclaration.decorators) {
             for (const decorator of methodDeclaration.decorators) {
                 if (decorator.expression) {

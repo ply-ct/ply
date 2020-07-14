@@ -156,7 +156,7 @@ export class Plyee {
     static collect(paths: string[], test?: (plyee: Plyee) => boolean): Map<string, Plyee[]> {
         const map = new Map<string, Plyee[]>();
         for (const path of paths) {
-            let plyee = new Plyee(path);
+            const plyee = new Plyee(path);
             if (!test || test(plyee)) {
                 let plyees = map.get(plyee.location);
                 if (!plyees) {
@@ -181,16 +181,16 @@ export class Plier extends EventEmitter {
         const promises: Promise<Result[]>[] = [];
         // requests
         for (const [loc, requestPlyee] of Plyee.requests(plyees)) {
-            let tests = requestPlyee.map(plyee => plyee.test);
-            let requestSuite = await this.ply.loadRequestSuite(loc);
+            const tests = requestPlyee.map(plyee => plyee.test);
+            const requestSuite = await this.ply.loadRequestSuite(loc);
             requestSuite.emitter = this;
             promises.push(requestSuite.run(tests, values, runOptions));
         }
 
         // cases
         for (const [loc, casePlyee] of Plyee.cases(plyees)) {
-            let tests = casePlyee.map(plyee => plyee.test);
-            let caseSuites = await this.ply.loadCaseSuites(loc);
+            const tests = casePlyee.map(plyee => plyee.test);
+            const caseSuites = await this.ply.loadCaseSuites(loc);
             for (const caseSuite of caseSuites) {
                 caseSuite.emitter = this;
                 promises.push(caseSuite.run(tests, values, runOptions));

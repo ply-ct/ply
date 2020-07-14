@@ -176,19 +176,19 @@ export class DecoratedSuite {
                 if (typeof instance.constructor.prototype[propName] === 'function') {
                     const method = instance.constructor.prototype[propName];
                     if (method[TEST]) {
-                        let testCase = method[TEST];
+                        const testCase = method[TEST];
                         if (!this.testCases.find(tc => tc.name === testCase.name)) {
                             this.testCases.push({ ...testCase, method });
                         }
                     }
                     if (method[BEFORE]) {
-                        let before = method[BEFORE];
+                        const before = method[BEFORE];
                         if (!this.befores.find(b => b.name === before.name)) {
                             this.befores.push({ ...before, method });
                         }
                     }
                     if (method[AFTER]) {
-                        let after = method[AFTER];
+                        const after = method[AFTER];
                         if (!this.afters.find(a => a.name === after.name)) {
                             this.afters.push({ ...after, method });
                         }

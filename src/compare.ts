@@ -29,13 +29,13 @@ export class Compare {
      */
     diffLines(expected: string, actual: string, values: object): Diff[] {
         const dmp = new DiffMatchPatch();
-        var a = dmp.diff_linesToChars_(expected, actual);
-        var lineText1 = a.chars1;
-        var lineText2 = a.chars2;
-        var lineArray = a.lineArray;
-        var dmpDiffs = dmp.diff_main(lineText1, lineText2, false);
+        const a = dmp.diff_linesToChars_(expected, actual);
+        const lineText1 = a.chars1;
+        const lineText2 = a.chars2;
+        const lineArray = a.lineArray;
+        const dmpDiffs = dmp.diff_main(lineText1, lineText2, false);
         dmp.diff_charsToLines_(dmpDiffs, lineArray);
-        let jsDiffs = this.convertToJsDiff(dmpDiffs);
+        const jsDiffs = this.convertToJsDiff(dmpDiffs);
         if (values) {
             return this.markIgnored(jsDiffs, values);
         }
@@ -48,9 +48,9 @@ export class Compare {
      * Diffs always have \n newlines
      */
     private convertToJsDiff(diffs: DmpDiff[]): Diff[] {
-        var jsdiffs: Diff[] = [];
+        const jsdiffs: Diff[] = [];
         diffs.forEach(diff => {
-            let jsdiff: Diff = {
+            const jsdiff: Diff = {
                 value: diff[1].replace(/\r\n/g, '\n'),
                 count: diff[1].split(/\r\n|\r|\n/).length
             };
@@ -74,17 +74,17 @@ export class Compare {
     private markIgnored(diffs: Diff[], values: object) {
         for (let i = 0; i < diffs.length; i++) {
             if (diffs[i].removed && diffs.length > i + 1 && diffs[i + 1].added) {
-                var exp = subst.replace(diffs[i].value, values, this.logger);
-                var act = diffs[i + 1].value;
+                const exp = subst.replace(diffs[i].value, values, this.logger);
+                const act = diffs[i + 1].value;
                 if (exp === act) {
                     diffs[i].ignored = diffs[i + 1].ignored = true;
                 }
                 else if (exp.indexOf('${~') >= 0) {
                     // regex
-                    var regex = exp.replace(/\$\{~.+?}/g, (match) => {
+                    const regex = exp.replace(/\$\{~.+?}/g, (match) => {
                         return '(' + match.substr(3, match.length - 4) + ')';
                     });
-                    var match = act.match(new RegExp(regex));
+                    const match = act.match(new RegExp(regex));
                     if (match && match[0].length === act.length) {
                         diffs[i].ignored = diffs[i + 1].ignored = true;
                     }
@@ -98,25 +98,25 @@ export class Compare {
      * Used by ply-ui
      */
     mirrorDiffs(diffs: Diff[]): Diff[] {
-        let mirroredDiffs = [];
+        const mirroredDiffs = [];
         for (let i = 0; i < diffs.length; i++) {
-            let diff = diffs[i];
+            const diff = diffs[i];
             if (diff.removed) {
-                let correspondingAdd = (i < diffs.length - 1 && diffs[i + 1].added) ? diffs[i + 1] : null;
+                const correspondingAdd = (i < diffs.length - 1 && diffs[i + 1].added) ? diffs[i + 1] : null;
                 if (correspondingAdd) {
-                    let remove = Object.assign({}, correspondingAdd);
+                    const remove = Object.assign({}, correspondingAdd);
                     delete remove.added;
                     remove.removed = true;
                     mirroredDiffs.push(remove);
                     i++; // corresponding add already covered
                 }
-                let add = Object.assign({}, diff);
+                const add = Object.assign({}, diff);
                 delete add.removed;
                 add.added = true;
                 mirroredDiffs.push(add);
             }
             else if (diff.added) {
-                let rem = Object.assign({}, diff);
+                const rem = Object.assign({}, diff);
                 delete rem.added;
                 rem.removed = true;
                 mirroredDiffs.push(rem);
@@ -132,10 +132,10 @@ export class Compare {
      * Used by ply-ui
      */
     markLines(start: number, lines: string[], ignored: boolean) {
-        var markers: Marker[] = [];
-        var linesIdx = 0;
+        const markers: Marker[] = [];
+        let linesIdx = 0;
         lines.forEach(line => {
-            var marker: Marker = {
+            const marker: Marker = {
                 start: start + linesIdx,
                 end: start + linesIdx + line.length + 1,
             };
@@ -149,26 +149,26 @@ export class Compare {
     }
 
     getMarkers(diffs: Diff[], lines: CodeLine[]) {
-        var markers: Marker[] = [];
+        const markers: Marker[] = [];
         if (diffs) {
-            var idx = 0;
-            var lineIdx = 0;
+            let idx = 0;
+            let lineIdx = 0;
             for (let i = 0; i < diffs.length; i++) {
-                var diff = diffs[i];
+                const diff = diffs[i];
                 if (diff.removed) {
-                    var correspondingAdd = (i < diffs.length - 1 && diffs[i + 1].added) ? diffs[i + 1] : null;
-                    var oldLines = diff.value.replace(/\n$/, '').split(/\n/);
+                    const correspondingAdd = (i < diffs.length - 1 && diffs[i + 1].added) ? diffs[i + 1] : null;
+                    const oldLines = diff.value.replace(/\n$/, '').split(/\n/);
                     if (correspondingAdd) {
                         // diff each line
-                        var newLines = correspondingAdd.value.replace(/\n$/, '').split(/\n/);
+                        const newLines = correspondingAdd.value.replace(/\n$/, '').split(/\n/);
                         const dmp = new DiffMatchPatch();
                         for (let j = 0; j < oldLines.length && j < newLines.length; j++) {
-                            let dmpLineDiffs = dmp.diff_main(oldLines[j], newLines[j]);
+                            const dmpLineDiffs = dmp.diff_main(oldLines[j], newLines[j]);
                             dmp.diff_cleanupEfficiency(dmpLineDiffs);
-                            let lineDiffs = this.convertToJsDiff(dmpLineDiffs);
+                            const lineDiffs = this.convertToJsDiff(dmpLineDiffs);
                             lineDiffs.forEach(lineDiff => {
                                 if (lineDiff.removed) {
-                                    var marker: Marker = {
+                                    const marker: Marker = {
                                         start: idx,
                                         end: idx + lineDiff.value.length,
                                     };
@@ -188,7 +188,7 @@ export class Compare {
                     }
                     else {
                         // mark every line
-                        markers.push.apply(markers, this.markLines(idx, oldLines, diff.ignored === true));
+                        markers.push.apply(markers, this.markLines(idx, oldLines, diff.ignored === true));  // eslint-disable-line prefer-spread
                     }
 
                     if (correspondingAdd) {

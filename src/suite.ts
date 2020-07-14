@@ -95,17 +95,17 @@ export class Suite<T extends Test> {
     async run(namesOrValues: object | string | string[], valuesOrRunOptions?: object | RunOptions, runOptions?: RunOptions): Promise<Result | Result[]> {
         if (typeof namesOrValues === 'string') {
             const name = namesOrValues;
-            let test = this.get(name);
+            const test = this.get(name);
             if (!test) {
                 throw new Error(`Test not found: ${name}`);
             }
-            let results = await this.runTests([test], valuesOrRunOptions || {}, runOptions);
+            const results = await this.runTests([test], valuesOrRunOptions || {}, runOptions);
             return results[0];
         }
         else if (Array.isArray(namesOrValues)) {
             const names = typeof namesOrValues === 'string' ? [namesOrValues] : namesOrValues;
             const tests = names.map(name => {
-                let test = this.get(name);
+                const test = this.get(name);
                 if (!test) {
                     throw new Error(`Test not found: ${name}`);
                 }
@@ -161,13 +161,13 @@ export class Suite<T extends Test> {
             }
         }
 
-        let expectedExists = await this.runtime.results.expected.exists;
+        const expectedExists = await this.runtime.results.expected.exists;
         let resultsStartLine = 0;
 
-        let results: Result[] = [];
+        const results: Result[] = [];
         // within a suite, tests are run sequentially
         for (let i = 0; i < tests.length; i++) {
-            let test = tests[i];
+            const test = tests[i];
             if (test.type === 'case' || test.type === 'workflow') {
                 this.runtime.results.actual.append(test.name + ':\n');
             }
@@ -182,8 +182,8 @@ export class Suite<T extends Test> {
                 result = await (test as unknown as PlyTest).run(this.runtime);
                 let actualYaml: string;
                 if (test.type === 'request') {
-                    let plyResult = result as PlyResult;
-                    let indent = callingCaseInfo ? this.runtime.options.prettyIndent : 0;
+                    const plyResult = result as PlyResult;
+                    const indent = callingCaseInfo ? this.runtime.options.prettyIndent : 0;
                     actualYaml = this.buildResultYaml(plyResult, indent);
                     this.runtime.results.actual.append(actualYaml);
                     if (!callingCaseInfo) {
@@ -193,9 +193,9 @@ export class Suite<T extends Test> {
                         // status could be 'Not Verified' if runOptions so specify
                         if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/workflow is complete)
-                            let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
+                            const verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
                             this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
-                            let outcome = verifier.verify(actualYaml, this.runtime.values);
+                            const outcome = verifier.verify(actualYaml, this.runtime.values);
                             result = { ...result as Result, ...outcome };
                             this.logOutcome(test, outcome);
                         }
@@ -210,14 +210,14 @@ export class Suite<T extends Test> {
                     }
                     // status could be 'Not Verified' if runOptions so specify
                     if (result.status === 'Pending') {
-                        let verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
+                        const verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
                         this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
                         // NOTE: By using this.runtime.values we're unadvisedly taking advantage the prototype's shared runtime object property
                         // (https://stackoverflow.com/questions/17088635/javascript-object-properties-shared-across-instances).
                         // This allows us to accumulate programmatic values changes like those in updateRating() in movieCrud.ply.ts
                         // so that they can be accessed when verifying here, even though the changes are not present the passed 'values' parameter.
                         // TODO: Revisit when implementing a comprehensive values specification mechanism.
-                        let outcome = verifier.verify(actualYaml, this.runtime.values);
+                        const outcome = verifier.verify(actualYaml, this.runtime.values);
                         result = { ...result as Result, ...outcome };
                         this.logOutcome(test, outcome);
                     }
@@ -274,7 +274,7 @@ export class Suite<T extends Test> {
     }
 
     private handleNoExpected(test: T, result: Result, actualYaml: string, isFirst: boolean, runOptions?: RunOptions): Result | undefined {
-        let dispensation = runOptions?.noExpectedResult;
+        const dispensation = runOptions?.noExpectedResult;
         if (dispensation === NoExpectedResultDispensation.NoVerify) {
             const res = {
                 name: test.name,
@@ -290,7 +290,7 @@ export class Suite<T extends Test> {
             if (this.runtime.results.expected.location.isUrl) {
                 throw new Error('Dispensation CreatedExpected not supported for remote results');
             }
-            let expected = new Storage(this.runtime.results.expected.location.toString());
+            const expected = new Storage(this.runtime.results.expected.location.toString());
             if (isFirst) {
                 this.log.info(`Creating expected result: ${expected}`);
                 expected.write(actualYaml);
@@ -352,8 +352,8 @@ export class Suite<T extends Test> {
                 let source = element.file;
                 if (runOptions?.importCaseModulesFromBuilt || !source) {
                     // Note: this doesn't work with ts compiler option outFile (relies on outDir)
-                    let outDir = new TsCompileOptions(this.runtime.options).outDir;
-                    let relLoc = new Location(new Location(element.file).relativeTo(outDir));
+                    const outDir = new TsCompileOptions(this.runtime.options).outDir;
+                    const relLoc = new Location(new Location(element.file).relativeTo(outDir));
                     source = relLoc.parent + '/' + relLoc.base + '.ts';
                 }
 
@@ -395,15 +395,15 @@ export class Suite<T extends Test> {
                 }
             });
         }
-        let invocation = invocationObject[result.name] as any;
+        const invocation = invocationObject[result.name] as any;
         if (typeof invocation.__start !== 'undefined') {
-            let outcomeLine = invocation.__start;
+            const outcomeLine = invocation.__start;
             if (result.request.submitted) {
                 ymlLines[outcomeLine] += `  # ${result.request.submitted.timestamp(this.runtime.locale)}`;
             }
             if (typeof result.response.time !== 'undefined') {
-                let responseMs = result.response.time + ' ms';
-                let requestYml = yaml.dump({ request: invocation.request }, this.runtime.options.prettyIndent);
+                const responseMs = result.response.time + ' ms';
+                const requestYml = yaml.dump({ request: invocation.request }, this.runtime.options.prettyIndent);
                 ymlLines[outcomeLine + requestYml.split('\n').length] += `  # ${responseMs}`;
             }
         }

@@ -1,7 +1,7 @@
 import { suite, test } from '../../src/decorators';
 
 @suite('ignore this suite')
-export class NamedSuite {
+export class IgnoredSuite {
 
     @test('won\'t be run')
     wontBeRun() {

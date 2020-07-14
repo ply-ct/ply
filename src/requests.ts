@@ -37,7 +37,7 @@ export class RequestLoader {
         if (suiteName.endsWith('.ply')) {
             suiteName = suiteName.substring(0, suiteName.length - 4);
         }
-        let results = await ResultPaths.create(this.options, suiteName, retrieval);
+        const results = await ResultPaths.create(this.options, suiteName, retrieval);
 
         const runtime = new Runtime(
             await osLocale(),
@@ -46,7 +46,7 @@ export class RequestLoader {
             results
         );
 
-        let logger = new Logger({
+        const logger = new Logger({
             level: this.options.verbose ? LogLevel.debug : LogLevel.info,
             prettyIndent: this.options.prettyIndent
         }, runtime.results.log);
@@ -63,11 +63,11 @@ export class RequestLoader {
 
         const obj = yaml.load(retrieval.location.path, contents, true);
         for (const key of Object.keys(obj)) {
-            let val = obj[key];
+            const val = obj[key];
             if (typeof val === 'object') {
-                let startEnd = { start: val.__start, end: val.__end };
-                let { __start, __end, ...cleanObj} = val;
-                let request = new PlyRequest(key, { ...startEnd, ...cleanObj } as Request, logger, retrieval);
+                const startEnd = { start: val.__start, end: val.__end };
+                const { __start, __end, ...cleanObj} = val;
+                const request = new PlyRequest(key, { ...startEnd, ...cleanObj } as Request, logger, retrieval);
                 suite.add(request);
             }
         }
