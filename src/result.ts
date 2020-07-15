@@ -3,7 +3,7 @@ import { Response, PlyResponse } from './response';
 import { Options } from './options';
 import { Logger } from './logger';
 import { CodeLine, Code } from './code';
-import { Compare } from './compare';
+import { Compare, Diff } from './compare';
 
 export interface Outcome {
     /**
@@ -19,6 +19,7 @@ export interface Outcome {
      * Diff message
      */
     diff?: string
+    diffs?: Diff[]
 }
 
 export interface Result extends Outcome {
@@ -147,7 +148,9 @@ export class Verifier {
             return {
                 status: 'Failed',
                 message: `Results differ from line ${firstDiffLine}`,
-                line: firstDiffLine, diff: diffMsg
+                line: firstDiffLine,
+                diff: diffMsg,
+                diffs
             };
         }
         else {

@@ -16,7 +16,7 @@ moviesByYearAndRating:
           {
             "credits": [
               {
-                "name": "Tod Browning",
+                "name": "Tod Browner",
                 "role": "director"
               },
               {
@@ -160,7 +160,7 @@ moviesQuery:
           {
             "credits": [
               {
-                "name": "James Whale",
+                "name": "James Whaler",
                 "role": "director"
               },
               {

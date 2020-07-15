@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as path from 'path';
 
 /**
@@ -59,6 +60,18 @@ export class Location {
         }
     }
 
+    /**
+     * Returns zero for URLs, undefined if file does not exist
+     */
+    get timestamp(): number | undefined {
+        if (this.isUrl) {
+            return 0;
+        }
+        else if (fs.existsSync(this.path)) {
+            return fs.statSync(this.path).mtimeMs;
+        }
+    }
+
     get isYaml(): boolean {
         return this.ext === 'yaml' || this.ext === 'yml';
     }
@@ -77,23 +90,34 @@ export class Location {
     }
 
     get isAbsolute(): boolean {
-        return path.isAbsolute(this.path);
+        return this.isUrl || path.isAbsolute(this.path);
     }
 
     get absolute(): string {
-        return path.normalize(path.resolve(this.path)).replace(/\\/g, '/');
+        if (this.isUrl) {
+            return this.path;
+        }
+        else {
+            return path.normalize(path.resolve(this.path)).replace(/\\/g, '/');
+        }
     }
 
+    /**
+     * TODO: handle urls
+     */
+    isChildOf(parent: string): boolean {
+        const relative = this.relativeTo(parent);
+        return relative.length > 0 && !relative.startsWith('..') && !path.isAbsolute(relative);
+    }
+
+    /**
+     * TODO: handle urls
+     */
     relativeTo(parent: string): string {
         return path.normalize(path.relative(parent, this.path)).replace(/\\/g, '/');
     }
 
     toString(): string {
         return this.path;
-    }
-
-    isChildOf(parent: string): boolean {
-        const relative = this.relativeTo(parent);
-        return relative.length > 0 && !relative.startsWith('..') && !path.isAbsolute(relative);
     }
 }
