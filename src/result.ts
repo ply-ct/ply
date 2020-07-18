@@ -12,7 +12,7 @@ export interface Outcome {
     status: 'Pending' | 'Passed' | 'Failed' | 'Errored' | 'Not Verified'
     message: string
     /**
-     * One-based, relative to starting line of test
+     * One-based line number of first diff, relative to starting line of test
      */
     line?: number
     /**
@@ -93,8 +93,8 @@ export class Verifier {
     verify(actualYaml: string, values: object): Outcome {
         this.logger.debug(`Expected:\n${this.expectedYaml}\n` +
                 `Actual:\n${actualYaml}\n`);
-        const expected = new Code(this.expectedYaml);
-        const actual = new Code(actualYaml);
+        const expected = new Code(this.expectedYaml, '#');
+        const actual = new Code(actualYaml, '#');
         const diffs = new Compare(this.logger).diffLines(expected.extractCode(), actual.extractCode(), values);
         let firstDiffLine = 0;
         let diffMsg = '';

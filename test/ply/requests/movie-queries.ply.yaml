@@ -3,7 +3,6 @@ moviesByYearAndRating:
   method: GET
   headers:
     Accept: application/json
-    Authorization: myauth
 
 movieById:
   # id comes from previous response body

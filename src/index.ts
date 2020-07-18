@@ -13,6 +13,7 @@ export { Suite } from './suite';
 export { PlyEvent, OutcomeEvent } from './event';
 export { RunOptions, NoExpectedResultDispensation } from './runtime';
 export { Diff } from './compare';
+export { Code } from './code';
 export { suite, test, before, after } from './decorators';
 export { load as loadYaml } from './yaml';
 

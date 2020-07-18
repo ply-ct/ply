@@ -4,18 +4,25 @@ export class Code {
 
     lines: CodeLine[];
 
-    constructor(code: string, commentDelim: string = '#') {
-        this.lines = this.trimComments(code.trimRight() + '\n', commentDelim);
+    constructor(code: string, commentDelim: string)
+    constructor(code: string[], commentDelim: string);
+    constructor(code: string | string[], commentDelim: string) {
+        if (typeof code === 'string') {
+            this.lines = this.trimComments((code.trimRight()  + '\n').split(/\r?\n/), commentDelim);
+        }
+        else {
+            this.lines = this.trimComments(code, commentDelim);
+        }
     }
 
     /**
      * Removes trailing comments, along with any preceding whitespace.
      * Returns an array of objects (one for each line) to be passed to extractCode.
      */
-    trimComments(code: string, delim: string): CodeLine[] {
+    trimComments(inLines: string[], delim: string): CodeLine[] {
         const lines: CodeLine[] = [];
         const regex = new RegExp('(\\s*' + delim + ')', 'g');
-        code.replace(/\r/g, '').split(/\n/).forEach(line => {
+        inLines.forEach(line => {
             const segs = line.split(regex);
             const ln: CodeLine = { code: segs[0] };
             if (segs.length > 1) {
