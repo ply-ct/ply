@@ -16,6 +16,7 @@ export { Diff } from './compare';
 export { Code } from './code';
 export { suite, test, before, after } from './decorators';
 export { load as loadYaml } from './yaml';
+export * as util from './util';
 
 require('ts-node/register');
 export default new Ply();
