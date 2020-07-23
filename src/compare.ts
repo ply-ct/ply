@@ -52,7 +52,7 @@ export class Compare {
         diffs.forEach(diff => {
             const jsdiff: Diff = {
                 value: diff[1].replace(/\r\n/g, '\n'),
-                count: diff[1].split(/\r\n|\r|\n/).length
+                count: diff[1].lines().length
             };
             if (diff[0] === -1) {
                 jsdiff.removed = true;

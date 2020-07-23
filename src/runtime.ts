@@ -68,7 +68,7 @@ export class ResultPaths {
         if (!expectedObj) {
             throw new Error(`Expected result not found: ${this.expected}#${name}`);
         }
-        const expectedLines = expected.split(/\r?\n/);
+        const expectedLines = expected.lines();
         return expectedLines.slice(expectedObj.__start, expectedObj.__end + 1).join('\n');
     }
 
@@ -84,7 +84,7 @@ export class ResultPaths {
         if (!actualObj) {
             throw new Error(`Actual result not found: ${this.actual}#${name}`);
         }
-        const actualLines = actual.split(/\r?\n/);
+        const actualLines = actual.lines();
         return actualLines.slice(actualObj.__start, actualObj.__end + 1).join('\n') + '\n';
     }
 }

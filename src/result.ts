@@ -167,7 +167,7 @@ export class Verifier {
      * Optional codeLines, start to restore comments.
      */
     private prefix(str: string, pre: string, codeLines: CodeLine[], start: number): string {
-        return str.replace(/\r\n/g, '\n').split(/\n/).reduce((a, seg, i, arr) => {
+        return str.lines().reduce((a, seg, i, arr) => {
             let line = i === arr.length - 1 && seg.length === 0 ? '' : pre + seg;
             if (line) {
                 if (codeLines) {

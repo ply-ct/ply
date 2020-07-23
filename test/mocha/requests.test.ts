@@ -31,15 +31,15 @@ describe('Requests', async () => {
         assert.equal(suites.length, 2);
         let request = suites[0].get('moviesByYearAndRating') as PlyRequest;
         assert.equal(request.start, 0);
-        assert.equal(request.end, 5);
+        assert.equal(request.end, 4);
 
         request = suites[0].get('movieById') as PlyRequest;
         assert.equal(request.name, 'movieById');
         assert.equal(request.method, 'GET');
         const headers = request.headers;
         assert.equal(headers['Accept'], 'application/json');
-        assert.equal(request.start, 7);
-        assert.equal(request.end, 12);
+        assert.equal(request.start, 6);
+        assert.equal(request.end, 11);
     });
 
     it('rejects missing url', async () => {

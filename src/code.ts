@@ -1,3 +1,5 @@
+import './string';
+
 export type CodeLine = { code: string, comment?: string };
 
 export class Code {
@@ -8,7 +10,7 @@ export class Code {
     constructor(code: string[], commentDelim: string);
     constructor(code: string | string[], commentDelim: string) {
         if (typeof code === 'string') {
-            this.lines = this.trimComments((code.trimRight()  + '\n').split(/\r?\n/), commentDelim);
+            this.lines = this.trimComments((code.trimRight()  + '\n').lines(), commentDelim);
         }
         else {
             this.lines = this.trimComments(code, commentDelim);

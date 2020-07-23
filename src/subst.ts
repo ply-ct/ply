@@ -27,7 +27,7 @@ function get(input: string, context: object, logger: Logger, explain = false): s
  */
 export function replace(template: string, context: object, logger: Logger, explain = false): string {
     const lines: string[] = [];
-    for (const line of template.split(/\r?\n/)) {
+    for (const line of template.lines()) {
         try {
             let l = line.replace(/\${~/g, '\\${~');  // escape regex
             l = l.replace(/\${@/g, '${' + RESULTS + '.');

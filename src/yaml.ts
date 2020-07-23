@@ -15,7 +15,7 @@ export function load(file: string, contents: string, assignLines = false) {
         }
     });
     if (assignLines) {
-        const contentLines = contents.split(/\r?\n/);
+        const contentLines = contents.lines();
         let lastObjProp: any;
         Object.keys(obj).forEach(key => {
             const line = lines[key];

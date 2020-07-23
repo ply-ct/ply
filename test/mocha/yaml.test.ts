@@ -12,11 +12,11 @@ describe('yaml', () => {
         const obj = yaml.load(retrieval.toString(), yml!, true);
 
         assert.equal(obj['moviesByYearAndRating'].__start, 0);
-        assert.equal(obj['moviesByYearAndRating'].__end, 5);
-        assert.equal(obj['movieById'].__start, 7);
-        assert.equal(obj['movieById'].__end, 12);
-        assert.equal(obj['moviesQuery'].__start, 15);
-        assert.equal(obj['moviesQuery'].__end, 19);
+        assert.equal(obj['moviesByYearAndRating'].__end, 4);
+        assert.equal(obj['movieById'].__start, 6);
+        assert.equal(obj['movieById'].__end, 11);
+        assert.equal(obj['moviesQuery'].__start, 14);
+        assert.equal(obj['moviesQuery'].__end, 18);
     });
 
     it('assigns line nums of empty keys', () => {

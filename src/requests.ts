@@ -58,7 +58,7 @@ export class RequestLoader {
             runtime,
             logger,
             0,
-            contents.split(/\r?\n/).length - 1
+            contents.lines().length - 1
         );
 
         const obj = yaml.load(retrieval.location.path, contents, true);
