@@ -1,4 +1,4 @@
-import './string';
+import './ext/string';
 
 export type CodeLine = { code: string, comment?: string };
 

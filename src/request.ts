@@ -5,7 +5,7 @@ import { Retrieval } from './retrieval';
 import { Runtime } from './runtime';
 import { PlyResult } from './result';
 import * as subst from './subst';
-import './date';
+import './ext/date';
 
 export interface Request extends Test {
     url: string;

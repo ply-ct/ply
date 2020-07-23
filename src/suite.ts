@@ -7,7 +7,7 @@ import { Runtime, RunOptions, DecoratedSuite, ResultPaths, CallingCaseInfo, NoEx
 import { SUITE, TEST, RESULTS } from './names';
 import { Retrieval } from './retrieval';
 import * as yaml from './yaml';
-import './date';
+import './ext/date';
 import { EventEmitter } from 'events';
 import { Plyee } from './ply';
 import { PlyEvent, OutcomeEvent } from './event';
