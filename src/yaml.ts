@@ -1,4 +1,5 @@
 import * as jsYaml from 'js-yaml';
+import * as util from './util';
 
 export function dump(obj: object, indent: number) {
     return jsYaml.safeDump(obj, { noCompatMode: true, skipInvalid: true, indent, lineWidth: -1 });
@@ -15,7 +16,7 @@ export function load(file: string, contents: string, assignLines = false) {
         }
     });
     if (assignLines) {
-        const contentLines = contents.lines();
+        const contentLines = util.lines(contents);
         let lastObjProp: any;
         Object.keys(obj).forEach(key => {
             const line = lines[key];

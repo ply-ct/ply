@@ -2,6 +2,7 @@ import { diff_match_patch as DiffMatchPatch, Diff as DmpDiff } from 'diff-match-
 import { CodeLine } from './code';
 import { Logger } from './logger';
 import * as subst from './subst';
+import { lines } from './util';
 
 /**
  * jsdiff object
@@ -52,7 +53,7 @@ export class Compare {
         diffs.forEach(diff => {
             const jsdiff: Diff = {
                 value: diff[1].replace(/\r\n/g, '\n'),
-                count: diff[1].lines().length
+                count: lines(diff[1]).length
             };
             if (diff[0] === -1) {
                 jsdiff.removed = true;

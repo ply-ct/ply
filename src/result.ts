@@ -4,6 +4,7 @@ import { Options } from './options';
 import { Logger } from './logger';
 import { CodeLine, Code } from './code';
 import { Compare, Diff } from './compare';
+import { lines } from './util';
 
 export interface Outcome {
     /**
@@ -167,7 +168,7 @@ export class Verifier {
      * Optional codeLines, start to restore comments.
      */
     private prefix(str: string, pre: string, codeLines: CodeLine[], start: number): string {
-        return str.lines().reduce((a, seg, i, arr) => {
+        return lines(str).reduce((a, seg, i, arr) => {
             let line = i === arr.length - 1 && seg.length === 0 ? '' : pre + seg;
             if (line) {
                 if (codeLines) {

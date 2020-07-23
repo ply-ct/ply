@@ -8,6 +8,7 @@ import { PlyOptions } from './options';
 import { TEST, BEFORE, AFTER, SUITE } from './names';
 import { TestSuite, TestCase, Before, After } from './decorators';
 import * as yaml from './yaml';
+import { lines } from './util';
 
 export class ResultPaths {
 
@@ -68,7 +69,7 @@ export class ResultPaths {
         if (!expectedObj) {
             throw new Error(`Expected result not found: ${this.expected}#${name}`);
         }
-        const expectedLines = expected.lines();
+        const expectedLines = lines(expected);
         return expectedLines.slice(expectedObj.__start, expectedObj.__end + 1).join('\n');
     }
 
@@ -84,7 +85,7 @@ export class ResultPaths {
         if (!actualObj) {
             throw new Error(`Actual result not found: ${this.actual}#${name}`);
         }
-        const actualLines = actual.lines();
+        const actualLines = lines(actual);
         return actualLines.slice(actualObj.__start, actualObj.__end + 1).join('\n') + '\n';
     }
 }

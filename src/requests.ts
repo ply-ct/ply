@@ -7,6 +7,7 @@ import { ResultPaths, Runtime } from './runtime';
 import { Logger, LogLevel } from './logger';
 import { PlyIgnore } from './ignore';
 import * as yaml from './yaml';
+import { lines } from './util';
 
 export class RequestLoader {
 
@@ -58,7 +59,7 @@ export class RequestLoader {
             runtime,
             logger,
             0,
-            contents.lines().length - 1
+            lines(contents).length - 1
         );
 
         const obj = yaml.load(retrieval.location.path, contents, true);

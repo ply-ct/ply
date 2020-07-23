@@ -1,5 +1,6 @@
 import { Logger } from './logger';
 import { RESULTS } from './names';
+import * as util from './util';
 
 /**
  * Evaluate the input expression vs context.
@@ -27,7 +28,7 @@ function get(input: string, context: object, logger: Logger, explain = false): s
  */
 export function replace(template: string, context: object, logger: Logger, explain = false): string {
     const lines: string[] = [];
-    for (const line of template.lines()) {
+    for (const line of util.lines(template)) {
         try {
             let l = line.replace(/\${~/g, '\\${~');  // escape regex
             l = l.replace(/\${@/g, '${' + RESULTS + '.');

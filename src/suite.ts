@@ -7,12 +7,12 @@ import { Runtime, RunOptions, DecoratedSuite, ResultPaths, CallingCaseInfo, NoEx
 import { SUITE, TEST, RESULTS } from './names';
 import { Retrieval } from './retrieval';
 import * as yaml from './yaml';
-import './ext/date';
 import { EventEmitter } from 'events';
 import { Plyee } from './ply';
 import { PlyEvent, OutcomeEvent } from './event';
 import { PlyResponse } from './response';
 import { TsCompileOptions } from './compile';
+import { timestamp } from './util';
 
 interface Tests<T extends Test> {
     [key: string]: T
@@ -399,7 +399,7 @@ export class Suite<T extends Test> {
         if (typeof invocation.__start !== 'undefined') {
             const outcomeLine = invocation.__start;
             if (result.request.submitted) {
-                ymlLines[outcomeLine] += `  # ${result.request.submitted.timestamp(this.runtime.locale)}`;
+                ymlLines[outcomeLine] += `  # ${timestamp(result.request.submitted, this.runtime.locale)}`;
             }
             if (typeof result.response.time !== 'undefined') {
                 const responseMs = result.response.time + ' ms';
