@@ -128,6 +128,7 @@ export class Suite<T extends Test> {
         if (this.emitter) {
             this.emitter.emit('suite', {
                 plyee: this.runtime.options.testsLocation + '/' + this.path,
+                type: this.type,
                 status: 'Started'
             } as SuiteEvent);
         }
@@ -253,6 +254,7 @@ export class Suite<T extends Test> {
         if (this.emitter) {
             this.emitter.emit('suite', {
                 plyee: this.runtime.options.testsLocation + '/' + this.path,
+                type: this.type,
                 status: 'Finished'
             } as SuiteEvent);
         }

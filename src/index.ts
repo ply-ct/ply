@@ -10,7 +10,7 @@ export { Options, PlyOptions, Defaults, Config } from './options';
 export { Retrieval } from './retrieval';
 export { Storage } from './storage';
 export { Suite } from './suite';
-export { PlyEvent, OutcomeEvent } from './event';
+export { PlyEvent, SuiteEvent, OutcomeEvent } from './event';
 export { RunOptions, NoExpectedResultDispensation } from './runtime';
 export { Diff } from './compare';
 export { Code } from './code';

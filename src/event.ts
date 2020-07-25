@@ -1,5 +1,6 @@
 // Browser may require https://www.npmjs.com/package/events
 import { Outcome } from './result';
+import { TestType } from './test';
 
 /**
  * Event for 'start' listeners.
@@ -20,6 +21,7 @@ export interface OutcomeEvent extends PlyEvent {
 }
 
 export interface SuiteEvent extends PlyEvent {
+    type: TestType,
     status: 'Started' | 'Finished';
 }
 
