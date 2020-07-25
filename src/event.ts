@@ -7,16 +7,20 @@ import { Outcome } from './result';
 
 export interface PlyEvent {
     /**
-     * Unique test path
+     * Unique test/suite path
      */
-    plyee: string
+    plyee: string;
 }
 
 /**
  * Event for 'outcome' listeners.
  */
 export interface OutcomeEvent extends PlyEvent {
-    outcome: Outcome
+    outcome: Outcome;
+}
+
+export interface SuiteEvent extends PlyEvent {
+    status: 'Started' | 'Finished';
 }
 
 export type PlyEventListener = (e: PlyEvent) => void;

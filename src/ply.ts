@@ -82,9 +82,12 @@ export class Ply {
 }
 
 /**
+ * A Plyee is a test (request/case), or a suite.
+ *
  * Format: <absolute_suite_file_forward_slashes>#<optional_case_suite>~<test_name>
  * eg: c:/ply/ply/test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating
- * or: /Users/donaldoakes/ply/ply/test/ply/cases/movieCrud.ply.ts#movie-crud^add new movie
+ * or: /Users/me/ply/ply/test/ply/cases/movieCrud.ply.ts#movie-crud^add new movie
+ * or for a suite: /Users/me/ply/ply/test/ply/requests/movie-queries.ply.yaml
  * (TODO: handle caseFile#suite^case)
  */
 export class Plyee {
@@ -102,7 +105,7 @@ export class Plyee {
             this.path = path.normalize(path.resolve(pathOrSuite)).replace(/\\/g, '/');
         }
         this.hash = this.path.indexOf('#');
-        if (this.hash < 1 || this.hash > this.path.length - 2) {
+        if (this.hash === 0 || this.hash > this.path.length - 2) {
             throw new Error(`Invalid path: ${this.path}`);
         }
         this.hat = this.path.lastIndexOf('^');
@@ -112,7 +115,12 @@ export class Plyee {
     }
 
     get location(): string {
-        return this.path.substring(0, this.hash);
+        if (this.hash > 0) {
+            return this.path.substring(0, this.hash);
+        }
+        else {
+            return this.path;
+        }
     }
 
     get suite(): string {
@@ -124,12 +132,14 @@ export class Plyee {
         }
     }
 
-    get test(): string {
-        if (this.hat > 0) {
-            return this.path.substring(this.hat + 1);
-        }
-        else {
-            return this.path.substring(this.hash + 1);
+    get test(): string | undefined {
+        if (this.hash > 0) {
+            if (this.hat > 0) {
+                return this.path.substring(this.hat + 1);
+            }
+            else {
+                return this.path.substring(this.hash + 1);
+            }
         }
     }
 
@@ -170,6 +180,9 @@ export class Plyee {
     }
 }
 
+/**
+ * Utility for executing multiple tests, organized into their respective suites.
+ */
 export class Plier extends EventEmitter {
     private ply: Ply;
     constructor(options?: Options) {
@@ -177,11 +190,19 @@ export class Plier extends EventEmitter {
         this.ply = new Ply(options);
     }
 
+    /**
+     * Plyees should be test paths (not suites).
+     */
     async run(plyees: string[], values: object, runOptions?: RunOptions): Promise<Result[]> {
         const promises: Promise<Result[]>[] = [];
         // requests
         for (const [loc, requestPlyee] of Plyee.requests(plyees)) {
-            const tests = requestPlyee.map(plyee => plyee.test);
+            const tests = requestPlyee.map(plyee => {
+                if (!plyee.test) {
+                    throw new Error(`Plyee is not a test: ${plyee}`);
+                }
+                return plyee.test;
+            });
             const requestSuite = await this.ply.loadRequestSuite(loc);
             requestSuite.emitter = this;
             promises.push(requestSuite.run(tests, values, runOptions));
@@ -189,7 +210,12 @@ export class Plier extends EventEmitter {
 
         // cases
         for (const [loc, casePlyee] of Plyee.cases(plyees)) {
-            const tests = casePlyee.map(plyee => plyee.test);
+            const tests = casePlyee.map(plyee => {
+                if (!plyee.test) {
+                    throw new Error(`Plyee is not a test: ${plyee}`);
+                }
+                return plyee.test;
+            });
             const caseSuites = await this.ply.loadCaseSuites(loc);
             for (const caseSuite of caseSuites) {
                 caseSuite.emitter = this;

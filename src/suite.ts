@@ -9,7 +9,7 @@ import { Retrieval } from './retrieval';
 import * as yaml from './yaml';
 import { EventEmitter } from 'events';
 import { Plyee } from './ply';
-import { PlyEvent, OutcomeEvent } from './event';
+import { PlyEvent, SuiteEvent, OutcomeEvent } from './event';
 import { PlyResponse } from './response';
 import { TsCompileOptions } from './compile';
 import { timestamp } from './util';
@@ -125,6 +125,13 @@ export class Suite<T extends Test> {
      */
     private async runTests(tests: T[], values: object, runOptions?: RunOptions): Promise<Result[]> {
 
+        if (this.emitter) {
+            this.emitter.emit('suite', {
+                plyee: this.runtime.options.testsLocation + '/' + this.path,
+                status: 'Started'
+            } as SuiteEvent);
+        }
+
         // runtime values are a deep copy of passed values
         this.runtime.values = JSON.parse(JSON.stringify(values));
 
@@ -175,7 +182,7 @@ export class Suite<T extends Test> {
             try {
                 this.logger.info(`Running ${test.type}: ${test.name}`);
                 if (this.emitter) {
-                    this.emitter.emit('start', {
+                    this.emitter.emit('test', {
                         plyee: new Plyee(this.runtime.options.testsLocation + '/' + this.path, test).path
                     } as PlyEvent );
                 }
@@ -241,6 +248,13 @@ export class Suite<T extends Test> {
             if (this.runtime.options.bail && result.status !== 'Passed') {
                 break;
             }
+        }
+
+        if (this.emitter) {
+            this.emitter.emit('suite', {
+                plyee: this.runtime.options.testsLocation + '/' + this.path,
+                status: 'Finished'
+            } as SuiteEvent);
         }
 
         return results;

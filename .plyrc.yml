@@ -10,4 +10,4 @@ responseHeaders:
   - 'content-type'
   - location
 
-verbose: true
+verbose: false
