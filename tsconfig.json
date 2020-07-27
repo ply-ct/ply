@@ -6,11 +6,11 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "outDir": "dist",
-    "declaration": true,
-    "noUnusedLocals": false,
     "sourceMap": true,
     "strict": true,
     "allowJs": true,
+    "declaration": true,
+    "noUnusedLocals": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
