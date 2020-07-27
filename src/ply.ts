@@ -10,6 +10,7 @@ import { RequestLoader } from './requests';
 import { Result } from './result';
 import { RunOptions } from './runtime';
 import { TsCompileOptions } from './compile';
+import * as util from './util';
 
 export class Ply {
 
@@ -99,10 +100,10 @@ export class Plyee {
     constructor(path: string);
     constructor(pathOrSuite: string, test?: Test) {
         if (test) {
-            this.path = path.normalize(path.resolve(`${pathOrSuite}#${test.name}`)).replace(/\\/g, '/');
+            this.path = util.fwdSlashes(path.normalize(path.resolve(`${pathOrSuite}#${test.name}`)));
         }
         else {
-            this.path = path.normalize(path.resolve(pathOrSuite)).replace(/\\/g, '/');
+            this.path = util.fwdSlashes(path.normalize(path.resolve(pathOrSuite)));
         }
         this.hash = this.path.indexOf('#');
         if (this.hash === 0 || this.hash > this.path.length - 2) {

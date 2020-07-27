@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { fwdSlashes } from './util';
 
 /**
  * Abstraction for a URL or file location.
@@ -12,7 +13,7 @@ export class Location {
      * @param path url or file path (backslashes are replaced with slashes)
      */
     constructor(path: string) {
-        this.path = path.replace(/\\/g, '/');
+        this.path = fwdSlashes(path);
         if (this.path.endsWith('/')) {
             this.path = this.path.substring(0, this.path.length - 1);
         }
@@ -98,7 +99,7 @@ export class Location {
             return this.path;
         }
         else {
-            return path.normalize(path.resolve(this.path)).replace(/\\/g, '/');
+            return fwdSlashes(path.normalize(path.resolve(this.path)));
         }
     }
 
@@ -114,7 +115,7 @@ export class Location {
      * TODO: handle urls
      */
     relativeTo(parent: string): string {
-        return path.normalize(path.relative(parent, this.path)).replace(/\\/g, '/');
+        return fwdSlashes(path.normalize(path.relative(parent, this.path)));
     }
 
     toString(): string {
