@@ -110,6 +110,7 @@ export class CaseLoader {
             }
         }
 
+        suites.sort((s1, s2) => s1.name.localeCompare(s2.name));
         return suites;
     }
 

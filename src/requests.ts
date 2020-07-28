@@ -24,7 +24,9 @@ export class RequestLoader {
         const retrievals = this.locations.map(loc => new Retrieval(loc));
         // load request files in parallel
         const promises = retrievals.map(retr => this.loadSuite(retr));
-        return await Promise.all(promises);
+        const suites = await Promise.all(promises);
+        suites.sort((s1, s2) => s1.name.localeCompare(s2.name));
+        return suites;
     }
 
     async loadSuite(retrieval: Retrieval): Promise<Suite<Request>> {
