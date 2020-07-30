@@ -48,7 +48,7 @@ export class CaseLoader {
         for (const sourceFile of this.program.getSourceFiles()) {
 
             const suiteDecorations = this.findSuites(sourceFile);
-            if (suiteDecorations) {
+            if (suiteDecorations.length > 0) {
                 const retrieval = new Retrieval(sourceFile.fileName);
                 const suitePath = retrieval.location.relativeTo(this.options.testsLocation);
 
