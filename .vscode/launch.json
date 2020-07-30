@@ -16,6 +16,15 @@
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"
             ]
+        },
+        {
+            "name": "Custom debug",
+            "type": "node",
+            "request": "attach",
+            "port": 9229,
+            "protocol": "inspector",
+            "timeout": 10000,
+            "stopOnEntry": false
         }
     ]
 }
