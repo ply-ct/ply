@@ -42,6 +42,23 @@ describe('Requests', async () => {
         assert.equal(request.end, 11);
     });
 
+    it('calculates result subpaths', async () => {
+        const ply = new Ply();
+
+        let suite = await ply.loadRequestSuite('test/ply/requests/movie-queries.ply.yaml');
+        assert.equal(suite.runtime.results.expected.location.toString(),
+            'test/ply/results/expected/requests/movie-queries.yaml');
+        assert.equal(suite.runtime.results.actual.location.toString(),
+            'test/ply/results/actual/requests/movie-queries.yaml');
+
+        ply.options.resultFollowsTestRelativePath = false;
+        suite = await ply.loadRequestSuite('test/ply/requests/movie-queries.ply.yaml');
+        assert.equal(suite.runtime.results.expected.location.toString(),
+            'test/ply/results/expected/movie-queries.yaml');
+        assert.equal(suite.runtime.results.actual.location.toString(),
+            'test/ply/results/actual/movie-queries.yaml');
+    });
+
     it('rejects missing url', async () => {
         const ply = new Ply();
         await assert.rejects(async () => {

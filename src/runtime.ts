@@ -28,7 +28,7 @@ export class ResultPaths {
         let actualPath;
         let log;
 
-        if (retrieval.location.isChildOf(options.testsLocation)) {
+        if (options.resultFollowsTestRelativePath && retrieval.location.isChildOf(options.testsLocation)) {
             const relPath = retrieval.location.relativeTo(options.testsLocation);
             const resultFilePath = new Location(relPath).parent + '/' + suiteName;
             expectedPath = options.expectedLocation + '/' + resultFilePath;
@@ -38,7 +38,7 @@ export class ResultPaths {
             }
         }
         else {
-            // can't determine results relative path; use specified
+            // flatly use the specified path
             expectedPath = options.expectedLocation + '/' + suiteName;
             actualPath = options.actualLocation + '/' + suiteName;
             if (options.logLocation) {

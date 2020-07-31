@@ -25,9 +25,9 @@ describe('Ignore', () => {
         });
 
         const suites = await ply.loadCases('test/mocha/suites.ts', 'test/mocha/ignored-suite.ts');
-        assert.ok(!suites[0].ignored);
+        assert.ok(suites[0].ignored);
         assert.ok(!suites[1].ignored);
-        assert.ok(suites[2].ignored);
+        assert.ok(!suites[2].ignored);
     });
 
 });

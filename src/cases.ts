@@ -110,7 +110,13 @@ export class CaseLoader {
             }
         }
 
-        suites.sort((s1, s2) => s1.name.localeCompare(s2.name));
+        suites.sort((s1, s2) => {
+            if (s1.path === s2.path) {
+                // within a file suites are ordered as declared
+                return 0;
+            }
+            return s1.name.localeCompare(s2.name);
+        });
         return suites;
     }
 

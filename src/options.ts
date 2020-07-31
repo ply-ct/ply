@@ -32,6 +32,12 @@ export interface Options {
      */
     actualLocation?: string;
     /**
+     * Result files live under a similar subpath as request/case files (true).
+     * (eg: Expected result relative to 'expectedLocation' is the same as
+     * request file relative to 'testsLocation').
+     */
+    resultFollowsTestRelativePath?: boolean;
+    /**
      * Log file base dir (this.actualLocation)
      */
     logLocation?: string;
@@ -68,6 +74,7 @@ export interface PlyOptions extends Options {
     excludes: string;
     expectedLocation: string;
     actualLocation: string;
+    resultFollowsTestRelativePath: boolean;
     logLocation?: string;
     verbose: boolean;
     bail: boolean;
@@ -83,6 +90,7 @@ export class Defaults implements PlyOptions {
     excludes = '**/{node_modules,bin,dist,out}/**';
     expectedLocation = this.testsLocation + '/results/expected';
     actualLocation = this.testsLocation + '/results/actual';
+    resultFollowsTestRelativePath = true;
     logLocation = this.actualLocation;
     verbose = false;
     bail = false;
@@ -95,19 +103,19 @@ export class Config {
 
     public options: PlyOptions;
 
-    constructor(private readonly defaults: PlyOptions = new Defaults()) {
+    constructor(private readonly defaults: PlyOptions = new Defaults(), private readonly commandLineOptions = true) {
         const logEqualsActual = defaults.actualLocation === defaults.logLocation;
-        this.options = this.load(defaults);
+        this.options = this.load(defaults, commandLineOptions);
         if (logEqualsActual) {
             // in case yargs adjusted actualLocation per cwd
             this.options.logLocation = this.options.actualLocation;
         }
     }
 
-    private load(defaults: PlyOptions) : PlyOptions {
+    private load(defaults: PlyOptions, commandLineOptions: boolean) : PlyOptions {
         const configPath = findUp.sync(['.plyrc.yaml', '.plyrc.yml', '.plyrc.json'], { cwd: defaults.testsLocation });
         const config = configPath ? this.read(configPath) : {};
-        const options = yargs.config(config).argv;
+        const options = commandLineOptions ? yargs.config(config).argv : { ...config };
         return Object.assign({}, defaults, options);
     }
 
