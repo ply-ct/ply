@@ -135,6 +135,7 @@ export class Suite<T extends Test> {
 
         // runtime values are a deep copy of passed values
         this.runtime.values = JSON.parse(JSON.stringify(values));
+        this.runtime.responseHeaders = undefined;
 
         let callingCaseInfo: CallingCaseInfo | undefined;
         if (this.className) {
@@ -187,6 +188,10 @@ export class Suite<T extends Test> {
                         plyee: new Plyee(this.runtime.options.testsLocation + '/' + this.path, test).path
                     } as PlyEvent );
                 }
+                // determine wanted headers (for requests)
+                if (test.type === 'request') {
+                    this.runtime.responseHeaders = await this.getExpectedResponseHeaders(test.name, callingCaseInfo?.caseName);
+                }
                 result = await (test as unknown as PlyTest).run(this.runtime);
                 let actualYaml: string;
                 if (test.type === 'request') {
@@ -201,7 +206,9 @@ export class Suite<T extends Test> {
                         // status could be 'Not Verified' if runOptions so specify
                         if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/workflow is complete)
+                            // expected yaml is reloaded if !expectedExists and dispensation === CreateExpected
                             const verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
+                            // const verifier = new Verifier(expectedYaml || await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
                             this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
                             const outcome = verifier.verify(actualYaml, this.runtime.values);
                             result = { ...result as Result, ...outcome };
@@ -287,6 +294,22 @@ export class Suite<T extends Test> {
         }
         resultsVal[result.name] = result;
         results.push(result);
+    }
+
+    // TODO: consider caching expected yaml content and possibly loaded obj (since obj is loaded twice for requests)
+    private async getExpectedResponseHeaders(requestName: string, caseName?: string): Promise<string[] | undefined> {
+        const expectedYaml = await this.runtime.results.expected.read();
+        if (expectedYaml) {
+            const expectedObj = yaml.load(this.runtime.results.expected.toString(), expectedYaml);
+            let obj = caseName ? expectedObj[caseName] : expectedObj;
+            if (obj) {
+                obj = obj[requestName];
+            }
+            const response = obj?.response;
+            if (response) {
+                return response.headers ? Object.keys(response.headers) : [];
+            }
+        }
     }
 
     private handleNoExpected(test: T, result: Result, actualYaml: string, isFirst: boolean, runOptions?: RunOptions): Result | undefined {

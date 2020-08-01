@@ -33,7 +33,7 @@ export interface Result extends Outcome {
      */
     readonly request?: Request,
     /**
-     * Response with ignore headers removed, and formatted/sorted body content (per options)
+     * Response maybe with ignore headers removed, and formatted/sorted body content (per options)
      */
     readonly response?: Response
 }
@@ -68,7 +68,7 @@ export class PlyResult implements Result {
             status: this.status,
             message: this.message,
             request: this.request,
-            response: this.response?.getResponse(options, false)
+            response: this.response?.getResponse(options)
         };
     }
 

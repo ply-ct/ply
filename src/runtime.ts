@@ -134,6 +134,10 @@ export class Runtime {
 
     decoratedSuite?: DecoratedSuite;
     values: object = {};
+    /**
+     * Verified response header names.
+     */
+    responseHeaders: string[] | undefined;
 
     constructor(
         readonly locale: string,

@@ -5,9 +5,4 @@ actualLocation: test/ply/results/actual
 requestFiles: '**/*.ply.yaml'
 caseFiles: '**/*.ply.ts'
 
-# these are the headers we care about matching
-responseHeaders:
-  - 'content-type'
-  - location
-
-verbose: true
+verbose: false

@@ -23,14 +23,18 @@ export class PlyResponse implements Response {
     }
 
     /**
-     * Strips ignored headers and orders body object keys unless suppressed.
+     * Orders body object keys unless suppressed by options.  Does not substitute values.
+     * Response header keys are always lowercase
+     * @param runtime runtime context
+     * @param wantedHeaders optional name of headers subset to keep
+     * @param stringBody body object is stringified
      */
-    getResponse(options: Options, stringBody = true): PlyResponse {
-        const headerNames = Object.keys(this.headers).sort();
-        const wanted = options.responseHeaders || headerNames;
+    getResponse(options: Options, wantedHeaders?: string[], stringBody = false): PlyResponse {
+
         const headers: any = {};
-        wanted.forEach(name => {
-            headers[name.toLowerCase()] = this.headers[name];
+        const headerNames = wantedHeaders || Object.keys(this.headers);
+        headerNames.forEach(h => {
+            headers[h.toLowerCase()] = this.headers[h];
         });
 
         let body = this.body;

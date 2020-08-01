@@ -57,11 +57,6 @@ export interface Options {
      * Prettification indent for yaml and response body (2)
      */
     prettyIndent?: number;
-    /**
-     * Response headers to be considered in verifying results, ordered as they should appear in results (['content-type']).
-     * If not specified, all headers are included in output yaml in alphabetical order.
-     */
-    responseHeaders?: string[];
 }
 
 /**
@@ -80,7 +75,6 @@ export interface PlyOptions extends Options {
     bail: boolean;
     responseBodySortedKeys: boolean;
     prettyIndent: number;
-    responseHeaders?: string[];
 }
 
 export class Defaults implements PlyOptions {
@@ -96,7 +90,6 @@ export class Defaults implements PlyOptions {
     bail = false;
     responseBodySortedKeys = true;
     prettyIndent = 2;
-    responseHeaders = ['content-type'];
 }
 
 export class Config {

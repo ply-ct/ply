@@ -145,7 +145,7 @@ export class PlyRequest implements Request, PlyTest {
         const result = new PlyResult(
             this.name,
             requestObject,
-            response.getResponse(runtime.options)
+            response.getResponse(runtime.options, runtime.responseHeaders, true)
         );
         return result;
     }
