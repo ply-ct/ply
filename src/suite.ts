@@ -206,9 +206,7 @@ export class Suite<T extends Test> {
                         // status could be 'Not Verified' if runOptions so specify
                         if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/workflow is complete)
-                            // expected yaml is reloaded if !expectedExists and dispensation === CreateExpected
                             const verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
-                            // const verifier = new Verifier(expectedYaml || await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
                             this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
                             const outcome = verifier.verify(actualYaml, this.runtime.values);
                             result = { ...result as Result, ...outcome };
@@ -227,7 +225,7 @@ export class Suite<T extends Test> {
                     if (result.status === 'Pending') {
                         const verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
                         this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
-                        // NOTE: By using this.runtime.values we're unadvisedly taking advantage the prototype's shared runtime object property
+                        // NOTE: By using this.runtime.values we're unadvisedly taking advantage of the prototype's shared runtime object property
                         // (https://stackoverflow.com/questions/17088635/javascript-object-properties-shared-across-instances).
                         // This allows us to accumulate programmatic values changes like those in updateRating() in movieCrud.ply.ts
                         // so that they can be accessed when verifying here, even though the changes are not present the passed 'values' parameter.
