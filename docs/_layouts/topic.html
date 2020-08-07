@@ -1,0 +1,14 @@
+---
+layout: default
+---
+{% assign navpage = page.url | remove_first: '/' | split: '/' | last | split: '.' | first %}
+<div class="topic">
+  <main class="page-content page-right">
+    {{ content }}
+  </main>
+
+  <nav class="left-nav">
+    {% include topics.html %}
+  </nav>
+  
+</div>
