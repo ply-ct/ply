@@ -8,7 +8,7 @@ export enum LogLevel {
 
 export class LogOptions {
     level: LogLevel = LogLevel.info;
-    prettyIndent: number = 0;
+    prettyIndent?: number = 0;
 }
 
 export class Logger {

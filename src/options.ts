@@ -12,11 +12,11 @@ export interface Options {
      */
     testsLocation?: string;
     /**
-     * Request file(s) glob patterns ('**\/*.{ply.yaml,ply.yml}')
+     * Request file(s) glob patterns ('**\/*.{ply.yaml,ply.yml}') -- relative to testsLocation
      */
     requestFiles?: string;
     /**
-     * Case files(s) glob pattern ('**\/*.ply.ts')
+     * Case files(s) glob pattern ('**\/*.ply.ts') -- relative to testsLocation
      */
     caseFiles?: string;
     /**
@@ -75,6 +75,7 @@ export interface PlyOptions extends Options {
     bail: boolean;
     responseBodySortedKeys: boolean;
     prettyIndent: number;
+    args?: any;
 }
 
 export class Defaults implements PlyOptions {
@@ -96,20 +97,32 @@ export class Config {
 
     public options: PlyOptions;
 
-    constructor(private readonly defaults: PlyOptions = new Defaults(), private readonly commandLineOptions = true) {
+    constructor(private readonly defaults: PlyOptions = new Defaults(), private readonly commandLine = false) {
         const logEqualsActual = defaults.actualLocation === defaults.logLocation;
-        this.options = this.load(defaults, commandLineOptions);
+        this.options = this.load(defaults, commandLine);
         if (logEqualsActual) {
             // in case yargs adjusted actualLocation per cwd
             this.options.logLocation = this.options.actualLocation;
         }
     }
 
-    private load(defaults: PlyOptions, commandLineOptions: boolean) : PlyOptions {
-        const configPath = findUp.sync(['.plyrc.yaml', '.plyrc.yml', '.plyrc.json'], { cwd: defaults.testsLocation });
+    private load(defaults: PlyOptions, commandLine: boolean) : PlyOptions {
+        const configPath = findUp.sync(
+            ['.plyrc.yaml', '.plyrc.yml', '.plyrc.json'], { cwd: defaults.testsLocation });
         const config = configPath ? this.read(configPath) : {};
-        const options = commandLineOptions ? yargs.config(config).argv : { ...config };
-        return Object.assign({}, defaults, options);
+        let options;
+        if (commandLine) {
+            options = yargs
+                .config(config)
+                .usage('Usage: $0 <tests> [options]')
+                .help('help').alias('help', 'h')
+                .argv;
+            options.args = options._;
+            delete options._;
+        } else {
+            options =  { ...config };
+        }
+        return { ...defaults, ...options};
     }
 
     private read(configPath: string): object {
