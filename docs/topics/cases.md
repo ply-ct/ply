@@ -88,4 +88,4 @@ above from the test/cases/ directory.
 In fact, the [ply-ct](https://www.npmjs.com/package/ply-ct) node module has all kinds of capabilities for
 complete API test automation, with or without Ply UI.
 
-Next Topic: [Options](options)
+Next Topic: [CLI](cli)
