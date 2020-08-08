@@ -12,15 +12,15 @@ export interface Options {
      */
     testsLocation?: string;
     /**
-     * Request file(s) glob patterns ('**\/*.{ply.yaml,ply.yml}') -- relative to testsLocation
+     * Request file(s) glob patterns, relative to testsLocation ('**\/*.{ply.yaml,ply.yml}')
      */
     requestFiles?: string;
     /**
-     * Case files(s) glob pattern ('**\/*.ply.ts') -- relative to testsLocation
+     * Case files(s) glob pattern, relative to testsLocation ('**\/*.ply.ts')
      */
     caseFiles?: string;
     /**
-     * Exclude file pattern (['**\/{node_modules,bin,dist,out}\/**'])
+     * Exclude file pattern, relative to testsLocation (['**\/{node_modules,bin,dist,out}\/**'])
      */
     excludes?: string;
     /**
