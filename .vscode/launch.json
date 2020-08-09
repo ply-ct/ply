@@ -7,11 +7,12 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Temp",
+            "name": "cli",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/dist/src/temp.js",
+            "program": "${workspaceFolder}/dist/src/cli.js",
+            // "args": ["/Users/donald/ply/ply/test/ply/requests/m*.yaml"],
             "preLaunchTask": "tsc: build - tsconfig.json",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"

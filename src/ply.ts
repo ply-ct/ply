@@ -85,7 +85,7 @@ export class Ply {
 /**
  * A Plyee is a test (request/case), or a suite.
  *
- * Format: <absolute_suite_file_forward_slashes>#<optional_case_suite>~<test_name>
+ * Format: <absolute_suite_file_forward_slashes>#<optional_case_suite>^<test_name>
  * eg: c:/ply/ply/test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating
  * or: /Users/me/ply/ply/test/ply/cases/movieCrud.ply.ts#movie-crud^add new movie
  * or for a suite: /Users/me/ply/ply/test/ply/requests/movie-queries.ply.yaml
@@ -148,21 +148,29 @@ export class Plyee {
         return this.path;
     }
 
+    static isRequest(path: string): boolean {
+        return path.endsWith('.yml') || path.endsWith('.yaml');
+    }
+
+    static isCase(path: string): boolean {
+        return path.endsWith('.ts');
+    }
+
     /**
      * Maps plyee paths to Plyee by Suite.
      */
     static requests(paths: string[]): Map<string, Plyee[]> {
-        return this.collect(paths, plyee => {
-            return plyee.location.endsWith('.yml') || plyee.location.endsWith('.yaml');
-        });
+        return this.collect(paths, plyee => Plyee.isRequest(plyee.location));
     }
 
     static cases(paths: string[]): Map<string, Plyee[]> {
-        return this.collect(paths, plyee => plyee.location.endsWith('.ts'));
+        return this.collect(paths, plyee => Plyee.isCase(plyee.location));
     }
 
     /**
-     * Returns a map of unique location to Plyee[]
+     * Returns a map of unique suite location to Plyee[]
+     * @param paths test paths
+     * @param test (optional) for matching
      */
     static collect(paths: string[], test?: (plyee: Plyee) => boolean): Map<string, Plyee[]> {
         const map = new Map<string, Plyee[]>();
@@ -180,6 +188,7 @@ export class Plyee {
         return map;
     }
 }
+
 
 /**
  * Utility for executing multiple tests, organized into their respective suites.
@@ -229,5 +238,38 @@ export class Plier extends EventEmitter {
             combined = combined.concat(results);
         }
         return combined;
+    }
+
+    /**
+     * Finds plyees from suites and tests.
+     * @param paths suite/test paths
+     */
+    async find(paths: string[]): Promise<string[]> {
+        const plyees: string[] = [];
+        for (const path of paths) {
+            if (path.indexOf('#') > 0) {
+                plyees.push(path);
+            } else {
+                // suite
+                if (Plyee.isRequest(path)) {
+                    const requestSuite = await this.ply.loadRequestSuite(path);
+                    if (!requestSuite.ignored) {
+                        for (const request of requestSuite) {
+                            plyees.push(this.ply.options.testsLocation + '/' + requestSuite.path + '#' + request.name);
+                        }
+                    }
+                } else if (Plyee.isCase(path)) {
+                    const caseSuites = await this.ply.loadCaseSuites(path);
+                    for (const caseSuite of caseSuites) {
+                        if (!caseSuite.ignored) {
+                            for (const testCase of caseSuite) {
+                                plyees.push(this.ply.options.testsLocation + '/' + caseSuite.path + '#' + testCase.name);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return plyees;
     }
 }

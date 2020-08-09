@@ -112,11 +112,16 @@ export class Config {
         const config = configPath ? this.read(configPath) : {};
         let options;
         if (commandLine) {
-            options = yargs
+            let parsed = yargs
                 .config(config)
                 .usage('Usage: $0 <tests> [options]')
-                .help('help').alias('help', 'h')
-                .argv;
+                .help('help').alias('help', 'h');
+            for (const option of Object.keys(defaults)) {
+                if (typeof (defaults as any)[option] === 'boolean') {
+                    parsed = parsed.boolean(option);
+                }
+            }
+            options = parsed.argv;
             options.args = options._;
             delete options._;
         } else {

@@ -138,36 +138,47 @@ export class Suite<T extends Test> {
         this.runtime.responseHeaders = undefined;
 
         let callingCaseInfo: CallingCaseInfo | undefined;
-        if (this.className) {
-            // running a case suite --
-            // initialize the decorated suite
-            let testFile;
-            if (runOptions?.importCaseModulesFromBuilt && this.outFile) {
-                testFile = this.outFile;
-            }
-            else {
-                testFile = this.runtime.testsLocation.toString() + '/' + this.path;
-            }
-            const mod = await import(testFile);
-            const clsName = Object.keys(mod).find(key => key === this.className);
-            if (!clsName) {
-                throw new Error(`Suite class ${this.className} not found in ${testFile}`);
-            }
-
-            const inst = new mod[clsName]();
-            this.runtime.decoratedSuite = new DecoratedSuite(inst);
-            this.runtime.results.actual.remove();
-        }
-        else {
-            // running a request suite
-            callingCaseInfo = await this.getCallingCaseInfo(runOptions);
-            if (callingCaseInfo) {
-                this.runtime.results = callingCaseInfo.results;
-                this.logger.storage = callingCaseInfo.results.log;
-            }
-            else {
+        try {
+            if (this.className) {
+                // running a case suite --
+                // initialize the decorated suite
+                let testFile;
+                if (runOptions?.importCaseModulesFromBuilt && this.outFile) {
+                    testFile = this.outFile;
+                }
+                else {
+                    testFile = this.runtime.testsLocation.toString() + '/' + this.path;
+                }
+                const mod = await import(testFile);
+                const clsName = Object.keys(mod).find(key => key === this.className);
+                if (!clsName) {
+                    throw new Error(`Suite class ${this.className} not found in ${testFile}`);
+                }
+                const inst = new mod[clsName]();
+                this.runtime.decoratedSuite = new DecoratedSuite(inst);
                 this.runtime.results.actual.remove();
             }
+            else {
+                // running a request suite
+                callingCaseInfo = await this.getCallingCaseInfo(runOptions);
+                if (callingCaseInfo) {
+                    this.runtime.results = callingCaseInfo.results;
+                    this.logger.storage = callingCaseInfo.results.log;
+                }
+                else {
+                    this.runtime.results.actual.remove();
+                }
+            }
+        } catch (err) {
+            // all tests are Errored
+            this.logger.error(err.message, err);
+            const results: Result[] = [];
+            for (const test of tests) {
+                const result = { name: test.name, status: 'Errored', message: '' + err.message } as Result;
+                results.push(result);
+                this.logOutcome(test, result);
+            }
+            return results;
         }
 
         const expectedExists = await this.runtime.results.expected.exists;
@@ -247,7 +258,6 @@ export class Suite<T extends Test> {
                     message: err.message
                 };
                 this.addResult(results, result);
-
                 this.logOutcome(test, result);
             }
 

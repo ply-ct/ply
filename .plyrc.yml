@@ -4,5 +4,7 @@ actualLocation: test/ply/results/actual
 
 requestFiles: '**/*.ply.yaml'
 caseFiles: '**/*.ply.ts'
+# exclude request for negative mocha test
+excludes: 'requests/bad-requests.ply.yaml'
 
 verbose: false
