@@ -15,7 +15,7 @@ Options specified as [command line](cli) arguments override values from the conf
 | **<code>skip</code>**<br>**<code>--skip</code>** | | File pattern for requests/cases/workflows that are loaded but shouldn't be directly executed. The use case for 'skip' is requests that are only meant to be run programmatically from within cases.
 | **<code>expectedLocation</code>**<br>**<code>--expectedLocation</code>** | `testsLocation + "/results/expected"` | Base directory containing expected result files.
 | **<code>actualLocation</code>**<br>**<code>--actualLocation</code>** | `testsLocation + "/results/actual"` | Base directory containing actual result files.
-| **<code>resultFollowsTestRelativePath</code>**<br>**<code>--resultFollowsTestRelativePath</code>** | `true` | Result files live under a similar subpath as request/case files. (eg: Expected result relative to 'expectedLocation' is the same as request file relative to 'testsLocation'). Otherwise results directory structure is flat.
+| **<code>resultFollowsRelativePath</code>**<br>**<code>--resultFollowsRelativePath</code>** | `true` | Result files live under a similar subpath as request/case files. (eg: Expected result relative to 'expectedLocation' is the same as request file relative to 'testsLocation'). Otherwise results directory structure is flat.
 | **<code>logLocation</code>**<br>**<code>--logLocation</code>** | `actualLocation` | Base directory for per-suite log files.
 | **<code>verbose</code>**<br>**<code>--verbose</code>** | `false` | Display debug/verbose logging output.
 | **<code>bail</code>**<br>**<code>--bail</code>** | `false` | Stop execution on first failure.

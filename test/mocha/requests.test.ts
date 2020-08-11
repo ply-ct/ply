@@ -51,7 +51,7 @@ describe('Requests', async () => {
         assert.equal(suite.runtime.results.actual.location.toString(),
             'test/ply/results/actual/requests/movie-queries.yaml');
 
-        ply.options.resultFollowsTestRelativePath = false;
+        ply.options.resultFollowsRelativePath = false;
         suite = await ply.loadRequestSuite('test/ply/requests/movie-queries.ply.yaml');
         assert.equal(suite.runtime.results.expected.location.toString(),
             'test/ply/results/expected/movie-queries.yaml');

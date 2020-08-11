@@ -40,7 +40,7 @@ export interface Options {
      * (eg: Expected result relative to 'expectedLocation' is the same as
      * request file relative to 'testsLocation').
      */
-    resultFollowsTestRelativePath?: boolean;
+    resultFollowsRelativePath?: boolean;
     /**
      * Log file base dir (this.actualLocation)
      */
@@ -74,7 +74,7 @@ export interface PlyOptions extends Options {
     skip: string;
     expectedLocation: string;
     actualLocation: string;
-    resultFollowsTestRelativePath: boolean;
+    resultFollowsRelativePath: boolean;
     logLocation?: string;
     verbose: boolean;
     bail: boolean;
@@ -91,7 +91,7 @@ export class Defaults implements PlyOptions {
     skip = '';
     expectedLocation = this.testsLocation + '/results/expected';
     actualLocation = this.testsLocation + '/results/actual';
-    resultFollowsTestRelativePath = true;
+    resultFollowsRelativePath = true;
     logLocation = this.actualLocation;
     verbose = false;
     bail = false;
@@ -128,7 +128,7 @@ export class Config {
         actualLocation: {
             describe: 'Actual results base dir'
         },
-        resultFollowsTestRelativePath: {
+        resultFollowsRelativePath: {
             describe: 'Results under similar subpath'
         },
         logLocation: {
