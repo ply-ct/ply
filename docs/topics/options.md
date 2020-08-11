@@ -2,38 +2,23 @@
 layout: topic
 ---
 ## Options
+Ply's configuration is defined in a file named plyconfig.json (or plyconfig.yaml or plyconfig.yml).
+This config file is found by searching upward in the file system directory structure, starting from cwd.
+Options specified as [command line](cli) arguments override values from the config file.
 
-This javascript object shows the default values for each ply option.
-These can be overridden programmatically in your tests by passing to the `run()` function:
-```javascript
-var options = {
-  location: ./test,
-  expectedResultLocation: './test/results/expected',
-  resultLocation: './test/results/actual',
-  debug: true,
-  responseHeaders: ['content-type']
-};
-
-request.run(options, values)
-```
-
-### Option Values
-
-| Name | Default |
+| Option | Default |
 | :----- | :------ |
-| **debug** | `false` | Debug logging output
-| **location** | `path.dirname(process.argv[1])` | File system location or URL |
-| **expectedResultLocation** | `[location]/results/expected` | Expected results YAML |
-| **resultLocation** | `[location]/results/actual` | Where to write actual results YAML |
-| **logLocation** | (same as *resultLocation*) | Where logs are written |
-| **localLocation** | (for ply-ui) | Logical path where overrides are saved in browser local storage |
-| **extensions** | `[.request.yaml,postman_collection.json]` | Filename extensions for request files |
-| **responseHeaders** | (all) | Array of validated response headers, in the order they'll appear in result YAML (omitted headers are ignored) |
-| **formatResult** | `true` | Pretty-print and sort keys of JSON body content in results (for comparision vs expected) |
-| **prettyIndent** | `2` | Pretty-print indentation |
-| **retainLog** | `false` | Append to log for each test instead of overwriting |
-| **captureResult** | `true` | Whether test results should be saved (false for pre-script cleanup, etc.) |
-| **retainResult** | `false` | Append to result file instead of overwriting |
-| **qualifyLocations** | `true` | Result and log paths prefixed by group (or can be string for custom) |
-| **overwriteExpected** | `false` | Save actual result as expected result (for initial creation) |
+| **<code>testsLocation</code>**<br>**<code>--testsLocation, -t</code>** | `"."` | Tests base directory. Ply finds requests/cases/workflows under here.
+| **<code>requestFiles</code>**<br>**<code>--requestFiles, -r</code>** | `"**\/*.{ply.yaml,ply.yml}"` | Request files glob pattern, relative to testsLocation.
+| **<code>caseFiles</code>**<br>**<code>--caseFiles, -c</code>** | `"**\/*.ply.ts"` | Case files glob pattern, relative to testsLocation.
+| **<code>ignore</code>**<br>**<code>--ignore</code>** | `"**\/{node_modules,bin,dist,out}\/**"` | File pattern to ignore, relative to testsLocation. Ignored files are not even parsed by Ply.
+| **<code>skip</code>**<br>**<code>--skip</code>** | | File pattern for requests/cases/workflows that are loaded but shouldn't be directly executed. The use case for 'skip' is requests that are only meant to be run programmatically from within cases.
+| **<code>expectedLocation</code>**<br>**<code>--expectedLocation</code>** | `testsLocation + "/results/expected"` | Base directory containing expected result files.
+| **<code>actualLocation</code>**<br>**<code>--actualLocation</code>** | `testsLocation + "/results/actual"` | Base directory containing actual result files.
+| **<code>resultFollowsTestRelativePath</code>**<br>**<code>--resultFollowsTestRelativePath</code>** | `true` | Result files live under a similar subpath as request/case files. (eg: Expected result relative to 'expectedLocation' is the same as request file relative to 'testsLocation'). Otherwise results directory structure is flat.
+| **<code>logLocation</code>**<br>**<code>--logLocation</code>** | `actualLocation` | Base directory for per-suite log files.
+| **<code>verbose</code>**<br>**<code>--verbose</code>** | `false` | Display debug/verbose logging output.
+| **<code>bail</code>**<br>**<code>--bail</code>** | `false` | Stop execution on first failure.
+| **<code>responseBodySortedKeys</code>**<br>**<code>--responseBodySortedKeys</code>** | `true` | Predictable ordering of response body JSON property keys in result files. Usually needed for verification.
+| **<code>prettyIndent</code>**<br>**<code>--prettyIndent</code>** | `2` | JSON format indenting for response body content in result files.
 

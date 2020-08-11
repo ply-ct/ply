@@ -1,0 +1,12 @@
+testsLocation: test/ply
+expectedLocation: test/ply/results/expected
+actualLocation: test/ply/results/actual
+
+requestFiles: '**/*.ply.yaml'
+caseFiles: '**/*.ply.ts'
+# exclude purposely malformed request (used in mocha test)
+ignore: 'requests/bad-requests.ply.yaml'
+# don't run these directly (they're for use by cases)
+skip: 'requests/movies-api.ply.yaml'
+
+verbose: false

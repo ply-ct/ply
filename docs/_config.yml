@@ -1,3 +1,5 @@
 repository: "ply-ct/ply"
 theme: minima
+markdown: kramdown
+highlighter: rouge
 baseurl: /ply

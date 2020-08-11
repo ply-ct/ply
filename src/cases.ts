@@ -8,7 +8,7 @@ import { Retrieval } from './retrieval';
 import { Location } from './location';
 import { ResultPaths, Runtime } from './runtime';
 import { Logger, LogLevel } from './logger';
-import { PlyIgnore } from './ignore';
+import { Skip } from './skip';
 
 interface SuiteDecoration {
     name: string;
@@ -28,7 +28,7 @@ export class CaseLoader {
 
     private program: ts.Program;
     private checker: ts.TypeChecker;
-    private ignore: PlyIgnore;
+    private skip: Skip | undefined;
 
     constructor(
         sourceFiles: string[],
@@ -38,7 +38,9 @@ export class CaseLoader {
         this.program = ts.createProgram(sourceFiles, compileOptions.compilerOptions);
         this.checker = this.program.getTypeChecker();
 
-        this.ignore = new PlyIgnore(options.testsLocation);
+        if (options.skip) {
+            this.skip = new Skip(options.testsLocation, options.skip);
+        }
     }
 
     async load(): Promise<Suite<Case>[]> {
@@ -100,9 +102,9 @@ export class CaseLoader {
                         suite.add(c);
                     }
 
-                    // mark if ignored
-                    if (this.ignore.isExcluded(suite.path)) {
-                        suite.ignored = true;
+                    // mark if skipped
+                    if (this.skip?.isSkipped(suite.path)) {
+                        suite.skip = true;
                     }
 
                     suites.push(suite);

@@ -12,17 +12,21 @@ export interface Options {
      */
     testsLocation?: string;
     /**
-     * Request file(s) glob patterns, relative to testsLocation ('**\/*.{ply.yaml,ply.yml}')
+     * Request files glob pattern, relative to testsLocation ('**\/*.{ply.yaml,ply.yml}')
      */
     requestFiles?: string;
     /**
-     * Case files(s) glob pattern, relative to testsLocation ('**\/*.ply.ts')
+     * Case files glob pattern, relative to testsLocation ('**\/*.ply.ts')
      */
     caseFiles?: string;
     /**
-     * Exclude file pattern, relative to testsLocation (['**\/{node_modules,bin,dist,out}\/**'])
+     * File pattern to ignore, relative to testsLocation ('**\/{node_modules,bin,dist,out}\/**')
      */
-    excludes?: string;
+    ignore?: string;
+    /**
+     * File pattern for requests/cases/workflows that shouldn't be directly executed, relative to testsLocation
+     */
+    skip?: string;
     /**
      * Expected results base dir (testsLocation + '/results/expected')
      */
@@ -66,7 +70,8 @@ export interface PlyOptions extends Options {
     testsLocation: string;
     requestFiles: string;
     caseFiles: string;
-    excludes: string;
+    ignore: string;
+    skip: string;
     expectedLocation: string;
     actualLocation: string;
     resultFollowsTestRelativePath: boolean;
@@ -82,7 +87,8 @@ export class Defaults implements PlyOptions {
     constructor(readonly testsLocation: string = '.') {}
     requestFiles = '**/*.{ply.yaml,ply.yml}';
     caseFiles = '**/*.ply.ts';
-    excludes = '**/{node_modules,bin,dist,out}/**';
+    ignore = '**/{node_modules,bin,dist,out}/**';
+    skip = '';
     expectedLocation = this.testsLocation + '/results/expected';
     actualLocation = this.testsLocation + '/results/actual';
     resultFollowsTestRelativePath = true;
@@ -97,6 +103,51 @@ export class Config {
 
     public options: PlyOptions;
 
+    private yargsOptions: any = {
+        testsLocation: {
+            describe: 'Tests base directory',
+            alias: 't'
+        },
+        requestFiles: {
+            describe: 'Request files glob pattern',
+            alias: 'r'
+        },
+        caseFiles: {
+            describe: 'Case files glob pattern',
+            alias: 'c'
+        },
+        ignore: {
+            describe: 'File patterns to ignore'
+        },
+        skip: {
+            describe: 'File patterns to skip'
+        },
+        expectedLocation: {
+            describe: 'Expected results base dir'
+        },
+        actualLocation: {
+            describe: 'Actual results base dir'
+        },
+        resultFollowsTestRelativePath: {
+            describe: 'Results under similar subpath'
+        },
+        logLocation: {
+            describe: 'Test logs base dir'
+        },
+        verbose: {
+            describe: 'Verbose logging output'
+        },
+        bail: {
+            describe: 'Stop on first failure'
+        },
+        responseBodySortedKeys: {
+            describe: 'Sort response body JSON keys'
+        },
+        prettyIndent: {
+            describe: 'Formats response JSON'
+        }
+    };
+
     constructor(private readonly defaults: PlyOptions = new Defaults(), private readonly commandLine = false) {
         const logEqualsActual = defaults.actualLocation === defaults.logLocation;
         this.options = this.load(defaults, commandLine);
@@ -108,20 +159,31 @@ export class Config {
 
     private load(defaults: PlyOptions, commandLine: boolean) : PlyOptions {
         const configPath = findUp.sync(
-            ['.plyrc.yaml', '.plyrc.yml', '.plyrc.json'], { cwd: defaults.testsLocation });
+            ['plyconfig.yaml', 'plyconfig.yml', 'plyconfig.json'], { cwd: defaults.testsLocation });
         const config = configPath ? this.read(configPath) : {};
         let options;
         if (commandLine) {
-            let parsed = yargs
+            let spec = yargs
                 .config(config)
                 .usage('Usage: $0 <tests> [options]')
-                .help('help').alias('help', 'h');
+                .help('help').alias('help', 'h')
+                .alias('version', 'v');
             for (const option of Object.keys(defaults)) {
-                if (typeof (defaults as any)[option] === 'boolean') {
-                    parsed = parsed.boolean(option);
+                const val = (defaults as any)[option];
+                const type = typeof val;
+                const yargsOption = this.yargsOptions[option];
+                if (yargsOption) {
+                    spec = spec.option(option, {
+                        type,
+                        // default: val, // clutters help output
+                        ...yargsOption
+                    });
+                }
+                if (type === 'boolean') {
+                    spec = spec.boolean(option);
                 }
             }
-            options = parsed.argv;
+            options = spec.argv;
             options.args = options._;
             delete options._;
         } else {

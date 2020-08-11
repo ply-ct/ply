@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="{{ page.lang | default: site.lang | default: "en" }}">
   {% assign navgroup = page.url | remove_first: '/' | split: '/' | first %}
-  
+
   {% include head.html %}
 
   <body>
 
     {% include header.html %}
 
-    {{ content }}    
+    {{ content }}
 
     {% include footer.html %}
 

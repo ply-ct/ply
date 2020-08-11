@@ -14,7 +14,7 @@ div.highlight {
 pre.highlight {
   background-color: #eceff1;
   background: #eceff1;
-  border: 1px solid lightgray;  
+  border: 1px solid lightgray;
   margin-bottom: 15px;
 }
 code {
@@ -36,14 +36,14 @@ th {
 .header {
   max-width: 100%;
   margin-left: 35px;
-  margin-right: 35px;  
+  margin-right: 35px;
 }
 .wrapper {
   max-width: 960px;
   margin-right: auto;
   margin-left: auto;
   padding-right: 30px;
-  padding-left: 30px;  
+  padding-left: 30px;
 }
 .page-content {
   padding: 30px;
@@ -56,7 +56,7 @@ th {
   border-top: 0;
   border-bottom: 0;
   min-height: 55.95px;
-  position: relative;  
+  position: relative;
 }
 .site-link {
   color: #212121;
@@ -70,7 +70,7 @@ th {
 .logo-icon {
   float: left;
   max-width: 100%;
-  vertical-align: middle;  
+  vertical-align: middle;
 }
 .logo {
   float: left;
@@ -78,9 +78,9 @@ th {
   position: relative;
   top: -2px;
   left: -6px;
-  font-size: 32px; 
+  font-size: 32px;
   font-weight: 600;
-  font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';  
+  font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';
 }
 .logo span {
   color: #009999;
@@ -91,7 +91,7 @@ th {
   align-items: center;
   margin-left: 100px;
   margin-top: -3px;
-  line-height: 54px;  
+  line-height: 54px;
 }
 .site-nav a {
   color: #78909c;
@@ -154,7 +154,7 @@ th {
   color: #2aefda;
 }
 .home-col {
-  margin-top:22px;  
+  margin-top:22px;
   font-size: 17px;
   float: left;
   width: 280px;
@@ -220,7 +220,7 @@ th {
   float: right;
   width: calc(100% - 200px);
   min-width: 500px;
-  min-height: 800px;  
+  min-height: 800px;
 }
 .topic {
 	margin: 0 25px;
@@ -240,7 +240,7 @@ th {
   padding: 15px;
   border: 2px solid gray;
   border-radius: 4px;
-  margin-bottom: 15px;  
+  margin-bottom: 15px;
   display: inline-block;
 }
 .top-btn:hover {
@@ -249,4 +249,29 @@ th {
 }
 .top-btn a:hover {
   text-decoration: none;
+}
+.header-link {
+  position: relative;
+  left: 0.5em;
+  opacity: 0;
+  font-size: 0.8em;
+  transition: opacity .3s ease-in;
+}
+h2:hover .header-link,
+h3:hover .header-link,
+h4:hover .header-link,
+h5:hover .header-link,
+h6:hover .header-link {
+  opacity: 1;
+}
+/* only visible to screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }

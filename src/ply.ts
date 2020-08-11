@@ -253,7 +253,7 @@ export class Plier extends EventEmitter {
                 // suite
                 if (Plyee.isRequest(path)) {
                     const requestSuite = await this.ply.loadRequestSuite(path);
-                    if (!requestSuite.ignored) {
+                    if (!requestSuite.skip) {
                         for (const request of requestSuite) {
                             plyees.push(this.ply.options.testsLocation + '/' + requestSuite.path + '#' + request.name);
                         }
@@ -261,7 +261,7 @@ export class Plier extends EventEmitter {
                 } else if (Plyee.isCase(path)) {
                     const caseSuites = await this.ply.loadCaseSuites(path);
                     for (const caseSuite of caseSuites) {
-                        if (!caseSuite.ignored) {
+                        if (!caseSuite.skip) {
                             for (const testCase of caseSuite) {
                                 plyees.push(this.ply.options.testsLocation + '/' + caseSuite.path + '#' + testCase.name);
                             }

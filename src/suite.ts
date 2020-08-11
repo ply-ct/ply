@@ -29,7 +29,7 @@ export class Suite<T extends Test> {
 
     readonly tests: Tests<T> = {};
     emitter?: EventEmitter;
-    ignored = false;
+    skip = false;
 
     /**
      * @param name suite name

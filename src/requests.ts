@@ -5,19 +5,21 @@ import { Retrieval } from './retrieval';
 import { Request, PlyRequest } from './request';
 import { ResultPaths, Runtime } from './runtime';
 import { Logger, LogLevel } from './logger';
-import { PlyIgnore } from './ignore';
+import { Skip } from './skip';
 import * as yaml from './yaml';
 import { lines } from './util';
 
 export class RequestLoader {
 
-    private ignore: PlyIgnore;
+    private skip: Skip | undefined;
 
     constructor(
         readonly locations: string[],
         private options: PlyOptions
     ) {
-        this.ignore = new PlyIgnore(options.testsLocation);
+        if (options.skip) {
+            this.skip = new Skip(options.testsLocation, options.skip);
+        }
     }
 
     async load(): Promise<Suite<Request>[]> {
@@ -75,12 +77,11 @@ export class RequestLoader {
             }
         }
 
-        // mark if ignored
-        if (this.ignore.isExcluded(suite.path)) {
-            suite.ignored = true;
+        // mark if skipped
+        if (this.skip?.isSkipped(suite.path)) {
+            suite.skip = true;
         }
 
         return suite;
     }
-
 }

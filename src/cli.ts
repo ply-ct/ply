@@ -19,7 +19,7 @@ let paths: string[] = [];
 let args: string[] = options.args;
 const globOptions = {
     cwd: options.testsLocation,
-    ignore: options.excludes
+    ignore: options.ignore
 };
 if (args && args.length > 0) {
     // make arg paths relative to tests loc
