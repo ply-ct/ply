@@ -18,8 +18,10 @@ pre.highlight {
   margin-bottom: 15px;
 }
 code {
-  background-color: #eceff1;
+  background-color: transparent;
   font-size: 14px;
+  border: 0;
+  white-space: pre;
 }
 main {
   display: block;
