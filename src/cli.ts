@@ -8,6 +8,9 @@ import { Config, Defaults } from './options';
 import { Logger, LogLevel } from './logger';
 import { Values } from './values';
 import { Location } from  './location';
+import * as tsNode from 'ts-node';
+
+tsNode.register( { transpileOnly: true } );
 
 const options = new Config(new Defaults(), true).options;
 const logger = new Logger({
