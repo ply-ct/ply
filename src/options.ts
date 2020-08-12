@@ -83,21 +83,44 @@ export interface PlyOptions extends Options {
     args?: any;
 }
 
+/**
+ * Locations are lazily inited to reflect bootstrapped testsLocation.
+ */
 export class Defaults implements PlyOptions {
+    private _expectedLocation?: string;
+    private _actualLocation?: string;
+    private _logLocation?: string;
     constructor(readonly testsLocation: string = '.') {}
     requestFiles = '**/*.{ply.yaml,ply.yml}';
     caseFiles = '**/*.ply.ts';
     ignore = '**/{node_modules,bin,dist,out}/**';
     skip = '';
-    expectedLocation = this.testsLocation + '/results/expected';
-    actualLocation = this.testsLocation + '/results/actual';
+    get expectedLocation() {
+        if (!this._expectedLocation) {
+            this._expectedLocation = this.testsLocation + '/results/expected';
+        }
+        return this._expectedLocation;
+    }
+    get actualLocation() {
+        if (!this._actualLocation) {
+            this._actualLocation = this.testsLocation + '/results/actual';
+        }
+        return this._actualLocation;
+    }
+    get logLocation() {
+        if (!this._logLocation) {
+            this._logLocation = this.actualLocation;
+        }
+        return this._logLocation;
+    }
     resultFollowsRelativePath = true;
-    logLocation = this.actualLocation;
     verbose = false;
     bail = false;
     responseBodySortedKeys = true;
     prettyIndent = 2;
 }
+
+export const PLY_CONFIGS = ['plyconfig.yaml', 'plyconfig.yml', 'plyconfig.json'];
 
 export class Config {
 
@@ -148,25 +171,40 @@ export class Config {
         }
     };
 
-    constructor(private readonly defaults: PlyOptions = new Defaults(), private readonly commandLine = false) {
-        const logEqualsActual = defaults.actualLocation === defaults.logLocation;
-        this.options = this.load(defaults, commandLine);
-        if (logEqualsActual) {
-            // in case yargs adjusted actualLocation per cwd
-            this.options.logLocation = this.options.actualLocation;
+    constructor(private readonly defaults: PlyOptions = new Defaults(), commandLine = false, configPath?: string) {
+        this.options = this.load(defaults, commandLine, configPath);
+        if (this.options.testsLocation !== this.defaults.testsLocation) {
+            this.defaults.testsLocation = this.options.testsLocation;
+            // result locations may need priming
+            if (!this.options.expectedLocation) {
+                this.options.expectedLocation = defaults.expectedLocation;
+            }
+            if (!this.options.actualLocation) {
+                this.options.actualLocation = defaults.actualLocation;
+            }
+            if (!this.options.logLocation) {
+                this.options.logLocation = defaults.logLocation;
+            }
         }
     }
 
-    private load(defaults: PlyOptions, commandLine: boolean) : PlyOptions {
-        const configPath = findUp.sync(
-            ['plyconfig.yaml', 'plyconfig.yml', 'plyconfig.json'], { cwd: defaults.testsLocation });
-        const config = configPath ? this.read(configPath) : {};
+    private load(defaults: PlyOptions, commandLine: boolean, configPath?: string) : PlyOptions {
         let options;
         if (commandLine) {
+            // TODO config passed on command line
+            if (!configPath && yargs.argv.config) {
+                configPath = '' + yargs.argv.config;
+                console.debug(`Loading config from ${configPath}`);
+            }
+            if (!configPath) {
+                configPath = findUp.sync(PLY_CONFIGS, { cwd: defaults.testsLocation });
+            }
+            const config = configPath ? this.read(configPath) : {};
             let spec = yargs
                 .config(config)
                 .usage('Usage: $0 <tests> [options]')
                 .help('help').alias('help', 'h')
+                .option('config', { description: 'Ply config location', type: 'string' })
                 .alias('version', 'v');
             for (const option of Object.keys(defaults)) {
                 const val = (defaults as any)[option];
@@ -187,7 +225,10 @@ export class Config {
             options.args = options._;
             delete options._;
         } else {
-            options =  { ...config };
+            if (!configPath) {
+                configPath = findUp.sync(PLY_CONFIGS, { cwd: defaults.testsLocation });
+            }
+            options = configPath ? this.read(configPath) : {};
         }
         return { ...defaults, ...options};
     }

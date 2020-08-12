@@ -8,4 +8,9 @@ TODO: docs here
 
 ### Additional Arguments
 
+TODO:
+  - help
+  - version
+  - config
+
 Next Topic: [Options](options)

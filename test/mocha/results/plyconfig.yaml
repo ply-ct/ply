@@ -1,0 +1,2 @@
+# test config for verifying result locations
+testsLocation: test/mocha/results

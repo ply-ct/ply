@@ -22,3 +22,7 @@ Options specified as [command line](cli) arguments override values from the conf
 | **<code>responseBodySortedKeys</code>**<br>**<code>--responseBodySortedKeys</code>** | `true` | Predictable ordering of response body JSON property keys in result files. Usually needed for verification.
 | **<code>prettyIndent</code>**<br>**<code>--prettyIndent</code>** | `2` | JSON format indenting for response body content in result files.
 
+### Ignored vs Skipped
+Ignored files aren't regarded by Ply at all. To wit, they don't show up in vscode's Test Explorer.
+Skipped files are loaded but not executed. The use case for `skip` is requests that are only meant to be executed programmatically from within cases.
+In ply-demo's plyconfig.json, for example, movies-api.ply.yaml is skipped to prevent direct execution.

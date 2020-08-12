@@ -8,4 +8,5 @@ describe('Options', () => {
         assert.equal(options.testsLocation, 'test/ply');
         assert.equal(options.requestFiles, '**/*.ply.yaml');
     });
+
 });
