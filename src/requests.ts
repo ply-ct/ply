@@ -1,4 +1,3 @@
-import * as osLocale from 'os-locale';
 import { PlyOptions } from './options';
 import { Suite } from './suite';
 import { Retrieval } from './retrieval';
@@ -7,7 +6,7 @@ import { ResultPaths, Runtime } from './runtime';
 import { Logger, LogLevel } from './logger';
 import { Skip } from './skip';
 import * as yaml from './yaml';
-import { lines } from './util';
+import * as util from './util';
 
 export class RequestLoader {
 
@@ -42,7 +41,6 @@ export class RequestLoader {
 
     buildSuite(retrieval: Retrieval, contents: string, resultPaths: ResultPaths): Suite<Request> {
         const runtime = new Runtime(
-            osLocale.sync(),
             this.options,
             retrieval,
             resultPaths
@@ -60,7 +58,7 @@ export class RequestLoader {
             runtime,
             logger,
             0,
-            lines(contents).length - 1
+            util.lines(contents).length - 1
         );
 
         const obj = yaml.load(retrieval.location.path, contents, true);

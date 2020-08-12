@@ -193,7 +193,7 @@ export class Suite<T extends Test> {
             }
             let result: Result;
             try {
-                this.logger.info(`Running ${test.type}: ${test.name}`);
+                this.logger.debug(`Running ${test.type}: ${test.name}`);
                 if (this.emitter) {
                     this.emitter.emit('test', {
                         plyee: new Plyee(this.runtime.options.testsLocation + '/' + this.path, test).path
@@ -218,7 +218,7 @@ export class Suite<T extends Test> {
                         if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/workflow is complete)
                             const verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
-                            this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
+                            this.log.debug(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
                             const outcome = verifier.verify(actualYaml, this.runtime.values);
                             result = { ...result as Result, ...outcome };
                             this.logOutcome(test, outcome);
@@ -235,7 +235,7 @@ export class Suite<T extends Test> {
                     // status could be 'Not Verified' if runOptions so specify
                     if (result.status === 'Pending') {
                         const verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
-                        this.log.info(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
+                        this.log.debug(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
                         // NOTE: By using this.runtime.values we're unadvisedly taking advantage of the prototype's shared runtime object property
                         // (https://stackoverflow.com/questions/17088635/javascript-object-properties-shared-across-instances).
                         // This allows us to accumulate programmatic values changes like those in updateRating() in movieCrud.ply.ts
@@ -446,7 +446,7 @@ export class Suite<T extends Test> {
         if (typeof invocation.__start !== 'undefined') {
             const outcomeLine = invocation.__start;
             if (result.request.submitted) {
-                ymlLines[outcomeLine] += `  # ${timestamp(result.request.submitted, this.runtime.locale)}`;
+                ymlLines[outcomeLine] += `  # ${timestamp(result.request.submitted)}`;
             }
             if (typeof result.response.time !== 'undefined') {
                 const responseMs = result.response.time + ' ms';

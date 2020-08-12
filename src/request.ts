@@ -1,6 +1,6 @@
 import { TestType, Test, PlyTest } from './test';
 import { Response, PlyResponse } from './response';
-import { Logger } from './logger';
+import { Logger, LogLevel } from './logger';
 import { Retrieval } from './retrieval';
 import { Runtime } from './runtime';
 import { PlyResult } from './result';
@@ -139,7 +139,7 @@ export class PlyRequest implements Request, PlyTest {
      */
     async run(runtime: Runtime): Promise<PlyResult> {
         this.submitted = new Date();
-        this.logger.info(`Request '${this.name}' submitted at ${timestamp(this.submitted, runtime.locale)}`);
+        this.logger.info(`Request '${this.name}' submitted at ${timestamp(this.submitted, this.logger.level === LogLevel.debug)}`);
         const requestObject = this.getRequest(runtime.values);
         const response = await this.doSubmit(requestObject);
         const result = new PlyResult(

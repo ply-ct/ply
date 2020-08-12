@@ -1,9 +1,20 @@
+import * as osLocale from 'os-locale';
+
+export function locale() {
+    let locale = osLocale.sync();
+    if (!locale || locale.toLocaleLowerCase() === 'c') {
+        locale = 'en-US';
+    }
+    return locale;
+}
+
 /**
- * turn a date into a timestamp based on a given locale
+ * turn a date into a timestamp based on the OS locale
  */
-export function timestamp(date: Date, locale: string): string {
+export function timestamp(date: Date, withTimeZone = false): string {
     const millis = String(date.getMilliseconds()).padStart(3, '0');
-    return `${date.toLocaleString(locale, { hour12: false })}:${millis}`;
+    const tz = withTimeZone ? date.toTimeString().substring(date.toTimeString().indexOf(' ')) : '';
+    return `${date.toLocaleString(locale(), { hour12: false })}:${millis}${tz}`;
 }
 
 /**

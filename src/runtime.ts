@@ -169,7 +169,6 @@ export class Runtime {
     responseHeaders: string[] | undefined;
 
     constructor(
-        readonly locale: string,
         readonly options: PlyOptions,
         readonly retrieval: Retrieval,
         public results: ResultPaths) {

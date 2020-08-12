@@ -1,5 +1,4 @@
 import * as ts from 'typescript';
-import * as osLocale from 'os-locale';
 import { PlyOptions } from './options';
 import { TsCompileOptions } from './compile';
 import { Suite } from './suite';
@@ -59,7 +58,6 @@ export class CaseLoader {
 
                     const results = await ResultPaths.create(this.options, retrieval, suiteDecoration.name);
                     const runtime = new Runtime(
-                        osLocale.sync(),
                         this.options,
                         retrieval,
                         results

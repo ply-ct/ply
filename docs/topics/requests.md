@@ -46,11 +46,7 @@ Requests can be run via the [CLI](cli), or within Visual Studio Code by installi
 Either way the outcome is the same, but the VS Code extension has a friendlier interface for comparing actual
 vs expected results.
 
-Let's use the CLI to run ply-demo's movie-queries.ply.yaml request suite.  First, install the ply-ct npm package:
-```
-npm install -g ply-ct
-```
-Now clone ply-demo and run the request suite:
+Let's use the CLI to run ply-demo's movie-queries.ply.yaml request suite.  Clone ply-demo and run the request suite:
 ```
 git clone https://github.com/ply-ct/ply-demo.git
 cd ply-demo
@@ -60,18 +56,14 @@ npm run ply -- test/requests/movie-queries.ply.yaml
 In package.json the scripts 'preply' and 'postply' start and stop ply-movies to handle movie-queries REST requests.
 The output indicates that all tests passed:
 ```
-Running request: moviesByYearAndRating
-Request 'moviesByYearAndRating' submitted at 8/7/2020, 17:05:30:189
-Comparing test/ply/results/expected/requests/movie-queries.yaml vs test/ply/results/actual/requests/movie-queries.yaml
+Request 'moviesByYearAndRating' submitted at 8/12/2020, 16:54:53:048
 Test 'moviesByYearAndRating' PASSED
-Running request: movieById
-Request 'movieById' submitted at 8/7/2020, 17:05:30:226
-Comparing test/ply/results/expected/requests/movie-queries.yaml vs test/ply/results/actual/requests/movie-queries.yaml
+Request 'movieById' submitted at 8/12/2020, 16:54:53:100
 Test 'movieById' PASSED
-Running request: moviesQuery
-Request 'moviesQuery' submitted at 8/7/2020, 17:05:30:234
-Comparing test/ply/results/expected/requests/movie-queries.yaml vs test/ply/results/actual/requests/movie-queries.yaml
+Request 'moviesQuery' submitted at 8/12/2020, 16:54:53:107
 Test 'moviesQuery' PASSED
+
+Overall Results: {"Passed":3,"Failed":0,"Errored":0,"Pending":0,"Not Verified":0}
 ```
 To understand what it means for a request to have PASSED, continue on to [Results](results).
 
