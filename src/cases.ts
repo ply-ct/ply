@@ -59,7 +59,7 @@ export class CaseLoader {
 
                     const results = await ResultPaths.create(this.options, retrieval, suiteDecoration.name);
                     const runtime = new Runtime(
-                        await osLocale(),
+                        osLocale.sync(),
                         this.options,
                         retrieval,
                         results
