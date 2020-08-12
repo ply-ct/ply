@@ -22,7 +22,7 @@ For even more powerful matching, results can contain regular expressions:
   headers:
     content-length: ${~[0-9]*} # any number of digits
 ``` 
-(Actually a better way to not care about content-length is to use response header filtering as described under [Options](options).) 
+(Actually a better way to not care about content-length is to use response header filtering as described under [Config](config).) 
 
 In Ply UI, values are applied by selecting their JSON source file like so:
 

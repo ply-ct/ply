@@ -12,7 +12,7 @@ those that are ignored or skipped).
 | :----- | :------ |
 | **<code>--version, -v</code>** | Show version number
 | **<code>--help, -h</code>** | Show help
-| **<code>--config</code>** | Specify path to [plyconfig file](options) (overrides default search mechanism)
+| **<code>--config</code>** | Specify path to [plyconfig file](config) (overrides default search mechanism)
 
 ## Command-Line/Config Options
 {% include_relative _options.md %}
@@ -41,4 +41,4 @@ Run a single case:
 ply "test/cases/movieCrud.ply.ts#add new movie"
 ```
 
-Next Topic: [Options](options)
+Next Topic: [Config](config)
