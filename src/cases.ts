@@ -57,7 +57,7 @@ export class CaseLoader {
                 for (const suiteDecoration of suiteDecorations) {
                     // every suite instance gets its own runtime
 
-                    const results = await ResultPaths.create(this.options, suiteDecoration.name, retrieval);
+                    const results = await ResultPaths.create(this.options, retrieval, suiteDecoration.name);
                     const runtime = new Runtime(
                         await osLocale(),
                         this.options,

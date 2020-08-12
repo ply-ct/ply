@@ -75,7 +75,7 @@ export interface PlyOptions extends Options {
     expectedLocation: string;
     actualLocation: string;
     resultFollowsRelativePath: boolean;
-    logLocation?: string;
+    logLocation: string;
     verbose: boolean;
     bail: boolean;
     responseBodySortedKeys: boolean;

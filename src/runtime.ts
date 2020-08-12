@@ -15,46 +15,75 @@ export class ResultPaths {
     private constructor(
         readonly expected: Retrieval,
         readonly actual: Storage,
-        readonly log?: Storage) { }
+        readonly log: Storage) { }
+
+    /**
+     * excluding file extension
+     */
+    private static bases(options: PlyOptions, retrieval: Retrieval, suiteName: string):
+            { expected: string, actual: string, log: string } {
+
+        if (suiteName.endsWith('.ply')) {
+            suiteName = suiteName.substring(0, suiteName.length - 4);
+        }
+
+        if (options.resultFollowsRelativePath && retrieval.location.isChildOf(options.testsLocation)) {
+            const relPath = retrieval.location.relativeTo(options.testsLocation);
+            const resultFilePath = new Location(relPath).parent + '/' + suiteName;
+            return {
+                expected: options.expectedLocation + '/' + resultFilePath,
+                actual: options.actualLocation + '/' + resultFilePath,
+                log: options.logLocation + '/' + resultFilePath
+            };
+        }
+        else {
+            // flatly use the specified paths
+            return {
+                expected: options.expectedLocation + '/' + suiteName,
+                actual: options.actualLocation + '/' + suiteName,
+                log: options.logLocation + '/' + suiteName
+            };
+        }
+    }
 
     /**
      * Figures out locations and file extensions for results.
      * Result file path relative to configured result location is the same as retrieval relative
      * to configured tests location.
      */
-    static async create(options: PlyOptions, suiteName: string, retrieval: Retrieval): Promise<ResultPaths> {
-
-        let expectedPath;
-        let actualPath;
-        let log;
-
-        if (options.resultFollowsRelativePath && retrieval.location.isChildOf(options.testsLocation)) {
-            const relPath = retrieval.location.relativeTo(options.testsLocation);
-            const resultFilePath = new Location(relPath).parent + '/' + suiteName;
-            expectedPath = options.expectedLocation + '/' + resultFilePath;
-            actualPath = options.actualLocation + '/' + resultFilePath;
-            if (options.logLocation) {
-                log = new Storage(options.logLocation + '/' + resultFilePath + '.log');
-            }
-        }
-        else {
-            // flatly use the specified path
-            expectedPath = options.expectedLocation + '/' + suiteName;
-            actualPath = options.actualLocation + '/' + suiteName;
-            if (options.logLocation) {
-                log = new Storage(options.logLocation + '/' + suiteName + '.log');
-            }
-        }
-
+    static async create(options: PlyOptions, retrieval: Retrieval, suiteName = retrieval.location.base): Promise<ResultPaths> {
+        const basePaths = this.bases(options, retrieval, suiteName);
         let ext = '.yml';
-        if (!await new Retrieval(expectedPath + '.yml').exists) {
-            if ((await new Retrieval(expectedPath + '.yaml').exists) || retrieval.location.ext === 'yaml') {
+        if (!await new Retrieval(basePaths.expected + '.yml').exists) {
+            if ((await new Retrieval(basePaths.expected + '.yaml').exists) || retrieval.location.ext === 'yaml') {
                 ext = '.yaml';
             }
         }
-        const expected = new Retrieval(expectedPath + ext);
-        const actual = new Storage(actualPath + ext);
-        return new ResultPaths(expected, actual, log);
+        return new ResultPaths(
+            new Retrieval(basePaths.expected + ext),
+            new Storage(basePaths.actual + ext),
+            new Storage(basePaths.log + '.log')
+        );
+    }
+
+    /**
+     * Figures out locations and file extensions for results.
+     * Result file path relative to configured result location is the same as retrieval relative
+     * to configured tests location.
+     */
+    static createSync(options: PlyOptions, retrieval: Retrieval, suiteName = retrieval.location.base): ResultPaths {
+        const basePaths = this.bases(options, retrieval, suiteName);
+        let ext = '.yml';
+        if (!new Storage(basePaths.expected + '.yml').exists) {
+            if (new Storage(basePaths.expected + '.yaml').exists || retrieval.location.ext === 'yaml') {
+                ext = '.yaml';
+            }
+        }
+        return new ResultPaths(
+            new Retrieval(basePaths.expected + ext),
+            new Storage(basePaths.actual + ext),
+            new Storage(basePaths.log + '.log')
+        );
     }
 
     /**

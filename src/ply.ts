@@ -50,6 +50,35 @@ export class Ply {
     }
 
     /**
+     * Load request suites.
+     * @param locations can be URLs or file paths
+     */
+    loadRequestsSync(location: string): Suite<Request>[];
+    loadRequestsSync(...locations: string[]): Suite<Request>[];
+    loadRequestsSync(locations: string[], ...moreLocations: string[]): Suite<Request>[];
+    loadRequestsSync(locations: string | string[], ...moreLocations: string[]): Suite<Request>[] {
+        if (typeof locations === 'string') {
+            locations = [locations];
+        }
+        if (moreLocations) {
+            locations = locations.concat(moreLocations);
+        }
+        const requestLoader = new RequestLoader(locations, this.options);
+        return requestLoader.sync();
+    }
+
+    /**
+     * Throws if location or suite not found
+     */
+    loadRequestSuiteSync(location: string): Suite<Request> {
+        const requestSuites = this.loadRequestsSync([location]);
+        if (requestSuites.length === 0) {
+            throw new Error(`No request suite found in: ${location}`);
+        }
+        return requestSuites[0];
+    }
+
+    /**
      * Throws if location or suite not found
      */
     async loadCaseSuites(location: string): Promise<Suite<Case>[]> {
@@ -62,6 +91,10 @@ export class Ply {
 
     async loadSuite(location: string): Promise<Suite<Request>> {
         return await this.loadRequestSuite(location);
+    }
+
+    loadSuiteSync(location: string): Suite<Request> {
+        return this.loadRequestSuiteSync(location);
     }
 
     async loadCases(file: string): Promise<Suite<Case>[]>;

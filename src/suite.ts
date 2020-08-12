@@ -404,7 +404,7 @@ export class Suite<T extends Test> {
                     source = relLoc.parent + '/' + relLoc.base + '.ts';
                 }
 
-                const results = await ResultPaths.create(this.runtime.options, suiteName, new Retrieval(source));
+                const results = await ResultPaths.create(this.runtime.options, new Retrieval(source), suiteName);
 
                 return { results, suiteName, caseName };
             }

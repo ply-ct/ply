@@ -31,24 +31,21 @@ export class RequestLoader {
         return suites;
     }
 
-    async loadSuite(retrieval: Retrieval): Promise<Suite<Request>> {
-
-        const contents = await retrieval.read();
-        if (!contents) {
-            throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
+    sync(): Suite<Request>[] {
+        const suites = [];
+        for (const location of this.locations) {
+            suites.push(this.syncSuite(new Retrieval(location)));
         }
+        suites.sort((s1, s2) => s1.name.localeCompare(s2.name));
+        return suites;
+    }
 
-        let suiteName = retrieval.location.base;
-        if (suiteName.endsWith('.ply')) {
-            suiteName = suiteName.substring(0, suiteName.length - 4);
-        }
-        const results = await ResultPaths.create(this.options, suiteName, retrieval);
-
+    buildSuite(retrieval: Retrieval, contents: string, resultPaths: ResultPaths): Suite<Request> {
         const runtime = new Runtime(
-            await osLocale(),
+            osLocale.sync(),
             this.options,
             retrieval,
-            results
+            resultPaths
         );
 
         const logger = new Logger({
@@ -83,5 +80,23 @@ export class RequestLoader {
         }
 
         return suite;
+    }
+
+    async loadSuite(retrieval: Retrieval): Promise<Suite<Request>> {
+        const contents = await retrieval.read();
+        if (!contents) {
+            throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
+        }
+        const resultPaths = await ResultPaths.create(this.options, retrieval);
+        return this.buildSuite(retrieval, contents, resultPaths);
+    }
+
+    syncSuite(retrieval: Retrieval): Suite<Request> {
+        const contents = retrieval.sync();
+        if (!contents) {
+            throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
+        }
+        const resultPaths = ResultPaths.createSync(this.options, retrieval);
+        return this.buildSuite(retrieval, contents, resultPaths);
     }
 }
