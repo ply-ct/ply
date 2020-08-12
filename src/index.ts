@@ -2,8 +2,8 @@ import { Ply } from './ply';
 
 export { Ply, Plyee, Plier } from './ply';
 export { Test } from './test';
-export { Request as Request } from './request';
-export { Case as Case } from './case';
+export { Request } from './request';
+export { Case } from './case';
 export { Location } from './location';
 export { Logger } from './logger';
 export { Options, PlyOptions, Defaults, Config, PLY_CONFIGS } from './options';
