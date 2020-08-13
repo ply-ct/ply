@@ -1,4 +1,5 @@
-#Ply
+# Ply
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ply-ct/ply/ply%20ci)
 
 ## REST API Automated Testing
 
