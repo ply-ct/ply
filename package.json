@@ -30,7 +30,7 @@
     "build": "tsc",
     "start-movies": "./node_modules/ply-movies/dist/cli.js start &",
     "pretest": "npm run start-movies",
-    "mocha": "mocha --require ts-node/register test/mocha/**/*.ts",
+    "mocha": "mocha --require ts-node/register --bail test/mocha/**/*.ts",
     "ply": "dist/src/cli.js",
     "stop-movies": "./node_modules/ply-movies/dist/cli.js stop",
     "test": "npm-run-all mocha ply stop-movies --continue-on-error"
