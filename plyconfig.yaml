@@ -10,3 +10,8 @@ ignore: 'requests/bad-requests.ply.yaml'
 skip: 'requests/movies-api.ply.yaml'
 
 verbose: false
+
+valuesFiles:
+  - test/ply/values/global.json
+  - test/ply/values/localhost.json
+

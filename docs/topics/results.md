@@ -5,6 +5,22 @@ layout: topic
 When you run a test in Ply, it generates results in [YAML](http://yaml.org/) format.  After execution, here's 
 what the Result tab looks like for [`GET movies/{id}`](https://ply-ct.com/ui/requests/movies-api/GET/movies/{id}):
 
+
+
+The examples illustrate how values are referenced in result YAML using JavaScript 
+[template literal expressions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) syntax:
+```yaml
+request:
+  url: '${base-url}/movies/${id}' # comments are ignored
+``` 
+For even more powerful matching, results can contain regular expressions: 
+```yaml
+  headers:
+    content-length: ${~[0-9]*} # any number of digits
+``` 
+
+
+
 !['GET movies/id' result](../img/get-movies-id-result.png)
 
 The green highlights indicate successful matching of runtime [Values](values).  Mismatches would cause the test to fail

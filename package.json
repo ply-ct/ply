@@ -15,8 +15,9 @@
     "url": "git+https://github.com/ply-ct/ply.git"
   },
   "keywords": [
-    "REST",
-    "Continuous Testing"
+    "REST APIs",
+    "Continuous Testing",
+    "Automated Testing"
   ],
   "author": "Donald Oakes",
   "license": "MIT",
