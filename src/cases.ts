@@ -64,7 +64,7 @@ export class CaseLoader {
                     );
 
                     const logger = new Logger({
-                        level: this.options.verbose ? LogLevel.debug : LogLevel.info,
+                        level: this.options.verbose ? LogLevel.debug : (this.options.quiet ? LogLevel.error : LogLevel.info),
                         prettyIndent: this.options.prettyIndent
                     }, runtime.results.log);
 

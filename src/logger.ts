@@ -28,7 +28,7 @@ export class Logger {
     }
 
     log(level: LogLevel, message: string, obj: any) {
-        if (level <= (this.options.level || LogLevel.info)) {
+        if (level <= this.options.level) {
             if (level === LogLevel.error) {
                 if (obj) {
                     if (obj.stack) {

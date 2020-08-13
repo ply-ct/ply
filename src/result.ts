@@ -21,6 +21,9 @@ export interface Outcome {
      */
     diff?: string
     diffs?: Diff[]
+
+    start?: number
+    end?: number
 }
 
 export interface Result extends Outcome {

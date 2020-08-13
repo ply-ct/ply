@@ -8,31 +8,31 @@ import * as yaml from './yaml';
  */
 export interface Options {
     /**
-     * Tests base directory ('.')
+     * Tests base directory ('.').
      */
     testsLocation?: string;
     /**
-     * Request files glob pattern, relative to testsLocation ('**\/*.{ply.yaml,ply.yml}')
+     * Request files glob pattern, relative to testsLocation ('**\/*.{ply.yaml,ply.yml}').
      */
     requestFiles?: string;
     /**
-     * Case files glob pattern, relative to testsLocation ('**\/*.ply.ts')
+     * Case files glob pattern, relative to testsLocation ('**\/*.ply.ts').
      */
     caseFiles?: string;
     /**
-     * File pattern to ignore, relative to testsLocation ('**\/{node_modules,bin,dist,out}\/**')
+     * File pattern to ignore, relative to testsLocation ('**\/{node_modules,bin,dist,out}\/**').
      */
     ignore?: string;
     /**
-     * File pattern for requests/cases/workflows that shouldn't be directly executed, relative to testsLocation
+     * File pattern for requests/cases/workflows that shouldn't be directly executed, relative to testsLocation.
      */
     skip?: string;
     /**
-     * Expected results base dir (testsLocation + '/results/expected')
+     * Expected results base dir (testsLocation + '/results/expected').
      */
     expectedLocation?: string;
     /**
-     * Actual results base dir (this.testsLocation + '/results/actual')
+     * Actual results base dir (this.testsLocation + '/results/actual').
      */
     actualLocation?: string;
     /**
@@ -42,7 +42,7 @@ export interface Options {
      */
     resultFollowsRelativePath?: boolean;
     /**
-     * Log file base dir (this.actualLocation)
+     * Log file base dir (this.actualLocation).
      */
     logLocation?: string;
     /**
@@ -50,19 +50,23 @@ export interface Options {
      */
     valuesFiles?: string[];
     /**
-     * Verbose output (false)
+     * Verbose output (false). Takes precedence over 'quiet' if both are true.
      */
     verbose?: boolean;
     /**
-     * Bail on first failure (false)
+     * The opposite of 'verbose' (false).
+     */
+    quiet?: boolean;
+    /**
+     * Bail on first failure (false).
      */
     bail?: boolean;
     /**
-     * Predictable ordering of response body JSON property keys -- needed for verification (true)
+     * Predictable ordering of response body JSON property keys -- needed for verification (true).
      */
     responseBodySortedKeys?: boolean;
     /**
-     * Prettification indent for yaml and response body (2)
+     * Prettification indent for yaml and response body (2).
      */
     prettyIndent?: number;
 }
@@ -121,6 +125,7 @@ export class Defaults implements PlyOptions {
     resultFollowsRelativePath = true;
     valuesFiles = [];
     verbose = false;
+    quiet = false;
     bail = false;
     responseBodySortedKeys = true;
     prettyIndent = 2;
@@ -164,10 +169,14 @@ export class Config {
             describe: 'Test logs base dir'
         },
         valuesFiles: {
-            describe: 'List of JSON values files'
+            describe: 'Values files (comma-separated)',
+            type: 'string'
         },
         verbose: {
-            describe: 'Verbose logging output'
+            describe: 'Much output (supersedes \'quiet\')'
+        },
+        quiet: {
+            describe: 'Opposite of \'verbose\''
         },
         bail: {
             describe: 'Stop on first failure'
@@ -176,24 +185,22 @@ export class Config {
             describe: 'Sort response body JSON keys'
         },
         prettyIndent: {
-            describe: 'Formats response JSON'
+            describe: 'Format response JSON'
         }
     };
 
     constructor(private readonly defaults: PlyOptions = new Defaults(), commandLine = false, configPath?: string) {
         this.options = this.load(defaults, commandLine, configPath);
-        if (this.options.testsLocation !== this.defaults.testsLocation) {
-            this.defaults.testsLocation = this.options.testsLocation;
-            // result locations may need priming
-            if (!this.options.expectedLocation) {
-                this.options.expectedLocation = defaults.expectedLocation;
-            }
-            if (!this.options.actualLocation) {
-                this.options.actualLocation = defaults.actualLocation;
-            }
-            if (!this.options.logLocation) {
-                this.options.logLocation = defaults.logLocation;
-            }
+        this.defaults.testsLocation = this.options.testsLocation;
+        // result locations may need priming
+        if (!this.options.expectedLocation) {
+            this.options.expectedLocation = defaults.expectedLocation;
+        }
+        if (!this.options.actualLocation) {
+            this.options.actualLocation = defaults.actualLocation;
+        }
+        if (!this.options.logLocation) {
+            this.options.logLocation = defaults.logLocation;
         }
     }
 
@@ -215,7 +222,7 @@ export class Config {
                 .help('help').alias('help', 'h')
                 .option('config', { description: 'Ply config location', type: 'string' })
                 .alias('version', 'v');
-            for (const option of Object.keys(defaults)) {
+            for (const option of Object.keys(this.yargsOptions)) {
                 const val = (defaults as any)[option];
                 const type = typeof val;
                 const yargsOption = this.yargsOptions[option];
@@ -231,6 +238,9 @@ export class Config {
                 }
             }
             options = spec.argv;
+            if (typeof options.valuesFiles === 'string') {
+                options.valuesFiles = options.valuesFiles.split(',').map(v => v.trim());
+            }
             options.args = options._;
             delete options._;
         } else {

@@ -30,6 +30,7 @@ export class Values {
                 this.logger.debug(`Values file not found: ${path.normalize(path.resolve(location))}`);
             }
         }
+        this.logger.debug('Values (excluding) PLY_VALUES env var)', values);
         const envValues = process.env[PLY_VALUES];
         if (envValues) {
             try {

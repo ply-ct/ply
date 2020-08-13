@@ -188,6 +188,7 @@ export class Suite<T extends Test> {
         // within a suite, tests are run sequentially
         for (let i = 0; i < tests.length; i++) {
             const test = tests[i];
+            const start = Date.now();
             if (test.type === 'case' || test.type === 'workflow') {
                 this.runtime.results.actual.append(test.name + ':\n');
             }
@@ -219,7 +220,7 @@ export class Suite<T extends Test> {
                             // verify request result (otherwise wait until case/workflow is complete)
                             const verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
                             this.log.debug(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
-                            const outcome = verifier.verify(actualYaml, this.runtime.values);
+                            const outcome = { ...verifier.verify(actualYaml, this.runtime.values), start };
                             result = { ...result as Result, ...outcome };
                             this.logOutcome(test, outcome);
                         }
@@ -241,7 +242,7 @@ export class Suite<T extends Test> {
                         // This allows us to accumulate programmatic values changes like those in updateRating() in movieCrud.ply.ts
                         // so that they can be accessed when verifying here, even though the changes are not present the passed 'values' parameter.
                         // TODO: Revisit when implementing a comprehensive values specification mechanism.
-                        const outcome = verifier.verify(actualYaml, this.runtime.values);
+                        const outcome = { ...verifier.verify(actualYaml, this.runtime.values), start };
                         result = { ...result as Result, ...outcome };
                         this.logOutcome(test, outcome);
                     }
@@ -255,7 +256,8 @@ export class Suite<T extends Test> {
                 result = {
                     name: test.name,
                     status: 'Errored',
-                    message: err.message
+                    message: err.message,
+                    start
                 };
                 this.addResult(results, result);
                 this.logOutcome(test, result);
@@ -349,18 +351,20 @@ export class Suite<T extends Test> {
     }
 
     private logOutcome(test: Test, outcome: Outcome) {
+        outcome.end = Date.now();
+        const ms = outcome.start ? ` in ${outcome.end - outcome.start} ms` : '';
         if (outcome.status === 'Passed') {
-            this.logger.info(`Test '${test.name}' PASSED`);
+            this.logger.info(`Test '${test.name}' PASSED${ms}`);
         }
         else if (outcome.status === 'Failed') {
             const diff = outcome.diff ? '\n' + outcome.diff : '';
-            this.logger.error(`Test '${test.name}' FAILED: ${outcome.message}${diff}`);
+            this.logger.error(`Test '${test.name}' FAILED${ms}: ${outcome.message}${diff}`);
         }
         else if (outcome.status === 'Errored') {
-            this.logger.error(`Test '${test.name}' ERRORED: ${outcome.message}`);
+            this.logger.error(`Test '${test.name}' ERRORED${ms}: ${outcome.message}`);
         }
         else if (outcome.status === 'Not Verified') {
-            this.logger.error(`Test '${test.name}' NOT VERIFIED: ${outcome.message}`);
+            this.logger.error(`Test '${test.name}' NOT VERIFIED${ms}: ${outcome.message}`);
         }
         if (this.emitter) {
             this.emitter.emit('outcome', {

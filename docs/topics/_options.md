@@ -11,7 +11,8 @@
 | **<code>resultFollowsRelativePath</code>**<br>**<code>--resultFollowsRelativePath</code>** | `true` | Result files live under a similar subpath as request/case files (eg: expected result relative to 'expectedLocation' is the same as request/case file relative to 'testsLocation'). Otherwise results directory structure is flat.
 | **<code>logLocation</code>**<br>**<code>--logLocation</code>** | `actualLocation` | Base directory for per-suite log files.
 | **<code>valuesFiles</code>**<br>**<code>--valuesFiles</code>** | | JSON files containing Ply values. Array in plyconfig, one comma-separated argument on the command line.
-| **<code>verbose</code>**<br>**<code>--verbose</code>** | `false` | Display debug/verbose logging output.
+| **<code>verbose</code>**<br>**<code>--verbose</code>** | `false` | Display debug/verbose logging output. Takes precedence over 'quiet' if both are true.
+| **<code>quiet</code>**<br>**<code>--quiet</code>** | `false` | The opposite of 'verbose'. Only error/status output is logged.
 | **<code>bail</code>**<br>**<code>--bail</code>** | `false` | Stop execution on first failure.
 | **<code>responseBodySortedKeys</code>**<br>**<code>--responseBodySortedKeys</code>** | `true` | Predictable ordering of response body JSON property keys in result files. Usually needed for verification.
 | **<code>prettyIndent</code>**<br>**<code>--prettyIndent</code>** | `2` | JSON format indenting for response body content in result files.

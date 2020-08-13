@@ -10,11 +10,13 @@ import { Values } from './values';
 import { Location } from  './location';
 import * as tsNode from 'ts-node';
 
+const start = Date.now();
+
 tsNode.register( { transpileOnly: true } );
 
 const options = new Config(new Defaults(), true).options;
 const logger = new Logger({
-    level: options.verbose ? LogLevel.debug : LogLevel.info,
+    level: options.verbose ? LogLevel.debug : (options.quiet ? LogLevel.error : LogLevel.info),
     prettyIndent: options.prettyIndent
 });
 
@@ -68,7 +70,8 @@ plier.find(paths).then(plyees => {
         plier.run(plyees, values, runOptions).then(results => {
             const res = { Passed: 0, Failed: 0, Errored: 0, Pending: 0, 'Not Verified': 0 };
             results.forEach(result => res[result.status]++);
-            logger.info('\nOverall Results: ' + JSON.stringify(res));
+            logger.error('\nOverall Results: ' + JSON.stringify(res));
+            logger.info(`Overall Time: ${Date.now() - start} ms`);
             if (res.Failed || res.Errored) {
                 process.exit(1);
             }
