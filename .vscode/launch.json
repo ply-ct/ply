@@ -12,7 +12,6 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/dist/src/cli.js",
-            // "args": ["/Users/donald/ply/ply/test/ply/requests/m*.yaml"],
             "preLaunchTask": "tsc: build - tsconfig.json",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"

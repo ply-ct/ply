@@ -135,9 +135,9 @@ describe('Requests', async () => {
     it('can run plyees', async () => {
         const plier = new Plier();
         const results = await plier.run([
-            '/Users/donald/ply/ply/test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating',
-            '/Users/donald/ply/ply/test/ply/requests/movie-queries.ply.yaml#movieById',
-            '/Users/donald/ply/ply/test/ply/requests/movie-queries.ply.yaml#moviesQuery'
+            'test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating',
+            'test/ply/requests/movie-queries.ply.yaml#movieById',
+            'test/ply/requests/movie-queries.ply.yaml#moviesQuery'
           ], values);
         assert.equal(results[0].status, 'Passed');
         assert.equal(results[0].message, 'Test succeeded');

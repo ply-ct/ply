@@ -128,9 +128,9 @@ describe('Cases', async () => {
     it('can run plyees', async () => {
         const plier = new Plier();
         const results = await plier.run([
-            '/Users/donald/ply/ply/test/ply/cases/movieCrud.ply.ts#add new movie',
-            '/Users/donald/ply/ply/test/ply/cases/movieCrud.ply.ts#update rating',
-            '/Users/donald/ply/ply/test/ply/cases/movieCrud.ply.ts#remove movie'
+            'test/ply/cases/movieCrud.ply.ts#add new movie',
+            'test/ply/cases/movieCrud.ply.ts#update rating',
+            'test/ply/cases/movieCrud.ply.ts#remove movie'
           ], values);
         assert.equal(results[0].status, 'Passed');
         assert.equal(results[0].message, 'Test succeeded');
