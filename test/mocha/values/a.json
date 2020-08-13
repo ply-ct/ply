@@ -1,0 +1,8 @@
+{
+  "obj": {
+    "file": "a.json"
+  },
+  "foo": "bar",
+  "baseUrl": "http://localhost:8080/movies",
+  "year": 2020
+}

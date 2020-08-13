@@ -46,6 +46,10 @@ export interface Options {
      */
     logLocation?: string;
     /**
+     * Files containing values JSON.
+     */
+    valuesFiles?: string[];
+    /**
      * Verbose output (false)
      */
     verbose?: boolean;
@@ -76,6 +80,7 @@ export interface PlyOptions extends Options {
     actualLocation: string;
     resultFollowsRelativePath: boolean;
     logLocation: string;
+    valuesFiles: string[];
     verbose: boolean;
     bail: boolean;
     responseBodySortedKeys: boolean;
@@ -114,6 +119,7 @@ export class Defaults implements PlyOptions {
         return this._logLocation;
     }
     resultFollowsRelativePath = true;
+    valuesFiles = [];
     verbose = false;
     bail = false;
     responseBodySortedKeys = true;
@@ -156,6 +162,9 @@ export class Config {
         },
         logLocation: {
             describe: 'Test logs base dir'
+        },
+        valuesFiles: {
+            describe: 'List of JSON values files'
         },
         verbose: {
             describe: 'Verbose logging output'

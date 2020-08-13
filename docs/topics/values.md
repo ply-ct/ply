@@ -46,7 +46,18 @@ So in `valuesFiles` from ply-demo's [plyconfig.json](https://github.com/ply-ct/p
   ]
 }
 ```
-same-named properties from auth.json superseded those from localhost.json, which supersede those from global.json.
+same-named properties from auth.json supersede those from localhost.json, which supersede those from global.json.
+
+As with other Ply options, `valuesFiles` specified on the command line or VS Code settings take precedence over the `valuesFiles` array in plyconfig.
+No merging is performed among values objects provided by these separate methods. For example, if you run `ply --valuesFiles "a.json, b.json"`, then
+only a.json and b.json will be considered (not any files designated in plyconfig).
+
+Values files that are specified but not present on the file system are simply ignored and no error is thrown.
+
+### Environment Variable
+Values are also read from environment variable PLY_VALUES, which should be in JSON format. Values from PLY_VALUES are merged with (and take 
+precedence over) values files designated in whichever of the other methods you employ. This enables you to keep secrets for containerized/cloud
+deployments in PLY_VALUES, while using the file-based method for non-secrets.
 
 ## Runtime Values
 As discussed previously under [Results](results#runtime-values), values are automatically supplemented with request/response objects from previous requests

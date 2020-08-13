@@ -62,8 +62,7 @@ paths = paths.map(p => {
 const plier = new Plier(options);
 plier.find(paths).then(plyees => {
     logger.debug('Plyees', plyees);
-    // TODO values (does not work for ply-demo)
-    new Values(['./test/values/localhost.json']).read().then(values => {
+    new Values(options.valuesFiles, logger).read().then(values => {
         // TODO run options
         const runOptions = undefined;
         plier.run(plyees, values, runOptions).then(results => {

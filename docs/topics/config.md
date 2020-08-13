@@ -4,7 +4,8 @@ layout: topic
 ## Config
 Ply's configuration is defined in a file named plyconfig.json (or plyconfig.yaml or plyconfig.yml).
 This config file is found by searching upward in the file system directory structure, starting from cwd.
-Options specified as [command line](cli) arguments override values from the config file.
+Options specified as [command line](cli) arguments override values from the config file. The overall
+order of precedence for Ply options is (from highest to highest).
 
 ## Options
 {% include_relative _options.md %}
