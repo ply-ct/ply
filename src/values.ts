@@ -15,7 +15,7 @@ export class Values {
         private readonly logger: Logger
     ) { }
 
-    async read(): Promise<any> {
+    async read(extras?: object): Promise<any> {
         let values = {};
         for (const location of this.locations) {
             const contents = await new Retrieval(location).read();
@@ -30,7 +30,7 @@ export class Values {
                 this.logger.debug(`Values file not found: ${path.normalize(path.resolve(location))}`);
             }
         }
-        this.logger.debug('Values (excluding) PLY_VALUES env var)', values);
+        this.logger.debug('Values (excluding PLY_VALUES env var)', values);
         const envValues = process.env[PLY_VALUES];
         if (envValues) {
             try {
@@ -39,6 +39,9 @@ export class Values {
             } catch (err) {
                 throw new Error(`Cannot parse ${PLY_VALUES} (${err.message})`);
             }
+        }
+        if (extras) {
+            values = deepmerge(values, extras);
         }
         return values;
     }

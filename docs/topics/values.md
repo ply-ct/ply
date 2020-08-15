@@ -76,6 +76,8 @@ Furthermore, in Ply [Cases](cases) you can programmatically add runtime values y
     }
 ```
 Before submitting 'updateMovie', this test adds values for "id" (from the previous response), and also for "rating".
-These changes are cumulative, so subsequent tests can modify values as needed for downstream requests. 
+These changes are cumulative, so subsequent tests can modify values as needed for downstream requests.
+
+**Note:** Runtime value objects must be serializable as JSON.
 
 Next Topic: [Cases](cases)

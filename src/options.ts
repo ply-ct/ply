@@ -86,6 +86,7 @@ export interface PlyOptions extends Options {
     logLocation: string;
     valuesFiles: string[];
     verbose: boolean;
+    quiet: boolean;
     bail: boolean;
     responseBodySortedKeys: boolean;
     prettyIndent: number;
@@ -205,7 +206,7 @@ export class Config {
     }
 
     private load(defaults: PlyOptions, commandLine: boolean, configPath?: string) : PlyOptions {
-        let options;
+        let opts: any;
         if (commandLine) {
             // TODO config passed on command line
             if (!configPath && yargs.argv.config) {
@@ -237,19 +238,27 @@ export class Config {
                     spec = spec.boolean(option);
                 }
             }
-            options = spec.argv;
-            if (typeof options.valuesFiles === 'string') {
-                options.valuesFiles = options.valuesFiles.split(',').map(v => v.trim());
+            opts = spec.argv;
+            if (typeof opts.valuesFiles === 'string') {
+                opts.valuesFiles = opts.valuesFiles.split(',').map((v: string) => v.trim());
             }
-            options.args = options._;
-            delete options._;
+            opts.args = opts._;
+            delete opts._;
         } else {
             if (!configPath) {
                 configPath = findUp.sync(PLY_CONFIGS, { cwd: defaults.testsLocation });
             }
-            options = configPath ? this.read(configPath) : {};
+            opts = configPath ? this.read(configPath) : {};
         }
-        return { ...defaults, ...options};
+        let options = { ...defaults, ...opts};
+        // clean up garbage keys added by yargs, and private defaults
+        options = Object.keys(options).reduce((obj: any, key) => {
+            if (key.length > 1 && key.indexOf('_') === -1 && key.indexOf('-') === -1) {
+                obj[key] = options[key];
+            }
+            return obj;
+        }, {});
+        return options;
     }
 
     private read(configPath: string): object {

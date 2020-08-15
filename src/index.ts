@@ -5,7 +5,7 @@ export { Test } from './test';
 export { Request } from './request';
 export { Case } from './case';
 export { Location } from './location';
-export { Logger } from './logger';
+export { Logger, LogLevel } from './logger';
 export { Options, PlyOptions, Defaults, Config, PLY_CONFIGS } from './options';
 export { Retrieval } from './retrieval';
 export { Storage } from './storage';

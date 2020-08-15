@@ -10,7 +10,10 @@ import { RequestLoader } from './requests';
 import { Result } from './result';
 import { RunOptions } from './runtime';
 import { TsCompileOptions } from './compile';
+import { Logger, LogLevel } from './logger';
+import { Values } from './values';
 import * as util from './util';
+import deepmerge = require('deepmerge');
 
 export class Ply {
 
@@ -225,19 +228,36 @@ export class Plyee {
 
 /**
  * Utility for executing multiple tests, organized into their respective suites.
+ * Used by both CLI and vscode-ply.
  */
 export class Plier extends EventEmitter {
-    private ply: Ply;
+    private readonly ply: Ply;
+    /**
+     * general purpose logger not associated with suite (goes to console)
+     */
+    readonly logger: Logger;
+
     constructor(options?: Options) {
         super({ captureRejections: true });
+
         this.ply = new Ply(options);
+        this.logger = new Logger({
+            level: this.ply.options.verbose ? LogLevel.debug : (this.ply.options.quiet ? LogLevel.error : LogLevel.info),
+            prettyIndent: this.ply.options.prettyIndent
+        });
     }
 
     /**
      * Plyees should be test paths (not suites).
      */
-    async run(plyees: string[], values: object, runOptions?: RunOptions): Promise<Result[]> {
+    async run(plyees: string[], extraValues?: object, runOptions?: RunOptions): Promise<Result[]> {
+        this.logger.debug('Options', this.ply.options);
+
+        const values = await new Values(this.ply.options.valuesFiles, this.logger).read(extraValues);
+        this.logger.debug('Values', this.logger);
+
         const promises: Promise<Result[]>[] = [];
+
         // requests
         for (const [loc, requestPlyee] of Plyee.requests(plyees)) {
             const tests = requestPlyee.map(plyee => {

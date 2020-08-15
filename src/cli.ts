@@ -15,10 +15,7 @@ const start = Date.now();
 tsNode.register( { transpileOnly: true } );
 
 const options = new Config(new Defaults(), true).options;
-const logger = new Logger({
-    level: options.verbose ? LogLevel.debug : (options.quiet ? LogLevel.error : LogLevel.info),
-    prettyIndent: options.prettyIndent
-});
+const plier = new Plier(options);
 
 let paths: string[] = [];
 let args: string[] = options.args;
@@ -34,7 +31,7 @@ if (args && args.length > 0) {
             if (argLoc.isChildOf(options.testsLocation)) {
                 return argLoc.relativeTo(options.testsLocation);
             } else {
-                logger.error(`WARNING: ${arg} is not under testsLocation ${options.testsLocation}`);
+                plier.logger.error(`WARNING: ${arg} is not under testsLocation ${options.testsLocation}`);
             }
             return arg;
         });
@@ -61,28 +58,23 @@ paths = paths.map(p => {
     return path.isAbsolute(p) ? p : options.testsLocation + path.sep + p;
 });
 
-const plier = new Plier(options);
 plier.find(paths).then(plyees => {
-    logger.debug('Plyees', plyees);
-    new Values(options.valuesFiles, logger).read().then(values => {
-        // TODO run options
-        const runOptions = undefined;
-        plier.run(plyees, values, runOptions).then(results => {
-            const res = { Passed: 0, Failed: 0, Errored: 0, Pending: 0, 'Not Verified': 0 };
-            results.forEach(result => res[result.status]++);
-            logger.error('\nOverall Results: ' + JSON.stringify(res));
-            logger.info(`Overall Time: ${Date.now() - start} ms`);
-            if (res.Failed || res.Errored) {
-                process.exit(1);
-            }
-        }).catch(err => {
-            logger.error(err);
-        });
+    plier.logger.debug('Plyees', plyees);
+    // TODO run options
+    const runOptions = undefined;
+    plier.run(plyees, {}, runOptions).then(results => {
+        const res = { Passed: 0, Failed: 0, Errored: 0, Pending: 0, 'Not Verified': 0 };
+        results.forEach(result => res[result.status]++);
+        plier.logger.error('\nOverall Results: ' + JSON.stringify(res));
+        plier.logger.info(`Overall Time: ${Date.now() - start} ms`);
+        if (res.Failed || res.Errored) {
+            process.exit(1);
+        }
     }).catch(err => {
-        logger.error(err);
+        plier.logger.error(err);
     });
 }).catch(err => {
-    logger.error(err);
+    plier.logger.error(err);
 });
 
 
