@@ -201,7 +201,7 @@ export class Config {
             this.options.actualLocation = defaults.actualLocation;
         }
         if (!this.options.logLocation) {
-            this.options.logLocation = defaults.logLocation;
+            this.options.logLocation = this.options.actualLocation;
         }
     }
 
