@@ -3,7 +3,6 @@ import { Ply, Plier } from '../../src/ply';
 import { Config } from '../../src/options';
 import { PlyRequest } from '../../src/request';
 import { Storage } from '../../src/storage';
-import { NoExpectedResultDispensation } from '../../src/runtime';
 
 const values = {
     baseUrl: 'http://localhost:3000/movies',
@@ -161,14 +160,14 @@ describe('Requests', async () => {
     it('honors NoVerify', async () => {
         const ply = new Ply({
             ...new Config().options,
-            // expected results don't live here -- triggering NoExpectedResultDispensation
+            // expected results don't live here
             expectedLocation: 'test/mocha/results/expected',
             actualLocation: 'test/mocha/results/actual'
         });
 
         const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');
         const suite = suites[0];
-        const runOptions = { noExpectedResult: NoExpectedResultDispensation.NoVerify };
+        const runOptions = { noVerify: true };
         const results = await suite.run(values, runOptions);
 
         assert.equal(results[0].status, 'Not Verified');
@@ -179,14 +178,14 @@ describe('Requests', async () => {
     it('honors CreateExpected', async () => {
         const ply = new Ply({
             ...new Config().options,
-            // expected results don't live here -- triggering NoExpectedResultDispensation
+            // expected results don't live here
             expectedLocation: 'test/mocha/results/expected',
             actualLocation: 'test/mocha/results/actual'
         });
 
         const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');
         const suite = suites[0];
-        const runOptions = { noExpectedResult: NoExpectedResultDispensation.CreateExpected };
+        const runOptions = { createExpected: true };
         const results = await suite.run(values, runOptions);
 
         assert.equal(results[0].status, 'Passed');

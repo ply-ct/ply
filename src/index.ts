@@ -11,7 +11,7 @@ export { Retrieval } from './retrieval';
 export { Storage } from './storage';
 export { Suite } from './suite';
 export { PlyEvent, SuiteEvent, OutcomeEvent } from './event';
-export { RunOptions, NoExpectedResultDispensation } from './runtime';
+export { RunOptions } from './runtime';
 export { Diff } from './compare';
 export { Code } from './code';
 export { suite, test, before, after } from './decorators';

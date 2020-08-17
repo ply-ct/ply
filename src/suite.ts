@@ -3,7 +3,7 @@ import { Result, Outcome, Verifier, PlyResult } from './result';
 import { Location } from './location';
 import { Storage } from './storage';
 import { Logger } from './logger';
-import { Runtime, RunOptions, DecoratedSuite, ResultPaths, CallingCaseInfo, NoExpectedResultDispensation } from './runtime';
+import { Runtime, RunOptions, DecoratedSuite, ResultPaths, CallingCaseInfo } from './runtime';
 import { SUITE, TEST, RESULTS } from './names';
 import { Retrieval } from './retrieval';
 import * as yaml from './yaml';
@@ -143,7 +143,7 @@ export class Suite<T extends Test> {
                 // running a case suite --
                 // initialize the decorated suite
                 let testFile;
-                if (runOptions?.importCaseModulesFromBuilt && this.outFile) {
+                if (runOptions?.useDist && this.outFile) {
                     testFile = this.outFile;
                 }
                 else {
@@ -181,7 +181,6 @@ export class Suite<T extends Test> {
             return results;
         }
 
-        const expectedExists = await this.runtime.results.expected.exists;
         let resultsStartLine = 0;
 
         const results: Result[] = [];
@@ -212,9 +211,7 @@ export class Suite<T extends Test> {
                     actualYaml = this.buildResultYaml(plyResult, indent);
                     this.runtime.results.actual.append(actualYaml);
                     if (!callingCaseInfo) {
-                        if (!expectedExists) {
-                            result = this.handleNoExpected(test, result, actualYaml, i === 0, runOptions) || result;
-                        }
+                        result = this.handleResultRunOptions(test, result, actualYaml, i === 0, runOptions) || result;
                         // status could be 'Not Verified' if runOptions so specify
                         if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/workflow is complete)
@@ -230,9 +227,7 @@ export class Suite<T extends Test> {
                 else {
                     // case/workflow run complete -- verify result
                     actualYaml = this.runtime.results.getActualYaml(test.name);
-                    if (!expectedExists) {
-                        result = this.handleNoExpected(test, result, actualYaml, i === 0, runOptions) || result;
-                    }
+                    result = this.handleResultRunOptions(test, result, actualYaml, i === 0, runOptions) || result;
                     // status could be 'Not Verified' if runOptions so specify
                     if (result.status === 'Pending') {
                         const verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
@@ -322,9 +317,8 @@ export class Suite<T extends Test> {
         }
     }
 
-    private handleNoExpected(test: T, result: Result, actualYaml: string, isFirst: boolean, runOptions?: RunOptions): Result | undefined {
-        const dispensation = runOptions?.noExpectedResult;
-        if (dispensation === NoExpectedResultDispensation.NoVerify) {
+    private handleResultRunOptions(test: T, result: Result, actualYaml: string, isFirst: boolean, runOptions?: RunOptions): Result | undefined {
+        if (runOptions?.noVerify) {
             const res = {
                 name: test.name,
                 status: 'Not Verified',
@@ -335,7 +329,7 @@ export class Suite<T extends Test> {
             this.logOutcome(test, res);
             return res;
         }
-        else if (dispensation === NoExpectedResultDispensation.CreateExpected) {
+        if (runOptions?.createExpected) {
             if (this.runtime.results.expected.location.isUrl) {
                 throw new Error('Dispensation CreatedExpected not supported for remote results');
             }
@@ -401,7 +395,7 @@ export class Suite<T extends Test> {
                 const caseName = mth[TEST].name;
 
                 let source = element.file;
-                if (runOptions?.importCaseModulesFromBuilt || !source) {
+                if (runOptions?.useDist || !source) {
                     // Note: this doesn't work with ts compiler option outFile (relies on outDir)
                     const outDir = new TsCompileOptions(this.runtime.options).outDir;
                     const relLoc = new Location(new Location(element.file).relativeTo(outDir));

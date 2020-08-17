@@ -157,6 +157,11 @@ export class Config {
         skip: {
             describe: 'File patterns to skip'
         },
+        exercise: {
+            describe: 'Send requests but don\'t verify results',
+            alias: 'x',
+            type: 'boolean'
+        },
         expectedLocation: {
             describe: 'Expected results base dir',
             type: 'string' // avoid premature reading of default
@@ -184,6 +189,14 @@ export class Config {
         },
         bail: {
             describe: 'Stop on first failure'
+        },
+        create: {
+            describe: 'Create expected result from actual',
+            type: 'boolean'
+        },
+        useDist: {
+            describe: 'Load cases from dist instead of source',
+            type: 'boolean'
         },
         responseBodySortedKeys: {
             describe: 'Sort response body JSON keys'

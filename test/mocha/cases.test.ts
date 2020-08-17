@@ -8,7 +8,6 @@ import { PlyCase } from '../../src/case';
 import { Runtime } from '../../src/runtime';
 import { Storage } from '../../src/storage';
 import { UnnamedSuite } from './suites';
-import { NoExpectedResultDispensation } from '../../src/runtime';
 
 const values = {
     baseUrl: 'http://localhost:3000/movies'
@@ -143,7 +142,7 @@ describe('Cases', async () => {
     it('can handle error', async () => {
         const ply = new Ply({
             ...new Config().options,
-            // real expected results don't live here -- triggering NoExpectedResultDispensation
+            // real expected results don't live here
             expectedLocation: 'test/mocha/results/expected',
             actualLocation: 'test/mocha/results/actual'
         });
@@ -160,14 +159,14 @@ describe('Cases', async () => {
     it('honors NoVerify', async () => {
         const ply = new Ply({
             ...new Config().options,
-            // real expected results don't live here -- triggering NoExpectedResultDispensation
+            // real expected results don't live here
             expectedLocation: 'test/mocha/results/expected',
             actualLocation: 'test/mocha/results/actual'
         });
 
         const suites = await ply.loadCases(['test/ply/cases/movieCrud.ply.ts']);
         const suite = suites[0];
-        const runOptions = { noExpectedResult: NoExpectedResultDispensation.NoVerify };
+        const runOptions = { noVerify: true };
         const results = await suite.run(values, runOptions);
 
         assert.equal(results[0].status, 'Not Verified');

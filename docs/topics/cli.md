@@ -13,6 +13,9 @@ those that are ignored or skipped).
 | **<code>--version, -v</code>** | Show version number
 | **<code>--help, -h</code>** | Show help
 | **<code>--config</code>** | Specify path to [plyconfig file](config) (overrides default search mechanism)
+| **<code>--exercise, -x</code>** | Submit requests but don't verify actual results against expected (ad hoc run)
+| **<code>--create</code>** | Create expected result file from actual responses
+| **<code>--useDist</code>** | Import case modules from build output (eg dist) instead of from TypeScript sources
 
 ## Command-Line/Config Options
 {% include_relative _options.md %}

@@ -127,31 +127,19 @@ export type CallingCaseInfo = {
 
 export interface RunOptions {
     /**
-     * How to handle missing expected result file(s).
+     * Run test requests but don't verify outcomes.
      */
-    noExpectedResult?: NoExpectedResultDispensation
+    noVerify?: boolean
+    /**
+     * Create expected from actual and verify based on that.
+     */
+    createExpected?: boolean
     /**
      * Import case suite modules from generated .js instead of .ts source (default = false).
      * This runOption needs to be set in your case's calls to Suite.run (for requests),
      * and also in originating the call to Suite.run (for the case(s)).
      */
-    importCaseModulesFromBuilt?: boolean
-}
-
-export enum NoExpectedResultDispensation {
-    /**
-     * Proceed and verify (let test fail).
-     * This is the default behavior if not specified.
-     */
-    Proceed = 1,
-    /**
-     * Run test requests but don't verify outcomes.
-     */
-    NoVerify = 2,
-    /**
-     * Create expected from actual and verify based on that.
-     */
-    CreateExpected = 3
+    useDist?: boolean
 }
 
 /**
