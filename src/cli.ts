@@ -5,8 +5,6 @@ import * as path from 'path';
 import * as glob from 'glob';
 import { Plier } from './ply';
 import { Config, Defaults } from './options';
-import { Logger, LogLevel } from './logger';
-import { Values } from './values';
 import { Location } from  './location';
 import * as tsNode from 'ts-node';
 

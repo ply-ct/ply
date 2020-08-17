@@ -158,16 +158,19 @@ export class Config {
             describe: 'File patterns to skip'
         },
         expectedLocation: {
-            describe: 'Expected results base dir'
+            describe: 'Expected results base dir',
+            type: 'string' // avoid premature reading of default
         },
         actualLocation: {
-            describe: 'Actual results base dir'
+            describe: 'Actual results base dir',
+            type: 'string' // avoid premature reading of default
         },
         resultFollowsRelativePath: {
             describe: 'Results under similar subpath'
         },
         logLocation: {
-            describe: 'Test logs base dir'
+            describe: 'Test logs base dir',
+            type: 'string' // avoid premature reading of default
         },
         valuesFiles: {
             describe: 'Values files (comma-separated)',
@@ -224,16 +227,17 @@ export class Config {
                 .option('config', { description: 'Ply config location', type: 'string' })
                 .alias('version', 'v');
             for (const option of Object.keys(this.yargsOptions)) {
-                const val = (defaults as any)[option];
-                const type = typeof val;
                 const yargsOption = this.yargsOptions[option];
-                if (yargsOption) {
-                    spec = spec.option(option, {
-                        type,
-                        // default: val, // clutters help output
-                        ...yargsOption
-                    });
+                let type = yargsOption.type;
+                if (!type) {
+                    // infer from default
+                    type = typeof (defaults as any)[option];
                 }
+                spec = spec.option(option, {
+                    type,
+                    // default: val, // clutters help output
+                    ...yargsOption
+                });
                 if (type === 'boolean') {
                     spec = spec.boolean(option);
                 }
