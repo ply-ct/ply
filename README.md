@@ -4,7 +4,6 @@
 ## REST API Automated Testing
 
 ## Contents
-
   - [Installation](#installation)
   - [Usage](#usage)
   - [Demo](#demo)
