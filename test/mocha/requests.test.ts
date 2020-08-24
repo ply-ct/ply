@@ -122,7 +122,6 @@ describe('Requests', async () => {
                 repository: 'ply'
             }
         });
-        console.log("VALUES:::: " + JSON.stringify(vals, null, 2));
 
         const result = await suite.run('repositoryTopicsQuery', vals);
         assert.equal(result.status, 'Passed');

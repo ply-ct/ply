@@ -52,16 +52,4 @@ describe('yaml', () => {
         assert.equal(obj['baz'].__start, 17);
         assert.equal(obj['baz'].__end, 18);
     });
-
-    it('loads folded text correctly', () => {
-        const file = 'notes/temp.yaml';
-        const yml = fs.readFileSync(file, 'utf-8');
-        const obj = jsYaml.safeLoad(yml, { filename: file });
-
-        console.log("FOLDED: " + obj.foldedText);
-
-        console.log("UNFOLDED: " + obj.nonFoldedText);
-
-    });
-
 });
