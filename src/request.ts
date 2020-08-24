@@ -3,6 +3,7 @@ import { Response, PlyResponse } from './response';
 import { Logger, LogLevel } from './logger';
 import { Retrieval } from './retrieval';
 import { Runtime } from './runtime';
+import { Options } from './options';
 import { PlyResult } from './result';
 import { timestamp } from './util';
 import * as subst from './subst';
@@ -11,7 +12,7 @@ export interface Request extends Test {
     url: string;
     method: string;
     headers: {[key: string]: string};
-    body?: any;
+    body?: string;
     submitted?: Date;
     submit(values: object): Promise<Response>;
 }
@@ -21,10 +22,11 @@ export class PlyRequest implements Request, PlyTest {
     readonly url: string;
     readonly method: string;
     readonly headers: {[key: string]: string};
-    readonly body?: any;
+    readonly body?: string;
     readonly start?: number;
     readonly end?: number;
     submitted?: Date;
+    graphQl?: string; // retain substituted but unjsonified query
 
     /**
      * @param name test name
@@ -60,6 +62,14 @@ export class PlyRequest implements Request, PlyTest {
         }
     }
 
+    get isGraphQl(): boolean {
+        if (this.body) {
+            return this.body.startsWith('query')
+              || this.body.startsWith('mutation');
+        }
+        return false;
+    }
+
     get fetch(): any {
         if (typeof window === 'undefined') {
             return require('node-fetch');
@@ -73,10 +83,9 @@ export class PlyRequest implements Request, PlyTest {
      * Call submit() to send the request without producing actual results
      * or comparing with expected.  Useful for cleaning up or restoring
      * REST resources before/after testing (see Case.before()/after()).
-     * @param values
      */
-    async submit(values: object): Promise<Response> {
-        return await this.doSubmit(this.getRequest(values));
+    async submit(values: object, options?: Options): Promise<Response> {
+        return await this.doSubmit(this.getRequest(values, options));
     }
 
     private async doSubmit(requestObj: Request): Promise<PlyResponse> {
@@ -99,7 +108,7 @@ export class PlyRequest implements Request, PlyTest {
     /**
      * Request object with substituted values
      */
-    private getRequest(values: object): Request {
+    private getRequest(values: object, options?: Options): Request {
         const url = subst.replace(this.url, values, this.logger);
         if (!url.startsWith('http://') && !url.startsWith('https://')) {
             throw new Error('Invalid url: ' + url);
@@ -112,13 +121,24 @@ export class PlyRequest implements Request, PlyTest {
         for (const key of Object.keys(this.headers)) {
             headers[key] = subst.replace(this.headers[key], values, this.logger);
         }
+
+        let body = this.body;
+        if (body) {
+            body = subst.replace(body, values, this.logger);
+            if (this.isGraphQl) {
+                // graphql
+                this.graphQl = body;
+                body = JSON.stringify({ query: body }, null, options?.prettyIndent);
+            }
+        }
+
         return {
             name: this.name,
             type: this.type,
             url,
             method,
             headers,
-            body: this.body ? subst.replace(this.body, values, this.logger) : undefined,
+            body,
             submitted: this.submitted,
             submit: () => { throw new Error('Not implemented'); }
          };
@@ -141,13 +161,16 @@ export class PlyRequest implements Request, PlyTest {
     async run(runtime: Runtime): Promise<PlyResult> {
         this.submitted = new Date();
         this.logger.info(`Request '${this.name}' submitted at ${timestamp(this.submitted, this.logger.level === LogLevel.debug)}`);
-        const requestObject = this.getRequest(runtime.values);
+        const requestObject = this.getRequest(runtime.values, runtime.options);
         const response = await this.doSubmit(requestObject);
         const result = new PlyResult(
             this.name,
             requestObject,
             response.getResponse(runtime.options, runtime.responseHeaders, true)
         );
+        if (this.graphQl) {
+            result.graphQl = this.graphQl;
+        }
         return result;
     }
 }

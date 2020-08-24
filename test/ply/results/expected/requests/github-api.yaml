@@ -31,7 +31,20 @@ repositoryTopicsQuery:
     headers:
       Content-Type: application/json
       User-Agent: ply-ct
-    body: '{ "query": "query { repository(owner:\\"${github.organization}\\", name:\\"${github.repository}\\") { repositoryTopics(last:20) { edges { node { topic { name } } } } } }" }'
+    body: |-
+      query {
+        repository(owner: "${github.organization}", name: "${github.repository}") {
+          repositoryTopics(first: 10) {
+            edges {
+              node {
+                topic {
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
   response:
     status:
       code: 200

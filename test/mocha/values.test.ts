@@ -42,13 +42,17 @@ describe('Values', () => {
 
     it('should honor PLY_VALUES', async () => {
 
+        const prevValues = process.env.PLY_VALUES;
         process.env.PLY_VALUES = '{ "rating": 1, "baseUrl": "http://localhost/movies" }';
-
         const values = await new Values(options.valuesFiles, logger).read();
+        if (prevValues) {
+            process.env.PLY_VALUES = prevValues;
+        }
 
         assert.equal(values.baseUrl, 'http://localhost/movies');
         assert.equal(values.year, 1931);
         assert.equal(values.rating, 1);
         assert.equal(values.query, 'year=1935&rating=>4&sort=rating&descending=true');
+
     });
 });

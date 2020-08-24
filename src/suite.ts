@@ -415,6 +415,9 @@ export class Suite<T extends Test> {
     private buildResultYaml(result: PlyResult, indent: number): string {
 
         const { name: _name, type: _type, submitted: _submitted, ...leanRequest } = result.request;
+        if (result.graphQl) {
+            leanRequest.body = result.graphQl;  // restore graphQl for better comparisons
+        }
         const { time: _time, ...leanResponse } = result.response;
 
         let invocationObject = {

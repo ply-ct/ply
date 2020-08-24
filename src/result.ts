@@ -44,11 +44,12 @@ export interface Result extends Outcome {
 export class PlyResult implements Result {
 
     status: 'Pending' | 'Passed' | 'Failed' | 'Errored' | 'Not Verified' = 'Pending';
-    message: string = '';
-    line: number = 0;
+    message = '';
+    line = 0;
     diff?: string;
     request: Request;
     response: PlyResponse;
+    graphQl?: string;
 
     constructor(readonly name: string, request: Request, response: PlyResponse) {
         this.request = { ... request };

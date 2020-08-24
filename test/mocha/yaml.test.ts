@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as assert from 'assert';
+import * as jsYaml from 'js-yaml';
 import * as yaml from '../../src/yaml';
 import { Retrieval } from '../../src/retrieval';
 
@@ -50,6 +51,17 @@ describe('yaml', () => {
         assert.equal(obj['bar'].__end, 14);
         assert.equal(obj['baz'].__start, 17);
         assert.equal(obj['baz'].__end, 18);
+    });
+
+    it('loads folded text correctly', () => {
+        const file = 'notes/temp.yaml';
+        const yml = fs.readFileSync(file, 'utf-8');
+        const obj = jsYaml.safeLoad(yml, { filename: file });
+
+        console.log("FOLDED: " + obj.foldedText);
+
+        console.log("UNFOLDED: " + obj.nonFoldedText);
+
     });
 
 });

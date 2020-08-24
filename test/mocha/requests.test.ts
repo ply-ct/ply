@@ -3,6 +3,7 @@ import { Ply, Plier } from '../../src/ply';
 import { Config } from '../../src/options';
 import { PlyRequest } from '../../src/request';
 import { Storage } from '../../src/storage';
+import { Values } from '../../src/values';
 
 const values = {
     baseUrl: 'http://localhost:3000/movies',
@@ -109,6 +110,23 @@ describe('Requests', async () => {
         const suite = (await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml'))[0];
         const result = await suite.run('movieById', values);
         assert.equal(result.status, 'Errored');
+    });
+
+    it('can handle graphql', async () => {
+        const ply = new Ply();
+        const suites = await ply.loadRequests('test/ply/requests/github-api.ply.yaml');
+        const suite = suites[0];
+        const vals = await new Values([], suite.logger).read({
+            github: {
+                organization: 'ply-ct',
+                repository: 'ply'
+            }
+        });
+        console.log("VALUES:::: " + JSON.stringify(vals, null, 2));
+
+        const result = await suite.run('repositoryTopicsQuery', vals);
+        assert.equal(result.status, 'Passed');
+        assert.equal(result.message, 'Test succeeded');
     });
 
     it('can iterate suite', async () => {

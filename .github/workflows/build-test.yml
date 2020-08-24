@@ -10,6 +10,8 @@ on:
 jobs:
   build-test:
     runs-on: ubuntu-latest
+    env:
+      PLY_VALUES: ${{ secrets.PLY_VALUES }}
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
