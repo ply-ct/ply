@@ -3,8 +3,6 @@
 
 ## REST API Automated Testing
 
-* * *
-
 ## Contents
 
   - [Installation](#installation)
@@ -12,8 +10,6 @@
   - [Demo](#demo)
   - [Documentation](#documentation)
   - [VS Code Extension](#vs-code-extension)
-
-* * *
 
 ## Installation
 ```sh
@@ -31,11 +27,11 @@ TODO
 TODO
 
 ## Documentation
-TODO
+TODO  
 https://ply-ct.github.io/ply/topics/requests
 
 ## VS Code Extension
-TODO
+TODO  
 https://github.com/ply-ct/vscode-ply
 
 
