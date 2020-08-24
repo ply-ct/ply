@@ -3,6 +3,40 @@
 
 ## REST API Automated Testing
 
-## Reappearing Very Soon
-Ply's revamp is almost complete.  Check back in a week or two for updated docs.
+* * *
+
+## Contents
+
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [Demo](#demo)
+  - [Documentation](#documentation)
+  - [VS Code Extension](#vs-code-extension)
+
+* * *
+
+## Installation
+```sh
+npm install ply-ct --save-dev
+```
+Or, to run from anywhere:
+```sh
+npm install -g ply-ct
+```
+
+## Usage
+TODO
+
+## Demo
+TODO
+
+## Documentation
+TODO
+https://ply-ct.github.io/ply/topics/requests
+
+## VS Code Extension
+TODO
+https://github.com/ply-ct/vscode-ply
+
+
 

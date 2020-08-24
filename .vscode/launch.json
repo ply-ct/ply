@@ -12,7 +12,16 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/dist/src/cli.js",
-            "args": ["test/ply/requests/github-api.ply.yaml#repositoryTopicsQuery"],
+            "args": [
+                "--testsLocation",
+                "../ply-demo/test",
+                "--expectedLocation",
+                "../ply-demo/test/results/expected",
+                "--actualLocation",
+                "../ply-demo/test/results/actual",
+                "../ply-demo/test/requests/github-api.ply.yaml#findRepositoryId",
+                "../ply-demo/test/requests/github-api.ply.yaml#starRepository"
+            ],
             "preLaunchTask": "tsc: build - tsconfig.json",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"
