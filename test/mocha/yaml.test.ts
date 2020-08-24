@@ -36,7 +36,7 @@ describe('yaml', () => {
         const obj = yaml.load(file, yml, true);
 
         assert.equal(obj['aSingle'].__start, 0);
-        assert.equal(obj['aSingle'].__end, 10);
+        assert.equal(obj['aSingle'].__end, 9);
     });
 
     it('assigns line nums of mixed objs', () => {

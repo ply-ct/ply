@@ -8,7 +8,7 @@ export interface Status {
 
 export interface Response {
     status: Status;
-    headers: any;
+    headers: {[key: string]: string};
     body?: any;
     time?: number;
 }
@@ -17,7 +17,7 @@ export class PlyResponse implements Response {
 
     constructor(
         readonly status: Status,
-        readonly headers: any,
+        readonly headers: {[key: string]: string},
         readonly body?: any,
         readonly time?: number) {
     }

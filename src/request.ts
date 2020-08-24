@@ -10,7 +10,7 @@ import * as subst from './subst';
 export interface Request extends Test {
     url: string;
     method: string;
-    headers: any;
+    headers: {[key: string]: string};
     body?: any;
     submitted?: Date;
     submit(values: object): Promise<Response>;
@@ -20,7 +20,7 @@ export class PlyRequest implements Request, PlyTest {
     readonly type = 'request' as TestType;
     readonly url: string;
     readonly method: string;
-    readonly headers: any;
+    readonly headers: {[key: string]: string};
     readonly body?: any;
     readonly start?: number;
     readonly end?: number;
@@ -82,12 +82,10 @@ export class PlyRequest implements Request, PlyTest {
     private async doSubmit(requestObj: Request): Promise<PlyResponse> {
 
         const before = new Date().getTime();
-        this.logger.debug('Request', requestObj);
+        const { Authorization: _auth, ...loggedHeaders } = requestObj.headers;
+        this.logger.debug('Request', { ...requestObj, headers: loggedHeaders });
 
         const { url: _url, ...fetchRequest } = requestObj;
-        if (this.headers.Authorization) {
-            (fetchRequest.headers as any).Authorization = this.headers.Authorization;
-        }
         const response = await this.fetch(requestObj.url, fetchRequest);
         const status = { code: response.status, message: response.statusText };
         const headers = this.responseHeaders(response.headers);
@@ -110,7 +108,10 @@ export class PlyRequest implements Request, PlyTest {
         if (!this.getSupportedMethod(method)) {
             throw new Error('Unsupported method: ' + method);
         }
-        const { Authorization: _auth, ...headers } = this.headers;
+        const headers: {[key: string]: string} = {};
+        for (const key of Object.keys(this.headers)) {
+            headers[key] = subst.replace(this.headers[key], values, this.logger);
+        }
         return {
             name: this.name,
             type: this.type,
@@ -123,7 +124,7 @@ export class PlyRequest implements Request, PlyTest {
          };
     }
 
-    private responseHeaders(headers: Headers): object {
+    private responseHeaders(headers: Headers): {[key: string]: string} {
         const obj: any = {};
         headers.forEach((value, name) => {
             obj[name] = value;

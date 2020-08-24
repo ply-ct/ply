@@ -1,7 +1,7 @@
 import * as jsYaml from 'js-yaml';
 import * as util from './util';
 
-export function dump(obj: object, indent: number) {
+export function dump(obj: object, indent: number): string {
     return jsYaml.safeDump(obj, { noCompatMode: true, skipInvalid: true, indent, lineWidth: -1 });
 }
 

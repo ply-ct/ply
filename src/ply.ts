@@ -13,7 +13,6 @@ import { TsCompileOptions } from './compile';
 import { Logger, LogLevel } from './logger';
 import { Values } from './values';
 import * as util from './util';
-import deepmerge = require('deepmerge');
 
 export class Ply {
 

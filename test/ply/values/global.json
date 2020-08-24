@@ -1,5 +1,9 @@
 {
   "year": 1931,
   "rating": 5,
-  "query": "year=1935&rating=>4&sort=rating&descending=true"
+  "query": "year=1935&rating=>4&sort=rating&descending=true",
+  "github": {
+    "organization": "ply-ct",
+    "repository": "ply"
+  }
 }

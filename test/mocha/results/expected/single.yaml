@@ -4,7 +4,6 @@ aSingle:
   headers:
     Accept: application/json
     Content-Type: application/json
-    Authorization: ${authorization}
   body: |-
     {
       "greeting": "I'm single!"

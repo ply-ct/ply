@@ -1,0 +1,100 @@
+repositoryTopics:
+  request:
+    url: 'https://api.github.com/repos/${github.organization}/${github.repository}/topics'
+    method: GET
+    headers:
+      Accept: application/vnd.github.mercy-preview+json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      content-type: application/json; charset=utf-8
+      status: 200 OK
+    body: |-
+      {
+        "names": [
+          "rest-api",
+          "testing",
+          "typescript",
+          "nodejs",
+          "http",
+          "test-automation",
+          "continuous-testing"
+        ]
+      }
+
+repositoryTopicsQuery:
+  request:
+    url: 'https://api.github.com/graphql'
+    method: POST
+    headers:
+      Content-Type: application/json
+      User-Agent: ply-ct
+    body: '{ "query": "query { repository(owner:\\"${github.organization}\\", name:\\"${github.repository}\\") { repositoryTopics(last:20) { edges { node { topic { name } } } } } }" }'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      x-github-media-type: github.v4; format=json
+    body: |-
+      {
+        "data": {
+          "repository": {
+            "repositoryTopics": {
+              "edges": [
+                {
+                  "node": {
+                    "topic": {
+                      "name": "rest-api"
+                    }
+                  }
+                },
+                {
+                  "node": {
+                    "topic": {
+                      "name": "testing"
+                    }
+                  }
+                },
+                {
+                  "node": {
+                    "topic": {
+                      "name": "typescript"
+                    }
+                  }
+                },
+                {
+                  "node": {
+                    "topic": {
+                      "name": "nodejs"
+                    }
+                  }
+                },
+                {
+                  "node": {
+                    "topic": {
+                      "name": "http"
+                    }
+                  }
+                },
+                {
+                  "node": {
+                    "topic": {
+                      "name": "test-automation"
+                    }
+                  }
+                },
+                {
+                  "node": {
+                    "topic": {
+                      "name": "continuous-testing"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }

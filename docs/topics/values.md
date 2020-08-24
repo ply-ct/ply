@@ -41,8 +41,7 @@ So in `valuesFiles` from ply-demo's [plyconfig.json](https://github.com/ply-ct/p
 {
   "valuesFiles": [
     "test/values/global.json",
-    "test/values/localhost.json",    
-    "~/.ply/auth.json"
+    "test/values/localhost.json"
   ]
 }
 ```
@@ -55,9 +54,12 @@ only a.json and b.json will be considered (not any files designated in plyconfig
 Values files that are specified but not present on the file system are simply ignored and no error is thrown.
 
 ### Environment Variable
-Values are also read from environment variable PLY_VALUES, which should be in JSON format. Values from PLY_VALUES are merged with (and take 
-precedence over) values files designated in whichever of the other methods you employ. This enables you to keep secrets for containerized/cloud
-deployments in PLY_VALUES, while using the file-based method for non-secrets.
+Values are also read from environment variable PLY_VALUES, which should be in JSON format. For example:
+```
+export PLY_VALUES="{ \"githubToken\": \"mygithubtokenvalue\" }"
+```
+Values from PLY_VALUES are merged with (and take precedence over) values files designated in whichever of the other methods you employ. 
+This enables you to keep secrets for containerized/cloud deployments in PLY_VALUES, while using the file-based method for non-secrets.
 
 ## Runtime Values
 As discussed previously under [Results](results#runtime-values), values are automatically supplemented with request/response objects from previous requests

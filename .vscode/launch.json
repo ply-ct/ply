@@ -12,6 +12,7 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/dist/src/cli.js",
+            "args": ["test/ply/requests/github-api.ply.yaml#repositoryTopicsQuery"],
             "preLaunchTask": "tsc: build - tsconfig.json",
             "outFiles": [
                 "${workspaceFolder}/dist/**/*.js"
