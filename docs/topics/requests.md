@@ -2,11 +2,11 @@
 layout: topic
 ---
 ## Requests
-Ply is all about automated testing of REST APIs. When executing a test, 
+Ply is all about automated testing of REST and GraphQL APIs. When executing a test, 
 you'll send actual HTTP requests to exercise your service endpoints.
 
 Requests are the reusable building blocks you'll arrange to create test sequences, or suites.
-Each request represents an HTTP request with parameterized URL, method, headers and payload.
+Each request represents an HTTP request with parameterized URL, method, headers and body.
 A request suite is a YAML file containing one or more named requests.  Here's an example from 
 movie-queries.ply.yaml in the [ply-demo](https://github.com/ply-ct/ply-demo) project:
 ```yaml
@@ -43,10 +43,8 @@ Before we move on to show how you can run your Ply request suites, a few points 
 
 ## Executing
 Requests can be run via the [CLI](cli), or within Visual Studio Code by installing the [Ply Extension]().
-Either way the outcome is the same, but the VS Code extension has a friendlier interface for comparing actual
-vs expected results.
 
-Let's use the CLI to run ply-demo's movie-queries.ply.yaml request suite.  Clone ply-demo and run the request suite:
+For now let's use the CLI to run ply-demo's movie-queries.ply.yaml request suite.  Clone ply-demo and run the request suite:
 ```
 git clone https://github.com/ply-ct/ply-demo.git
 cd ply-demo
