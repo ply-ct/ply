@@ -18,9 +18,9 @@ repositoryTopics:
           "testing",
           "typescript",
           "nodejs",
-          "http",
           "test-automation",
-          "continuous-testing"
+          "continuous-testing",
+          "graphql"
         ]
       }
 
