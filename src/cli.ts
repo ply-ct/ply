@@ -58,9 +58,7 @@ paths = paths.map(p => {
 
 plier.find(paths).then(plyees => {
     plier.logger.debug('Plyees', plyees);
-    // TODO run options
-    const runOptions = undefined;
-    plier.run(plyees, {}, runOptions).then(results => {
+    plier.run(plyees, {}, options.runOptions).then(results => {
         const res = { Passed: 0, Failed: 0, Errored: 0, Pending: 0, 'Not Verified': 0 };
         results.forEach(result => res[result.status]++);
         plier.logger.error('\nOverall Results: ' + JSON.stringify(res));

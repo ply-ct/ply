@@ -67,4 +67,7 @@ Overall Results: {"Passed":3,"Failed":0,"Errored":0,"Pending":0,"Not Verified":0
 ```
 To understand what it means for a request to have PASSED, continue on to [Results](results).
 
+## GraphQL
+TODO
+
 Next Topic: [Results](results)

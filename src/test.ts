@@ -1,5 +1,6 @@
 import { Runtime } from './runtime';
 import { Result } from './result';
+import { RunOptions } from './options';
 
 export type TestType = 'request' | 'case' | 'workflow';
 
@@ -22,5 +23,5 @@ export interface PlyTest extends Test {
     /**
      * Invokes.
      */
-    run(runtime: Runtime): Promise<Result>;
+    run(runtime: Runtime, runOptions?: RunOptions): Promise<Result>;
 }

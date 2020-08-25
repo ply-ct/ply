@@ -88,13 +88,6 @@ repositoryTopicsQuery:
                 {
                   "node": {
                     "topic": {
-                      "name": "http"
-                    }
-                  }
-                },
-                {
-                  "node": {
-                    "topic": {
                       "name": "test-automation"
                     }
                   }
@@ -103,6 +96,13 @@ repositoryTopicsQuery:
                   "node": {
                     "topic": {
                       "name": "continuous-testing"
+                    }
+                  }
+                },
+                {
+                  "node": {
+                    "topic": {
+                      "name": "graphql"
                     }
                   }
                 }

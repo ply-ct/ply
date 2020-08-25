@@ -91,6 +91,27 @@ export interface PlyOptions extends Options {
     responseBodySortedKeys: boolean;
     prettyIndent: number;
     args?: any;
+    runOptions?: RunOptions;
+}
+
+/**
+ * Options specified on a per-run basis.
+ */
+export interface RunOptions {
+    /**
+     * Run test requests but don't verify outcomes.
+     */
+    noVerify?: boolean
+    /**
+     * Create expected from actual and verify based on that.
+     */
+    createExpected?: boolean
+    /**
+     * Import case suite modules from generated .js instead of .ts source (default = false).
+     * This runOption needs to be set in your case's calls to Suite.run (for requests),
+     * and also in originating the call to Suite.run (for the case(s)).
+     */
+    useDist?: boolean
 }
 
 /**
@@ -275,6 +296,12 @@ export class Config {
             }
             return obj;
         }, {});
+        // run options
+        options.runOptions = {
+            noVerify: options.exercise,
+            createExpected: options.create,
+            useDist: options.useDist
+        };
         return options;
     }
 

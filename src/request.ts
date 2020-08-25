@@ -3,7 +3,7 @@ import { Response, PlyResponse } from './response';
 import { Logger, LogLevel } from './logger';
 import { Retrieval } from './retrieval';
 import { Runtime } from './runtime';
-import { Options } from './options';
+import { Options, RunOptions } from './options';
 import { PlyResult } from './result';
 import { timestamp } from './util';
 import * as subst from './subst';
@@ -88,11 +88,13 @@ export class PlyRequest implements Request, PlyTest {
         return await this.doSubmit(this.getRequest(values, options));
     }
 
-    private async doSubmit(requestObj: Request): Promise<PlyResponse> {
+    private async doSubmit(requestObj: Request, runOptions?: RunOptions): Promise<PlyResponse> {
 
+        const logLevel = runOptions?.noVerify ? LogLevel.info : LogLevel.debug;
+        
         const before = new Date().getTime();
         const { Authorization: _auth, ...loggedHeaders } = requestObj.headers;
-        this.logger.debug('Request', { ...requestObj, headers: loggedHeaders });
+        this.logger.log(logLevel, 'Request', { ...requestObj, headers: loggedHeaders });
 
         const { url: _url, ...fetchRequest } = requestObj;
         const response = await this.fetch(requestObj.url, fetchRequest);
@@ -101,7 +103,7 @@ export class PlyRequest implements Request, PlyTest {
         const body = await response.text();
         const time = new Date().getTime() - before;
         const plyResponse = new PlyResponse(status, headers, body, time);
-        this.logger.debug('Response', plyResponse);
+        this.logger.log(logLevel, 'Response', plyResponse);
         return plyResponse;
     }
 
@@ -158,11 +160,11 @@ export class PlyRequest implements Request, PlyTest {
      * Or to send a request without testing, call submit().
      * @returns result with request invocation and status of 'Pending'
      */
-    async run(runtime: Runtime): Promise<PlyResult> {
+    async run(runtime: Runtime, runOptions?: RunOptions): Promise<PlyResult> {
         this.submitted = new Date();
         this.logger.info(`Request '${this.name}' submitted at ${timestamp(this.submitted, this.logger.level === LogLevel.debug)}`);
         const requestObject = this.getRequest(runtime.values, runtime.options);
-        const response = await this.doSubmit(requestObject);
+        const response = await this.doSubmit(requestObject, runOptions);
         const result = new PlyResult(
             this.name,
             requestObject,

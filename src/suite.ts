@@ -3,7 +3,8 @@ import { Result, Outcome, Verifier, PlyResult } from './result';
 import { Location } from './location';
 import { Storage } from './storage';
 import { Logger } from './logger';
-import { Runtime, RunOptions, DecoratedSuite, ResultPaths, CallingCaseInfo } from './runtime';
+import { Runtime, DecoratedSuite, ResultPaths, CallingCaseInfo } from './runtime';
+import { RunOptions } from './options';
 import { SUITE, TEST, RESULTS } from './names';
 import { Retrieval } from './retrieval';
 import * as yaml from './yaml';
@@ -203,7 +204,7 @@ export class Suite<T extends Test> {
                 if (test.type === 'request') {
                     this.runtime.responseHeaders = await this.getExpectedResponseHeaders(test.name, callingCaseInfo?.caseName);
                 }
-                result = await (test as unknown as PlyTest).run(this.runtime);
+                result = await (test as unknown as PlyTest).run(this.runtime, runOptions);
                 let actualYaml: string;
                 if (test.type === 'request') {
                     const plyResult = result as PlyResult;

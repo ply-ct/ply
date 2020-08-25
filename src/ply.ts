@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { EventEmitter } from 'events';
-import { Options, Config, PlyOptions, Defaults } from './options';
+import { Options, Config, PlyOptions, RunOptions, Defaults } from './options';
 import { Suite } from './suite';
 import { Test } from './test';
 import { Request } from './request';
@@ -8,7 +8,6 @@ import { Case } from './case';
 import { CaseLoader } from './cases';
 import { RequestLoader } from './requests';
 import { Result } from './result';
-import { RunOptions } from './runtime';
 import { TsCompileOptions } from './compile';
 import { Logger, LogLevel } from './logger';
 import { Values } from './values';

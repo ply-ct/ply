@@ -29,7 +29,8 @@ export class ResultPaths {
 
         if (options.resultFollowsRelativePath && retrieval.location.isChildOf(options.testsLocation)) {
             const relPath = retrieval.location.relativeTo(options.testsLocation);
-            const resultFilePath = new Location(relPath).parent + '/' + suiteName;
+            const parent = new Location(relPath).parent; // undefined if relPath is just filename
+            const resultFilePath = parent ? parent + '/' + suiteName : suiteName;
             return {
                 expected: options.expectedLocation + '/' + resultFilePath,
                 actual: options.actualLocation + '/' + resultFilePath,
@@ -124,23 +125,6 @@ export type CallingCaseInfo = {
     suiteName: string,
     caseName: string
 };
-
-export interface RunOptions {
-    /**
-     * Run test requests but don't verify outcomes.
-     */
-    noVerify?: boolean
-    /**
-     * Create expected from actual and verify based on that.
-     */
-    createExpected?: boolean
-    /**
-     * Import case suite modules from generated .js instead of .ts source (default = false).
-     * This runOption needs to be set in your case's calls to Suite.run (for requests),
-     * and also in originating the call to Suite.run (for the case(s)).
-     */
-    useDist?: boolean
-}
 
 /**
  * Runtime information for a test suite.
