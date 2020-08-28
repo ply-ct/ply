@@ -53,10 +53,11 @@ Request 'repositoryTopics' submitted at 8/28/2020, 10:54:40:667
 Creating expected result: ./results/expected/github.yml
 Test 'repositoryTopics' PASSED in 303 ms
 ```
-During execution Ply submitted the request and wrote **actual** result file "./results/actual/github.yml"
+During execution Ply submits the request and writes **actual** result file "./results/actual/github.yml"
 based on the response. This test naturally passed since **expected** result file "./results/expected/github.yml" 
 was created directly from actual results, per `--create`.
 
+### Expected results
 Auto-creating an expected result provides a good starting point. But looking at "./results/expected/github.yml",
 you'll notice that it includes many response headers that are not of interest for testing purposes. Here's a
 cleaned-up version of similar expected results from [ply-demo](https://github.com/ply-ct/ply-demo/blob/master/test/requests/github-api.ply.yaml#L1):
@@ -91,7 +92,13 @@ The subset of response headers included in expected results YAML are those we ca
 In this test, body content is our main concern.
 
 ### Expressions
-TODO
+Something else about this example may be noticed by sharp-eyed observers: our request URL contains
+placeholders like `${github.organization}`. JavaScript [template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)
+syntax is supported for substituting dynamic values, which can come from JSON files and/or environment variables.
+Even more powerfully, in multi-request suites expressions can reference runtime values from previous responses.
+This enables you to string together multiple requests that depend on response output from preceding requests.
+These mechanisms are described in the [Results](https://ply-ct.github.io/ply/topics/results) and [Values](https://ply-ct.github.io/ply/topics/values) 
+topics in Ply's documentation.
 
 ### Cases
 TODO
