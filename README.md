@@ -14,7 +14,7 @@
 ```sh
 npm install ply-ct --save-dev
 ```
-Or, to run from anywhere:
+Or, to run anywhere:
 ```sh
 npm install -g ply-ct
 ```
@@ -32,7 +32,7 @@ repositoryTopics:
 ```
 
 ### Run a request
-Suppose you saved this in a file named "github.ply.yml". Then you'd be able to submit this
+Suppose you save this in a file named "github.ply.yml". Then you can submit this
 `repositoryTopics` request from the command line by typing:
 ```sh
 ply -x github.ply.yml
@@ -43,13 +43,63 @@ meaning submit an ad hoc request and don't bother with verification).
 ### Verify response
 If you run without `-x` you'll get an error saying, "Expected result file not found". Ply verification
 works by comparing expected vs actual. So a complete test requires an expected result file. Run again
-with `-c` (create), and the expected result file will be created from the actual response.
+with `--create` (create), and the expected result file will be created from the actual response.
 ```sh
-ply -c github.ply.yml
+ply --create github.ply.yml
 ```
+Output looks like this:
+```
+Request 'repositoryTopics' submitted at 8/28/2020, 10:54:40:667
+Creating expected result: ./results/expected/github.yml
+Test 'repositoryTopics' PASSED in 303 ms
+```
+During execution Ply submitted the request and wrote **actual** result file "./results/actual/github.yml"
+based on the response. This test naturally passed since **expected** result file "./results/expected/github.yml" 
+was created directly from actual results, per `--create`.
 
+Auto-creating an expected result provides a good starting point. But looking at "./results/expected/github.yml",
+you'll notice that it includes many response headers that are not of interest for testing purposes. Here's a
+cleaned-up version of similar expected results from [ply-demo](https://github.com/ply-ct/ply-demo/blob/master/test/requests/github-api.ply.yaml#L1):
+```yaml
+repositoryTopics:
+  request:
+    url: 'https://api.github.com/repos/${github.organization}/${github.repository}/topics'
+    method: GET
+    headers:
+      Accept: application/vnd.github.mercy-preview+json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      content-type: application/json; charset=utf-8
+      status: 200 OK
+    body: |-
+      {
+        "names": [
+          "rest-api",
+          "testing",
+          "ply",
+          "example-project",
+          "graphql",
+          "typescript",
+          "github-workflow"
+        ]
+      }
+```
+The subset of response headers included in expected results YAML are those we care about for comparison.
+In this test, body content is our main concern.
 
-## Demo
+### Expressions
+TODO
+
+### Cases
+TODO
+
+### GraphQL
+TODO
+
+## Live Demo
 TODO
 
 ## Documentation

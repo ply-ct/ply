@@ -258,7 +258,7 @@ export class Config {
                 .config(config)
                 .usage('Usage: $0 <tests> [options]')
                 .help('help').alias('help', 'h')
-                .option('config', { description: 'Ply config location', type: 'string' })
+                .option('config', { description: 'Ply config location', type: 'string', alias: 'c' })
                 .alias('version', 'v');
             for (const option of Object.keys(this.yargsOptions)) {
                 const yargsOption = this.yargsOptions[option];
@@ -297,11 +297,16 @@ export class Config {
             return obj;
         }, {});
         // run options
-        options.runOptions = {
-            noVerify: options.exercise,
-            createExpected: options.create,
-            useDist: options.useDist
-        };
+        options.runOptions = {};
+        if (options.exercise) {
+            options.runOptions.noVerify = options.exercise;
+        }
+        if (options.create) {
+            options.runOptions.createExpected = options.create;
+        }
+        if (options.useDist) {
+            options.runOptions.useDist = options.useDist;
+        }
         return options;
     }
 

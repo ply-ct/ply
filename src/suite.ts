@@ -126,6 +126,10 @@ export class Suite<T extends Test> {
      */
     private async runTests(tests: T[], values: object, runOptions?: RunOptions): Promise<Result[]> {
 
+        if (runOptions && Object.keys(runOptions).length > 0) {
+            this.log.debug('RunOptions', runOptions);
+        }
+
         if (this.emitter) {
             this.emitter.emit('suite', {
                 plyee: this.runtime.options.testsLocation + '/' + this.path,
@@ -332,7 +336,7 @@ export class Suite<T extends Test> {
         }
         if (runOptions?.createExpected) {
             if (this.runtime.results.expected.location.isUrl) {
-                throw new Error('Dispensation CreatedExpected not supported for remote results');
+                throw new Error('Run option createExpected not supported for remote results');
             }
             const expected = new Storage(this.runtime.results.expected.location.toString());
             if (isFirst) {

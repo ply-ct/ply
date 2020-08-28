@@ -252,7 +252,6 @@ export class Plier extends EventEmitter {
         this.logger.debug('Options', this.ply.options);
 
         const values = await new Values(this.ply.options.valuesFiles, this.logger).read(extraValues);
-        this.logger.debug('Values', this.logger);
 
         const promises: Promise<Result[]>[] = [];
 
