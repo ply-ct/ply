@@ -114,21 +114,30 @@ Implement a Ply [case](https://ply-ct.github.io/ply/topics/cases) suite using Ty
 access to your requests/responses. Here's [add new movie](https://github.com/ply-ct/ply-demo/blob/master/test/cases/movieCrud.ply.ts#L31) 
 from ply-demo:
 ```typescript
-    @test('add new movie')
-    async createMovie(values: any) {
-        const result = await this.requestSuite.run('createMovie', values);
-        assert.exists(result.response);
-        assert.exists(result.response?.body);
-        // capture movie id from response -- used in downstream values
-        this.movieId = result.response?.body?.id;
-        this.requestSuite.log.info(`Created movie: id=${this.movieId}`);
-    }
+@test('add new movie')
+async createMovie(values: any) {
+    const result = await this.requestSuite.run('createMovie', values);
+    assert.exists(result.response);
+    assert.exists(result.response?.body);
+    // capture movie id from response -- used in downstream values
+    this.movieId = result.response?.body?.id;
+    this.requestSuite.log.info(`Created movie: id=${this.movieId}`);
+}
 ```
-Here `this.requestSuite` was previously loaded from request YAML in the case suite's constructor:
+Applying the `@test` decorator to a method automatically makes it a Ply case. Here `this.requestSuite` was previously loaded from 
+request YAML in the case suite's constructor:
 ```typescript
-    this.requestSuite = ply.loadSuiteSync('test/requests/movies-api.ply.yaml');
+this.requestSuite = ply.loadSuiteSync('test/requests/movies-api.ply.yaml');
 ```
-In movies-api.ply.yaml, the request named 'createMovie' is submitted by calling Ply API's [run]() method.
+And in `createMovie()` above, the request named 'createMovie' from movies-api.ply.yaml is invoked by calling Ply API's [run]() method.
+
+Running a case suite from the command line is similar to running a request suite:
+```sh
+ply test/cases/movieCrud.ply.ts
+```
+This executes all cases in movieCrud.ply.ts (in the order they're declared), and compiles actual results from all requests
+into a file named after the `@suite` ("movie-crud.yaml"). At the end of the run, the actual result file is compared with expected
+to determine whether the suite has passed. 
 
 ### GraphQL
 TODO
