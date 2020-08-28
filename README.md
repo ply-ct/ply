@@ -2,7 +2,7 @@
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ply-ct/ply/ply%20ci)
 
 ## API Automated Testing
-__*Ply your wares*__
+<span style='font-size:18px;font-style:italic;font-family:"Palatino Linotype","Book Antiqua",Palatino,serif'>Ply your wares</span>
 
 ## Contents
   - [Installation](#installation)
