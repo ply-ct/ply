@@ -2,6 +2,7 @@
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ply-ct/ply/ply%20ci)
 
 ## API Automated Testing
+__*Ply your wares*__
 
 ## Contents
   - [Installation](#installation)
@@ -126,7 +127,7 @@ Here `this.requestSuite` was previously loaded from request YAML in the case sui
 ```typescript
     this.requestSuite = ply.loadSuiteSync('test/requests/movies-api.ply.yaml');
 ```
-In movies-api.ply.yaml, the request named 'createMovie' is submitted by calling Ply API's [run]().
+In movies-api.ply.yaml, the request named 'createMovie' is submitted by calling Ply API's [run]() method.
 
 ### GraphQL
 TODO
