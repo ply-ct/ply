@@ -1,7 +1,7 @@
 # Ply
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ply-ct/ply/ply%20ci)
 
-## REST API Automated Testing
+## API Automated Testing
 
 ## Contents
   - [Installation](#installation)
@@ -93,15 +93,40 @@ In this test, body content is our main concern.
 
 ### Expressions
 Something else about this example may be noticed by sharp-eyed observers: our request URL contains
-placeholders like `${github.organization}`. JavaScript [template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)
-syntax is supported for substituting dynamic values, which can come from JSON files and/or environment variables.
-Even more powerfully, in multi-request suites expressions can reference runtime values from previous responses.
-This enables you to string together multiple requests that depend on response output from preceding requests.
-These mechanisms are described in the [Results](https://ply-ct.github.io/ply/topics/results) and [Values](https://ply-ct.github.io/ply/topics/values) 
-topics in Ply's documentation.
+placeholders like `${github.organization}`. Ply supports JavaScript [template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)
+syntax for substituting dynamic values in request files and result files. You can specify values in JSON files and/or environment variables,
+as described in the documentation [Values](https://ply-ct.github.io/ply/topics/values).
+
+Even more powerfully, your multi-request suites can embed expressions that reference runtime values from previous responses.
+For instance, the URL or body of a subsequent request in our github.ply.yml file could have something like this:
+```
+${@repositoryTopics.response.body.names[0]
+```
+which uses the special `@` character to reference the first topic name from above (resolving to 'rest-api').
+This enables you to string together sequential requests that each depend on response output from preceding ones.
+Check out the [Results](https://ply-ct.github.io/ply/topics/results) topic for details and examples.
 
 ### Cases
-TODO
+For more complex testing scenarios, you'll want even greater control over request execution.
+Implement a Ply [case](https://ply-ct.github.io/ply/topics/cases) suite using TypeScript for programmatic
+access to your requests/responses. Here's [add new movie](https://github.com/ply-ct/ply-demo/blob/master/test/cases/movieCrud.ply.ts#L31) 
+from ply-demo:
+```typescript
+    @test('add new movie')
+    async createMovie(values: any) {
+        const result = await this.requestSuite.run('createMovie', values);
+        assert.exists(result.response);
+        assert.exists(result.response?.body);
+        // capture movie id from response -- used in downstream values
+        this.movieId = result.response?.body?.id;
+        this.requestSuite.log.info(`Created movie: id=${this.movieId}`);
+    }
+```
+Here `this.requestSuite` was previously loaded from request YAML in the case suite's constructor:
+```typescript
+    this.requestSuite = ply.loadSuiteSync('test/requests/movies-api.ply.yaml');
+```
+In movies-api.ply.yaml, the request named 'createMovie' is submitted by calling Ply API's [run]().
 
 ### GraphQL
 TODO
