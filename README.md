@@ -1,8 +1,9 @@
 # Ply
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ply-ct/ply/ply%20ci)
 
-## API Automated Testing
-<img src="docs/img/wares.png" width="128" alt="Ply your wares" />
+<h2>API Automated Testing
+<div><img src="docs/img/wares.png" width="128" alt="Ply your wares" /></div>
+</h2>
 
 ## Contents
   - [Installation](#installation)
