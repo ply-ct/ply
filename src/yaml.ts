@@ -5,7 +5,7 @@ export function dump(obj: object, indent: number): string {
     return jsYaml.safeDump(obj, { noCompatMode: true, skipInvalid: true, indent, lineWidth: -1 });
 }
 
-export function load(file: string, contents: string, assignLines = false) {
+export function load(file: string, contents: string, assignLines = false): any {
     const lines: any = {};
     const obj = jsYaml.safeLoad(contents, {
         filename: file,
@@ -14,8 +14,8 @@ export function load(file: string, contents: string, assignLines = false) {
                 lines[state.result] = state.line;
             }
         }
-    });
-    if (assignLines) {
+    }) as any;
+    if (obj && assignLines) {
         const contentLines = util.lines(contents);
         let lastObjProp: any;
         Object.keys(obj).forEach(key => {
