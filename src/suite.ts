@@ -76,12 +76,6 @@ export class Suite<T extends Test> {
     }
 
     /**
-     * Run all tests, write actual results, and verify vs expected.
-     * @param values runtime values for substitution
-     * @returns result array indicating outcomes
-     */
-    async run(values: object, runOptions?: RunOptions): Promise<Result[]>;
-    /**
      * Run one test, write actual result, and verify vs expected.
      * @param values runtime values for substitution
      * @returns result indicating outcome
@@ -93,6 +87,12 @@ export class Suite<T extends Test> {
      * @returns result array indicating outcomes
      */
     async run(names: string[], values: object, runOptions?: RunOptions): Promise<Result[]>;
+    /**
+     * Run all tests, write actual results, and verify vs expected.
+     * @param values runtime values for substitution
+     * @returns result array indicating outcomes
+     */
+    async run(values: object, runOptions?: RunOptions): Promise<Result[]>;
     async run(namesOrValues: object | string | string[], valuesOrRunOptions?: object | RunOptions, runOptions?: RunOptions): Promise<Result | Result[]> {
         if (typeof namesOrValues === 'string') {
             const name = namesOrValues;

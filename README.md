@@ -130,7 +130,7 @@ request YAML in the case suite's constructor:
 this.requestSuite = ply.loadSuiteSync('test/requests/movies-api.ply.yaml');
 ```
 And in `createMovie()` above, the request named 'createMovie' from movies-api.ply.yaml is invoked by calling Ply API's
-[Request.run()](https://ply-ct.github.io/ply/api/classes/plyrequest.html#run) method.
+[Suite.run()](https://ply-ct.github.io/ply/api/classes/suite.html#run) method.
 
 Running a case suite from the command line is similar to running a request suite:
 ```sh
