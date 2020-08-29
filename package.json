@@ -35,7 +35,7 @@
     "ply": "dist/src/cli.js",
     "stop-movies": "ply-movies stop",
     "test": "npm-run-all mocha ply stop-movies --continue-on-error",
-    "docs": "typedoc --out docs/api"
+    "docs": "typedoc --mode file --out docs/api --excludePrivate true --excludeNotExported true src && cp docs/api/globals.html docs/api/index.html"
   },
   "homepage": "https://github.com/ply-ct/ply#readme",
   "dependencies": {
