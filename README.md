@@ -5,10 +5,9 @@
 <div><img src="docs/img/wares.png" width="128" alt="Ply your wares" /></div>
 </h2>
 
-## Contents
   - [Installation](#installation)
   - [Usage](#usage)
-  - [Demo](#demo)
+  - [Live Demo](#live-demo)
   - [Documentation](#documentation)
   - [VS Code Extension](#vs-code-extension)
 
@@ -40,12 +39,12 @@ Suppose you save this in a file named "github.ply.yml". Then you can submit this
 ply -x github.ply.yml
 ```
 The `-x` argument tells Ply not to verify the response (`-x` is short for `--exercise`, 
-meaning submit an ad hoc request and don't bother with verification).
+meaning submit an *ad hoc* request and don't bother with verification).
 
 ### Verify response
 If you run without `-x` you'll get an error saying, "Expected result file not found". Ply verification
 works by comparing expected vs actual. So a complete test requires an expected result file. Run again
-with `--create` (create), and the expected result file will be created from the actual response.
+with `--create`, and the expected result file will be created from the actual response.
 ```sh
 ply --create github.ply.yml
 ```
@@ -56,8 +55,8 @@ Creating expected result: ./results/expected/github.yml
 Test 'repositoryTopics' PASSED in 303 ms
 ```
 During execution Ply submits the request and writes **actual** result file "./results/actual/github.yml"
-based on the response. This test naturally passed since **expected** result file "./results/expected/github.yml" 
-was created directly from actual results, per `--create`.
+based on the response. Because of `--create`, Ply then copies the actual result over **expected** result file "./results/expected/github.yml"
+before comparing. This test naturally passes since the results are identical.
 
 ### Expected results
 Auto-creating an expected result provides a good starting point. But looking at "./results/expected/github.yml",
@@ -97,7 +96,7 @@ In this test, body content is our main concern.
 Something else about this example may be noticed by sharp-eyed observers: our request URL contains
 placeholders like `${github.organization}`. Ply supports JavaScript [template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)
 syntax for substituting dynamic values in request files and result files. You can specify values in JSON files and/or environment variables,
-as described in the documentation [Values](https://ply-ct.github.io/ply/topics/values).
+as described in the docs under [Values](https://ply-ct.github.io/ply/topics/values).
 
 Even more powerfully, your multi-request suites can embed expressions that reference runtime values from previous responses.
 For instance, the URL or body of a subsequent request in our github.ply.yml file could have something like this:
@@ -109,7 +108,7 @@ This enables you to string together sequential requests that each depend on resp
 Check out the [Results](https://ply-ct.github.io/ply/topics/results) topic for details and examples.
 
 ### Cases
-For more complex testing scenarios, you'll want even greater control over request execution.
+For complex testing scenarios, you'll want even greater control over request execution.
 Implement a Ply [case](https://ply-ct.github.io/ply/topics/cases) suite using TypeScript for programmatic
 access to your requests/responses. Here's [add new movie](https://github.com/ply-ct/ply-demo/blob/master/test/cases/movieCrud.ply.ts#L31) 
 from ply-demo:
@@ -124,31 +123,59 @@ async createMovie(values: any) {
     this.requestSuite.log.info(`Created movie: id=${this.movieId}`);
 }
 ```
-Applying the `@test` decorator to a method automatically makes it a Ply case. Here `this.requestSuite` was previously loaded from 
-request YAML in the case suite's constructor:
+Applying the `@test` decorator to a method automatically makes it a Ply case. At this point `this.requestSuite` has already 
+been loaded from request YAML (in the case suite's constructor):
 ```typescript
 this.requestSuite = ply.loadSuiteSync('test/requests/movies-api.ply.yaml');
 ```
-And in `createMovie()` above, the request named 'createMovie' from movies-api.ply.yaml is invoked by calling Ply API's
-[Suite.run()](https://ply-ct.github.io/ply/api/classes/suite.html#run) method.
+Then in `createMovie()` above, the request named 'createMovie' from movies-api.ply.yaml is invoked by calling Ply's API
+method [Suite.run()](https://ply-ct.github.io/ply/api/classes/suite.html#run).
 
 Running a case suite from the command line is similar to running a request suite:
 ```sh
 ply test/cases/movieCrud.ply.ts
 ```
 This executes all cases in movieCrud.ply.ts (in the order they're declared), and compiles actual results from all requests
-into a file named after the `@suite` ("movie-crud.yaml"). At the end of the run, the actual result file is compared with expected
+into a file named after the `@suite` ("movie-crud.yaml"). At the end of the run, actual results are compared against expected
 to determine whether the suite has passed. 
 
 ### GraphQL
-TODO
+Body content in request YAML can be any text payload (typically JSON). GraphQL syntax is also supported, as in this
+example which queries the [GitHub GraphQL API](https://docs.github.com/en/graphql) for ply-demo repository topics: 
+```yaml
+repositoryTopicsQuery:
+  url: 'https://api.github.com/graphql'
+  method: POST
+  headers:
+    Authorization: Bearer ${githubToken}
+    Content-Type: application/json
+    User-Agent: ${github.organization}
+  body: |-
+    query {
+      repository(owner: "${github.organization}", name: "${github.repository}") {
+        repositoryTopics(first: 10) {
+          edges {
+            node {
+              topic {
+                name
+              }
+            }
+          }
+        }
+      }
+    }
+```
 
 ## Live Demo
 TODO
 
 ## Documentation
-TODO  
-https://ply-ct.github.io/ply/topics/requests
+
+### Guide
+https://ply-ct.github.io/ply/
+
+### API
+https://ply-ct.github.io/ply/api
 
 ## VS Code Extension
 TODO  
