@@ -1,3 +1,4 @@
+import fetch from 'cross-fetch';
 import { Location } from './location';
 import { Storage } from './storage';
 
@@ -20,7 +21,7 @@ export class Retrieval {
             return Promise.resolve(this.storage.read());
         }
         else {
-            const response = await this.fetch(this.location.path);
+            const response = await fetch(this.location.path);
             return await response.text();
         }
     }
@@ -40,7 +41,7 @@ export class Retrieval {
         }
         else {
             try {
-                return this.fetch(this.location.path, { method: 'HEAD' })
+                return fetch(this.location.path, { method: 'HEAD' })
                 .then((response: Response) => {
                     return Promise.resolve(response.ok);
                 });
@@ -57,17 +58,6 @@ export class Retrieval {
     get storage(): Storage | undefined {
         if (!this.location.isUrl) {
             return new Storage(this.location.path);
-        }
-    }
-
-    get fetch(): any {
-        if (this.location.isUrl) {
-            if (typeof window === 'undefined') {
-                return require('node-fetch');
-            }
-            else {
-                return window.fetch;
-            }
         }
     }
 }

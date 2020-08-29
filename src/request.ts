@@ -1,3 +1,4 @@
+import fetch from 'cross-fetch';
 import { TestType, Test, PlyTest } from './test';
 import { Response, PlyResponse } from './response';
 import { Logger, LogLevel } from './logger';
@@ -70,15 +71,6 @@ export class PlyRequest implements Request, PlyTest {
         return false;
     }
 
-    get fetch(): any {
-        if (typeof window === 'undefined') {
-            return require('node-fetch');
-        }
-        else {
-            return window.fetch;
-        }
-    }
-
     /**
      * Call submit() to send the request without producing actual results
      * or comparing with expected.  Useful for cleaning up or restoring
@@ -91,13 +83,13 @@ export class PlyRequest implements Request, PlyTest {
     private async doSubmit(requestObj: Request, runOptions?: RunOptions): Promise<PlyResponse> {
 
         const logLevel = runOptions?.noVerify ? LogLevel.info : LogLevel.debug;
-        
+
         const before = new Date().getTime();
         const { Authorization: _auth, ...loggedHeaders } = requestObj.headers;
         this.logger.log(logLevel, 'Request', { ...requestObj, headers: loggedHeaders });
 
         const { url: _url, ...fetchRequest } = requestObj;
-        const response = await this.fetch(requestObj.url, fetchRequest);
+        const response = await fetch(requestObj.url, fetchRequest);
         const status = { code: response.status, message: response.statusText };
         const headers = this.responseHeaders(response.headers);
         const body = await response.text();
