@@ -33,7 +33,7 @@ export class Ply {
             locations = [locations];
         }
         if (moreLocations) {
-            locations = locations.concat(moreLocations);
+            locations = [ ...locations, ...moreLocations ];
         }
         const requestLoader = new RequestLoader(locations, this.options);
         return await requestLoader.load();
@@ -62,7 +62,7 @@ export class Ply {
             locations = [locations];
         }
         if (moreLocations) {
-            locations = locations.concat(moreLocations);
+            locations = [ ...locations, ...moreLocations ];
         }
         const requestLoader = new RequestLoader(locations, this.options);
         return requestLoader.sync();
@@ -106,7 +106,7 @@ export class Ply {
             files = [files];
         }
         if (moreFiles) {
-            files = files.concat(moreFiles);
+            files = [ ...files, ...moreFiles ];
         }
         const compileOptions = new TsCompileOptions(this.options);
         const caseLoader = new CaseLoader(files, this.options, compileOptions);
@@ -285,7 +285,7 @@ export class Plier extends EventEmitter {
 
         let combined: Result[] = [];
         for (const results of await Promise.all(promises)) {
-            combined = combined.concat(results);
+            combined = [ ...combined, ...results ];
         }
         return combined;
     }

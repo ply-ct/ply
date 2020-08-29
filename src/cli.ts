@@ -49,8 +49,10 @@ if (args && args.length > 0) {
         }
     }
 } else {
-    paths = glob.sync(options.requestFiles, globOptions);
-    paths = paths.concat(glob.sync(options.caseFiles, globOptions));
+    paths = [
+        ...glob.sync(options.requestFiles, globOptions),
+        ...glob.sync(options.caseFiles, globOptions)
+    ];
 }
 
 paths = paths.map(p => {
