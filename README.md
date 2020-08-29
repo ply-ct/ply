@@ -7,8 +7,8 @@
 
   - [Installation](#installation)
   - [Usage](#usage)
-  - [Live Demo](#live-demo)
   - [Documentation](#documentation)
+  - [Demo](#demo)
   - [VS Code Extension](#vs-code-extension)
 
 ## Installation
@@ -166,9 +166,6 @@ repositoryTopicsQuery:
     }
 ```
 
-## Live Demo
-TODO
-
 ## Documentation
 
 ### Guide
@@ -177,9 +174,14 @@ https://ply-ct.github.io/ply/
 ### API
 https://ply-ct.github.io/ply/api
 
+## Demo
+
+### Example Project
+https://github.com/ply-ct/ply-demo
+
 ## VS Code Extension
-TODO  
-https://github.com/ply-ct/vscode-ply
+https://github.com/ply-ct/vscode-ply  
+TODO: marketplace link
 
 
 
