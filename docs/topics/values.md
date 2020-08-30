@@ -54,7 +54,7 @@ only a.json and b.json will be considered (not any files designated in plyconfig
 Values files that are specified but not present on the file system are simply ignored and no error is thrown.
 
 ### Environment Variable
-Values are also read from environment variable PLY_VALUES, which should be in JSON format. For example:
+Values are also read from environment variable PLY_VALUES, which should be JSON format. For example:
 ```
 export PLY_VALUES="{ \"githubToken\": \"mygithubtokenvalue\" }"
 ```

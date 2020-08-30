@@ -12,11 +12,11 @@
   - [VS Code Extension](#vs-code-extension)
 
 ## Installation
-```sh
+```
 npm install ply-ct --save-dev
 ```
 Or, to run anywhere:
-```sh
+```
 npm install -g ply-ct
 ```
 
@@ -35,7 +35,7 @@ repositoryTopics:
 ### Run a request
 Suppose you save this in a file named "github.ply.yml". Then you can submit this
 `repositoryTopics` request from the command line by typing:
-```sh
+```
 ply -x github.ply.yml
 ```
 The `-x` argument tells Ply not to verify the response (`-x` is short for `--exercise`, 
@@ -45,7 +45,7 @@ meaning submit an *ad hoc* request and don't bother with verification).
 If you run without `-x` you'll get an error saying, "Expected result file not found". Ply verification
 works by comparing expected vs actual. So a complete test requires an expected result file. Run again
 with `--create`, and the expected result file will be created from the actual response.
-```sh
+```
 ply --create github.ply.yml
 ```
 Output looks like this:
@@ -132,7 +132,7 @@ Then in `createMovie()` above, the request named 'createMovie' from movies-api.p
 method [Suite.run()](https://ply-ct.github.io/ply/api/classes/suite.html#run).
 
 Running a case suite from the command line is similar to running a request suite:
-```sh
+```
 ply test/cases/movieCrud.ply.ts
 ```
 This executes all cases in movieCrud.ply.ts (in the order they're declared), and compiles actual results from all requests

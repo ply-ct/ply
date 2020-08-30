@@ -4,6 +4,9 @@ body {
   font-feature-settings: "kern" 1;
   font-kerning: normal;
 }
+h3 {
+  font-size: 1.25em;
+}
 pre {
   font-size: 14px;
 }
@@ -34,6 +37,14 @@ td, th {
 th {
   border-bottom: 1px solid lightgray;
   color: #616161;
+}
+ul {
+  position: relative;
+  top: -7px;
+  margin-bottom: 8px;
+}
+li > ul {
+  top: 1px;
 }
 .header {
   max-width: 100%;
