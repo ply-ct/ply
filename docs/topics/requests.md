@@ -84,7 +84,7 @@ ply test/requests/movie-queries.ply.yaml#moviesByYearAndRating
 ```
 
 ## GraphQL
-In request YAML, `body` elements may contain text content. For REST APIs like ply-movies, this is typically JSON.
+In request YAML, `body` elements may contain any text content. For REST APIs like ply-movies, this is typically JSON.
 But GraphQL syntax is also supported, as in the following example which queries the [GitHub GraphQL API](https://docs.github.com/en/graphql) 
 for ply-demo repository topics: 
 ```yaml

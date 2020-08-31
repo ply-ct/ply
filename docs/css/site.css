@@ -4,6 +4,9 @@ body {
   font-feature-settings: "kern" 1;
   font-kerning: normal;
 }
+h2 {
+  margin-top: 20px;
+}
 h3 {
   font-size: 1.25em;
 }
@@ -42,6 +45,7 @@ ul {
   position: relative;
   top: -7px;
   margin-bottom: 8px;
+  z-index: -1;
 }
 li > ul {
   top: 1px;
@@ -50,6 +54,15 @@ li > ul {
   max-width: 100%;
   margin-left: 35px;
   margin-right: 35px;
+}
+.site-header {
+  background-color: #E0E0E0;
+  padding-top: 6px;
+  border-top: 0;
+  border-bottom: 3px solid white;
+  width: 100%;
+  height: 56px;
+  position: fixed;
 }
 .wrapper {
   max-width: 960px;
@@ -60,16 +73,8 @@ li > ul {
 }
 .page-content {
   padding: 30px;
-  padding-top: 20px;
+  padding-top: 4px;
   font-family: Verdana, Geneva, sans-serif;
-}
-.site-header {
-  background-color: #E0E0E0;
-  padding-top: 6px;
-  border-top: 0;
-  border-bottom: 0;
-  min-height: 55.95px;
-  position: relative;
 }
 .site-link {
   color: #212121;
@@ -142,7 +147,7 @@ li > ul {
   color: #455a64 !important;
 }
 .highlighter-rouge {
-  background-color: #cfd8dc;
+  background-color: #d9e0e3;
   border-radius: 5px;
 }
 .highlighter-rouge .highlight {
@@ -206,7 +211,7 @@ li > ul {
   width: 105px;
   margin-left: 10px;
   position: fixed;
-  padding-top: 25px;
+  padding-top: 28px;
   white-space: nowrap;
 }
 .left-nav ul {
@@ -236,7 +241,7 @@ li > ul {
   min-height: 800px;
 }
 .topic {
-	margin: 0 25px;
+	margin: 60px 25px 0;
 }
 .topic-heading {
   margin-bottom: 8px;

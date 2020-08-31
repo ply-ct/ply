@@ -12,7 +12,6 @@ This way you can run `ply` directly from the command line:
 ```
 ply --version
 ```
-<div style="height:5px"></div>
 ## 2. Dev Dependency
 ```
 npm install --save-dev ply-ct
@@ -21,11 +20,9 @@ Then you should run ply in your project directory through `npx`:
 ```
 npx ply --version
 ```
-<div style="height:10px"></div>
 The exercises in this guide assume you have Ply installed globally. If instead
 you've installed as a dev dependency, adjust the example commands accordingly.
 <hr style="margin-top:10px">
-<div style="height:15px"></div>
 ## ply-movies
 Most of these exercises use the [ply-movies](https://github.com/ply-ct/ply-movies#readme) sample API.
 Once you've cloned [ply-demo](https://github.com/ply-ct/ply-demo), you can start and stop the movies 
