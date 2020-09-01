@@ -47,7 +47,6 @@ ul {
   position: relative;
   top: -7px;
   margin-bottom: 8px;
-  z-index: -1;
 }
 li > ul {
   top: 1px;
@@ -65,8 +64,10 @@ li > ul {
   width: 100%;
   height: 56px;
   position: fixed;
+  z-index: 100;
 }
 .wrapper {
+  margin-top: 10px;
   max-width: 960px;
   margin-right: auto;
   margin-left: auto;
@@ -77,6 +78,21 @@ li > ul {
   padding: 30px;
   padding-top: 4px;
   font-family: Verdana, Geneva, sans-serif;
+}
+.frame-header {
+  width: calc(100% - 15px);
+}
+.frame-container {
+  height: 100%;
+  overflow-y: scroll;
+}
+.frame {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: 0;
+  width: 100%;
+  height: 100%;
 }
 .site-link {
   color: #212121;
@@ -238,9 +254,10 @@ li > ul {
 }
 .page-right {
   float: right;
-  width: calc(100% - 200px);
+  width: calc(100% - 240px);
   min-width: 500px;
   min-height: 800px;
+  margin-right: 40px;
 }
 .topic {
 	margin: 60px 25px 0;

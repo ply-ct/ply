@@ -21,12 +21,12 @@
 
     document.onreadystatechange = function () {
       if (this.readyState === "complete") {
-        var topicBlock = document.getElementsByClassName("topic")[0];
-        if (!topicBlock) {
+        var pageBlock = document.getElementsByClassName("page-content")[0];
+        if (!pageBlock) {
           return;
         }
         for (var level = 1; level <= 6; level++) {
-          linkifyAnchors(level, topicBlock);
+          linkifyAnchors(level, pageBlock);
         }
       }
     };

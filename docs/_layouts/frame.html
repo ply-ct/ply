@@ -4,13 +4,13 @@
 
   {% include head.html %}
 
-  <header class="site-header" role="banner">
-    {% include header.html %}
-  </header>
+  <body style="overflow-y:hidden">
 
-  {{ content }}
+    <header class="site-header frame-header" role="banner">
+      {% include header.html %}
+    </header>
 
-  {% include footer.html %}
+    {{ content }}
 
   </body>
 
