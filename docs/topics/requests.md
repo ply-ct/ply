@@ -30,14 +30,13 @@ The next request in this suite illustrates another important feature of expressi
 ```yaml
 movieById:
   # id comes from previous response body
-  url:  '${baseUrl}/${@moviesByYearAndRating.response.body.movies[1].id}'
+  url:  '${baseUrl}/${@moviesByYearAndRating.response.body.movies[0].id}'
   method: GET
   headers:
     Accept: application/json
 ```
 Here we use special designator `@` in our URL expression to reference a runtime value from the body of the previous response.
 This enables us to construct simple workflows by embedding values from previous requests/responses in subsequent requests.
-Ply also supports another special designator `~` that lets you embed regular expressions (more on this in [Results](results)).
 
 Before we move on to show how you can run your Ply request suites, a few points to keep in mind:
   - Suites are identified by their YAML file name, so there's always one suite per file
@@ -77,10 +76,16 @@ To understand what it means for a request to have PASSED, continue on to [Result
 Therefore the above commands include steps for starting and stopping the ply-movies server. Henceforward these steps will be omitted.
 You can start ply-movies once, and stop it whenever you're done running these examples.
 
-### Running a single request
+### Run a single request
 Passing a file name to `ply` executes all requests in sequence. You can also run an individual request by itself:
 ```
 ply test/requests/movie-queries.ply.yaml#moviesByYearAndRating
+```
+
+### Run without verifying
+You can tell Ply to submit *ad hoc* requests without verifying results (see [CLI commands](cli#command-line-only-arguments)):
+```
+ply -x test/requests/movie-queries.ply.yaml
 ```
 
 ## GraphQL

@@ -63,7 +63,7 @@ This enables you to keep secrets for containerized/cloud deployments in PLY_VALU
 
 ## Runtime Values
 As discussed previously under [Results](results#runtime-values), values are automatically supplemented with request/response objects from previous requests
-in the running suite. Thus in a results file you can reference the "id" value from the moviesByYearAndRatting response: `${@moviesByYearAndRating.response.body.movies[1].id}`.
+in the running suite. Thus in a results file you can reference the "id" value from the moviesByYearAndRatting response: `${@moviesByYearAndRating.response.body.movies[0].id}`.
 When populating runtime values, Ply will convert their body contents to objects if they're parseable as JSON. Otherwise, any body content is treated as a raw string.
 
 Furthermore, in Ply [Cases](cases) you can programmatically add runtime values yourself. For example, take a look at the 'update rating' test in ply-demo's 

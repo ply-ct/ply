@@ -95,7 +95,7 @@ In this test, body content is our main concern.
 ### Expressions
 Something else about this example may be noticed by sharp-eyed observers: our request URL contains
 placeholders like `${github.organization}`. Ply supports JavaScript [template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)
-syntax for substituting dynamic values in request files and result files. You can specify values in JSON files and/or environment variables,
+syntax for substituting dynamic values in both requests and results. Values come from JSON files and/or environment variables,
 as described in the docs under [Values](https://ply-ct.github.io/ply/topics/values).
 
 Even more powerfully, your multi-request suites can embed expressions that reference runtime values from previous responses.

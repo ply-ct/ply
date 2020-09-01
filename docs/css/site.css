@@ -9,6 +9,7 @@ h2 {
 }
 h3 {
   font-size: 1.25em;
+  margin-bottom: 10px;
 }
 pre {
   font-size: 14px;
@@ -22,6 +23,7 @@ pre.highlight {
   background: #eceff1;
   border: 1px solid lightgray;
   margin-bottom: 15px;
+  max-height: 400px;
 }
 code {
   background-color: transparent;

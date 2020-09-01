@@ -96,8 +96,7 @@ export class Verifier {
      * Diffs/messages always contain \n newlines.
      */
     verify(actualYaml: string, values: object): Outcome {
-        this.logger.debug(`Expected:\n${this.expectedYaml}\n` +
-                `Actual:\n${actualYaml}\n`);
+        // this.logger.debug(`Expected:\n${this.expectedYaml}\n` + `Actual:\n${actualYaml}\n`);
         const expected = new Code(this.expectedYaml, '#');
         const actual = new Code(actualYaml, '#');
         const diffs = new Compare(this.logger).diffLines(expected.extractCode(), actual.extractCode(), values);
