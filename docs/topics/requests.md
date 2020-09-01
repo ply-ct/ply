@@ -116,12 +116,13 @@ repositoryTopicsQuery:
     }
 ```
 
-To run this in ply-demo:
+Run this in ply-demo with `--verbose` to see how Ply translates GraphQL to a JSON request body:
 ```
-ply test/requests/github-api.ply.yaml#repositoryTopicsQuery
+ply --verbose test/requests/github-api.ply.yaml#repositoryTopicsQuery
 ```
 You'll receive an HTTP 401 (Unauthorized) response unless you include the `githubToken` property
-somewhere in your [values](values) JSON. This is a good candidate for the [PLY_VALUES](values#environment-variable) 
-environment variable, since you wouldn't want to share `githubToken` in version control.
+somewhere in your [values](values). Follow the [GitHub token guide](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)
+to obtain your personal access token. This is a good candidate for the [PLY_VALUES](values#environment-variable) 
+environment variable, since you don't want to share your access token in version control.
 
 Next Topic: [Results](results)

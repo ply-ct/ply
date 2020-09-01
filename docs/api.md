@@ -1,6 +1,8 @@
 ---
 layout: frame
 ---
-<iframe class="frame"
-  src="../api-docs/globals.html">
-</iframe>
+<div style="height:150px">
+</div>
+<div>
+  NO IFRAME HERE
+</div>
