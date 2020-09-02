@@ -62,6 +62,11 @@ export interface Options {
      */
     bail?: boolean;
     /**
+     * Import requests or values from external format (currently 'postman' is supported).
+     * Overwrites existing same-named files.
+     */
+    import?: string;
+    /**
      * Predictable ordering of response body JSON property keys -- needed for verification (true).
      */
     responseBodySortedKeys?: boolean;
@@ -88,6 +93,7 @@ export interface PlyOptions extends Options {
     verbose: boolean;
     quiet: boolean;
     bail: boolean;
+    import?: string;
     responseBodySortedKeys: boolean;
     prettyIndent: number;
     args?: any;
@@ -211,6 +217,11 @@ export class Config {
         bail: {
             describe: 'Stop on first failure'
         },
+        import: {
+            describe: 'Import requests/values from (\'postman\')',
+            alias: 'i',
+            type: 'string'
+        },
         create: {
             describe: 'Create expected result from actual',
             type: 'boolean'
@@ -296,6 +307,10 @@ export class Config {
             }
             return obj;
         }, {});
+        // default import format
+        if (options.import === '') {
+            options.import = 'postman';
+        }
         // run options
         options.runOptions = {};
         if (options.exercise) {

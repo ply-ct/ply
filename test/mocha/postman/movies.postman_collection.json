@@ -1,0 +1,228 @@
+{
+	"info": {
+		"_postman_id": "8b515e62-26e0-48b2-acfa-46dd1c738913",
+		"name": "movies",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "by rating",
+			"item": [
+				{
+					"name": "good",
+					"item": [
+						{
+							"name": "good movies after 1935",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}?rating=>3.5&year=>1935",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"query": [
+										{
+											"key": "rating",
+											"value": ">3.5"
+										},
+										{
+											"key": "year",
+											"value": ">1935"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "great",
+					"item": [
+						{
+							"name": "great movies of 1931",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}?rating=5&year=1931",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"query": [
+										{
+											"key": "rating",
+											"value": "5"
+										},
+										{
+											"key": "year",
+											"value": "1931"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "great movies after 1935",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}?rating=5&year=>1935",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"query": [
+										{
+											"key": "rating",
+											"value": "5"
+										},
+										{
+											"key": "year",
+											"value": ">1935"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "five stars",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}?rating=5",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"query": [
+								{
+									"key": "rating",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "actors",
+			"item": [
+				{
+					"name": "Lugosi",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}?search=Bela%20Lugosi",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "Bela%20Lugosi"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Karloff",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}?search=Boris%20Karloff",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "Boris%20Karloff"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "after 1935",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}?year=>1935",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"query": [
+						{
+							"key": "year",
+							"value": ">1935"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/38a917a5",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"38a917a5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"credits\": [\n    {\n        \"name\": \"Alan Crosland\",\n        \"role\": \"director\"\n    },\n    {\n        \"name\": \"Warren William\",\n        \"role\": \"actor\"\n    },\n    {\n        \"name\": \"Mary Astor\",\n        \"role\": \"actor\"\n    },\n    {\n        \"name\": \"Allen Jenkins\",\n        \"role\": \"actor\"\n    },\n    {\n        \"name\": \"Grant Mitchell\",\n        \"role\": \"actor\"\n    },\n    {\n        \"name\": \"Helen Trenholme\",\n        \"role\": \"actor\"\n    }\n    ],\n    \"poster\": \"cothd.jpg\",\n    \"title\": \"The Case of the Howling Dog\",\n    \"webRef\": {\n    \"ref\": \"tt0024958\",\n    \"site\": \"imdb.com\"\n    },\n    \"year\": 1934\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}",
+					"host": [
+						"{{baseUrl}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

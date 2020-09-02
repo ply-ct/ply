@@ -1,0 +1,66 @@
+{
+	"info": {
+		"_postman_id": "e4e9d00d-a5ed-4020-9670-fe41458e0daf",
+		"name": "GitHub",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "repositoryTopicsQuery",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"query\": \"query {\\n  repository(owner:\\\"ply-ct\\\", name:\\\"ply\\\") {\\n    repositoryTopics(last:20) {\\n      edges {\\n        node {\\n          topic {\\n            name\\n\\n         }\\n        }\\n      }\\n    }\\n  }\\n}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.github.com/graphql",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "repositoryTopicsGraphql",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query {\n  repository(owner: \"ply-ct\", name: \"ply\") {\n    repositoryTopics(last: 20) {\n      edges {\n        node {\n          topic {\n            name\n          }\n        }\n      }\n    }\n  }  \n}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "https://api.github.com/graphql",
+					"protocol": "https",
+					"host": [
+						"api",
+						"github",
+						"com"
+					],
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

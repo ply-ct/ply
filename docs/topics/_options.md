@@ -14,5 +14,6 @@
 | **<code>verbose</code>**<br>**<code>--verbose</code>** | `false` | Display debug/verbose logging output. Takes precedence over 'quiet' if both are true.
 | **<code>quiet</code>**<br>**<code>--quiet</code>** | `false` | The opposite of 'verbose'. Only error/status output is logged.
 | **<code>bail</code>**<br>**<code>--bail</code>** | `false` | Stop execution on first failure.
+| **<code>import</code>**<br>**<code>--import, -i</code>** | | Import requests or values from specified format. Currently Postman ('postman') is the default and only supported format. Overwrites existing same-named files.
 | **<code>responseBodySortedKeys</code>**<br>**<code>--responseBodySortedKeys</code>** | `true` | Predictable ordering of response body JSON property keys in result files. Usually needed for verification.
 | **<code>prettyIndent</code>**<br>**<code>--prettyIndent</code>** | `2` | JSON format indenting for response body content in result files.
