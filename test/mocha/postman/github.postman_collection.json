@@ -12,7 +12,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"query\": \"query {\\n  repository(owner:\\\"ply-ct\\\", name:\\\"ply\\\") {\\n    repositoryTopics(last:20) {\\n      edges {\\n        node {\\n          topic {\\n            name\\n\\n         }\\n        }\\n      }\\n    }\\n  }\\n}\"\n}",
+					"raw": "{\n  \"query\": \"query {\\n  repository(owner: \\\"ply-ct\\\", name: \\\"ply\\\") {\\n    repositoryTopics(last: 20) {\\n      edges {\\n        node {\\n          topic {\\n            name\\n          }\\n        }\\n      }\\n    }\\n  }\\n}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -42,7 +42,7 @@
 				"body": {
 					"mode": "graphql",
 					"graphql": {
-						"query": "query {\n  repository(owner: \"ply-ct\", name: \"ply\") {\n    repositoryTopics(last: 20) {\n      edges {\n        node {\n          topic {\n            name\n          }\n        }\n      }\n    }\n  }  \n}",
+						"query": "query {\n  repository(owner: \"ply-ct\", name: \"ply\") {\n    repositoryTopics(last: 20) {\n      edges {\n        node {\n          topic {\n            name\n          }\n        }\n      }\n    }\n  }\n}",
 						"variables": ""
 					}
 				},

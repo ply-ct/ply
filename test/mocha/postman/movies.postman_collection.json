@@ -204,10 +204,16 @@
 			"name": "create",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"credits\": [\n    {\n        \"name\": \"Alan Crosland\",\n        \"role\": \"director\"\n    },\n    {\n        \"name\": \"Warren William\",\n        \"role\": \"actor\"\n    },\n    {\n        \"name\": \"Mary Astor\",\n        \"role\": \"actor\"\n    },\n    {\n        \"name\": \"Allen Jenkins\",\n        \"role\": \"actor\"\n    },\n    {\n        \"name\": \"Grant Mitchell\",\n        \"role\": \"actor\"\n    },\n    {\n        \"name\": \"Helen Trenholme\",\n        \"role\": \"actor\"\n    }\n    ],\n    \"poster\": \"cothd.jpg\",\n    \"title\": \"The Case of the Howling Dog\",\n    \"webRef\": {\n    \"ref\": \"tt0024958\",\n    \"site\": \"imdb.com\"\n    },\n    \"year\": 1934\n}",
+					"raw": "{\n    \"credits\": [\n    {\n        \"name\": \"Alan Crosland\",\n        \"role\": \"director\"\n    },\n    {\n        \"name\": \"Warren William\",\n        \"role\": \"actor\"\n    },\n    {\n        \"name\": \"Mary Astor\",\n        \"role\": \"actor\"\n    },\n    {\n        \"name\": \"Allen Jenkins\",\n        \"role\": \"actor\"\n    },\n    {\n        \"name\": \"Grant Mitchell\",\n        \"role\": \"actor\"\n    },\n    {\n        \"name\": \"Helen Trenholme\",\n        \"role\": \"actor\"\n    }\n    ],\n    \"poster\": \"cothd.jpg\",\n    \"title\": \"The Case of the Howling Dog\",\n    \"webRef\": {\n        \"ref\": \"tt0024958\",\n        \"site\": \"imdb.com\"\n    },\n    \"year\": 1934\n}",
 					"options": {
 						"raw": {
 							"language": "json"

@@ -1,5 +1,4 @@
 import { Retrieval } from './retrieval';
-import { Location } from './location';
 import { Storage } from './storage';
 import { Logger } from './logger';
 import * as yaml from './yaml';
@@ -16,13 +15,9 @@ export class Import {
     ) { }
 
     async doImport(retrieval: Retrieval): Promise<void> {
-        const from = await retrieval.read();
-        if (!from) {
-            throw new Error(`Import source not found: ${retrieval.location}`);
-        }
         switch(this.format) {
             case 'postman': {
-                new Postman(this.root, this.logger, this.indent).import(from);
+                new Postman(this.root, this.logger, this.indent).import(retrieval);
             }
         }
 
@@ -30,13 +25,13 @@ export class Import {
 }
 
 export interface Importer {
-    import(from: string): Promise<void>;
+    import(from: Retrieval): Promise<void>;
 }
 
 interface Request {
     url: string;
     method: string;
-    headers: {[key: string]: string};
+    headers?: {[key: string]: string};
     body?: string;
 }
 
@@ -50,8 +45,12 @@ export class Postman implements Importer {
         readonly indent: number
     ) { }
 
-    async import(from: string): Promise<void> {
-        const obj = JSON.parse(from);
+    async import(from: Retrieval): Promise<void> {
+        const contents = await from.read();
+        if (!contents) {
+            throw new Error(`Import source not found: ${from.location}`);
+        }
+        const obj = JSON.parse(contents);
         this.storagePathToRequestsObj.clear();
         if (obj.values) {
             const values: any = {};
@@ -63,16 +62,16 @@ export class Postman implements Importer {
             // TODO save values
         } else if (obj.item) {
             // requests
-            let name = new Location(from).name;
-            const dot = name.lastIndexOf('.');
-            if (dot > 0) {
-                name = name.substring(0, dot);
+            let name = from.location.base;
+            const dotPc = name.lastIndexOf('.postman_collection');
+            if (dotPc > 0) {
+                name = name.substring(0, dotPc);
             }
             this.processItem(`${this.root}/${name}`, obj.item);
             for (const [path, requestsObj] of this.storagePathToRequestsObj) {
                 const storage = new Storage(path);
                 if (storage.exists) {
-                    this.logger.info(`Overwritng: ${storage}`);
+                    this.logger.info(`Overwriting: ${storage}`);
                 } else {
                     this.logger.info(`Creating: ${storage}`);
                 }
@@ -108,29 +107,35 @@ export class Postman implements Importer {
 
     private translateRequest(postmanRequest: any): Request {
         const request: Request = {
-            url: postmanRequest.url.raw,
-            method: postmanRequest.method,
-            headers: {}
+            url: this.replaceExpressions(postmanRequest.url.raw),
+            method: this.replaceExpressions(postmanRequest.method)
         };
-        if (postmanRequest.header) {
+        if (postmanRequest.header && postmanRequest.header.length > 0) {
+            request.headers = {};
             for (const head of postmanRequest.header) {
-                request.headers[head.key] = head.value;
+                request.headers[head.key] = this.replaceExpressions(head.value);
             }
         }
         if (postmanRequest.body) {
             if (typeof postmanRequest.body === 'string') {
-                request.body = postmanRequest.body;
+                request.body = this.replaceExpressions(postmanRequest.body);
             } else {
                 const mode = postmanRequest.body.mode;
                 if (mode === 'graphql') {
-                    request.body = postmanRequest.body.graphql;
+                    request.body = this.replaceExpressions(postmanRequest.body.graphql.query);
                 } else if (mode === 'raw') {
-                    request.body = postmanRequest.body.raw;
+                    request.body = this.replaceExpressions(postmanRequest.body.raw);
                 } else {
                     throw new Error(`Unsupported request body mode: ${postmanRequest.body.mode}`);
                 }
             }
         }
         return request;
+    }
+
+    private replaceExpressions(input: string): string {
+        return input.replace(/\{\{(.*?)}}/g, function(_a, b) {
+            return '${' + b + '}';
+        });
     }
 }
