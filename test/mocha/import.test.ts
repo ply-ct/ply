@@ -17,7 +17,6 @@ describe('Import', () => {
         await importer.doImport(retrieval);
 
         const ply = new Ply();
-        console.log("READING: " + `${root}/movies.ply.yaml`);
         const topRequests = ply.loadSuiteSync(`${root}/movies.ply.yaml`);
         assert.ok(topRequests);
 
@@ -74,8 +73,10 @@ describe('Import', () => {
         assert.equal(repositoryTopicsQuery.headers.Authorization, 'Bearer ${githubToken}');
         assert.ok(repositoryTopicsQuery.body);
         const repositoryTopicsQueryBody = JSON.parse(repositoryTopicsQuery.body);
-        const repositoryTopicsQueryQuery = repositoryTopicsQueryBody.query;
+        let repositoryTopicsQueryQuery = repositoryTopicsQueryBody.query;
         assert.ok(repositoryTopicsQueryQuery);
+        // unescape for comparison
+        repositoryTopicsQueryQuery = repositoryTopicsQueryQuery.replace(/\\n/g, '\n').replace(/\\"/g, '"');
 
         const repositoryTopicsGraphql = githubRequests.get('repositoryTopicsGraphql') as Request;
         assert.equal(repositoryTopicsGraphql.url, 'https://api.github.com/graphql');

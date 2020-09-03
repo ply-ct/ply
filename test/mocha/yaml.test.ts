@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as assert from 'assert';
-import * as jsYaml from 'js-yaml';
 import * as yaml from '../../src/yaml';
 import { Retrieval } from '../../src/retrieval';
 
@@ -52,4 +51,28 @@ describe('yaml', () => {
         assert.equal(obj['baz'].__start, 17);
         assert.equal(obj['baz'].__end, 18);
     });
+
+    it('handles escaped string content', async () => {
+        const missive = 'Dear Sir,\n\nGo jump in the "lake".\n\n - A Friend';
+
+        const file = 'test/mocha/requests/raw-requests.ply.yaml';
+        const yml = fs.readFileSync(file, 'utf-8');
+        const obj = yaml.load(file, yml, true);
+
+        const rawRequestFlow = obj.rawRequestFlow;
+        assert.ok(rawRequestFlow.body);
+        const rawRequestFlowBody = JSON.parse(rawRequestFlow.body);
+        assert.equal(rawRequestFlowBody.myGreeting, 'Hello');
+        assert.equal(rawRequestFlowBody.myNumber, 1234);
+        assert.equal(rawRequestFlowBody.myMissive, missive);
+
+        const rawRequestBlock = obj.rawRequestBlock;
+        assert.ok(rawRequestBlock.body);
+        assert.equal(rawRequestBlock.body, rawRequestFlow.body);
+        const rawRequestBlockBody = JSON.parse(rawRequestBlock.body);
+        assert.equal(rawRequestBlockBody.myGreeting, 'Hello');
+        assert.equal(rawRequestBlockBody.myNumber, 1234);
+        assert.equal(rawRequestBlockBody.myMissive, missive);
+    });
+
 });

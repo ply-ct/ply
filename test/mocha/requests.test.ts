@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import { Ply, Plier } from '../../src/ply';
 import { Config } from '../../src/options';
-import { PlyRequest } from '../../src/request';
+import { Request, PlyRequest } from '../../src/request';
 import { Storage } from '../../src/storage';
 import { Values } from '../../src/values';
 
@@ -62,12 +62,33 @@ describe('Requests', async () => {
     it('rejects missing url', async () => {
         const ply = new Ply();
         await assert.rejects(async () => {
-            return ply.loadRequests(['test/ply/requests/bad-requests.ply.yaml']);
+            return ply.loadRequests(['test/mocha/requests/bad-requests.ply.yaml']);
         },
         {
             name: 'Error',
-            message: "Request missingUrl in test/ply/requests/bad-requests.ply.yaml is missing 'url'"
+            message: "Request missingUrl in test/mocha/requests/bad-requests.ply.yaml is missing 'url'"
         });
+    });
+
+    it('can load raw requests', async () => {
+        const missive = 'Dear Sir,\n\nGo jump in the "lake".\n\n - A Friend';
+        const ply = new Ply();
+        const suite = await ply.loadSuite('test/mocha/requests/raw-requests.ply.yaml');
+
+        const rawRequestFlow = suite.get('rawRequestFlow') as Request;
+        assert.ok(rawRequestFlow.body);
+        const rawRequestFlowBody = JSON.parse(rawRequestFlow.body);
+        assert.equal(rawRequestFlowBody.myGreeting, 'Hello');
+        assert.equal(rawRequestFlowBody.myNumber, 1234);
+        assert.equal(rawRequestFlowBody.myMissive, missive);
+
+        const rawRequestBlock = suite.get('rawRequestBlock') as Request;
+        assert.ok(rawRequestBlock.body);
+        // assert.equal(rawRequestBlock.body, rawRequestFlow.body);
+        const rawRequestBlockBody = JSON.parse(rawRequestBlock.body);
+        assert.equal(rawRequestBlockBody.myGreeting, 'Hello');
+        assert.equal(rawRequestBlockBody.myNumber, 1234);
+        assert.equal(rawRequestBlockBody.myMissive, missive);
     });
 
     it('can handle success', async () => {

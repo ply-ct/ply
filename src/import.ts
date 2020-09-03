@@ -76,7 +76,6 @@ export class Postman implements Importer {
                     this.logger.info(`Creating: ${storage}`);
                 }
                 storage.write(yaml.dump(requestsObj, this.indent));
-                console.log("WRITTEN: " + storage.toString());
             }
         }
     }
@@ -119,19 +118,46 @@ export class Postman implements Importer {
         }
         if (postmanRequest.body) {
             if (typeof postmanRequest.body === 'string') {
-                request.body = this.replaceExpressions(postmanRequest.body);
+                let stringBody = postmanRequest.body;
+                if (this.isJson(postmanRequest, stringBody)) {
+                    stringBody = this.fixEscaping(stringBody);
+                }
+                request.body = this.replaceExpressions(stringBody);
             } else {
                 const mode = postmanRequest.body.mode;
                 if (mode === 'graphql') {
                     request.body = this.replaceExpressions(postmanRequest.body.graphql.query);
                 } else if (mode === 'raw') {
-                    request.body = this.replaceExpressions(postmanRequest.body.raw);
+                    let rawBody = postmanRequest.body.raw;
+                    if (this.isJson(postmanRequest, rawBody)) {
+                        rawBody = this.fixEscaping(rawBody);
+                    }
+                    request.body = this.replaceExpressions(rawBody);
                 } else {
                     throw new Error(`Unsupported request body mode: ${postmanRequest.body.mode}`);
                 }
             }
         }
         return request;
+    }
+
+    private isJson(postmanRequest: any, bodyContent: string): boolean {
+        if (postmanRequest.body?.options?.raw?.language === 'json') {
+            return true;
+        }
+        if (bodyContent.startsWith('{') && bodyContent.endsWith('}')) {
+            try {
+                JSON.parse(bodyContent);
+                return true;
+            } catch (err) {
+                this.logger.debug(`Request not parseable as JSON: ${err.message}`);
+            }
+        }
+        return false;
+    }
+
+    private fixEscaping(jsonContent: string): string {
+        return jsonContent.replace(/\\/g, '\\\\').replace(/\\\\"/g, '\\\\\\"');
     }
 
     private replaceExpressions(input: string): string {
