@@ -4,7 +4,6 @@ import { Import } from '../../src/import';
 import { Logger } from '../../src/logger';
 import { Ply } from '../../src/ply';
 import { Request } from '../../src/request';
-import { Storage } from '../../src/storage';
 
 describe('Import', () => {
 
@@ -15,9 +14,10 @@ describe('Import', () => {
         assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
         const importer = new Import('postman', root, new Logger(), 2);
-        importer.doImport(retrieval);
+        await importer.doImport(retrieval);
 
         const ply = new Ply();
+        console.log("READING: " + `${root}/movies.ply.yaml`);
         const topRequests = ply.loadSuiteSync(`${root}/movies.ply.yaml`);
         assert.ok(topRequests);
 
@@ -62,7 +62,7 @@ describe('Import', () => {
         assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
         const importer = new Import('postman', root, new Logger(), 2);
-        importer.doImport(retrieval);
+        await importer.doImport(retrieval);
 
         const ply = new Ply();
         const githubRequests = ply.loadSuiteSync(`${root}/github.ply.yaml`);
@@ -71,6 +71,7 @@ describe('Import', () => {
         const repositoryTopicsQuery = githubRequests.get('repositoryTopicsQuery') as Request;
         assert.equal(repositoryTopicsQuery.url, 'https://api.github.com/graphql');
         assert.equal(repositoryTopicsQuery.method, 'POST');
+        assert.equal(repositoryTopicsQuery.headers.Authorization, 'Bearer ${githubToken}');
         assert.ok(repositoryTopicsQuery.body);
         const repositoryTopicsQueryBody = JSON.parse(repositoryTopicsQuery.body);
         const repositoryTopicsQueryQuery = repositoryTopicsQueryBody.query;
@@ -79,6 +80,7 @@ describe('Import', () => {
         const repositoryTopicsGraphql = githubRequests.get('repositoryTopicsGraphql') as Request;
         assert.equal(repositoryTopicsGraphql.url, 'https://api.github.com/graphql');
         assert.equal(repositoryTopicsGraphql.method, 'POST');
+        assert.equal(repositoryTopicsGraphql.headers.Authorization, 'Bearer ${githubToken}');
         assert.ok(repositoryTopicsGraphql.body);
         const repositoryTopicsGraphqlBody = repositoryTopicsGraphql.body;
         assert.equal(repositoryTopicsGraphqlBody, repositoryTopicsQueryQuery);

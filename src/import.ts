@@ -17,7 +17,7 @@ export class Import {
     async doImport(retrieval: Retrieval): Promise<void> {
         switch(this.format) {
             case 'postman': {
-                new Postman(this.root, this.logger, this.indent).import(retrieval);
+                await new Postman(this.root, this.logger, this.indent).import(retrieval);
             }
         }
 
@@ -76,6 +76,7 @@ export class Postman implements Importer {
                     this.logger.info(`Creating: ${storage}`);
                 }
                 storage.write(yaml.dump(requestsObj, this.indent));
+                console.log("WRITTEN: " + storage.toString());
             }
         }
     }

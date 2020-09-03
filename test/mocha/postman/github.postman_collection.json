@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "e4e9d00d-a5ed-4020-9670-fe41458e0daf",
+		"_postman_id": "b1165921-97a0-403b-89b5-a17a7b793d79",
 		"name": "GitHub",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -9,7 +9,13 @@
 			"name": "repositoryTopicsQuery",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{githubToken}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n  \"query\": \"query {\\n  repository(owner: \\\"ply-ct\\\", name: \\\"ply\\\") {\\n    repositoryTopics(last: 20) {\\n      edges {\\n        node {\\n          topic {\\n            name\\n          }\\n        }\\n      }\\n    }\\n  }\\n}\"\n}",
@@ -38,7 +44,13 @@
 			"name": "repositoryTopicsGraphql",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{githubToken}}",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "graphql",
 					"graphql": {
