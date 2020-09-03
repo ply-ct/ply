@@ -4,20 +4,22 @@ import { Import } from '../../src/import';
 import { Logger } from '../../src/logger';
 import { Ply } from '../../src/ply';
 import { Request } from '../../src/request';
+import { Values } from '../../src/values';
 
 describe('Import', () => {
 
-    const root = 'test/mocha/postman/requests';
+    const reqRoot = 'test/mocha/postman/requests';
+    const valRoot = 'test/mocha/postman/values';
 
     it('should import postman requests', async () => {
         const retrieval = new Retrieval('test/mocha/postman/movies.postman_collection.json');
         assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
-        const importer = new Import('postman', root, new Logger(), 2);
+        const importer = new Import('postman', reqRoot, new Logger(), 2);
         await importer.doImport(retrieval);
 
         const ply = new Ply();
-        const topRequests = ply.loadSuiteSync(`${root}/movies.ply.yaml`);
+        const topRequests = ply.loadSuiteSync(`${reqRoot}/movies.ply.yaml`);
         assert.ok(topRequests);
 
         const after1935 = topRequests.get('after 1935') as Request;
@@ -33,7 +35,7 @@ describe('Import', () => {
         assert.equal(movie.title, 'The Case of the Howling Dog');
         assert.equal(movie.year, 1934);
 
-        const moviesRequests = ply.loadSuiteSync(`${root}/movies/actors.ply.yaml`);
+        const moviesRequests = ply.loadSuiteSync(`${reqRoot}/movies/actors.ply.yaml`);
         assert.ok(moviesRequests);
 
         const lugosi = moviesRequests.get('Lugosi') as Request;
@@ -44,7 +46,7 @@ describe('Import', () => {
         assert.equal(karloff.url, '${baseUrl}?search=Boris%20Karloff');
         assert.equal(karloff.method, 'GET');
 
-        const greatRequests = ply.loadSuiteSync(`${root}/movies/by rating/great.ply.yaml`);
+        const greatRequests = ply.loadSuiteSync(`${reqRoot}/movies/by rating/great.ply.yaml`);
         assert.ok(greatRequests);
 
         const greatsOf1931 = greatRequests.get('great movies of 1931') as Request;
@@ -58,13 +60,12 @@ describe('Import', () => {
 
     it('should import postman graphql', async () => {
         const retrieval = new Retrieval('test/mocha/postman/github.postman_collection.json');
-        assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
-        const importer = new Import('postman', root, new Logger(), 2);
+        const importer = new Import('postman', reqRoot, new Logger(), 2);
         await importer.doImport(retrieval);
 
         const ply = new Ply();
-        const githubRequests = ply.loadSuiteSync(`${root}/github.ply.yaml`);
+        const githubRequests = ply.loadSuiteSync(`${reqRoot}/github.ply.yaml`);
         assert.ok(githubRequests);
 
         const repositoryTopicsQuery = githubRequests.get('repositoryTopicsQuery') as Request;
@@ -88,6 +89,14 @@ describe('Import', () => {
     });
 
     it('should import postman values', async () => {
+        const retrieval = new Retrieval('test/mocha/postman/localhost.postman_environment.json');
+        assert.ok(await retrieval.exists);
+        const importer = new Import('postman', valRoot, new Logger(), 2);
+        await importer.doImport(retrieval);
+        const values = new Values([`${valRoot}/localhost.json`], new Logger());
+        const obj = await values.read();
+        assert.ok(obj);
+        assert.equal(obj.baseUrl, 'http://localhost:8080/movies');
     });
 
 });

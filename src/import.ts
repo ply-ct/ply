@@ -1,4 +1,5 @@
 import { Retrieval } from './retrieval';
+import { Location } from './location';
 import { Storage } from './storage';
 import { Logger } from './logger';
 import * as yaml from './yaml';
@@ -20,7 +21,6 @@ export class Import {
                 await new Postman(this.root, this.logger, this.indent).import(retrieval);
             }
         }
-
     }
 }
 
@@ -53,31 +53,42 @@ export class Postman implements Importer {
         const obj = JSON.parse(contents);
         this.storagePathToRequestsObj.clear();
         if (obj.values) {
+            // values
+            const name = this.baseName(from.location, 'postman_environment');
             const values: any = {};
             for (const value of obj.values) {
                 if (value.enabled) {
                     values[value.key] = value.value;
                 }
             }
-            // TODO save values
+            this.writeStorage(`${this.root}/${name}.json`, JSON.stringify(values, null, this.indent));
         } else if (obj.item) {
             // requests
-            let name = from.location.base;
-            const dotPc = name.lastIndexOf('.postman_collection');
-            if (dotPc > 0) {
-                name = name.substring(0, dotPc);
-            }
+            const name = this.baseName(from.location, 'postman_collection');
             this.processItem(`${this.root}/${name}`, obj.item);
             for (const [path, requestsObj] of this.storagePathToRequestsObj) {
-                const storage = new Storage(path);
-                if (storage.exists) {
-                    this.logger.info(`Overwriting: ${storage}`);
-                } else {
-                    this.logger.info(`Creating: ${storage}`);
-                }
-                storage.write(yaml.dump(requestsObj, this.indent));
+                this.writeStorage(path, yaml.dump(requestsObj, this.indent));
             }
         }
+    }
+
+    private baseName(location: Location, suffix: string): string {
+        let name = location.base;
+        const dotPc = name.lastIndexOf(`.${suffix}`);
+        if (dotPc > 0) {
+            name = name.substring(0, dotPc);
+        }
+        return name;
+    }
+
+    private writeStorage(path: string, content: string) {
+        const storage = new Storage(path);
+        if (storage.exists) {
+            this.logger.info(`Overwriting: ${storage}`);
+        } else {
+            this.logger.info(`Creating: ${storage}`);
+        }
+        storage.write(content);
     }
 
     private processItem(path: string, item: any[]) {
