@@ -43,4 +43,9 @@ describe('subst', () => {
         assert.equal(res, 'http://localhost:3000/movies/eec22a97');
     });
 
+    it('retains escaped characters', () => {
+        const before = 'Dear Sir,\\n\\nGo jump in the \\"lake\\".\\n\\n - A Friend';
+        const after = subst.replace(before, {}, logger);
+        assert.equal(before, after);
+    });
 });

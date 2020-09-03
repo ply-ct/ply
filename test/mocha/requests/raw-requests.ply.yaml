@@ -1,11 +1,4 @@
-# these requests show how to escape newlines and quotes in body content
-rawRequestFlow:
-  url: 'http://example.com/nothing'
-  method: POST
-  headers:
-    Content-Type: application/json
-  body: "{\n  \"myGreeting\": \"Hello\",\n  \"myNumber\": 1234,\n  \"myMissive\": \"Dear Sir,\\n\\nGo jump in the \\\"lake\\\".\\n\\n - A Friend\"\n}"
-
+# these requests show how to escape newlines and quotes in body content json
 rawRequestBlock:
   url: 'http://example.com/nothing'
   method: POST
@@ -18,15 +11,22 @@ rawRequestBlock:
       "myMissive": "Dear Sir,\n\nGo jump in the \"lake\".\n\n - A Friend"
     }
 
+rawRequestFlow:
+  url: 'http://example.com/nothing'
+  method: POST
+  headers:
+    Content-Type: application/json
+  body: "{\n  \"myGreeting\": \"Hello\",\n  \"myNumber\": 1234,\n  \"myMissive\": \"Dear Sir,\\n\\nGo jump in the \\\"lake\\\".\\n\\n - A Friend\"\n}"
+
 # translated from postman
-rawGraphQlBlockLiteral:
+rawGraphQlBlock:
   url: 'https://api.github.com/graphql'
   method: POST
   headers:
     Authorization: 'Bearer ${githubToken}'
   body: |-
     {
-      "query": "query {\\n  repository(owner: \\\"ply-ct\\\", name: \\\"ply\\\") {\\n    repositoryTopics(last: 20) {\\n      edges {\\n        node {\\n          topic {\\n            name\\n          }\\n        }\\n      }\\n    }\\n  }\\n}"
+      "query": "query {\n  repository(owner: \"ply-ct\", name: \"ply\") {\n    repositoryTopics(last: 20) {\n      edges {\n        node {\n          topic {\n            name\n          }\n        }\n      }\n    }\n  }\n}"
     }
 
 rawGraphQlFlow:
@@ -34,5 +34,5 @@ rawGraphQlFlow:
   method: POST
   headers:
     Authorization: 'Bearer ${githubToken}'
-  body: "{\n  \"query\": \"query {\\\\n  repository(owner: \\\\\"ply-ct\\\\\", name: \\\\\"ply\\\\\") {\\\\n    repositoryTopics(last: 20) {\\\\n      edges {\\\\n        node {\\\\n          topic {\\\\n            name\\\\n          }\\\\n        }\\\\n      }\\\\n    }\\\\n  }\\\\n}\"\n}"
+  body: "{\n  \"query\": \"query {\\n  repository(owner: \\\"ply-ct\\\", name: \\\"ply\\\") {\\n    repositoryTopics(last: 20) {\\n      edges {\\n        node {\\n          topic {\\n            name\\n          }\\n        }\\n      }\\n    }\\n  }\\n}\"\n}"
 

@@ -84,7 +84,7 @@ describe('Requests', async () => {
 
         const rawRequestBlock = suite.get('rawRequestBlock') as Request;
         assert.ok(rawRequestBlock.body);
-        // assert.equal(rawRequestBlock.body, rawRequestFlow.body);
+        assert.equal(rawRequestBlock.body, rawRequestFlow.body);
         const rawRequestBlockBody = JSON.parse(rawRequestBlock.body);
         assert.equal(rawRequestBlockBody.myGreeting, 'Hello');
         assert.equal(rawRequestBlockBody.myNumber, 1234);

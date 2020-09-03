@@ -118,21 +118,13 @@ export class Postman implements Importer {
         }
         if (postmanRequest.body) {
             if (typeof postmanRequest.body === 'string') {
-                let stringBody = postmanRequest.body;
-                if (this.isJson(postmanRequest, stringBody)) {
-                    stringBody = this.fixEscaping(stringBody);
-                }
-                request.body = this.replaceExpressions(stringBody);
+                request.body = this.replaceExpressions(postmanRequest.body);
             } else {
                 const mode = postmanRequest.body.mode;
                 if (mode === 'graphql') {
                     request.body = this.replaceExpressions(postmanRequest.body.graphql.query);
                 } else if (mode === 'raw') {
-                    let rawBody = postmanRequest.body.raw;
-                    if (this.isJson(postmanRequest, rawBody)) {
-                        rawBody = this.fixEscaping(rawBody);
-                    }
-                    request.body = this.replaceExpressions(rawBody);
+                    request.body = this.replaceExpressions(postmanRequest.body.raw);
                 } else {
                     throw new Error(`Unsupported request body mode: ${postmanRequest.body.mode}`);
                 }
@@ -154,10 +146,6 @@ export class Postman implements Importer {
             }
         }
         return false;
-    }
-
-    private fixEscaping(jsonContent: string): string {
-        return jsonContent.replace(/\\/g, '\\\\').replace(/\\\\"/g, '\\\\\\"');
     }
 
     private replaceExpressions(input: string): string {

@@ -18,7 +18,14 @@ export function timestamp(date: Date, withTimeZone = false): string {
 }
 
 /**
- * split a string into an array of lines
+ * Remove windows newline characters (\r)
+ */
+export function newlines(input: string): string {
+    return input.replace(/\r/g, '');
+}
+
+/**
+ * split a string into an array of lines, ignoring escaped
  */
 export function lines(input: string): string[] {
     return input.split(/\r?\n/);

@@ -73,10 +73,10 @@ describe('Import', () => {
         assert.equal(repositoryTopicsQuery.headers.Authorization, 'Bearer ${githubToken}');
         assert.ok(repositoryTopicsQuery.body);
         const repositoryTopicsQueryBody = JSON.parse(repositoryTopicsQuery.body);
-        let repositoryTopicsQueryQuery = repositoryTopicsQueryBody.query;
+        const repositoryTopicsQueryQuery = repositoryTopicsQueryBody.query;
         assert.ok(repositoryTopicsQueryQuery);
         // unescape for comparison
-        repositoryTopicsQueryQuery = repositoryTopicsQueryQuery.replace(/\\n/g, '\n').replace(/\\"/g, '"');
+        // repositoryTopicsQueryQuery = repositoryTopicsQueryQuery.replace(/\\n/g, '\n').replace(/\\"/g, '"');
 
         const repositoryTopicsGraphql = githubRequests.get('repositoryTopicsGraphql') as Request;
         assert.equal(repositoryTopicsGraphql.url, 'https://api.github.com/graphql');

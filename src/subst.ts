@@ -6,19 +6,23 @@ import * as util from './util';
  * Evaluate the input expression vs context.
  */
 function get(input: string, context: object, logger: Logger, explain = false): string {
-        const params = [
-            'const tagged = (' + Object.keys(context).join(', ') + ') => {',
-            '    return `' + input + '`;',
-            '}',
-            'return tagged(...Object.values(context))'
-        ].join('\n');
 
-        if (explain) {
-            logger.debug('params: ' + params);
-        }
+    // escape all \, and escape regex $ prefix
+    const escaped = input.replace(/\\/g, '\\\\').replace(/\${~/g, '\\${~');
 
-        const handler = new Function('context', params);
-        return handler(context);
+    const params = [
+        'const tagged = (' + Object.keys(context).join(', ') + ') => {',
+        '    return `' + escaped + '`;',
+        '}',
+        'return tagged(...Object.values(context))'
+    ].join('\n');
+
+    if (explain) {
+        logger.debug('params: ' + params);
+    }
+
+    const handler = new Function('context', params);
+    return handler(context);
 }
 
 /**
@@ -30,8 +34,7 @@ export function replace(template: string, context: object, logger: Logger, expla
     const lines: string[] = [];
     for (const line of util.lines(template)) {
         try {
-            let l = line.replace(/\${~/g, '\\${~');  // escape regex
-            l = l.replace(/\${@/g, '${' + RESULTS + '.');
+            const l = line.replace(/\${@/g, '${' + RESULTS + '.');
             lines.push(get(l, context, logger, explain));
         } catch (err) {
             if (err.message === `${RESULTS} is not defined`) {
