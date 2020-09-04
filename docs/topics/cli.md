@@ -14,6 +14,7 @@ those that are ignored or skipped).
 | **<code>--help, -h</code>** | Show help
 | **<code>--config, -c</code>** | Specify path to [plyconfig file](config) (overrides default search mechanism)
 | **<code>--exercise, -x</code>** | Submit requests but don't verify actual results against expected (ad hoc run)
+| **<code>--import, -i</code>** | Import requests or values from specified format. Currently 'postman' is the only supported format. Overwrites existing same-named files.
 | **<code>--create</code>** | Create expected result file from actual responses
 | **<code>--useDist</code>** | Import case modules from build output (eg dist) instead of from TypeScript sources
 

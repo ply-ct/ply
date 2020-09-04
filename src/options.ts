@@ -62,11 +62,6 @@ export interface Options {
      */
     bail?: boolean;
     /**
-     * Import requests or values from external format (currently 'postman' is supported).
-     * Overwrites existing same-named files.
-     */
-    import?: string;
-    /**
      * Predictable ordering of response body JSON property keys -- needed for verification (true).
      */
     responseBodySortedKeys?: boolean;
@@ -93,7 +88,6 @@ export interface PlyOptions extends Options {
     verbose: boolean;
     quiet: boolean;
     bail: boolean;
-    import?: string;
     responseBodySortedKeys: boolean;
     prettyIndent: number;
     args?: any;
@@ -112,6 +106,11 @@ export interface RunOptions {
      * Create expected from actual and verify based on that.
      */
     createExpected?: boolean
+    /**
+     * Import requests or values from external format (currently 'postman' is supported).
+     * Overwrites existing same-named files.
+     */
+    import?: string;
     /**
      * Import case suite modules from generated .js instead of .ts source (default = false).
      * This runOption needs to be set in your case's calls to Suite.run (for requests),
@@ -307,21 +306,25 @@ export class Config {
             }
             return obj;
         }, {});
-        // default import format
-        if (options.import === '') {
-            options.import = 'postman';
-        }
         // run options
         options.runOptions = {};
         if (options.exercise) {
             options.runOptions.noVerify = options.exercise;
+            delete options.exercise;
         }
         if (options.create) {
             options.runOptions.createExpected = options.create;
+            delete options.create;
         }
         if (options.useDist) {
             options.runOptions.useDist = options.useDist;
+            delete options.useDist;
         }
+        if (options.import) {
+            options.runOptions.import =  options.import;
+            delete options.import;
+        }
+
         return options;
     }
 
