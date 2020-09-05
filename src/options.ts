@@ -103,9 +103,17 @@ export interface RunOptions {
      */
     noVerify?: boolean
     /**
+     * Skip verify only if expected result does not exist.
+     */
+    noVerifyIfExpectedMissing?: boolean
+    /**
      * Create expected from actual and verify based on that.
      */
     createExpected?: boolean
+    /**
+     * Create expected from actual only if expected does not exist.
+     */
+    createExpectedIfMissing?: boolean
     /**
      * Import requests or values from external format (currently 'postman' is supported).
      * Overwrites existing same-named files.

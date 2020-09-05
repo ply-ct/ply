@@ -186,6 +186,7 @@ export class Suite<T extends Test> {
             return results;
         }
 
+        const expectedExists = await this.runtime.results.expected.exists;
         let resultsStartLine = 0;
 
         const results: Result[] = [];
@@ -216,7 +217,7 @@ export class Suite<T extends Test> {
                     actualYaml = this.buildResultYaml(plyResult, indent);
                     this.runtime.results.actual.append(actualYaml);
                     if (!callingCaseInfo) {
-                        result = this.handleResultRunOptions(test, result, actualYaml, i === 0, runOptions) || result;
+                        result = this.handleResultRunOptions(test, result, actualYaml, i === 0, expectedExists, runOptions) || result;
                         // status could be 'Not Verified' if runOptions so specify
                         if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/workflow is complete)
@@ -232,7 +233,7 @@ export class Suite<T extends Test> {
                 else {
                     // case/workflow run complete -- verify result
                     actualYaml = this.runtime.results.getActualYaml(test.name);
-                    result = this.handleResultRunOptions(test, result, actualYaml, i === 0, runOptions) || result;
+                    result = this.handleResultRunOptions(test, result, actualYaml, i === 0, expectedExists, runOptions) || result;
                     // status could be 'Not Verified' if runOptions so specify
                     if (result.status === 'Pending') {
                         const verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
@@ -322,8 +323,10 @@ export class Suite<T extends Test> {
         }
     }
 
-    private handleResultRunOptions(test: T, result: Result, actualYaml: string, isFirst: boolean, runOptions?: RunOptions): Result | undefined {
-        if (runOptions?.noVerify) {
+    private handleResultRunOptions(test: T, result: Result, actualYaml: string,
+        isFirst: boolean, expectedExists: boolean, runOptions?: RunOptions): Result | undefined {
+
+        if (runOptions?.noVerify || (!expectedExists && runOptions?.noVerifyIfExpectedMissing)) {
             const res = {
                 name: test.name,
                 status: 'Not Verified',
@@ -334,7 +337,7 @@ export class Suite<T extends Test> {
             this.logOutcome(test, res);
             return res;
         }
-        if (runOptions?.createExpected) {
+        if (runOptions?.createExpected || (!expectedExists && runOptions?.createExpectedIfMissing)) {
             if (this.runtime.results.expected.location.isUrl) {
                 throw new Error('Run option createExpected not supported for remote results');
             }
