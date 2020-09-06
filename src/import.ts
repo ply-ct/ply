@@ -1,7 +1,7 @@
 import { Retrieval } from './retrieval';
 import { Location } from './location';
 import { Storage } from './storage';
-import { Logger } from './logger';
+import { Log } from './logger';
 import * as yaml from './yaml';
 
 export type ImportFormat = 'postman';
@@ -11,14 +11,14 @@ export class Import {
     constructor(
         readonly format: ImportFormat,
         readonly root: string,
-        readonly logger: Logger,
-        readonly indent: number
+        readonly indent: number,
+        readonly logger: Log
     ) { }
 
     async doImport(retrieval: Retrieval): Promise<void> {
         switch(this.format) {
             case 'postman': {
-                await new Postman(this.root, this.logger, this.indent).import(retrieval);
+                await new Postman(this.root, this.indent, this.logger).import(retrieval);
             }
         }
     }
@@ -41,8 +41,8 @@ export class Postman implements Importer {
 
     constructor(
         readonly root: string,
-        readonly logger: Logger,
-        readonly indent: number
+        readonly indent: number,
+        readonly logger: Log
     ) { }
 
     async import(from: Retrieval): Promise<void> {

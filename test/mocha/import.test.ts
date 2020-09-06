@@ -15,7 +15,7 @@ describe('Import', () => {
         const retrieval = new Retrieval('test/mocha/postman/movies.postman_collection.json');
         assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
-        const importer = new Import('postman', reqRoot, new Logger(), 2);
+        const importer = new Import('postman', reqRoot, 2, new Logger());
         await importer.doImport(retrieval);
 
         const ply = new Ply();
@@ -61,7 +61,7 @@ describe('Import', () => {
     it('should import postman graphql', async () => {
         const retrieval = new Retrieval('test/mocha/postman/github.postman_collection.json');
         assert.ok(await retrieval.exists);
-        const importer = new Import('postman', reqRoot, new Logger(), 2);
+        const importer = new Import('postman', reqRoot, 2, new Logger());
         await importer.doImport(retrieval);
 
         const ply = new Ply();
@@ -76,8 +76,6 @@ describe('Import', () => {
         const repositoryTopicsQueryBody = JSON.parse(repositoryTopicsQuery.body);
         const repositoryTopicsQueryQuery = repositoryTopicsQueryBody.query;
         assert.ok(repositoryTopicsQueryQuery);
-        // unescape for comparison
-        // repositoryTopicsQueryQuery = repositoryTopicsQueryQuery.replace(/\\n/g, '\n').replace(/\\"/g, '"');
 
         const repositoryTopicsGraphql = githubRequests.get('repositoryTopicsGraphql') as Request;
         assert.equal(repositoryTopicsGraphql.url, 'https://api.github.com/graphql');
@@ -91,7 +89,7 @@ describe('Import', () => {
     it('should import postman values', async () => {
         const retrieval = new Retrieval('test/mocha/postman/localhost.postman_environment.json');
         assert.ok(await retrieval.exists);
-        const importer = new Import('postman', valRoot, new Logger(), 2);
+        const importer = new Import('postman', valRoot, 2, new Logger());
         await importer.doImport(retrieval);
         const values = new Values([`${valRoot}/localhost.json`], new Logger());
         const obj = await values.read();

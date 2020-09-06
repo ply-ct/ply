@@ -11,7 +11,13 @@ export class LogOptions {
     prettyIndent?: number = 0;
 }
 
-export class Logger {
+export interface Log {
+    info(message: string, obj?: any): void;
+    error(message: string, obj?: any): void;
+    debug(message: string, obj?: any): void;
+}
+
+export class Logger implements Log {
 
     private options: LogOptions = {
         level: LogLevel.info,

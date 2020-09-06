@@ -20,7 +20,7 @@ const plier = new Plier(options);
 
 if (runOptions?.import) {
     plier.logger.debug('Options', options);
-    const importer = new Import(runOptions.import as any, options.testsLocation, plier.logger, options.prettyIndent);
+    const importer = new Import(runOptions.import as any, options.testsLocation, options.prettyIndent, plier.logger);
     try {
         for (const path of options.args) {
             plier.logger.info('Importing', path);
