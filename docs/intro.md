@@ -175,7 +175,7 @@ repositoryTopicsQuery:
 <https://ply-ct.github.io/ply/>
 
 ### API
-<https://ply-ct.github.io/ply/api/>
+<https://ply-ct.github.io/ply/api>
 
 ## Demo
 

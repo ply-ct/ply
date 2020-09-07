@@ -218,7 +218,7 @@ export class Suite<T extends Test> {
                     this.runtime.results.actual.append(actualYaml);
                     if (!callingCaseInfo) {
                         result = this.handleResultRunOptions(test, result, actualYaml, i === 0, expectedExists, runOptions) || result;
-                        // status could be 'Not Verified' if runOptions so specify
+                        // status could be 'Submitted' if runOptions so specify
                         if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/workflow is complete)
                             const verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
@@ -234,7 +234,7 @@ export class Suite<T extends Test> {
                     // case/workflow run complete -- verify result
                     actualYaml = this.runtime.results.getActualYaml(test.name);
                     result = this.handleResultRunOptions(test, result, actualYaml, i === 0, expectedExists, runOptions) || result;
-                    // status could be 'Not Verified' if runOptions so specify
+                    // status could be 'Submitted' if runOptions so specify
                     if (result.status === 'Pending') {
                         const verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
                         this.log.debug(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
@@ -326,11 +326,10 @@ export class Suite<T extends Test> {
     private handleResultRunOptions(test: T, result: Result, actualYaml: string,
         isFirst: boolean, expectedExists: boolean, runOptions?: RunOptions): Result | undefined {
 
-        if (runOptions?.noVerify || (!expectedExists && runOptions?.noVerifyIfExpectedMissing)) {
+        if (runOptions?.submit || (!expectedExists && runOptions?.submitIfExpectedMissing)) {
             const res = {
                 name: test.name,
-                status: 'Not Verified',
-                message: 'Verification skipped',
+                status: 'Submitted',
                 request: result.request,
                 response: result.response
             } as Result;
@@ -366,8 +365,8 @@ export class Suite<T extends Test> {
         else if (outcome.status === 'Errored') {
             this.logger.error(`${testType} '${test.name}' ERRORED${ms}: ${outcome.message}`);
         }
-        else if (outcome.status === 'Not Verified') {
-            this.logger.info(`${testType} '${test.name}' SUBMITTED${ms}: ${outcome.message}`);
+        else if (outcome.status === 'Submitted') {
+            this.logger.info(`${testType} '${test.name}' SUBMITTED${ms}`);
         }
         if (this.emitter) {
             this.emitter.emit('outcome', {

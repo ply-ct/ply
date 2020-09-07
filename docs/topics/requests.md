@@ -67,7 +67,7 @@ Test 'movieById' PASSED in 8 ms
 Request 'moviesQuery' submitted at 8/29/2020, 18:26:55:039
 Test 'moviesQuery' PASSED in 8 ms
 
-Overall Results: {"Passed":3,"Failed":0,"Errored":0,"Pending":0,"Not Verified":0}
+Overall Results: {"Passed":3,"Failed":0,"Errored":0,"Pending":0,"Submitted":0}
 Overall Time: 305 ms
 ```
 To understand what it means for a request to have PASSED, continue on to [Results](results).

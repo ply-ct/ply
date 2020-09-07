@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Code | ply</title>
+	<title>Postman | ply</title>
 	<meta name="description" content="Documentation for ply">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,10 +54,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="code.html">Code</a>
+					<a href="postman.html">Postman</a>
 				</li>
 			</ul>
-			<h1>Class Code</h1>
+			<h1>Class Postman</h1>
 		</div>
 	</div>
 </header>
@@ -68,8 +68,14 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">Code</span>
+						<span class="target">Postman</span>
 					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel">
+				<h3>Implements</h3>
+				<ul class="tsd-hierarchy">
+					<li><a href="../interfaces/importer.html" class="tsd-signature-type">Importer</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -79,20 +85,21 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="code.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="postman.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="code.html#lines" class="tsd-kind-icon">lines</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="postman.html#indent" class="tsd-kind-icon">indent</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="postman.html#logger" class="tsd-kind-icon">logger</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="postman.html#root" class="tsd-kind-icon">root</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="code.html#extractcode" class="tsd-kind-icon">extract<wbr>Code</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="code.html#trimcomments" class="tsd-kind-icon">trim<wbr>Comments</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="postman.html#import" class="tsd-kind-icon">import</a></li>
 							</ul>
 						</section>
 					</div>
@@ -104,43 +111,28 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Code<span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, commentDelim<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="code.html" class="tsd-signature-type">Code</a></li>
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Code<span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, commentDelim<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="code.html" class="tsd-signature-type">Code</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Postman<span class="tsd-signature-symbol">(</span>root<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, indent<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, logger<span class="tsd-signature-symbol">: </span><a href="../interfaces/log.html" class="tsd-signature-type">Log</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="postman.html" class="tsd-signature-type">Postman</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ply-ct/ply/blob/621cbc8/src/code.ts#L7">src/code.ts:7</a></li>
+									<li>Defined in <a href="https://github.com/ply-ct/ply/blob/621cbc8/src/import.ts#L40">src/import.ts:40</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>code: <span class="tsd-signature-type">string</span></h5>
+									<h5>root: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5>commentDelim: <span class="tsd-signature-type">string</span></h5>
+									<h5>indent: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>logger: <a href="../interfaces/log.html" class="tsd-signature-type">Log</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="code.html" class="tsd-signature-type">Code</a></h4>
-						</li>
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/ply-ct/ply/blob/621cbc8/src/code.ts#L9">src/code.ts:9</a></li>
-								</ul>
-							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>code: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
-								</li>
-								<li>
-									<h5>commentDelim: <span class="tsd-signature-type">string</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="code.html" class="tsd-signature-type">Code</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="postman.html" class="tsd-signature-type">Postman</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -148,12 +140,32 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="lines" class="tsd-anchor"></a>
-					<h3>lines</h3>
-					<div class="tsd-signature tsd-kind-icon">lines<span class="tsd-signature-symbol">:</span> <a href="../globals.html#codeline" class="tsd-signature-type">CodeLine</a><span class="tsd-signature-symbol">[]</span></div>
+					<a name="indent" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> indent</h3>
+					<div class="tsd-signature tsd-kind-icon">indent<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/621cbc8/src/code.ts#L7">src/code.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/621cbc8/src/import.ts#L44">src/import.ts:44</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="logger" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> logger</h3>
+					<div class="tsd-signature tsd-kind-icon">logger<span class="tsd-signature-symbol">:</span> <a href="../interfaces/log.html" class="tsd-signature-type">Log</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/621cbc8/src/import.ts#L45">src/import.ts:45</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="root" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> root</h3>
+					<div class="tsd-signature tsd-kind-icon">root<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/621cbc8/src/import.ts#L43">src/import.ts:43</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -161,62 +173,26 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="extractcode" class="tsd-anchor"></a>
-					<h3>extract<wbr>Code</h3>
+					<a name="import" class="tsd-anchor"></a>
+					<h3>import</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">extract<wbr>Code<span class="tsd-signature-symbol">(</span>withComments<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+						<li class="tsd-signature tsd-kind-icon">import<span class="tsd-signature-symbol">(</span>from<span class="tsd-signature-symbol">: </span><a href="retrieval.html" class="tsd-signature-type">Retrieval</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/importer.html">Importer</a>.<a href="../interfaces/importer.html#import">import</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ply-ct/ply/blob/621cbc8/src/code.ts#L41">src/code.ts:41</a></li>
+									<li>Defined in <a href="https://github.com/ply-ct/ply/blob/621cbc8/src/import.ts#L48">src/import.ts:48</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>All newlines are \n</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> withComments: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+									<h5>from: <a href="retrieval.html" class="tsd-signature-type">Retrieval</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="trimcomments" class="tsd-anchor"></a>
-					<h3>trim<wbr>Comments</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">trim<wbr>Comments<span class="tsd-signature-symbol">(</span>inLines<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, delim<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../globals.html#codeline" class="tsd-signature-type">CodeLine</a><span class="tsd-signature-symbol">[]</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/ply-ct/ply/blob/621cbc8/src/code.ts#L24">src/code.ts:24</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Removes trailing comments, along with any preceding whitespace.
-									Returns an array of objects (one for each line) to be passed to extractCode.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>inLines: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
-								</li>
-								<li>
-									<h5>delim: <span class="tsd-signature-type">string</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="../globals.html#codeline" class="tsd-signature-type">CodeLine</a><span class="tsd-signature-symbol">[]</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -235,19 +211,22 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class">
-						<a href="code.html" class="tsd-kind-icon">Code</a>
+						<a href="postman.html" class="tsd-kind-icon">Postman</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="code.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="postman.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="code.html#lines" class="tsd-kind-icon">lines</a>
+								<a href="postman.html#indent" class="tsd-kind-icon">indent</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="postman.html#logger" class="tsd-kind-icon">logger</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="postman.html#root" class="tsd-kind-icon">root</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="code.html#extractcode" class="tsd-kind-icon">extract<wbr>Code</a>
-							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="code.html#trimcomments" class="tsd-kind-icon">trim<wbr>Comments</a>
+								<a href="postman.html#import" class="tsd-kind-icon">import</a>
 							</li>
 						</ul>
 					</li>

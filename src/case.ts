@@ -1,6 +1,7 @@
 import { TestType, Test, PlyTest } from './test';
 import { Logger } from './logger';
 import { Runtime } from './runtime';
+import { RunOptions } from './options';
 import { Result } from './result';
 
 export interface Case extends Test {
@@ -24,14 +25,16 @@ export class PlyCase implements Case, PlyTest {
      * Or to send a request without testing, call submit().
      * @returns result with request outcomes and status of 'Pending'
      */
-    async run(runtime: Runtime): Promise<Result> {
+    async run(runtime: Runtime, runOptions?: RunOptions): Promise<Result> {
         const decoratedSuite = runtime.decoratedSuite;
         if (!decoratedSuite) {
             throw new Error(`Missing decorators for suite '${runtime.suitePath}'`);
         }
 
         this.logger.info(`Running '${this.name}'`);
-        await decoratedSuite.runBefores(this.name, runtime.values);
+        if (!runOptions?.submit) {
+            await decoratedSuite.runBefores(this.name, runtime.values);
+        }
 
         const method = decoratedSuite.instance[this.method];
         if (!method) {
@@ -39,7 +42,9 @@ export class PlyCase implements Case, PlyTest {
         }
         await method.call(decoratedSuite.instance, runtime.values);
 
-        await decoratedSuite.runAfters(this.name, runtime.values);
+        if (!runOptions?.submit) {
+            await decoratedSuite.runAfters(this.name, runtime.values);
+        }
 
         return {
             name: this.name,

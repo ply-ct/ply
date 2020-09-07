@@ -195,7 +195,7 @@ describe('Requests', async () => {
         assert.equal(results[2].status, 'Passed');
     });
 
-    it('honors NoVerify', async () => {
+    it('honors submit', async () => {
         const ply = new Ply({
             ...new Config().options,
             // expected results don't live here
@@ -205,12 +205,12 @@ describe('Requests', async () => {
 
         const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');
         const suite = suites[0];
-        const runOptions = { noVerify: true };
+        const runOptions = { submit: true };
         const results = await suite.run(values, runOptions);
 
-        assert.equal(results[0].status, 'Not Verified');
-        assert.equal(results[1].status, 'Not Verified');
-        assert.equal(results[2].status, 'Not Verified');
+        assert.equal(results[0].status, 'Submitted');
+        assert.equal(results[1].status, 'Submitted');
+        assert.equal(results[2].status, 'Submitted');
     });
 
     it('honors CreateExpected', async () => {

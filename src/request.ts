@@ -86,7 +86,7 @@ export class PlyRequest implements Request, PlyTest {
 
     private async doSubmit(requestObj: Request, runOptions?: RunOptions): Promise<PlyResponse> {
 
-        const logLevel = runOptions?.noVerify ? LogLevel.info : LogLevel.debug;
+        const logLevel = runOptions?.submit ? LogLevel.info : LogLevel.debug;
 
         const before = new Date().getTime();
         const { Authorization: _auth, ...loggedHeaders } = requestObj.headers;

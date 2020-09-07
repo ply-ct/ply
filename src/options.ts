@@ -101,11 +101,11 @@ export interface RunOptions {
     /**
      * Run test requests but don't verify outcomes.
      */
-    noVerify?: boolean
+    submit?: boolean
     /**
      * Skip verify only if expected result does not exist.
      */
-    noVerifyIfExpectedMissing?: boolean
+    submitIfExpectedMissing?: boolean
     /**
      * Create expected from actual and verify based on that.
      */
@@ -317,7 +317,7 @@ export class Config {
         // run options
         options.runOptions = {};
         if (options.exercise) {
-            options.runOptions.noVerify = options.exercise;
+            options.runOptions.submit = options.exercise;
             delete options.exercise;
         }
         if (options.create) {
