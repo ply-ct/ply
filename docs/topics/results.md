@@ -66,7 +66,7 @@ that request. When verifying, Ply compares whichever request(s) appear in actual
 as described below.
 
 ## Expected Results
-Unless run with the `--exercise` (`-x`) option, after generating actual results Ply will proceed to compare against
+Unless run with the `--submit` (`-s`) option, after generating actual results Ply will proceed to compare against
 expected results. Expected results are named after your request suite and are found under your configured `expectedLocation`
 (eg: test/results/expected). Here's ply-demo's `movieById` expected fragment corresponding to the actual fragment above.
 ```yaml

@@ -191,9 +191,9 @@ export class Config {
         skip: {
             describe: 'File patterns to skip'
         },
-        exercise: {
+        submit: {
             describe: 'Send requests but don\'t verify results',
-            alias: 'x',
+            alias: 's',
             type: 'boolean'
         },
         expectedLocation: {
@@ -316,9 +316,9 @@ export class Config {
         }, {});
         // run options
         options.runOptions = {};
-        if (options.exercise) {
-            options.runOptions.submit = options.exercise;
-            delete options.exercise;
+        if (options.submit) {
+            options.runOptions.submit = options.submit;
+            delete options.submit;
         }
         if (options.create) {
             options.runOptions.createExpected = options.create;

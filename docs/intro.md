@@ -41,7 +41,7 @@ Suppose you save this in a file named "github.ply.yml". Then you can submit this
 ```
 ply -x github.ply.yml
 ```
-The `-x` argument tells Ply not to verify the response (`-x` is short for `--exercise`, 
+The `-x` argument tells Ply not to verify the response (`-s` is short for `--submit`, 
 meaning submit an *ad hoc* request and don't bother with verification).
 
 ### Verify response
