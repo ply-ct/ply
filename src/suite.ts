@@ -355,18 +355,19 @@ export class Suite<T extends Test> {
     private logOutcome(test: Test, outcome: Outcome) {
         outcome.end = Date.now();
         const ms = outcome.start ? ` in ${outcome.end - outcome.start} ms` : '';
+        const testType = test.type.charAt(0).toLocaleUpperCase() + test.type.substring(1);
         if (outcome.status === 'Passed') {
-            this.logger.info(`Test '${test.name}' PASSED${ms}`);
+            this.logger.info(`${testType} '${test.name}' PASSED${ms}`);
         }
         else if (outcome.status === 'Failed') {
             const diff = outcome.diff ? '\n' + outcome.diff : '';
-            this.logger.error(`Test '${test.name}' FAILED${ms}: ${outcome.message}${diff}`);
+            this.logger.error(`${testType} '${test.name}' FAILED${ms}: ${outcome.message}${diff}`);
         }
         else if (outcome.status === 'Errored') {
-            this.logger.error(`Test '${test.name}' ERRORED${ms}: ${outcome.message}`);
+            this.logger.error(`${testType} '${test.name}' ERRORED${ms}: ${outcome.message}`);
         }
         else if (outcome.status === 'Not Verified') {
-            this.logger.error(`Test '${test.name}' NOT VERIFIED${ms}: ${outcome.message}`);
+            this.logger.info(`${testType} '${test.name}' SUBMITTED${ms}: ${outcome.message}`);
         }
         if (this.emitter) {
             this.emitter.emit('outcome', {
