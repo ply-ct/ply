@@ -4,6 +4,7 @@ import { Options } from './options';
 import { Logger } from './logger';
 import { CodeLine, Code } from './code';
 import { Compare, Diff } from './compare';
+import { Yaml } from './yaml';
 import { lines } from './util';
 
 export interface Outcome {
@@ -86,19 +87,20 @@ export class PlyResult implements Result {
 
 export class Verifier {
     constructor(
-        readonly expectedYaml: string,
-        readonly logger: Logger,
-        readonly startLine = 0
+        private readonly expectedYaml: Yaml,
+        private readonly logger: Logger,
+        private readonly start?: number
     ) {}
 
     /**
      * Verify expected vs actual results yaml after substituting values.
      * Diffs/messages always contain \n newlines.
      */
-    verify(actualYaml: string, values: object): Outcome {
+    verify(actualYaml: Yaml, values: object): Outcome {
         // this.logger.debug(`Expected:\n${this.expectedYaml}\n` + `Actual:\n${actualYaml}\n`);
-        const expected = new Code(this.expectedYaml, '#');
-        const actual = new Code(actualYaml, '#');
+        const start = /*typeof this.start === 'number' ? this.start :*/ this.expectedYaml.start;
+        const expected = new Code(this.expectedYaml.text, '#');
+        const actual = new Code(actualYaml.text, '#');
         const diffs = new Compare(this.logger).diffLines(expected.extractCode(), actual.extractCode(), values);
         let firstDiffLine = 0;
         let diffMsg = '';
@@ -111,11 +113,11 @@ export class Verifier {
                     const correspondingAdd = (i < diffs.length - 1 && diffs[i + 1].added) ? diffs[i + 1] : null;
                     if (!diff.ignored) {
                         if (!firstDiffLine) {
-                            firstDiffLine = line + this.startLine;
+                            firstDiffLine = line + start;
                         }
-                        diffMsg += (line + this.startLine);
+                        diffMsg += (line + start);
                         if (diff.count > 1) {
-                            diffMsg += '-' + (line + this.startLine + diff.count - 1);
+                            diffMsg += '-' + (line + start + diff.count - 1);
                         }
                         diffMsg += '\n';
                         diffMsg += this.prefix(diff.value, '- ', expected.lines, line);
@@ -134,7 +136,7 @@ export class Verifier {
                     if (!diff.ignored) {
                         // added with no corresponding remove
                         if (!firstDiffLine) {
-                            firstDiffLine = line + this.startLine;
+                            firstDiffLine = line + start;
                         }
                         diffMsg += line + '\n';
                         diffMsg += this.prefix(diff.value, '+ ', actual.lines, actLine);

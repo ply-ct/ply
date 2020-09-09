@@ -1,13 +1,14 @@
 import * as path from 'path';
 import * as process from 'process';
 import * as minimatch from 'minimatch';
+import * as yaml from './yaml';
 import { Location } from './location';
 import { Retrieval } from './retrieval';
 import { Storage } from './storage';
 import { PlyOptions } from './options';
 import { TEST, BEFORE, AFTER, SUITE } from './names';
 import { TestSuite, TestCase, Before, After } from './decorators';
-import * as yaml from './yaml';
+import { Yaml } from './yaml';
 import { lines } from './util';
 
 export class ResultPaths {
@@ -90,7 +91,7 @@ export class ResultPaths {
     /**
      * Newlines are always \n.
      */
-    async getExpectedYaml(name: string): Promise<string> {
+    async getExpectedYaml(name: string): Promise<Yaml> {
         const expected = await this.expected.read();
         if (!expected) {
             throw new Error(`Expected result file not found: ${this.expected}`);
@@ -100,13 +101,16 @@ export class ResultPaths {
             throw new Error(`Expected result not found: ${this.expected}#${name}`);
         }
         const expectedLines = lines(expected);
-        return expectedLines.slice(expectedObj.__start, expectedObj.__end + 1).join('\n');
+        return {
+            start: expectedObj.__start || 0,
+            text: expectedLines.slice(expectedObj.__start, expectedObj.__end + 1).join('\n')
+        };
     }
 
     /**
      * Newlines are always \n.  Trailing \n is appended.
      */
-    getActualYaml(name: string): string {
+    getActualYaml(name: string): Yaml {
         const actual = this.actual.read();
         if (!actual) {
             throw new Error(`Actual result file not found: ${this.actual}`);
@@ -116,7 +120,10 @@ export class ResultPaths {
             throw new Error(`Actual result not found: ${this.actual}#${name}`);
         }
         const actualLines = lines(actual);
-        return actualLines.slice(actualObj.__start, actualObj.__end + 1).join('\n') + '\n';
+        return {
+            start: actualObj.__start || 0,
+            text: actualLines.slice(actualObj.__start, actualObj.__end + 1).join('\n') + '\n'
+        };
     }
 }
 

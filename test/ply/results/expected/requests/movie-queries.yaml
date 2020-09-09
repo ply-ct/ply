@@ -1,3 +1,5 @@
+# I can have some comments up here even
+
 moviesByYearAndRating:
   request:
     url: '${baseUrl}?year=${year}&rating=${rating}'
@@ -20,7 +22,7 @@ moviesByYearAndRating:
                 "role": "director"
               },
               {
-                "name": "Bela Lugosi",
+                "name": "Bela Lugoser",
                 "role": "actor"
               },
               {
@@ -91,6 +93,7 @@ moviesByYearAndRating:
           }
         ]
       }
+
 movieById:
   request:
     url: '${baseUrl}/${@moviesByYearAndRating.response.body.movies[0].id}' # id from previous response
@@ -107,7 +110,7 @@ movieById:
       {
         "credits": [
           {
-            "name": "Tod Browning",
+            "name": "Tod Browner",
             "role": "director"
           },
           {
@@ -142,6 +145,7 @@ movieById:
         },
         "year": 1931
       }
+
 moviesQuery:
   request:
     url: '${baseUrl}?${query}'
@@ -160,7 +164,7 @@ moviesQuery:
           {
             "credits": [
               {
-                "name": "James Whale",
+                "name": "James Whaler",
                 "role": "director"
               },
               {

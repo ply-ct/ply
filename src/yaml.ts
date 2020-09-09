@@ -1,6 +1,11 @@
 import * as jsYaml from 'js-yaml';
 import * as util from './util';
 
+export interface Yaml {
+    start: number,
+    text: string
+}
+
 export function dump(obj: object, indent: number): string {
     return jsYaml.safeDump(obj, { noCompatMode: true, skipInvalid: true, indent, lineWidth: -1 });
 }

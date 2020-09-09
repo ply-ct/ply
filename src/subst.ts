@@ -38,7 +38,7 @@ export function replace(template: string, context: object, logger: Logger, expla
             lines.push(get(l, context, logger, explain));
         } catch (err) {
             if (err.message === `${RESULTS} is not defined`) {
-                err.message = 'No results found';
+                err.message = 'No previous results found';
             }
             logger.error(`Error in expression:\n${line}\n** ${err.message} **`);
             logger.debug(err);

@@ -157,9 +157,9 @@ export class PlyRequest implements Request, PlyTest {
      * @returns result with request invocation and status of 'Pending'
      */
     async run(runtime: Runtime, runOptions?: RunOptions): Promise<PlyResult> {
+        const requestObject = this.getRequest(runtime.values, runtime.options);
         this.submitted = new Date();
         this.logger.info(`Request '${this.name}' submitted at ${timestamp(this.submitted, this.logger.level === LogLevel.debug)}`);
-        const requestObject = this.getRequest(runtime.values, runtime.options);
         const response = await this.doSubmit(requestObject, runOptions);
         const result = new PlyResult(
             this.name,
