@@ -120,7 +120,7 @@ describe('Requests', async () => {
 
         const result = await suite.run('moviesByYearAndRating', values);
         assert.equal(result.status, 'Failed');
-        assert.equal(result.message, 'Results differ from line 19');
+        assert.equal(result.message, 'Results differ from line 21 (moviesByYearAndRating:19)');
     });
 
     it('can handle error', async () => {

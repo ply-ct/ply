@@ -22,7 +22,7 @@ moviesByYearAndRating:
                 "role": "director"
               },
               {
-                "name": "Bela Lugoser",
+                "name": "Bela Lugosi",
                 "role": "actor"
               },
               {
@@ -110,7 +110,7 @@ movieById:
       {
         "credits": [
           {
-            "name": "Tod Browner",
+            "name": "Tod Browning",
             "role": "director"
           },
           {
@@ -164,7 +164,7 @@ moviesQuery:
           {
             "credits": [
               {
-                "name": "James Whaler",
+                "name": "James Whale",
                 "role": "director"
               },
               {

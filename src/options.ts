@@ -115,10 +115,6 @@ export interface RunOptions {
      */
     createExpectedIfMissing?: boolean
     /**
-     * Report diff line nums based on result YAML fragment (ie: single test)
-     */
-    diffsBasedOnFragment?: boolean
-    /**
      * Import requests or values from external format (currently 'postman' is supported).
      * Overwrites existing same-named files.
      */

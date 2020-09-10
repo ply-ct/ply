@@ -87,6 +87,10 @@ export class Storage {
         this.write(newLines.join('\n'));
     }
 
+    padLines(start: number, lines: number) {
+        this.insert(''.padStart(lines - 1, '\n'), start);
+    }
+
     remove() {
         if (this.localStorage) {
             this.localStorage.removeItem(this.location.path);

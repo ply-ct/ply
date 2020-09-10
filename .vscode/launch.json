@@ -13,8 +13,7 @@
             ],
             "program": "${workspaceFolder}/dist/src/cli.js",
             "args": [
-                "--verbose",
-                "test/ply/requests/movie-queries.ply.yaml"
+                "test/ply/cases/movieCrud.ply.ts"
             ],
             "preLaunchTask": "tsc: build - tsconfig.json",
             "outFiles": [

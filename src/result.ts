@@ -87,9 +87,9 @@ export class PlyResult implements Result {
 
 export class Verifier {
     constructor(
+        private readonly name: string,
         private readonly expectedYaml: Yaml,
-        private readonly logger: Logger,
-        private readonly start?: number
+        private readonly logger: Logger
     ) {}
 
     /**
@@ -98,7 +98,6 @@ export class Verifier {
      */
     verify(actualYaml: Yaml, values: object): Outcome {
         // this.logger.debug(`Expected:\n${this.expectedYaml}\n` + `Actual:\n${actualYaml}\n`);
-        const start = /*typeof this.start === 'number' ? this.start :*/ this.expectedYaml.start;
         const expected = new Code(this.expectedYaml.text, '#');
         const actual = new Code(actualYaml.text, '#');
         const diffs = new Compare(this.logger).diffLines(expected.extractCode(), actual.extractCode(), values);
@@ -113,12 +112,9 @@ export class Verifier {
                     const correspondingAdd = (i < diffs.length - 1 && diffs[i + 1].added) ? diffs[i + 1] : null;
                     if (!diff.ignored) {
                         if (!firstDiffLine) {
-                            firstDiffLine = line + start;
+                            firstDiffLine = line;
                         }
-                        diffMsg += (line + start);
-                        if (diff.count > 1) {
-                            diffMsg += '-' + (line + start + diff.count - 1);
-                        }
+                        diffMsg += this.diffLine(line, diff.count);
                         diffMsg += '\n';
                         diffMsg += this.prefix(diff.value, '- ', expected.lines, line);
                         if (correspondingAdd) {
@@ -136,9 +132,10 @@ export class Verifier {
                     if (!diff.ignored) {
                         // added with no corresponding remove
                         if (!firstDiffLine) {
-                            firstDiffLine = line + start;
+                            firstDiffLine = line;
                         }
-                        diffMsg += line + '\n';
+                        diffMsg += '-> ' + this.diffLine(actLine, diff.count);
+                        diffMsg += '\n';
                         diffMsg += this.prefix(diff.value, '+ ', actual.lines, actLine);
                         diffMsg += '===\n';
                     }
@@ -153,7 +150,7 @@ export class Verifier {
         if (firstDiffLine) {
             return {
                 status: 'Failed',
-                message: `Results differ from line ${firstDiffLine}`,
+                message: `Results differ from line ${this.diffLine(firstDiffLine, 1, this.name)}`,
                 line: firstDiffLine,
                 diff: diffMsg,
                 diffs
@@ -166,6 +163,25 @@ export class Verifier {
                 line: 0
             };
         }
+    }
+
+    private diffLine(line: number, count = 1, name?: string): string {
+        let dl = `${line + this.expectedYaml.start}`;
+        if (count > 1) {
+            dl += `-${line + this.expectedYaml.start + count - 1}`;
+        }
+        if (this.expectedYaml.start > 0) {
+            dl += ' (';
+            if (name) {
+                dl += name + ':';
+            }
+            dl += line;
+            if (count > 1) {
+                dl += `-${line + count - 1}`;
+            }
+            dl += ')';
+        }
+        return dl;
     }
 
     /**

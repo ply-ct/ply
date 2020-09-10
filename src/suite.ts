@@ -190,7 +190,7 @@ export class Suite<T extends Test> {
             return results;
         }
 
-        const isWholeSuite = tests.length === this.size();
+        const padActualStart = callingCaseInfo ? false : this.declaredStartsWith(tests);
         const expectedExists = await this.runtime.results.expected.exists;
 
         const results: Result[] = [];
@@ -228,12 +228,11 @@ export class Suite<T extends Test> {
                             const expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
                             if (expectedYaml.start > 0) {
                                 actualYaml = this.runtime.results.getActualYaml(test.name);
-                                if (expectedYaml.start > actualYaml.start) {
-                                    // pad actual for comparison
-                                    // this.runtime.results.actual.insert(''.padStart(expectedYaml.start - actualYaml.start - 1, '\n'), actualYaml.start);
+                                if (padActualStart && expectedYaml.start > actualYaml.start) {
+                                    this.runtime.results.actual.padLines(actualYaml.start, expectedYaml.start - actualYaml.start);
                                 }
                             }
-                            const verifier = new Verifier(expectedYaml, this.logger, runOptions?.diffsBasedOnFragment ? 0 : undefined );
+                            const verifier = new Verifier(test.name, expectedYaml, this.logger);
                             this.log.debug(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
                             const outcome = { ...verifier.verify(actualYaml, this.runtime.values), start };
                             result = { ...result as Result, ...outcome };
@@ -249,7 +248,10 @@ export class Suite<T extends Test> {
                     // status could be 'Submitted' if runOptions so specify
                     if (result.status === 'Pending') {
                         const expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
-                        const verifier = new Verifier(expectedYaml, this.logger, runOptions?.diffsBasedOnFragment ? 0 : undefined);
+                        if (padActualStart && expectedYaml.start > actualYaml.start) {
+                            this.runtime.results.actual.padLines(actualYaml.start, expectedYaml.start - actualYaml.start);
+                        }
+                        const verifier = new Verifier(test.name, expectedYaml, this.logger);
                         this.log.debug(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
                         // NOTE: By using this.runtime.values we're unadvisedly taking advantage of the prototype's shared runtime object property
                         // (https://stackoverflow.com/questions/17088635/javascript-object-properties-shared-across-instances).
@@ -288,6 +290,16 @@ export class Suite<T extends Test> {
         }
 
         return results;
+    }
+
+    private declaredStartsWith(tests: T[]): boolean {
+        const names = Object.keys(this.tests);
+        for (let i = 0; i < names.length; i++) {
+            if (tests.length > i && names[i] !== tests[i].name) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
