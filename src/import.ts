@@ -98,7 +98,7 @@ export class Postman implements Importer {
                 const name = it.name as string;
                 try {
                     const request = this.translateRequest(it.request);
-                    const storagePath = `${path}.ply.yaml`;
+                    const storagePath = `${path.replace(/ \/ /g, '/')}.ply.yaml`;
                     const reqsObj = this.storagePathToRequestsObj.get(storagePath);
                     if (reqsObj) {
                         reqsObj[name] = request;
