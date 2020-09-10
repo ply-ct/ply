@@ -1,3 +1,5 @@
+import * as yaml from './yaml';
+import * as util from './util';
 import { TestType, Test, PlyTest } from './test';
 import { Result, Outcome, Verifier, PlyResult } from './result';
 import { Location } from './location';
@@ -7,13 +9,11 @@ import { Runtime, DecoratedSuite, ResultPaths, CallingCaseInfo } from './runtime
 import { RunOptions } from './options';
 import { SUITE, TEST, RESULTS } from './names';
 import { Retrieval } from './retrieval';
-import * as yaml from './yaml';
 import { EventEmitter } from 'events';
 import { Plyee } from './ply';
 import { PlyEvent, SuiteEvent, OutcomeEvent } from './event';
 import { PlyResponse } from './response';
 import { TsCompileOptions } from './compile';
-import { timestamp } from './util';
 
 interface Tests<T extends Test> {
     [key: string]: T
@@ -65,6 +65,10 @@ export class Suite<T extends Test> {
 
     all(): T[] {
         return Object.values(this.tests);
+    }
+
+    size(): number {
+        return Object.keys(this.tests).length;
     }
 
     *[Symbol.iterator]() {
@@ -186,8 +190,8 @@ export class Suite<T extends Test> {
             return results;
         }
 
+        const padActualStart = callingCaseInfo ? false : this.declaredStartsWith(tests);
         const expectedExists = await this.runtime.results.expected.exists;
-        let resultsStartLine = 0;
 
         const results: Result[] = [];
         // within a suite, tests are run sequentially
@@ -210,18 +214,25 @@ export class Suite<T extends Test> {
                     this.runtime.responseHeaders = await this.getExpectedResponseHeaders(test.name, callingCaseInfo?.caseName);
                 }
                 result = await (test as unknown as PlyTest).run(this.runtime, runOptions);
-                let actualYaml: string;
+                let actualYaml: yaml.Yaml;
                 if (test.type === 'request') {
                     const plyResult = result as PlyResult;
                     const indent = callingCaseInfo ? this.runtime.options.prettyIndent : 0;
-                    actualYaml = this.buildResultYaml(plyResult, indent);
-                    this.runtime.results.actual.append(actualYaml);
+                    actualYaml = { start: 0, text: this.buildResultYaml(plyResult, indent) };
+                    this.runtime.results.actual.append(actualYaml.text);
                     if (!callingCaseInfo) {
-                        result = this.handleResultRunOptions(test, result, actualYaml, i === 0, expectedExists, runOptions) || result;
+                        result = this.handleResultRunOptions(test, result, actualYaml.text, i === 0, expectedExists, runOptions) || result;
                         // status could be 'Submitted' if runOptions so specify
                         if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/workflow is complete)
-                            const verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
+                            const expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
+                            if (expectedYaml.start > 0) {
+                                actualYaml = this.runtime.results.getActualYaml(test.name);
+                                if (padActualStart && expectedYaml.start > actualYaml.start) {
+                                    this.runtime.results.actual.padLines(actualYaml.start, expectedYaml.start - actualYaml.start);
+                                }
+                            }
+                            const verifier = new Verifier(test.name, expectedYaml, this.logger);
                             this.log.debug(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
                             const outcome = { ...verifier.verify(actualYaml, this.runtime.values), start };
                             result = { ...result as Result, ...outcome };
@@ -233,10 +244,14 @@ export class Suite<T extends Test> {
                 else {
                     // case/workflow run complete -- verify result
                     actualYaml = this.runtime.results.getActualYaml(test.name);
-                    result = this.handleResultRunOptions(test, result, actualYaml, i === 0, expectedExists, runOptions) || result;
+                    result = this.handleResultRunOptions(test, result, actualYaml.text, i === 0, expectedExists, runOptions) || result;
                     // status could be 'Submitted' if runOptions so specify
                     if (result.status === 'Pending') {
-                        const verifier = new Verifier(await this.runtime.results.getExpectedYaml(test.name), this.logger, resultsStartLine);
+                        const expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
+                        if (padActualStart && expectedYaml.start > actualYaml.start) {
+                            this.runtime.results.actual.padLines(actualYaml.start, expectedYaml.start - actualYaml.start);
+                        }
+                        const verifier = new Verifier(test.name, expectedYaml, this.logger);
                         this.log.debug(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
                         // NOTE: By using this.runtime.values we're unadvisedly taking advantage of the prototype's shared runtime object property
                         // (https://stackoverflow.com/questions/17088635/javascript-object-properties-shared-across-instances).
@@ -249,9 +264,6 @@ export class Suite<T extends Test> {
                     }
                     this.addResult(results, result);
                 }
-
-                resultsStartLine += actualYaml.split('\n').length - 1;
-
             } catch (err) {
                 this.logger.error(err.message, err);
                 result = {
@@ -278,6 +290,16 @@ export class Suite<T extends Test> {
         }
 
         return results;
+    }
+
+    private declaredStartsWith(tests: T[]): boolean {
+        const names = Object.keys(this.tests);
+        for (let i = 0; i < names.length; i++) {
+            if (tests.length > i && names[i] !== tests[i].name) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -323,7 +345,7 @@ export class Suite<T extends Test> {
         }
     }
 
-    private handleResultRunOptions(test: T, result: Result, actualYaml: string,
+    private handleResultRunOptions(test: T, result: Result, actualYamlText: string,
         isFirst: boolean, expectedExists: boolean, runOptions?: RunOptions): Result | undefined {
 
         if (runOptions?.submit || (!expectedExists && runOptions?.submitIfExpectedMissing)) {
@@ -343,10 +365,10 @@ export class Suite<T extends Test> {
             const expected = new Storage(this.runtime.results.expected.location.toString());
             if (isFirst) {
                 this.log.info(`Creating expected result: ${expected}`);
-                expected.write(actualYaml);
+                expected.write(actualYamlText);
             }
             else {
-                expected.append(actualYaml);
+                expected.append(actualYamlText);
             }
         }
     }
@@ -455,7 +477,7 @@ export class Suite<T extends Test> {
         if (typeof invocation.__start !== 'undefined') {
             const outcomeLine = invocation.__start;
             if (result.request.submitted) {
-                ymlLines[outcomeLine] += `  # ${timestamp(result.request.submitted)}`;
+                ymlLines[outcomeLine] += `  # ${util.timestamp(result.request.submitted)}`;
             }
             if (typeof result.response.time !== 'undefined') {
                 const responseMs = result.response.time + ' ms';

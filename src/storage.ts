@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as mkdirp from 'mkdirp';
+import * as util from './util';
 import { Location } from './location';
 
 /**
@@ -72,6 +73,22 @@ export class Storage {
             }
             fs.appendFileSync(this.location.path, contents.replace(/\r?\n/, os.EOL));
         }
+    }
+
+    insert(contents: string, start: number) {
+        let newLines = util.lines(contents);
+        const exist = this.read();
+        if (exist) {
+            const existLines = util.lines(exist);
+            const preLines = start > 0 ? existLines.slice(0, start) : [];
+            const postLines = existLines.slice(start);
+            newLines = [ ...preLines, ...newLines, ...postLines ];
+        }
+        this.write(newLines.join('\n'));
+    }
+
+    padLines(start: number, lines: number) {
+        this.insert(''.padStart(lines - 1, '\n'), start);
     }
 
     remove() {
