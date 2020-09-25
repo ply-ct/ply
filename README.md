@@ -33,8 +33,8 @@ repositoryTopics:
 ```
 
 ### Run a request
-Suppose you save this in a file named "github.ply.yml". Then you can submit this
-`repositoryTopics` request from the command line by typing:
+Suppose you save this in a file named "github.ply.yml". Then you can submit the
+`repositoryTopics` request from a command line by typing:
 ```
 ply -x github.ply.yml
 ```

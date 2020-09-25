@@ -3,10 +3,10 @@ layout: topic
 ---
 ## Values
 Values provide a way to parameterize request content and response matching per environment or other varying condition. Values files are JSON format.
-For example, here's ply-demo's [localhost.json](https://github.com/ply-ct/ply-demo/blob/master/test/values/localhost.json) values file:
+For example, here's ply-demo's [env.json](https://github.com/ply-ct/ply-demo/blob/master/test/values/env.json) values file:
 ```json
 {
-  "baseUrl": "http://localhost:3000/movies"
+  "baseUrl": "https://ply-ct.com/movies"
 }
 ```
 Properties such as `baseUrl` are referenced in requests ([movie-queries.ply.yaml](https://github.com/ply-ct/ply-demo/blob/master/test/requests/movie-queries.ply.yaml))
@@ -21,7 +21,7 @@ JSON objects containing values can also be nested. You could just as well declar
 ```json
 {
   "moviesApi": {
-    "baseUrl": "http://localhost:3000/movies"
+    "baseUrl": "https://ply-ct.com/movies"
   }
 }
 ```
@@ -41,7 +41,7 @@ So in `valuesFiles` from ply-demo's [plyconfig.json](https://github.com/ply-ct/p
 {
   "valuesFiles": [
     "test/values/global.json",
-    "test/values/localhost.json"
+    "test/values/env.json"
   ]
 }
 ```

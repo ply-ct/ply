@@ -2,17 +2,17 @@
 layout: topic
 ---
 ## Requests
-Ply is all about automated testing of REST and GraphQL APIs. By running Ply tests, 
+Ply is all about automated testing of REST (and GraphQL) APIs. By running Ply tests, 
 you're sending actual HTTP requests to exercise your service endpoints.
 
-Requests are the reusable building blocks you arrange to create test sequences, or suites.
+Requests are the reusable building blocks you can arrange to create test sequences, or suites.
 Each request represents an HTTP request with these elements:
   - url
   - method
   - headers
   - body
 
-A request suite is a YAML file containing one or more named requests.  Here's an example from 
+A request suite is a YAML file containing one or more named requests. Here's an example from 
 movie-queries.ply.yaml in the [ply-demo](https://github.com/ply-ct/ply-demo) project:
 ```yaml
 moviesByYearAndRating:
@@ -22,7 +22,7 @@ moviesByYearAndRating:
     Accept: application/json
 ```
 This defines a GET request against [ply-movies](https://github.com/ply-ct/ply-movies/), an
-example API we use to illustrate Ply testing.  Our request's name, `moviesByYearAndRating`,
+example API we use to illustrate Ply testing. Our request's name, `moviesByYearAndRating`,
 is the top-level key. Note our use of JavaScript [template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)
 expressions embedded in `url`. Every element of a request can be parameterized using [Values](values).
 
@@ -36,7 +36,7 @@ movieById:
     Accept: application/json
 ```
 Here we use special designator `@` in our URL expression to reference a runtime value from the body of the previous response.
-This enables us to construct simple workflows by embedding values from previous requests/responses in subsequent requests.
+This enables us to chain requests, embedding values from previous requests/responses in subsequent requests.
 
 Before we move on to show how you can run your Ply request suites, a few points to keep in mind:
   - Suites are identified by their YAML file name, so there's always one suite per file
@@ -45,7 +45,7 @@ Before we move on to show how you can run your Ply request suites, a few points 
     - suites are run in parallel 
     - but within a suite each request is run sequentially, in order
 
-## Executing
+## Running
 Requests can be run via [Ply CLI](cli), or within Visual Studio Code by installing the [Ply Extension]().
 
 For now let's use the CLI to run ply-demo's movie-queries.ply.yaml request suite. First, if you haven't already,
@@ -54,11 +54,9 @@ For now let's use the CLI to run ply-demo's movie-queries.ply.yaml request suite
 git clone https://github.com/ply-ct/ply-demo.git
 cd ply-demo
 npm install
-npm run start-movies
 ply test/requests/movie-queries.ply.yaml
-npm run stop-movies
 ```
-The output indicates that all tests passed:
+The output indicates that all tests have passed:
 ```
 Request 'moviesByYearAndRating' submitted at 8/29/2020, 18:26:54:981
 Test 'moviesByYearAndRating' PASSED in 51 ms
@@ -72,9 +70,7 @@ Overall Time: 305 ms
 ```
 To understand what it means for a request to have PASSED, continue on to [Results](results).
 
-**Note:** Like many of these exercises, movie-queries.ply.yaml uses the [ply-movies](install-ply#ply-movies) sample API.
-Therefore the above commands include steps for starting and stopping the ply-movies server. Henceforward these steps will be omitted.
-You can start ply-movies once, and stop it whenever you're done running these examples.
+**Note:** Like many of these exercises, movie-queries.ply.yaml uses the [ply-movies](https://github.com/ply-ct/ply-movies#readme) sample API.
 
 ### Run a single request
 Passing a file name to `ply` executes all requests in sequence. You can also run an individual request by itself:
@@ -122,7 +118,7 @@ ply --verbose test/requests/github-api.ply.yaml#repositoryTopicsQuery
 ```
 You'll receive an HTTP 401 (Unauthorized) response unless you include the `githubToken` property
 somewhere in your [values](values). Follow the [GitHub token guide](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)
-to obtain your personal access token. This is a good candidate for the [PLY_VALUES](values#environment-variable) 
+to obtain your personal access token. This is a good candidate for your [PLY_VALUES](values#environment-variable) 
 environment variable, since you don't want to share your access token in version control.
 
 Next Topic: [Results](results)
