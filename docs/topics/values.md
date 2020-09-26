@@ -3,7 +3,7 @@ layout: topic
 ---
 ## Values
 Values provide a way to parameterize request content and response matching per environment or other varying condition. Values files are JSON format.
-For example, here's ply-demo's [env.json](https://github.com/ply-ct/ply-demo/blob/master/test/values/env.json) values file:
+For example, here's ply-demo's [ply-ct.json](https://github.com/ply-ct/ply-demo/blob/master/test/values/ply-ct.json) values file:
 ```json
 {
   "baseUrl": "https://ply-ct.com/movies"
@@ -41,7 +41,7 @@ So in `valuesFiles` from ply-demo's [plyconfig.json](https://github.com/ply-ct/p
 {
   "valuesFiles": [
     "test/values/global.json",
-    "test/values/env.json"
+    "test/values/ply-ct.json"
   ]
 }
 ```

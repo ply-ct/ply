@@ -40,7 +40,7 @@
   },
   "homepage": "https://github.com/ply-ct/ply#readme",
   "dependencies": {
-    "cross-fetch": "^3.0.5",
+    "cross-fetch": "^3.0.6",
     "deepmerge": "^4.2.2",
     "diff-match-patch": "^1.0.5",
     "find-up": "^4.1.0",

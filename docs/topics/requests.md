@@ -21,7 +21,7 @@ moviesByYearAndRating:
   headers:
     Accept: application/json
 ```
-This defines a GET request against [ply-movies](https://github.com/ply-ct/ply-movies/), an
+This defines a GET request against [ply-movies](https://github.com/ply-ct/ply-movies#readme), an
 example API we use to illustrate Ply testing. Our request's name, `moviesByYearAndRating`,
 is the top-level key. Note our use of JavaScript [template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)
 expressions embedded in `url`. Every element of a request can be parameterized using [Values](values).
