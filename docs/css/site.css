@@ -106,8 +106,7 @@ li > ul {
 .logo {
   float: left;
   position: relative;
-  top: -6px;
-  left: -6px;
+  left: -5px;
 }
 .logo span {
   color: #009999;
