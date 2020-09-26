@@ -1,0 +1,5 @@
+Font:
+Arial Rounded MT Bold 81px
+
+VS Code Requirements:
+128 x 128 png
