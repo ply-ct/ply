@@ -103,20 +103,11 @@ li > ul {
 .site-link:visited {
   color: #212121;
 }
-.logo-icon {
-  float: left;
-  max-width: 100%;
-  vertical-align: middle;
-}
 .logo {
   float: left;
-  color: #212121;
   position: relative;
-  top: -2px;
+  top: -6px;
   left: -6px;
-  font-size: 32px;
-  font-weight: 600;
-  font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol';
 }
 .logo span {
   color: #009999;
