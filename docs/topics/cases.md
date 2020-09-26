@@ -2,7 +2,7 @@
 layout: topic
 ---
 ## Cases
-Real-world APIs need powerful testing tools. Ply cases deliver ultimate control by enabling you to run your 
+Real-world APIs need powerful test automation. Ply cases deliver ultimate control by enabling you to run your 
 requests programmatically using [TypeScript](https://www.typescriptlang.org/).
 
 Case suites are signified by applying the `@suite` decorator to a TypeScript class:
