@@ -1,4 +1,6 @@
-<img src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/ply.png" width="64" alt="ply" />
+<a href="https://ply-ct.github.io/ply/topics/requests">
+  <img src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/ply.png" width="64" alt="ply" />
+</a>
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ply-ct/ply/ply%20ci)
 
