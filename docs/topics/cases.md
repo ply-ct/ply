@@ -20,8 +20,8 @@ The name parameter is optional in both `@suite` and `@test`. If not specified, t
 When a case suite is executed here's what happens:
   - Any `@before` decorated methods are invoked
   - All `@test` methods are invoked, in the order they appear in the class
-  - Typically `@test` methods run one or more requests programmatically
-  - Results from each request are appended to the case result file
+  - Typically these `@test` methods run one or more requests programmatically
+  - Results from each request are appended to the case [result](results) file
   - Any `@after` decorated methods are invoked
   - To verify, overall actual result YAML is compared against expected
 
@@ -63,7 +63,7 @@ The next test method, `updateRating()` runs the 'updateMovie' PATCH request and 
 ```
 Notice that [values](values) are passed into our test method, and that we're updating them programmatically
 to set id to what we previously captured, and rating to 4.5. These are used by 'updateMovie' in the
-movies-api.ply.yaml request suite:
+movies-api.ply.yaml request suite we've loaded:
 ```yaml
 updateMovie: # PATCH
   url: '${baseUrl}/${id}'
@@ -77,7 +77,7 @@ updateMovie: # PATCH
     }
 ```
 You might ask how we can "confirm the update" in `updateRating()` above simply by running the 'retrieveMovie' request. 
-Remember: all requests/responses are appended to the result file for verification once the suite is finished.
+Remember: all requests/responses are appended to the result file for verification once the case suite is finished.
 
 Lastly we clean up after ourselves by deleting the movie we've created:
 ```typescript
