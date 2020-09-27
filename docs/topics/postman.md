@@ -3,8 +3,8 @@ layout: topic
 ---
 ## Postman
 Ply can import [Postman](https://www.postman.com/) collections into request YAML files.
-In fact, the [ply-demo](https://github.com/ply-ct/ply-demo) repository contains the Postman
-Echo collection, which you can import like this:
+In fact, the [ply-demo](https://github.com/ply-ct/ply-demo) repository already contains 
+the Postman Echo collection, which you can import like this:
 ```
 ply --import=postman "test/postman/Postman Echo.postman_collection.json"
 ```
@@ -21,7 +21,8 @@ Creating: test/Postman Echo/Utilities / Date and Time.ply.yaml
 Creating: test/Postman Echo/Utilities / Postman Collection.ply.yaml
 Creating: test/Postman Echo/Auth: Digest.ply.yaml
 ```
-so you can run these newly-imported requests, and they should pass:
+The ply-demo repo also includes expected results for Postman Echo (under test/results/expected/Postman Echo), 
+so you can run these newly-imported requests and they should pass:
 ```
 ply "test/Postman Echo/**/*"
 ```
