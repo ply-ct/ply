@@ -62,13 +62,15 @@ export class RequestLoader {
         );
 
         const obj = yaml.load(retrieval.location.path, contents, true);
-        for (const key of Object.keys(obj)) {
-            const val = obj[key];
-            if (typeof val === 'object') {
-                const startEnd = { start: val.__start, end: val.__end };
-                const { __start, __end, ...cleanObj} = val;
-                const request = new PlyRequest(key, { ...startEnd, ...cleanObj } as Request, logger, retrieval);
-                suite.add(request);
+        if (obj) {
+            for (const key of Object.keys(obj)) {
+                const val = obj[key];
+                if (typeof val === 'object') {
+                    const startEnd = { start: val.__start, end: val.__end };
+                    const { __start, __end, ...cleanObj} = val;
+                    const request = new PlyRequest(key, { ...startEnd, ...cleanObj } as Request, logger, retrieval);
+                    suite.add(request);
+                }
             }
         }
 
@@ -82,7 +84,7 @@ export class RequestLoader {
 
     async loadSuite(retrieval: Retrieval): Promise<Suite<Request>> {
         const contents = await retrieval.read();
-        if (!contents) {
+        if (typeof contents === 'undefined') {
             throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
         }
         const resultPaths = await ResultPaths.create(this.options, retrieval);
@@ -91,7 +93,7 @@ export class RequestLoader {
 
     syncSuite(retrieval: Retrieval): Suite<Request> {
         const contents = retrieval.sync();
-        if (!contents) {
+        if (typeof contents === 'undefined') {
             throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
         }
         const resultPaths = ResultPaths.createSync(this.options, retrieval);

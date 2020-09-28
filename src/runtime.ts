@@ -93,7 +93,7 @@ export class ResultPaths {
      */
     async getExpectedYaml(name: string): Promise<Yaml> {
         const expected = await this.expected.read();
-        if (!expected) {
+        if (typeof expected === 'undefined') {
             throw new Error(`Expected result file not found: ${this.expected}`);
         }
         const expectedObj = yaml.load(this.expected.toString(), expected, true)[name];
