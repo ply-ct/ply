@@ -1,5 +1,5 @@
 <script>
-    var anchorForId = function (id) {
+    var anchorForId = function(id) {
       var anchor = document.createElement("a");
       anchor.className = "header-link";
       anchor.href      = "#" + id;
@@ -8,7 +8,7 @@
       return anchor;
     };
 
-    var linkifyAnchors = function (level, containingElement) {
+    var linkifyAnchors = function(level, containingElement) {
       var headers = containingElement.getElementsByTagName("h" + level);
       for (var h = 0; h < headers.length; h++) {
         var header = headers[h];
@@ -19,15 +19,32 @@
       }
     };
 
-    document.onreadystatechange = function () {
+    document.onreadystatechange = function() {
       if (this.readyState === "complete") {
         var pageBlock = document.getElementsByClassName("page-content")[0];
         if (!pageBlock) {
           return;
+        }
+        if (window.location.hash) {
+          // adjust for fixed header
+          var anchor = document.getElementById(window.location.hash.substring(1));
+          if (anchor && document.documentElement.scrollTop >= 60) {
+            document.documentElement.scrollTop = document.documentElement.scrollTop - 60;
+          }
         }
         for (var level = 1; level <= 6; level++) {
           linkifyAnchors(level, pageBlock);
         }
       }
     };
+
+    window.onhashchange = function() {
+      if (window.location.hash) {
+        // adjust for fixed header
+        var anchor = document.getElementById(window.location.hash.substring(1));
+        if (anchor && document.documentElement.scrollTop >= 60) {
+          document.documentElement.scrollTop = document.documentElement.scrollTop - 60;
+        }
+      }
+    }
   </script>
