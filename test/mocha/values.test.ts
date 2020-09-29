@@ -1,4 +1,3 @@
-import * as process from 'process';
 import * as assert from 'assert';
 import { Logger, LogLevel } from '../../src/logger';
 import { Config } from '../../src/options';

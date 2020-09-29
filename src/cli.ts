@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import * as process from 'process';
 import * as path from 'path';
 import * as glob from 'glob';
 import { Plier } from './ply';

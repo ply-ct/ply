@@ -1,5 +1,4 @@
 import * as path from 'path';
-import * as process from 'process';
 import * as minimatch from 'minimatch';
 import * as yaml from './yaml';
 import { Location } from './location';
