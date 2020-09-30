@@ -1,4 +1,4 @@
-<a href="https://ply-ct.github.io/ply/topics/requests" style="position:relative;top:-5px">
+<a href="https://ply-ct.github.io/ply/topics/requests">
   <img src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/logo.png" width="64" alt="ply" />
 </a>
 <br><br>
@@ -182,14 +182,11 @@ repositoryTopicsQuery:
 ### API
 <https://ply-ct.github.io/ply/api>
 
-## Demo
-
-### Example Project
+### Demo Project
 <https://github.com/ply-ct/ply-demo/>
 
 ## VS Code Extension
-<https://github.com/ply-ct/vscode-ply/>  
-TODO: marketplace link
+<https://marketplace.visualstudio.com/items?itemName=ply-ct.vscode-ply>  
 
 
 

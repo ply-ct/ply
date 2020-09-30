@@ -117,7 +117,7 @@ in our results.
 
 ## Running
 Like requests, cases can be run via [Ply CLI](cli), or within Visual Studio Code by installing 
-the [Ply Extension]().
+the [Ply Extension](https://marketplace.visualstudio.com/items?itemName=ply-ct.vscode-ply).
 
 ### ply-movies
 Unlike previous exercises in this guide, our movie-crud case suite performs updates and changes

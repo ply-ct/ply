@@ -124,7 +124,7 @@ movieById:
 ```
 You may include YAML comments in expected results, and all comments are ignored by Ply when verifying. Our `movieById`
 example has a comment after `url`. End-of-line comments like this work better than comments on separate lines, because 
-they make for friendlier side-by-side comparisons in [VS Code]().
+they make for friendlier side-by-side comparisons in [VS Code](https://marketplace.visualstudio.com/items?itemName=ply-ct.vscode-ply).
 
 ### Response headers
 Only `content-type` appears in response headers for `movieById` expected results. We include only the response headers
