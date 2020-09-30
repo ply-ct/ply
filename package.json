@@ -1,13 +1,14 @@
 {
   "name": "ply-ct",
-  "version": "2.1.8",
+  "version": "2.1.9",
   "description": "REST API Automated Testing",
   "main": "dist/src",
   "bin": {
     "ply": "dist/src/cli.js"
   },
   "files": [
-    "dist/src"
+    "dist/src",
+    "src"
   ],
   "types": "dist/src",
   "repository": {
