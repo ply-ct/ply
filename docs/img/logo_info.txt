@@ -1,5 +1,7 @@
 Font:
-Arial Rounded MT Bold 81px
+Arial Rounded MT Bold 172px
 
 VS Code Requirements:
 128 x 128 png
+Actual Size:
+256 x 256 png
