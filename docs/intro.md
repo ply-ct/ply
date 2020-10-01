@@ -1,11 +1,19 @@
 ---
 layout: page
 ---
-# Ply
+<a href="https://ply-ct.github.io/ply/topics/requests">
+  <img src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/logo.png" width="64" alt="ply" />
+</a>
+<br><br>
+
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ply-ct/ply/ply%20ci)
 
 <h2>API Automated Testing
-<div><img src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/wares.png" width="128" alt="Ply your wares" /></div>
+<div>
+<a href="https://ply-ct.github.io/ply/topics/requests">
+  <img src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/wares.png" width="128" alt="Ply your wares" />
+</a>
+</div>
 </h2>
 
   - [Installation](#installation)
@@ -36,8 +44,8 @@ repositoryTopics:
 ```
 
 ### Run a request
-Suppose you save this in a file named "github.ply.yml". Then you can submit this
-`repositoryTopics` request from the command line by typing:
+Suppose you save this in a file named "github.ply.yml". Then you can submit the
+`repositoryTopics` request from a command line by typing:
 ```
 ply -x github.ply.yml
 ```
@@ -177,14 +185,11 @@ repositoryTopicsQuery:
 ### API
 <https://ply-ct.github.io/ply/api>
 
-## Demo
-
-### Example Project
+### Demo Project
 <https://github.com/ply-ct/ply-demo/>
 
 ## VS Code Extension
-<https://github.com/ply-ct/vscode-ply/>  
-TODO: marketplace link
+<https://marketplace.visualstudio.com/items?itemName=ply-ct.vscode-ply>  
 
 
 
