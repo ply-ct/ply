@@ -106,10 +106,11 @@ li > ul {
 .logo {
   float: left;
   position: relative;
+  top: -5px;
   left: -5px;
 }
-.logo span {
-  color: #009999;
+.logo-text {
+  margin-left: 10px;
 }
 .site-nav {
   float: left;
