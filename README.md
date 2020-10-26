@@ -1,7 +1,7 @@
 <a href="https://ply-ct.github.io/ply/topics/requests">
   <img alt="ply-logo" src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/ply-logo.png" width="128">
 </a>
-<br>
+<br><br>
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ply-ct/ply/ply%20ci)
 
