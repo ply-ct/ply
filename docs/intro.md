@@ -2,7 +2,7 @@
 layout: page
 ---
 <a href="https://ply-ct.github.io/ply/topics/requests">
-  <img src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/logo.png" width="64" alt="ply" />
+  <img alt="ply-logo" src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/ply-logo.png" width="128">
 </a>
 <br><br>
 
