@@ -1,6 +1,5 @@
 <a href="https://ply-ct.github.io/ply/topics/requests">
-  <img alt="ply-logo" src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/ply-icon.svg" width="48">
-  <img alt="ply" src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/ply.svg" width="56" style="margin-left:10px">
+  <img alt="ply-logo" src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/ply-logo.png" width="128">
 </a>
 <br><br>
 
