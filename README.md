@@ -1,13 +1,17 @@
 <a href="https://ply-ct.github.io/ply/topics/requests">
   <img alt="ply-logo" src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/ply-logo.png" width="128">
 </a>
-<a href="https://ply-ct.github.io/ply/topics/requests">
-  <img src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/wares.png" width="128" alt="Ply your wares" />
-</a>
+<br>
 
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ply-ct/ply/ply%20ci)
 
-## API Automated Testing
+<h2>API Automated Testing
+<div>
+<a href="https://ply-ct.github.io/ply/topics/requests">
+  <img src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/wares.png" width="128" alt="Ply your wares" />
+</a>
+</div>
+</h2>
 
   - [Installation](#installation)
   - [Usage](#usage)
