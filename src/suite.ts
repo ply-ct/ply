@@ -5,7 +5,7 @@ import { Result, Outcome, Verifier, PlyResult } from './result';
 import { Location } from './location';
 import { Storage } from './storage';
 import { Logger } from './logger';
-import { Runtime, DecoratedSuite, ResultPaths, CallingCaseInfo } from './runtime';
+import { Runtime, DecoratedSuite, ResultPaths, CallingCaseInfo, CallingFlowInfo } from './runtime';
 import { RunOptions } from './options';
 import { SUITE, TEST, RESULTS } from './names';
 import { Retrieval } from './retrieval';
@@ -21,8 +21,7 @@ interface Tests<T extends Test> {
 
 /**
  * A suite represents one ply requests file (.ply.yaml), one ply case file (.ply.ts),
- * or a single folder within a Postman collection (a .postman_collection.json file
- * may have requests at the top level or may have folders).
+ * or one flow file (.ply.flow);
  *
  * Suites cannot be nested.
  */
@@ -31,10 +30,11 @@ export class Suite<T extends Test> {
     readonly tests: Tests<T> = {};
     emitter?: EventEmitter;
     skip = false;
+    callingFlowInfo?: CallingFlowInfo;
 
     /**
      * @param name suite name
-     * @param type request|case|workflow
+     * @param type request|case|flow
      * @param path relative path from tests location (forward slashes)
      * @param runtime info
      * @param logger
@@ -169,13 +169,18 @@ export class Suite<T extends Test> {
             }
             else {
                 // running a request suite
-                callingCaseInfo = await this.getCallingCaseInfo(runOptions);
-                if (callingCaseInfo) {
-                    this.runtime.results = callingCaseInfo.results;
-                    this.logger.storage = callingCaseInfo.results.log;
-                }
-                else {
-                    this.runtime.results.actual.remove();
+                if (this.callingFlowInfo) {
+                    this.runtime.results = this.callingFlowInfo.results;
+                    this.logger.storage = this.callingFlowInfo.results.log;
+                } else {
+                    callingCaseInfo = await this.getCallingCaseInfo(runOptions);
+                    if (callingCaseInfo) {
+                        this.runtime.results = callingCaseInfo.results;
+                        this.logger.storage = callingCaseInfo.results.log;
+                    }
+                    else {
+                        this.runtime.results.actual.remove();
+                    }
                 }
             }
         } catch (err) {
@@ -198,7 +203,7 @@ export class Suite<T extends Test> {
         for (let i = 0; i < tests.length; i++) {
             const test = tests[i];
             const start = Date.now();
-            if (test.type === 'case' || test.type === 'workflow') {
+            if (test.type === 'case') {
                 this.runtime.results.actual.append(test.name + ':\n');
             }
             let result: Result;
@@ -220,11 +225,11 @@ export class Suite<T extends Test> {
                     const indent = callingCaseInfo ? this.runtime.options.prettyIndent : 0;
                     actualYaml = { start: 0, text: this.buildResultYaml(plyResult, indent) };
                     this.runtime.results.actual.append(actualYaml.text);
-                    if (!callingCaseInfo) {
+                    if (!this.callingFlowInfo && !callingCaseInfo) {
                         result = this.handleResultRunOptions(test, result, actualYaml.text, i === 0, expectedExists, runOptions) || result;
                         // status could be 'Submitted' if runOptions so specify
                         if (result.status === 'Pending') {
-                            // verify request result (otherwise wait until case/workflow is complete)
+                            // verify request result (otherwise wait until case/flow is complete)
                             const expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
                             if (expectedYaml.start > 0) {
                                 actualYaml = this.runtime.results.getActualYaml(test.name);
@@ -242,7 +247,7 @@ export class Suite<T extends Test> {
                     this.addResult(results, result);
                 }
                 else {
-                    // case/workflow run complete -- verify result
+                    // case/flow run complete -- verify result
                     actualYaml = this.runtime.results.getActualYaml(test.name);
                     result = this.handleResultRunOptions(test, result, actualYaml.text, i === 0, expectedExists, runOptions) || result;
                     // status could be 'Submitted' if runOptions so specify

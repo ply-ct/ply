@@ -48,6 +48,7 @@
     "deepmerge": "^4.2.2",
     "diff-match-patch": "^1.0.5",
     "find-up": "^4.1.0",
+    "flowbee": "^0.1.2-beta.4",
     "glob": "^7.1.6",
     "js-yaml": "^3.14.0",
     "json-stable-stringify": "^1.0.1",

@@ -132,6 +132,12 @@ export type CallingCaseInfo = {
     caseName: string
 };
 
+export type CallingFlowInfo = {
+    results: ResultPaths,
+    suiteName: string,
+    flowName: string
+};
+
 /**
  * Runtime information for a test suite.
  */
@@ -165,7 +171,7 @@ export class Runtime {
 }
 
 /**
- * Applicable for Cases (and soon Workflows)
+ * Applicable for Cases
  */
 export class DecoratedSuite {
 

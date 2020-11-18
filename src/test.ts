@@ -2,7 +2,7 @@ import { Runtime } from './runtime';
 import { Result } from './result';
 import { RunOptions } from './options';
 
-export type TestType = 'request' | 'case' | 'workflow';
+export type TestType = 'request' | 'case' | 'flow';
 
 export interface Test {
 

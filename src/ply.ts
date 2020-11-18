@@ -12,6 +12,8 @@ import { TsCompileOptions } from './compile';
 import { Logger, LogLevel } from './logger';
 import { Values } from './values';
 import * as util from './util';
+import { Flow } from './flow';
+import { FlowLoader } from './flows';
 
 export class Ply {
 
@@ -79,6 +81,14 @@ export class Ply {
         return requestSuites[0];
     }
 
+        async loadSuite(location: string): Promise<Suite<Request>> {
+        return await this.loadRequestSuite(location);
+    }
+
+    loadSuiteSync(location: string): Suite<Request> {
+        return this.loadRequestSuiteSync(location);
+    }
+
     /**
      * Throws if location or suite not found
      */
@@ -88,14 +98,6 @@ export class Ply {
             throw new Error(`No case suite found in: ${location}`);
         }
         return caseSuites;
-    }
-
-    async loadSuite(location: string): Promise<Suite<Request>> {
-        return await this.loadRequestSuite(location);
-    }
-
-    loadSuiteSync(location: string): Suite<Request> {
-        return this.loadRequestSuiteSync(location);
     }
 
     async loadCases(file: string): Promise<Suite<Case>[]>;
@@ -112,6 +114,32 @@ export class Ply {
         const caseLoader = new CaseLoader(files, this.options, compileOptions);
 
         const suites = await caseLoader.load();
+        return suites;
+    }
+
+    /**
+     * Throws if location or suite not found
+     */
+    async loadFlowSuites(location: string): Promise<Suite<Flow>[]> {
+        const flowSuites = await this.loadFlows([location]);
+        if (flowSuites.length === 0) {
+            throw new Error(`No flow suite found in: ${location}`);
+        }
+        return flowSuites;
+    }
+
+    async loadFlows(file: string): Promise<Suite<Flow>[]>;
+    async loadFlows(...files: string[]): Promise<Suite<Flow>[]>;
+    async loadFlows(files: string[], ...moreFiles: string[]): Promise<Suite<Flow>[]>;
+    async loadFlows(files: string | string[], ...moreFiles: string[]): Promise<Suite<Flow>[]> {
+        if (typeof files === 'string') {
+            files = [files];
+        }
+        if (moreFiles) {
+            files = [ ...files, ...moreFiles ];
+        }
+        const flowLoader = new FlowLoader(files, this.options);
+        const suites = await flowLoader.load();
         return suites;
     }
 }

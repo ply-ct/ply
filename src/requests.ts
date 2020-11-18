@@ -39,6 +39,24 @@ export class RequestLoader {
         return suites;
     }
 
+    async loadSuite(retrieval: Retrieval): Promise<Suite<Request>> {
+        const contents = await retrieval.read();
+        if (typeof contents === 'undefined') {
+            throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
+        }
+        const resultPaths = await ResultPaths.create(this.options, retrieval);
+        return this.buildSuite(retrieval, contents, resultPaths);
+    }
+
+    syncSuite(retrieval: Retrieval): Suite<Request> {
+        const contents = retrieval.sync();
+        if (typeof contents === 'undefined') {
+            throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
+        }
+        const resultPaths = ResultPaths.createSync(this.options, retrieval);
+        return this.buildSuite(retrieval, contents, resultPaths);
+    }
+
     buildSuite(retrieval: Retrieval, contents: string, resultPaths: ResultPaths): Suite<Request> {
         const runtime = new Runtime(
             this.options,
@@ -80,23 +98,5 @@ export class RequestLoader {
         }
 
         return suite;
-    }
-
-    async loadSuite(retrieval: Retrieval): Promise<Suite<Request>> {
-        const contents = await retrieval.read();
-        if (typeof contents === 'undefined') {
-            throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
-        }
-        const resultPaths = await ResultPaths.create(this.options, retrieval);
-        return this.buildSuite(retrieval, contents, resultPaths);
-    }
-
-    syncSuite(retrieval: Retrieval): Suite<Request> {
-        const contents = retrieval.sync();
-        if (typeof contents === 'undefined') {
-            throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
-        }
-        const resultPaths = ResultPaths.createSync(this.options, retrieval);
-        return this.buildSuite(retrieval, contents, resultPaths);
     }
 }

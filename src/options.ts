@@ -24,7 +24,7 @@ export interface Options {
      */
     ignore?: string;
     /**
-     * File pattern for requests/cases/workflows that shouldn't be directly executed, relative to testsLocation.
+     * File pattern for requests/cases/flows that shouldn't be directly executed, relative to testsLocation.
      */
     skip?: string;
     /**

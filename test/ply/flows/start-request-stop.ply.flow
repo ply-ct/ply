@@ -1,0 +1,37 @@
+attributes:
+  NodeStyle: BoxIcon
+  display: 'x=23,y=18,w=156,h=27'
+steps:
+  - id: s1
+    name: Start
+    path: start
+    attributes:
+      display: 'x=56,y=97,w=60,h=40'
+    links:
+      - id: l1
+        attributes:
+          display: 'type=Elbow,x=163,y=117,xs=120&206,ys=117&117'
+        to: s3
+        result: ''
+  - id: s2
+    name: Stop
+    path: stop
+    attributes:
+      display: 'x=406,y=97,w=60,h=40'
+  - id: s3
+    name: |-
+      Movies by
+      Year & Rating
+    path: request.ts
+    attributes:
+      display: 'x=210,y=90,w=100,h=60'
+      method: GET
+      url: '${baseUrl}?year=${year}&rating=${rating}'
+      headers: '[["Accept","application/json"]]'
+    links:
+      - id: l2
+        to: s2
+        type: link
+        attributes:
+          display: 'type=Elbow,x=358,y=117,xs=314&402,ys=117&117'
+    type: step
