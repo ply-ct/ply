@@ -1,6 +1,7 @@
 import * as assert from 'assert';
 import { Logger, LogLevel, LogOptions } from '../../src/logger';
 import { Storage } from '../../src/storage';
+import { RESULTS } from '../../src/names';
 import * as subst from '../../src/subst';
 
 const logger = new Logger({
@@ -18,7 +19,7 @@ describe('subst', () => {
         // note windows newline converted to \n
         const template = 'here is z: ${x.something()},\r\nand here is y: ${y}';
         const res = subst.replace(template, values, logger);
-        assert.equal(res, 'here is z: ${x.something()},\nand here is y: bar');
+        assert.strictEqual(res, 'here is z: ${x.something()},\nand here is y: bar');
     });
 
     it('handles result values', () => {
@@ -40,12 +41,25 @@ describe('subst', () => {
 
         const template = '${baseUrl}/${@moviesByYearAndRating.response.body.movies[1].id}';
         const res = subst.replace(template, values, logger);
-        assert.equal(res, 'http://localhost:3000/movies/eec22a97');
+        assert.strictEqual(res, 'http://localhost:3000/movies/eec22a97');
     });
 
     it('retains escaped characters', () => {
         const before = 'Dear Sir,\\n\\nGo jump in the \\"lake\\".\\n\\n - A Friend';
         const after = subst.replace(before, {}, logger);
-        assert.equal(before, after);
+        assert.strictEqual(before, after);
     });
+
+    it('handles implicit with spaces', () => {
+        const values = {
+            x: 'foo',
+            [RESULTS]: {
+                'Movies by Year & Rating': { y: 'bar' }
+            }
+        };
+        const before = "${x}/${@['Movies by Year & Rating'].y}";
+        const after = subst.replace(before, values, logger);
+        assert.strictEqual(after, 'foo/bar');
+    });
+
 });

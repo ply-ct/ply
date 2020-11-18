@@ -34,7 +34,8 @@ export function replace(template: string, context: object, logger: Logger, expla
     const lines: string[] = [];
     for (const line of util.lines(template)) {
         try {
-            const l = line.replace(/\${@/g, '${' + RESULTS + '.');
+            let l = line.replace(/\${@\[/g, '${' + RESULTS + '[');
+            l = l.replace(/\${@/g, '${' + RESULTS + '.');
             lines.push(get(l, context, logger, explain));
         } catch (err) {
             if (err.message === `${RESULTS} is not defined`) {

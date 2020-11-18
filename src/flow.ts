@@ -59,7 +59,7 @@ export class PlyFlow implements Flow, PlyTest {
 
     async exec(step: flowbee.Step, runtime: Runtime, runOptions?: RunOptions): Promise<void> {
 
-        this.logger.info('Executing step', step.path);
+        this.logger.info('Executing step', step.name.replace(/\r?\n/g, ' '));
 
         const plyStep = new PlyStep(step, this.requestSuite, this.instance.id, this.logger);
 
@@ -80,8 +80,8 @@ export class PlyFlow implements Flow, PlyTest {
         const outSteps: flowbee.Step[] = [];
         if (step.links) {
             for (const link of step.links) {
-                // TODO: match event
-                if (plyStep.instance.result === link.result) {
+                const result = plyStep.instance.result?.trim();
+                if ((!result && !link.result) || (result === link.result)) {
                     const outStep = this.flow.steps?.find(s => s.id === link.to);
                     if (!this.instance.linkInstances) {
                         this.instance.linkInstances = [];
@@ -98,6 +98,9 @@ export class PlyFlow implements Flow, PlyTest {
                     outSteps.push(outStep);
                 }
             }
+        }
+        if (outSteps.length === 0 && step.path !== 'stop') {
+            throw new Error(`No outbound link from step ${step.id} matches result: ${plyStep.instance.result}`);
         }
 
         await Promise.all(outSteps.map(outStep => this.exec(outStep, runtime, runOptions)));

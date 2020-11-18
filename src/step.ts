@@ -2,7 +2,6 @@ import * as flowbee from 'flowbee';
 import { Logger } from './logger';
 import { RunOptions } from './options';
 import { Request, PlyRequest } from './request';
-import { Result } from './result';
 import { Runtime } from './runtime';
 import { Suite } from './suite';
 import * as subst from './subst';
@@ -31,9 +30,9 @@ export class PlyStep implements Step {
         };
     }
 
-    async exec(runtime: Runtime, runOptions?: RunOptions): Promise<Result | void> {
+    async exec(runtime: Runtime, runOptions?: RunOptions): Promise<void> {
         if (this.step.path === 'start') {
-            this.logger.info('Starting flow', this.requestSuite.name);
+            // just starting
         } else if (this.step.path === 'stop') {
             this.logger.info('Finished flow', this.requestSuite.name);
         } else if (this.step.path === 'request.ts') {
@@ -43,17 +42,21 @@ export class PlyStep implements Step {
             let method = this.step.attributes?.method;
             if (!method) throw new Error('Missing attribute: method');
             method = subst.replace(method, runtime.values, this.logger);
-            const headers = this.step.attributes?.headers ? JSON.parse(this.step.attributes?.headers) : {};
-            for (const key of Object.keys(headers)) {
-                headers[key] = subst.replace(headers[key], runtime.values, this.logger);
+            const headers: {[key: string]: string} = {};
+            if (this.step.attributes?.headers) {
+                const rows = JSON.parse(this.step.attributes.headers);
+                for (const row of rows) {
+                    headers[row[0]] = subst.replace(row[1], runtime.values, this.logger);
+                }
             }
             let body = this.step.attributes?.body;
             if (body) {
                 body = subst.replace(body, runtime.values, this.logger);
             }
 
+            const requestName = this.step.name.replace(/\r?\n/g, ' ');
             const requestObj: Request = {
-                name: this.step.name,
+                name: requestName,
                 type: 'request',
                 url,
                 method,
@@ -63,15 +66,15 @@ export class PlyStep implements Step {
                 submit: (_values: object) => { throw new Error('Not implemented'); }
             };
 
-            const request = new PlyRequest(this.step.name, requestObj, this.logger, runtime.retrieval);
+            const request = new PlyRequest(requestName, requestObj, this.logger, runtime.retrieval);
             if (request.isGraphQl) {
                 request.graphQl = body;
                 body = JSON.stringify({ query: body }, null, runtime.options?.prettyIndent);
             }
 
-            this.requestSuite.tests[this.step.name] = request;
+            this.requestSuite.tests[requestName] = request;
 
-            return await this.requestSuite.run(this.step.name, runtime.values, runOptions);
+            await this.requestSuite.run(requestName, runtime.values, runOptions);
         }
     }
 }
