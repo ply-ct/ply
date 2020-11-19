@@ -31,7 +31,6 @@ export class MovieCrud {
     @test('add new movie')
     async createMovie(values: any) {
         const result = await this.requestSuite.run('createMovie', values);
-        assert.exists(result.response);
         assert.exists(result.response?.body);
         // capture movie id from response -- used in downstream values
         this.movieId = result.response?.body?.id;

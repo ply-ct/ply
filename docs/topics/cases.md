@@ -30,7 +30,7 @@ suite to further understand how Ply cases relate to requests. MovieCrud's constr
 [loadSuiteSync](https://ply-ct.github.io/ply/api-docs/classes/ply.html#loadsuitesync):
 ```typescript
   constructor() {
-      this.requestSuite = ply.loadSuiteSync('test/requests/movies-api.ply.yaml');
+    this.requestSuite = ply.loadSuiteSync('test/ply/requests/movies-api.ply.yaml');
   }
 ```
 Our first test method, `createMovie()` runs a request and captures the result:
@@ -38,7 +38,7 @@ Our first test method, `createMovie()` runs a request and captures the result:
   @test('add new movie')
   async createMovie(values: any) {
       const result = await this.requestSuite.run('createMovie', values);
-      assert.equal(result.response?.status?.code, 201);
+      assert.strictEqual(result.response?.status?.code, 201);
       assert.exists(result.response?.body);
       // capture movie id from response -- used in downstream values
       this.movieId = result.response?.body?.id;

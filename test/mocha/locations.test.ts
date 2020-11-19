@@ -8,6 +8,6 @@ describe('Location', () => {
         const path = resolve('test/ply/requests/movie-queries.ply.yaml');
         const location = new Location(path);
         const relPath = location.relativeTo('test/ply');
-        assert.equal(relPath, 'requests/movie-queries.ply.yaml');
+        assert.strictEqual(relPath, 'requests/movie-queries.ply.yaml');
     });
 });

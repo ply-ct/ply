@@ -26,8 +26,8 @@ describe('Compare', () => {
 
         const diffs = compare.diffLines(expected, actual, {});
 
-        assert.equal(diffs[1].ignored, true);
-        assert.equal(diffs[2].ignored, true);
+        assert.strictEqual(diffs[1].ignored, true);
+        assert.strictEqual(diffs[2].ignored, true);
     });
 
     it('handles multiline regex', () => {
@@ -52,12 +52,12 @@ describe('Compare', () => {
 
         const diffs = compare.diffLines(expected, actual, values);
 
-        assert.equal(diffs[1].count, 2);
-        assert.equal(diffs[1].removed, true);
-        assert.equal(!!diffs[1].ignored, true);
-        assert.equal(diffs[2].count, 2);
-        assert.equal(diffs[2].added, true);
-        assert.equal(!!diffs[2].ignored, true);
+        assert.strictEqual(diffs[1].count, 2);
+        assert.strictEqual(diffs[1].removed, true);
+        assert.strictEqual(!!diffs[1].ignored, true);
+        assert.strictEqual(diffs[2].count, 2);
+        assert.strictEqual(diffs[2].added, true);
+        assert.strictEqual(!!diffs[2].ignored, true);
     });
 
     it('handles regex with unmatched value', () => {
@@ -81,8 +81,8 @@ describe('Compare', () => {
         };
 
         const diffs = compare.diffLines(expected, actual, values);
-        assert.equal(diffs.length, 3);
-        assert.equal(diffs[1].value, "  content-type: application/json${~.*}\n  location: '${baseUrl}/${id}'\n");
-        assert.equal(diffs[1].ignored, undefined);
+        assert.strictEqual(diffs.length, 3);
+        assert.strictEqual(diffs[1].value, "  content-type: application/json${~.*}\n  location: '${baseUrl}/${id}'\n");
+        assert.strictEqual(diffs[1].ignored, undefined);
     });
 });

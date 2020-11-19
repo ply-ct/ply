@@ -63,7 +63,7 @@ export class FlowLoader {
             util.lines(contents).length - 1
         );
 
-        // request suite comprising requests configured in steps
+        // request suite comprising all requests configured in steps
         const requestSuite = new Suite<Request>(
             retrieval.location.base,
             'request',

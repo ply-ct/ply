@@ -53,7 +53,7 @@ export class PlyResult implements Result {
     graphQl?: string;
 
     constructor(readonly name: string, request: Request, response: PlyResponse) {
-        this.request = { ... request };
+        this.request = { ...request };
         this.request.headers = { };
         Object.keys(request.headers).forEach( key => {
             if (key !== 'Authorization') {

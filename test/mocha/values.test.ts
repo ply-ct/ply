@@ -19,24 +19,24 @@ describe('Values', () => {
 
         const values = await new Values(locations, logger).read();
 
-        assert.equal(values.baseUrl, 'http://localhost:8080/movies');
-        assert.equal(values.year, 2020);
-        assert.equal(values.rating, 10);
-        assert.equal(values.query, 'year=1935&rating=>4&sort=rating&descending=true');
+        assert.strictEqual(values.baseUrl, 'http://localhost:8080/movies');
+        assert.strictEqual(values.year, 2020);
+        assert.strictEqual(values.rating, 10);
+        assert.strictEqual(values.query, 'year=1935&rating=>4&sort=rating&descending=true');
         const obj = values.obj;
         assert.ok(obj);
-        assert.equal(obj.file, 'b.json');
-        assert.equal(values.foo, 'bar');
+        assert.strictEqual(obj.file, 'b.json');
+        assert.strictEqual(values.foo, 'bar');
     });
 
     it('should use config', async () => {
 
         const values = await new Values(options.valuesFiles, logger).read();
 
-        assert.equal(values.baseUrl, 'http://localhost:3000/movies');
-        assert.equal(values.year, 1931);
-        assert.equal(values.rating, 5);
-        assert.equal(values.query, 'year=1935&rating=>4&sort=rating&descending=true');
+        assert.strictEqual(values.baseUrl, 'http://localhost:3000/movies');
+        assert.strictEqual(values.year, 1931);
+        assert.strictEqual(values.rating, 5);
+        assert.strictEqual(values.query, 'year=1935&rating=>4&sort=rating&descending=true');
     });
 
     it('should honor PLY_VALUES', async () => {
@@ -48,10 +48,10 @@ describe('Values', () => {
             process.env.PLY_VALUES = prevValues;
         }
 
-        assert.equal(values.baseUrl, 'http://localhost/movies');
-        assert.equal(values.year, 1931);
-        assert.equal(values.rating, 1);
-        assert.equal(values.query, 'year=1935&rating=>4&sort=rating&descending=true');
+        assert.strictEqual(values.baseUrl, 'http://localhost/movies');
+        assert.strictEqual(values.year, 1931);
+        assert.strictEqual(values.rating, 1);
+        assert.strictEqual(values.query, 'year=1935&rating=>4&sort=rating&descending=true');
 
     });
 });

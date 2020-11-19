@@ -5,8 +5,8 @@ describe('Options', () => {
 
     it('is loaded from config', () => {
         const options: Options = new Config().options;
-        assert.equal(options.testsLocation, 'test/ply');
-        assert.equal(options.requestFiles, '**/*.ply.yaml');
+        assert.strictEqual(options.testsLocation, 'test/ply');
+        assert.strictEqual(options.requestFiles, '**/*.ply.yaml');
     });
 
 });

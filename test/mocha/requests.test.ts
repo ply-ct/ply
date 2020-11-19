@@ -28,34 +28,34 @@ describe('Requests', async () => {
             'test/ply/requests/movies-api.ply.yaml'
         );
 
-        assert.equal(suites.length, 2);
+        assert.strictEqual(suites.length, 2);
         let request = suites[0].get('moviesByYearAndRating') as PlyRequest;
-        assert.equal(request.start, 0);
-        assert.equal(request.end, 4);
+        assert.strictEqual(request.start, 0);
+        assert.strictEqual(request.end, 4);
 
         request = suites[0].get('movieById') as PlyRequest;
-        assert.equal(request.name, 'movieById');
-        assert.equal(request.method, 'GET');
+        assert.strictEqual(request.name, 'movieById');
+        assert.strictEqual(request.method, 'GET');
         const headers = request.headers;
-        assert.equal(headers['Accept'], 'application/json');
-        assert.equal(request.start, 6);
-        assert.equal(request.end, 11);
+        assert.strictEqual(headers['Accept'], 'application/json');
+        assert.strictEqual(request.start, 6);
+        assert.strictEqual(request.end, 11);
     });
 
     it('calculates result subpaths', async () => {
         const ply = new Ply();
 
         let suite = await ply.loadRequestSuite('test/ply/requests/movie-queries.ply.yaml');
-        assert.equal(suite.runtime.results.expected.location.toString(),
+        assert.strictEqual(suite.runtime.results.expected.location.toString(),
             'test/ply/results/expected/requests/movie-queries.yaml');
-        assert.equal(suite.runtime.results.actual.location.toString(),
+        assert.strictEqual(suite.runtime.results.actual.location.toString(),
             'test/ply/results/actual/requests/movie-queries.yaml');
 
         ply.options.resultFollowsRelativePath = false;
         suite = await ply.loadRequestSuite('test/ply/requests/movie-queries.ply.yaml');
-        assert.equal(suite.runtime.results.expected.location.toString(),
+        assert.strictEqual(suite.runtime.results.expected.location.toString(),
             'test/ply/results/expected/movie-queries.yaml');
-        assert.equal(suite.runtime.results.actual.location.toString(),
+        assert.strictEqual(suite.runtime.results.actual.location.toString(),
             'test/ply/results/actual/movie-queries.yaml');
     });
 
@@ -78,17 +78,17 @@ describe('Requests', async () => {
         const rawRequestFlow = suite.get('rawRequestFlow') as Request;
         assert.ok(rawRequestFlow.body);
         const rawRequestFlowBody = JSON.parse(rawRequestFlow.body);
-        assert.equal(rawRequestFlowBody.myGreeting, 'Hello');
-        assert.equal(rawRequestFlowBody.myNumber, 1234);
-        assert.equal(rawRequestFlowBody.myMissive, missive);
+        assert.strictEqual(rawRequestFlowBody.myGreeting, 'Hello');
+        assert.strictEqual(rawRequestFlowBody.myNumber, 1234);
+        assert.strictEqual(rawRequestFlowBody.myMissive, missive);
 
         const rawRequestBlock = suite.get('rawRequestBlock') as Request;
         assert.ok(rawRequestBlock.body);
-        assert.equal(rawRequestBlock.body, rawRequestFlow.body);
+        assert.strictEqual(rawRequestBlock.body, rawRequestFlow.body);
         const rawRequestBlockBody = JSON.parse(rawRequestBlock.body);
-        assert.equal(rawRequestBlockBody.myGreeting, 'Hello');
-        assert.equal(rawRequestBlockBody.myNumber, 1234);
-        assert.equal(rawRequestBlockBody.myMissive, missive);
+        assert.strictEqual(rawRequestBlockBody.myGreeting, 'Hello');
+        assert.strictEqual(rawRequestBlockBody.myNumber, 1234);
+        assert.strictEqual(rawRequestBlockBody.myMissive, missive);
     });
 
     it('can handle success', async () => {
@@ -103,8 +103,8 @@ describe('Requests', async () => {
         };
 
         const result = await suite.run('moviesByYearAndRating', values);
-        assert.equal(result.status, 'Passed');
-        assert.equal(result.message, 'Test succeeded');
+        assert.strictEqual(result.status, 'Passed');
+        assert.strictEqual(result.message, 'Test succeeded');
     });
 
     it('can handle failure', async () => {
@@ -119,8 +119,8 @@ describe('Requests', async () => {
         };
 
         const result = await suite.run('moviesByYearAndRating', values);
-        assert.equal(result.status, 'Failed');
-        assert.equal(result.message, 'Results differ from line 21 (moviesByYearAndRating:19)');
+        assert.strictEqual(result.status, 'Failed');
+        assert.strictEqual(result.message, 'Results differ from line 21 (moviesByYearAndRating:19)');
     });
 
     it('can handle error', async () => {
@@ -130,7 +130,7 @@ describe('Requests', async () => {
         });
         const suite = (await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml'))[0];
         const result = await suite.run('movieById', values);
-        assert.equal(result.status, 'Errored');
+        assert.strictEqual(result.status, 'Errored');
     });
 
     it('can handle graphql', async () => {
@@ -145,8 +145,8 @@ describe('Requests', async () => {
         });
 
         const result = await suite.run('repositoryTopicsQuery', vals);
-        assert.equal(result.status, 'Passed');
-        assert.equal(result.message, 'Test succeeded');
+        assert.strictEqual(result.status, 'Passed');
+        assert.strictEqual(result.message, 'Test succeeded');
     });
 
     it('can iterate suite', async () => {
@@ -157,16 +157,16 @@ describe('Requests', async () => {
         for (const request of suite) {
             requests.push(request);
         }
-        assert.equal(requests[0].name, 'moviesByYearAndRating');
-        assert.equal(requests[1].name, 'movieById');
-        assert.equal(requests[2].name, 'moviesQuery');
+        assert.strictEqual(requests[0].name, 'moviesByYearAndRating');
+        assert.strictEqual(requests[1].name, 'movieById');
+        assert.strictEqual(requests[2].name, 'moviesQuery');
     });
 
     it('can run plyee', async () => {
         const plier = new Plier();
         const results = await plier.run(['test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating'], values);
-        assert.equal(results[0].status, 'Passed');
-        assert.equal(results[0].message, 'Test succeeded');
+        assert.strictEqual(results[0].status, 'Passed');
+        assert.strictEqual(results[0].message, 'Test succeeded');
     });
 
     it('can run plyees', async () => {
@@ -176,12 +176,12 @@ describe('Requests', async () => {
             'test/ply/requests/movie-queries.ply.yaml#movieById',
             'test/ply/requests/movie-queries.ply.yaml#moviesQuery'
           ], values);
-        assert.equal(results[0].status, 'Passed');
-        assert.equal(results[0].message, 'Test succeeded');
-        assert.equal(results[1].status, 'Passed');
-        assert.equal(results[1].message, 'Test succeeded');
-        assert.equal(results[2].status, 'Passed');
-        assert.equal(results[2].message, 'Test succeeded');
+        assert.strictEqual(results[0].status, 'Passed');
+        assert.strictEqual(results[0].message, 'Test succeeded');
+        assert.strictEqual(results[1].status, 'Passed');
+        assert.strictEqual(results[1].message, 'Test succeeded');
+        assert.strictEqual(results[2].status, 'Passed');
+        assert.strictEqual(results[2].message, 'Test succeeded');
     });
 
     it('can run suite', async () => {
@@ -190,9 +190,9 @@ describe('Requests', async () => {
         const suite = suites[0];
         const results = await suite.run(values);
 
-        assert.equal(results[0].status, 'Passed');
-        assert.equal(results[1].status, 'Passed');
-        assert.equal(results[2].status, 'Passed');
+        assert.strictEqual(results[0].status, 'Passed');
+        assert.strictEqual(results[1].status, 'Passed');
+        assert.strictEqual(results[2].status, 'Passed');
     });
 
     it('honors submit', async () => {
@@ -208,9 +208,9 @@ describe('Requests', async () => {
         const runOptions = { submit: true };
         const results = await suite.run(values, runOptions);
 
-        assert.equal(results[0].status, 'Submitted');
-        assert.equal(results[1].status, 'Submitted');
-        assert.equal(results[2].status, 'Submitted');
+        assert.strictEqual(results[0].status, 'Submitted');
+        assert.strictEqual(results[1].status, 'Submitted');
+        assert.strictEqual(results[2].status, 'Submitted');
     });
 
     it('honors CreateExpected', async () => {
@@ -226,9 +226,9 @@ describe('Requests', async () => {
         const runOptions = { createExpected: true };
         const results = await suite.run(values, runOptions);
 
-        assert.equal(results[0].status, 'Passed');
-        assert.equal(results[1].status, 'Passed');
-        assert.equal(results[2].status, 'Passed');
+        assert.strictEqual(results[0].status, 'Passed');
+        assert.strictEqual(results[1].status, 'Passed');
+        assert.strictEqual(results[2].status, 'Passed');
 
         const expected = new Storage('test/mocha/results/expected/requests/movie-queries.yaml');
         assert.ok(expected.exists);

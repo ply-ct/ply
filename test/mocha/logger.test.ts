@@ -14,7 +14,7 @@ describe('Logger', () => {
         logger2.error('error message', err);
         logger2.debug('should not appear');
         const log = storage.read() || '';
-        assert.equal(log, `info message\nerror message\n${err.stack}\n`);
+        assert.strictEqual(log, `info message\nerror message\n${err.stack}\n`);
         storage.remove();
     });
 });
