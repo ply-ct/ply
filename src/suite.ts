@@ -196,7 +196,7 @@ export class Suite<T extends Test> {
         }
 
         const padActualStart = callingCaseInfo ? false : this.declaredStartsWith(tests);
-        const expectedExists = await this.runtime.results.expected.exists;
+        let expectedExists = await this.runtime.results.expected.exists;
 
         const results: Result[] = [];
         // within a suite, tests are run sequentially
@@ -225,7 +225,11 @@ export class Suite<T extends Test> {
                     const indent = callingCaseInfo ? this.runtime.options.prettyIndent : 0;
                     actualYaml = { start: 0, text: this.buildResultYaml(plyResult, indent) };
                     this.runtime.results.actual.append(actualYaml.text);
-                    if (!this.callingFlowInfo && !callingCaseInfo) {
+                    if (!callingCaseInfo) {
+                        if (expectedExists && this.callingFlowInfo && this.type === 'request') {
+                            // expectedExists based on specific request step
+                            expectedExists = await this.runtime.results.expectedExists(test.name);
+                        }
                         result = this.handleResultRunOptions(test, result, actualYaml.text, i === 0, expectedExists, runOptions) || result;
                         // status could be 'Submitted' if runOptions so specify
                         if (result.status === 'Pending') {
@@ -248,11 +252,11 @@ export class Suite<T extends Test> {
                 }
                 else {
                     // case/flow run complete -- verify result
-                    actualYaml = this.runtime.results.getActualYaml(test.name);
+                    actualYaml = this.runtime.results.getActualYaml(this.type === 'flow' ? '' : test.name);
                     result = this.handleResultRunOptions(test, result, actualYaml.text, i === 0, expectedExists, runOptions) || result;
                     // status could be 'Submitted' if runOptions so specify
                     if (result.status === 'Pending') {
-                        const expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
+                        const expectedYaml = await this.runtime.results.getExpectedYaml(this.type === 'flow' ? '' : test.name);
                         if (padActualStart && expectedYaml.start > actualYaml.start) {
                             this.runtime.results.actual.padLines(actualYaml.start, expectedYaml.start - actualYaml.start);
                         }

@@ -90,39 +90,53 @@ export class ResultPaths {
     /**
      * Newlines are always \n.
      */
-    async getExpectedYaml(name: string): Promise<Yaml> {
+    async getExpectedYaml(name?: string): Promise<Yaml> {
         const expected = await this.expected.read();
         if (typeof expected === 'undefined') {
             throw new Error(`Expected result file not found: ${this.expected}`);
         }
-        const expectedObj = yaml.load(this.expected.toString(), expected, true)[name];
-        if (!expectedObj) {
-            throw new Error(`Expected result not found: ${this.expected}#${name}`);
+        if (name) {
+            const expectedObj = yaml.load(this.expected.toString(), expected, true)[name];
+            if (!expectedObj) {
+                throw new Error(`Expected result not found: ${this.expected}#${name}`);
+            }
+            const expectedLines = lines(expected);
+            return {
+                start: expectedObj.__start || 0,
+                text: expectedLines.slice(expectedObj.__start, expectedObj.__end + 1).join('\n')
+            };
+        } else {
+            return { start: 0, text: expected };
         }
-        const expectedLines = lines(expected);
-        return {
-            start: expectedObj.__start || 0,
-            text: expectedLines.slice(expectedObj.__start, expectedObj.__end + 1).join('\n')
-        };
+    }
+
+    async expectedExists(name: string): Promise<boolean> {
+        const expected = await this.expected.read();
+        if (typeof expected === 'undefined') return false;
+        return !!yaml.load(this.expected.toString(), expected, true)[name];
     }
 
     /**
      * Newlines are always \n.  Trailing \n is appended.
      */
-    getActualYaml(name: string): Yaml {
+    getActualYaml(name?: string): Yaml {
         const actual = this.actual.read();
-        if (!actual) {
+        if (typeof actual === 'undefined') {
             throw new Error(`Actual result file not found: ${this.actual}`);
         }
-        const actualObj = yaml.load(this.actual.toString(), actual, true)[name];
-        if (!actualObj) {
-            throw new Error(`Actual result not found: ${this.actual}#${name}`);
+        if (name) {
+            const actualObj = yaml.load(this.actual.toString(), actual, true)[name];
+            if (!actualObj) {
+                throw new Error(`Actual result not found: ${this.actual}#${name}`);
+            }
+            const actualLines = lines(actual);
+            return {
+                start: actualObj.__start || 0,
+                text: actualLines.slice(actualObj.__start, actualObj.__end + 1).join('\n') + '\n'
+            };
+        } else {
+            return { start: 0, text: actual };
         }
-        const actualLines = lines(actual);
-        return {
-            start: actualObj.__start || 0,
-            text: actualLines.slice(actualObj.__start, actualObj.__end + 1).join('\n') + '\n'
-        };
     }
 }
 

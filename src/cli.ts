@@ -67,7 +67,8 @@ else {
     } else {
         paths = [
             ...glob.sync(options.requestFiles, globOptions),
-            ...glob.sync(options.caseFiles, globOptions)
+            ...glob.sync(options.caseFiles, globOptions),
+            ...glob.sync(options.flowFiles, globOptions)
         ];
     }
 

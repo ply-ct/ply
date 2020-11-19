@@ -107,7 +107,7 @@ describe('Cases', async () => {
         assert.equal(suites.length, 1);
         const suite = suites[0];
 
-        const results = await suite.run(values);
+        const results = await suite.run(values, { createExpectedIfMissing: true });
 
         assert.equal(results[0].name, 'add new movie');
         assert.equal(results[0].status, 'Passed');

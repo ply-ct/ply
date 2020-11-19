@@ -25,7 +25,10 @@ export class PlyFlow implements Flow, PlyTest {
         readonly requestSuite: Suite<Request>,
         readonly logger: Logger
     ) {
-        this.name = flow.path; // TODO trim?
+        this.name = flowbee.getFlowName(flow);
+        if (this.name.endsWith('.ply')) {
+            this.name = this.name.substring(0, this.name.length - 4);
+        }
         this.instance = {
             id: '',
             runId: Date.now().toString(16),

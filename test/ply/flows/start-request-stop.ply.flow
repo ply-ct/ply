@@ -42,7 +42,7 @@ steps:
     attributes:
       display: 'x=370,y=90,w=100,h=60'
       method: GET
-      url: '${baseUrl}/${@[''Movies by Year & Rating''].response.body.movies[0].id}'
+      url: '${baseUrl}/${@["Movies by Year & Rating"].response.body.movies[0].id}'
       headers: '[["Accept","application/json"]]'
     links:
       - id: l3

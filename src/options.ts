@@ -20,6 +20,10 @@ export interface Options {
      */
     caseFiles?: string;
     /**
+     * Flow files glob pattern, relative to testsLocation ('**\/*.ply.flow').
+     */
+    flowFiles?: string;
+    /**
      * File pattern to ignore, relative to testsLocation ('**\/{node_modules,bin,dist,out}\/**').
      */
     ignore?: string;
@@ -78,6 +82,7 @@ export interface PlyOptions extends Options {
     testsLocation: string;
     requestFiles: string;
     caseFiles: string;
+    flowFiles: string;
     ignore: string;
     skip: string;
     expectedLocation: string;
@@ -137,6 +142,7 @@ export class Defaults implements PlyOptions {
     constructor(readonly testsLocation: string = '.') {}
     requestFiles = '**/*.{ply.yaml,ply.yml}';
     caseFiles = '**/*.ply.ts';
+    flowFiles = '**/*.ply.flow';
     ignore = '**/{node_modules,bin,dist,out}/**';
     skip = '';
     get expectedLocation() {
@@ -184,6 +190,10 @@ export class Config {
         caseFiles: {
             describe: 'Case files glob pattern',
             alias: 'c'
+        },
+        flowFiles: {
+            describe: 'Flow files glob pattern',
+            alias: 'f'
         },
         ignore: {
             describe: 'File patterns to ignore'

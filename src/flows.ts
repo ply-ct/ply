@@ -8,12 +8,20 @@ import { Suite } from './suite';
 import { Request } from './request';
 import * as util from './util';
 import * as yaml from './yaml';
+import { Skip } from './skip';
 
 export class FlowLoader {
+
+    private skip: Skip | undefined;
+
     constructor(
         readonly locations: string[],
         private options: PlyOptions
-    ) { }
+    ) {
+        if (options.skip) {
+            this.skip = new Skip(options.testsLocation, options.skip);
+        }
+    }
 
     async load(): Promise<Suite<Flow>[]> {
         const retrievals = this.locations.map(loc => new Retrieval(loc));
@@ -73,11 +81,17 @@ export class FlowLoader {
         };
 
         suite.add(new PlyFlow(flowbeeFlow, requestSuite, logger));
+
+        // mark if skipped
+        if (this.skip?.isSkipped(suite.path)) {
+            suite.skip = true;
+        }
+
         return suite;
     }
 
     /**
-     * Parse a flowbee flow from text
+     * Parse a flowbee flow from text (reproduced from flowbee.FlowDiagram)
      * @param text json or yaml
      * @param file file name
      */

@@ -6,6 +6,9 @@
 	],
 	"settings": {
         "editor.detectIndentation": false,
-        "editor.formatOnPaste": true
+        "editor.formatOnPaste": true,
+        "files.exclude": {
+            "docs/api-docs/": true
+        }
 	}
 }
