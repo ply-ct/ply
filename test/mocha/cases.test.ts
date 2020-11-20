@@ -49,7 +49,7 @@ describe('Cases', async () => {
 
         const create = suites[0].get('add new movie') as PlyCase;
         const c2 = suites[0].tests['add new movie'];
-        assert.deepEqual(create, c2);
+        assert.deepStrictEqual(create, c2);
         assert.strictEqual(create.method, 'createMovie');
         assert.strictEqual(create.type, 'case');
         assert.strictEqual(create.start, 30);
@@ -67,7 +67,7 @@ describe('Cases', async () => {
 
         const instance = ((unnamedSuite as any).runtime as Runtime).decoratedSuite!.instance as UnnamedSuite;
         assert.strictEqual(instance.beforeCount, 1);
-        assert.deepEqual(instance.testsRun, ['unnamedCaseNoValues', 'unnamedCaseWithValues']);
+        assert.deepStrictEqual(instance.testsRun, ['unnamedCaseNoValues', 'unnamedCaseWithValues']);
         assert.strictEqual(instance.aValue, 'foo');
         assert.strictEqual(instance.afterCount, 1);
 
@@ -89,7 +89,7 @@ describe('Cases', async () => {
 
         const instance = ((unnamedSuite as any).runtime as Runtime).decoratedSuite!.instance as UnnamedSuite;
         assert.strictEqual(instance.beforeCount, 3);
-        assert.deepEqual(instance.testsRun, ['namedCaseNoValues', 'namedCaseWithValues']);
+        assert.deepStrictEqual(instance.testsRun, ['namedCaseNoValues', 'namedCaseWithValues']);
         assert.strictEqual(instance.aValue, 'zero');
         assert.strictEqual(instance.afterCount, 3);
 
