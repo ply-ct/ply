@@ -218,15 +218,23 @@ export class Plyee {
         return path.endsWith('.ts');
     }
 
+    static isFlow(path: string): boolean {
+        return path.endsWith('.flow');
+    }
+
     /**
      * Maps plyee paths to Plyee by Suite.
      */
-    static requests(paths: string[]): Map<string, Plyee[]> {
+    static requests(paths: string[]): Map<string,Plyee[]> {
         return this.collect(paths, plyee => Plyee.isRequest(plyee.location));
     }
 
-    static cases(paths: string[]): Map<string, Plyee[]> {
+    static cases(paths: string[]): Map<string,Plyee[]> {
         return this.collect(paths, plyee => Plyee.isCase(plyee.location));
+    }
+
+    static flows(paths: string[]): Map<string,Plyee[]> {
+        return this.collect(paths, plyee => Plyee.isFlow(plyee.location));
     }
 
     /**
@@ -311,6 +319,21 @@ export class Plier extends EventEmitter {
             }
         }
 
+        // flows
+        for (const [loc, flowPlyee] of Plyee.flows(plyees)) {
+            const tests = flowPlyee.map(plyee => {
+                if (!plyee.test) {
+                    throw new Error(`Plyee is not a test: ${plyee}`);
+                }
+                return plyee.test;
+            });
+            const flowSuites = await this.ply.loadFlowSuites(loc);
+            for (const flowSuite of flowSuites) {
+                flowSuite.emitter = this;
+                promises.push(flowSuite.run(tests, values, runOptions));
+            }
+        }
+
         let combined: Result[] = [];
         for (const results of await Promise.all(promises)) {
             combined = [ ...combined, ...results ];
@@ -342,6 +365,15 @@ export class Plier extends EventEmitter {
                         if (!caseSuite.skip) {
                             for (const testCase of caseSuite) {
                                 plyees.push(this.ply.options.testsLocation + '/' + caseSuite.path + '#' + testCase.name);
+                            }
+                        }
+                    }
+                } else if (Plyee.isFlow(path)) {
+                    const flowSuites = await this.ply.loadFlowSuites(path);
+                    for (const flowSuite of flowSuites) {
+                        if (!flowSuite.skip) {
+                            for (const flow of flowSuite) {
+                                plyees.push(this.ply.options.testsLocation + '/' + flowSuite.path + '#' + flow.name);
                             }
                         }
                     }

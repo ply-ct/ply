@@ -14,7 +14,7 @@ describe('Flows', async () => {
 
     it('can run suite', async () => {
         const ply = new Ply();
-        const suites = await ply.loadFlows('test/ply/flows/start-request-stop.ply.flow');
+        const suites = await ply.loadFlows('test/ply/flows/movie-queries.ply.flow');
         const suite = suites[0];
         const results = await suite.run(values);
 
@@ -24,12 +24,12 @@ describe('Flows', async () => {
     it('does create expected', async () => {
         const options = { ...new Config().options, expectedLocation: 'temp' };
         const ply = new Ply(options);
-        const suites = await ply.loadFlows('test/ply/flows/start-request-stop.ply.flow');
+        const suites = await ply.loadFlows('test/ply/flows/movie-queries.ply.flow');
         const suite = suites[0];
         const results = await suite.run(values, { createExpected: true });
 
         // remove before assertions in case test fails
-        new Storage('temp/flows/start-request-stop.yml').remove();
+        new Storage('temp/flows/movie-queries.yml').remove();
 
         assert.strictEqual(results[0].status, 'Passed');
     });
