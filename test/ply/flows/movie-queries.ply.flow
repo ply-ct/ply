@@ -16,7 +16,7 @@ steps:
     name: Stop
     path: stop
     attributes:
-      display: 'x=550,y=100,w=60,h=40'
+      display: 'x=720,y=100,w=60,h=40'
   - id: s3
     name: |-
       Movies by
@@ -46,8 +46,25 @@ steps:
       headers: '[["Accept","application/json"]]'
     links:
       - id: l3
+        to: s5
+        type: link
+        attributes:
+          display: 'type=Elbow,x=513,y=120,xs=474&546,ys=120&120'
+    type: step
+  - id: s5
+    name: |-
+      Great Films
+      of 1935
+    path: request.ts
+    attributes:
+      display: 'x=550,y=90,w=100,h=60'
+      method: GET
+      url: '${baseUrl}?${query}'
+      headers: '[["Accept","application/json"]]'
+    links:
+      - id: l4
         to: s2
         type: link
         attributes:
-          display: 'type=Elbow,x=510,y=120,xs=474&546,ys=120&120'
+          display: 'type=Elbow,x=685,y=120,xs=654&716,ys=120&120'
     type: step

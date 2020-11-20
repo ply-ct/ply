@@ -91,30 +91,31 @@ export class PlyStep implements Step {
             if (this.instance.status === 'In Progress') { // not overwritten by step execution
                 this.instance.status = 'Completed';
             }
+
+            // append status, result and message to actual result
+            const indent = this.requestSuite.runtime.options.prettyIndent;
+            const statusLine = `status: ${this.instance.status}`;
+            actual.append(statusLine.padStart(statusLine.length + indent));
+            this.instance.end = new Date();
+            const elapsed = this.instance.end.getTime() - this.instance.start.getTime();
+            actual.append(`  # ${elapsed} ms\n`);
+
+            if (typeof res === 'boolean' || typeof res === 'number' || res) {
+                this.instance.result = '' + res;
+                const resultLine = `result: ${this.instance.result}\n`;
+                actual.append(resultLine.padStart(resultLine.length + indent));
+            }
+            if (this.instance.message) {
+                const messageLine = `message: '${this.instance.message}'\n`;
+                actual.append(messageLine.padStart(messageLine.length + indent));
+            }
+
+            await this.handleResult(runOptions);
+
         } catch (err) {
             this.instance.status = 'Errored';
             this.instance.message = err.message;
         }
-
-        // append status, result and message to actual result
-        const indent = this.requestSuite.runtime.options.prettyIndent;
-        const statusLine = `status: ${this.instance.status}`;
-        actual.append(statusLine.padStart(statusLine.length + indent));
-        this.instance.end = new Date();
-        const elapsed = this.instance.end.getTime() - this.instance.start.getTime();
-        actual.append(`  # ${elapsed} ms\n`);
-
-        if (typeof res === 'boolean' || typeof res === 'number' || res) {
-            this.instance.result = '' + res;
-            const resultLine = `result: ${this.instance.result}\n`;
-            actual.append(resultLine.padStart(resultLine.length + indent));
-        }
-        if (this.instance.message) {
-            const messageLine = `result: ${this.instance.message}\n`;
-            actual.append(messageLine.padStart(messageLine.length + indent));
-        }
-
-        await this.handleResult(runOptions);
     }
 
     /**
@@ -151,7 +152,7 @@ export class PlyStep implements Step {
                     expected.append(resultLine.padStart(resultLine.length + indent));
                 }
                 if (this.instance.message) {
-                    const messageLine = `result: ${this.instance.message}\n`;
+                    const messageLine = `message: ${this.instance.message}\n`;
                     expected.append(messageLine.padStart(messageLine.length + indent));
                 }
             } else {
