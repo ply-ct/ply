@@ -38,8 +38,7 @@ export class Retrieval {
     get exists(): Promise<boolean> {
         if (this.storage) {
             return Promise.resolve(this.storage.exists);
-        }
-        else {
+        } else {
             try {
                 return fetch(this.location.path, { method: 'HEAD' })
                 .then((response: Response) => {
@@ -48,6 +47,14 @@ export class Retrieval {
             } catch {
                 return Promise.resolve(false);
             }
+        }
+    }
+
+    remove() {
+        if (this.storage) {
+            this.storage.remove();
+        } else {
+            throw new Error('Retrieval.remove() not supported for remote path: ' + this);
         }
     }
 

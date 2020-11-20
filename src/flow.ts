@@ -22,8 +22,8 @@ export class PlyFlow implements Flow, PlyTest {
 
     constructor(
         readonly flow: flowbee.Flow,
-        readonly requestSuite: Suite<Request>,
-        readonly logger: Logger
+        private readonly requestSuite: Suite<Request>,
+        private readonly logger: Logger
     ) {
         this.name = flowbee.getFlowName(flow);
         if (this.name.endsWith('.ply')) {
@@ -62,9 +62,9 @@ export class PlyFlow implements Flow, PlyTest {
 
     async exec(step: flowbee.Step, runtime: Runtime, runOptions?: RunOptions): Promise<void> {
 
-        this.logger.info('Executing step', step.name.replace(/\r?\n/g, ' '));
+        const plyStep = new PlyStep(step, this.requestSuite, this.logger, this.instance.id);
 
-        const plyStep = new PlyStep(step, this.requestSuite, this.instance.id, this.logger);
+        this.logger.info('Executing step', plyStep.name);
 
         if (!this.instance.stepInstances) {
             this.instance.stepInstances = [];
@@ -72,12 +72,9 @@ export class PlyFlow implements Flow, PlyTest {
 
         this.instance.stepInstances.push(plyStep.instance);
 
-        const res = await plyStep.exec(runtime, runOptions);
-
-        plyStep.instance.end = new Date();
-        plyStep.instance.status = 'Completed';
-        if (typeof res === 'boolean' || typeof res === 'number' || res) {
-            plyStep.instance.result = '' + res;
+        await plyStep.exec(runtime, runOptions);
+        if (plyStep.instance.status === 'Waiting' || (plyStep.instance.status !== 'Completed' && runtime.options.bail)) {
+            return;
         }
 
         const outSteps: flowbee.Step[] = [];

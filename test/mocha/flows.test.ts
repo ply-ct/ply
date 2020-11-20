@@ -26,12 +26,11 @@ describe('Flows', async () => {
         const ply = new Ply(options);
         const suites = await ply.loadFlows('test/ply/flows/start-request-stop.ply.flow');
         const suite = suites[0];
-        const results = await suite.run(values, { createExpectedIfMissing: true });
+        const results = await suite.run(values, { createExpected: true });
 
         // remove before assertions in case test fails
         new Storage('temp/flows/start-request-stop.yml').remove();
 
         assert.strictEqual(results[0].status, 'Passed');
-
     });
 });

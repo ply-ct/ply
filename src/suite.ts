@@ -226,15 +226,16 @@ export class Suite<T extends Test> {
                     actualYaml = { start: 0, text: this.buildResultYaml(plyResult, indent) };
                     this.runtime.results.actual.append(actualYaml.text);
                     if (!callingCaseInfo) {
-                        if (expectedExists && this.callingFlowInfo && this.type === 'request') {
+                        if (expectedExists && this.callingFlowInfo) {
                             // expectedExists based on specific request step
                             expectedExists = await this.runtime.results.expectedExists(test.name);
                         }
-                        result = this.handleResultRunOptions(test, result, actualYaml.text, i === 0, expectedExists, runOptions) || result;
+                        const isFirst = i === 0 && !this.callingFlowInfo;
+                        result = this.handleResultRunOptions(test, result, actualYaml.text, isFirst, expectedExists, runOptions) || result;
                         // status could be 'Submitted' if runOptions so specify
                         if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/flow is complete)
-                            const expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
+                            const expectedYaml = await this.runtime.results.getExpectedYaml(test.name, !!this.callingFlowInfo);
                             if (expectedYaml.start > 0) {
                                 actualYaml = this.runtime.results.getActualYaml(test.name);
                                 if (padActualStart && expectedYaml.start > actualYaml.start) {
@@ -354,7 +355,7 @@ export class Suite<T extends Test> {
         }
     }
 
-    private handleResultRunOptions(test: T, result: Result, actualYamlText: string,
+    private handleResultRunOptions(test: Test, result: Result, actualYamlText: string,
         isFirst: boolean, expectedExists: boolean, runOptions?: RunOptions): Result | undefined {
 
         if (runOptions?.submit || (!expectedExists && runOptions?.submitIfExpectedMissing)) {
@@ -377,12 +378,15 @@ export class Suite<T extends Test> {
                 expected.write(actualYamlText);
             }
             else {
+                if (this.callingFlowInfo) {
+                    expected.append(`${test.name}:\n`);
+                }
                 expected.append(actualYamlText);
             }
         }
     }
 
-    private logOutcome(test: Test, outcome: Outcome) {
+    logOutcome(test: Test, outcome: Outcome) {
         outcome.end = Date.now();
         const ms = outcome.start ? ` in ${outcome.end - outcome.start} ms` : '';
         const testType = test.type.charAt(0).toLocaleUpperCase() + test.type.substring(1);
@@ -493,6 +497,11 @@ export class Suite<T extends Test> {
                 const requestYml = yaml.dump({ request: invocation.request }, this.runtime.options.prettyIndent);
                 ymlLines[outcomeLine + requestYml.split('\n').length] += `  # ${responseMs}`;
             }
+        }
+
+        if (this.callingFlowInfo) {
+            // name already appended with step output
+            ymlLines.shift();
         }
         yml = ymlLines.join('\n');
 

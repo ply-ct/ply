@@ -91,6 +91,10 @@ export class Storage {
         this.insert(''.padStart(lines - 1, '\n'), start);
     }
 
+    clear() {
+        this.write('');
+    }
+
     remove() {
         if (this.localStorage) {
             this.localStorage.removeItem(this.location.path);

@@ -1,3 +1,6 @@
+# flow results for movie queries (illustrates previous request access)
+Start:
+  status: Completed
 Movies by Year & Rating:
   request:
     url: '${baseUrl}?year=${year}&rating=${rating}'
@@ -91,6 +94,7 @@ Movies by Year & Rating:
           }
         ]
       }
+  status: Completed
 Movie by ID:
   request:
     url: '${baseUrl}/${@["Movies by Year & Rating"].response.body.movies[0].id}'
@@ -142,3 +146,6 @@ Movie by ID:
         },
         "year": 1931
       }
+  status: Completed
+Stop:
+  status: Completed

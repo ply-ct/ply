@@ -77,7 +77,7 @@ export class FlowLoader {
         requestSuite.callingFlowInfo = {
             results: resultPaths,
             suiteName: retrieval.location.base,
-            flowName: flowbeeFlow.path
+            flowPath: flowbeeFlow.path
         };
 
         suite.add(new PlyFlow(flowbeeFlow, requestSuite, logger));

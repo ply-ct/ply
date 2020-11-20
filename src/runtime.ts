@@ -4,7 +4,7 @@ import * as yaml from './yaml';
 import { Location } from './location';
 import { Retrieval } from './retrieval';
 import { Storage } from './storage';
-import { PlyOptions } from './options';
+import { Options, PlyOptions } from './options';
 import { TEST, BEFORE, AFTER, SUITE } from './names';
 import { TestSuite, TestCase, Before, After } from './decorators';
 import { Yaml } from './yaml';
@@ -15,7 +15,9 @@ export class ResultPaths {
     private constructor(
         readonly expected: Retrieval,
         readonly actual: Storage,
-        readonly log: Storage) { }
+        readonly options: Options,
+        readonly log: Storage
+    ) { }
 
     /**
      * excluding file extension
@@ -63,6 +65,7 @@ export class ResultPaths {
         return new ResultPaths(
             new Retrieval(basePaths.expected + ext),
             new Storage(basePaths.actual + ext),
+            options,
             new Storage(basePaths.log + '.log')
         );
     }
@@ -83,6 +86,7 @@ export class ResultPaths {
         return new ResultPaths(
             new Retrieval(basePaths.expected + ext),
             new Storage(basePaths.actual + ext),
+            options,
             new Storage(basePaths.log + '.log')
         );
     }
@@ -90,8 +94,8 @@ export class ResultPaths {
     /**
      * Newlines are always \n.
      */
-    async getExpectedYaml(name?: string): Promise<Yaml> {
-        const expected = await this.expected.read();
+    async getExpectedYaml(name?: string, isFlowRequest = false): Promise<Yaml> {
+        let expected = await this.expected.read();
         if (typeof expected === 'undefined') {
             throw new Error(`Expected result file not found: ${this.expected}`);
         }
@@ -100,11 +104,29 @@ export class ResultPaths {
             if (!expectedObj) {
                 throw new Error(`Expected result not found: ${this.expected}#${name}`);
             }
-            const expectedLines = lines(expected);
-            return {
-                start: expectedObj.__start || 0,
-                text: expectedLines.slice(expectedObj.__start, expectedObj.__end + 1).join('\n')
-            };
+            let expectedLines: string[];
+            if (isFlowRequest) {
+                // exclude step info from request expected
+                const {
+                    __start: _start,
+                    __end: _end,
+                    status: _status,
+                    result: _result,
+                    message: _message,
+                    ...rawObj
+                } = expectedObj;
+                const indent = this.options.prettyIndent || 0;
+                expected = yaml.dump(rawObj, indent);
+                expectedLines = lines(expected).map(l => l.padStart(l.length + indent));
+                return { start: 0, text: expectedLines.join('\n') };
+            } else {
+                expectedLines = lines(expected);
+                return {
+                    start: expectedObj.__start || 0,
+                    text: expectedLines.slice(expectedObj.__start, expectedObj.__end + 1).join('\n')
+                };
+            }
+
         } else {
             return { start: 0, text: expected };
         }
@@ -149,7 +171,7 @@ export type CallingCaseInfo = {
 export type CallingFlowInfo = {
     results: ResultPaths,
     suiteName: string,
-    flowName: string
+    flowPath: string
 };
 
 /**
