@@ -83,7 +83,7 @@ export class PlyStep implements Step {
                 this.requestSuite.tests[this.name] = request;
 
                 const result = await this.requestSuite.run(this.name, runtime.values, runOptions);
-                if (result.status !== 'Passed') {
+                if (result.status !== 'Passed' && result.status !== 'Submitted') {
                     this.instance.status = result.status === 'Failed' ? 'Failed' : 'Errored';
                     this.instance.message = result.message;
                 }
@@ -132,7 +132,7 @@ export class PlyStep implements Step {
         if (runOptions?.submit || (!expectedExists && runOptions?.submitIfExpectedMissing)) {
             this.requestSuite.logOutcome(
                 { name: this.name, type: 'flow' },
-                { status: this.instance.status as any, message: this.instance.message || '' }
+                { status: this.instance.status as any, message: this.instance.message || '', start: this.instance.start?.getTime() }
             );
         } else if (runOptions?.createExpected || (!expectedExists && runOptions?.createExpectedIfMissing)) {
             if (this.requestSuite.runtime.results.expected.location.isUrl) {

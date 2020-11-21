@@ -21,7 +21,7 @@ steps:
     name: |-
       Movies by
       Year & Rating
-    path: request.ts
+    path: request
     attributes:
       display: 'x=190,y=90,w=100,h=60'
       method: GET
@@ -38,7 +38,7 @@ steps:
     name: |-
       Movie by
       ID
-    path: request.ts
+    path: request
     attributes:
       display: 'x=370,y=90,w=100,h=60'
       method: GET
@@ -55,7 +55,7 @@ steps:
     name: |-
       Great Films
       of 1935
-    path: request.ts
+    path: request
     attributes:
       display: 'x=550,y=90,w=100,h=60'
       method: GET

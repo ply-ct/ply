@@ -13,7 +13,8 @@
             ],
             "program": "${workspaceFolder}/dist/src/cli.js",
             "args": [
-                "test/ply/cases/movieCrud.ply.ts"
+                "-s",
+                "test/ply/flows/movie-queries.ply.flow"
             ],
             "preLaunchTask": "tsc: build - tsconfig.json",
             "outFiles": [
