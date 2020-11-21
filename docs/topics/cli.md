@@ -10,8 +10,8 @@ those that are ignored or skipped).
 
 | Option | Default |
 | :----- | :------ |
+| **<code>-h</code>** | Show help
 | **<code>--version, -v</code>** | Show version number
-| **<code>--help, -h</code>** | Show help
 | **<code>--config, -c</code>** | Specify path to [plyconfig file](config) (overrides default search mechanism)
 | **<code>--submit, -s</code>** | Submit requests but don't verify actual results against expected (ad hoc run)
 | **<code>--import, -i</code>** | Import requests or values from specified format. Currently 'postman' is the only supported format. Overwrites existing same-named files.

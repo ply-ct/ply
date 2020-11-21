@@ -283,11 +283,11 @@ export class Config {
             }
             const config = configPath ? this.read(configPath) : {};
             let spec = yargs
-                .config(config)
                 .usage('Usage: $0 <tests> [options]')
-                .help('help').alias('help', 'h')
-                .option('config', { description: 'Ply config location', type: 'string', alias: 'c' })
-                .alias('version', 'v');
+                .help('h')
+                .version().alias('version', 'v')
+                .config(config)
+                .option('config', { description: 'Ply config location', type: 'string', alias: 'c' });
             for (const option of Object.keys(this.yargsOptions)) {
                 const yargsOption = this.yargsOptions[option];
                 let type = yargsOption.type;
