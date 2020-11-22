@@ -44,7 +44,7 @@ export class PlyStep implements Step {
             actual.append(`${this.name}:  # ${util.timestamp(this.instance.start)}\n`);
             if (this.step.path === 'stop') {
                 this.logger.info('Finished flow', this.requestSuite.name);
-            } else if (this.step.path === 'request.ts') {
+            } else if (this.step.path === 'request') {
                 let url = this.step.attributes?.url;
                 if (!url) throw new Error('Missing attribute: url');
                 url = subst.replace(url, runtime.values, this.logger);
@@ -80,12 +80,16 @@ export class PlyStep implements Step {
                     body = JSON.stringify({ query: body }, null, runtime.options?.prettyIndent);
                 }
 
-                this.requestSuite.tests[this.name] = request;
+                if (this.step.attributes?.submit === 'true') {
+                    await request.submit(runtime.values, runtime.options, { ...runOptions, submit: true });
+                } else {
+                    this.requestSuite.tests[this.name] = request;
+                    const result = await this.requestSuite.run(this.name, runtime.values, runOptions);
+                    if (result.status !== 'Passed' && result.status !== 'Submitted') {
+                        this.instance.status = result.status === 'Failed' ? 'Failed' : 'Errored';
+                        this.instance.message = result.message;
+                    }
 
-                const result = await this.requestSuite.run(this.name, runtime.values, runOptions);
-                if (result.status !== 'Passed' && result.status !== 'Submitted') {
-                    this.instance.status = result.status === 'Failed' ? 'Failed' : 'Errored';
-                    this.instance.message = result.message;
                 }
             }
             if (this.instance.status === 'In Progress') { // not overwritten by step execution
@@ -132,7 +136,8 @@ export class PlyStep implements Step {
         if (runOptions?.submit || (!expectedExists && runOptions?.submitIfExpectedMissing)) {
             this.requestSuite.logOutcome(
                 { name: this.name, type: 'flow' },
-                { status: this.instance.status as any, message: this.instance.message || '', start: this.instance.start?.getTime() }
+                { status: 'Submitted', message: this.instance.message || '', start: this.instance.start?.getTime() },
+                'Step'
             );
         } else if (runOptions?.createExpected || (!expectedExists && runOptions?.createExpectedIfMissing)) {
             if (this.requestSuite.runtime.results.expected.location.isUrl) {
@@ -142,7 +147,7 @@ export class PlyStep implements Step {
             if (this.step.path === 'start') {
                 this.logger.info(`Creating expected result: ${expected}`);
                 expected.write(actualYaml.text);
-            } else if (this.step.path === 'request.ts') {
+            } else if (this.step.path === 'request') {
                 // request already written -- just append step info
                 const indent = this.requestSuite.runtime.options.prettyIndent;
                 const statusLine = `status: ${this.instance.status}\n`;

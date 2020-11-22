@@ -286,7 +286,7 @@ export class Suite<T extends Test> {
                 this.logOutcome(test, result);
             }
 
-            if (this.runtime.options.bail && result.status !== 'Passed') {
+            if (this.runtime.options.bail && result.status !== 'Passed' && result.status !== 'Submitted') {
                 break;
             }
         }
@@ -386,22 +386,22 @@ export class Suite<T extends Test> {
         }
     }
 
-    logOutcome(test: Test, outcome: Outcome) {
+    logOutcome(test: Test, outcome: Outcome, label?: string) {
         outcome.end = Date.now();
         const ms = outcome.start ? ` in ${outcome.end - outcome.start} ms` : '';
-        const testType = test.type.charAt(0).toLocaleUpperCase() + test.type.substring(1);
+        const testLabel = label || test.type.charAt(0).toLocaleUpperCase() + test.type.substring(1);
         if (outcome.status === 'Passed') {
-            this.logger.info(`${testType} '${test.name}' PASSED${ms}`);
+            this.logger.info(`${testLabel} '${test.name}' PASSED${ms}`);
         }
         else if (outcome.status === 'Failed') {
             const diff = outcome.diff ? '\n' + outcome.diff : '';
-            this.logger.error(`${testType} '${test.name}' FAILED${ms}: ${outcome.message}${diff}`);
+            this.logger.error(`${testLabel} '${test.name}' FAILED${ms}: ${outcome.message}${diff}`);
         }
         else if (outcome.status === 'Errored') {
-            this.logger.error(`${testType} '${test.name}' ERRORED${ms}: ${outcome.message}`);
+            this.logger.error(`${testLabel} '${test.name}' ERRORED${ms}: ${outcome.message}`);
         }
         else if (outcome.status === 'Submitted') {
-            this.logger.info(`${testType} '${test.name}' SUBMITTED${ms}`);
+            this.logger.info(`${testLabel} '${test.name}' SUBMITTED${ms}`);
         }
         if (this.emitter) {
             this.emitter.emit('outcome', {

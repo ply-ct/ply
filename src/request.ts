@@ -76,12 +76,11 @@ export class PlyRequest implements Request, PlyTest {
      * or comparing with expected.  Useful for cleaning up or restoring
      * REST resources before/after testing (see Case.before()/after()).
      */
-    async submit(values: object, options?: Options): Promise<Response> {
-        return await this.doSubmit(this.getRequest(values, options));
+    async submit(values: object, options?: Options, runOptions?: RunOptions): Promise<Response> {
+        return await this.doSubmit(this.getRequest(values, options), runOptions);
     }
 
     private async doSubmit(requestObj: Request, runOptions?: RunOptions): Promise<PlyResponse> {
-
         const logLevel = runOptions?.submit ? LogLevel.info : LogLevel.debug;
 
         const before = new Date().getTime();
@@ -156,7 +155,11 @@ export class PlyRequest implements Request, PlyTest {
         this.submitted = new Date();
         const requestObject = this.getRequest(runtime.values, runtime.options);
         this.logger.info(`Request '${this.name}' submitted at ${timestamp(this.submitted, this.logger.level === LogLevel.debug)}`);
-        const response = await this.doSubmit(requestObject, runOptions);
+        const runOpts: RunOptions = { ...runOptions };
+        if (runOptions?.submitIfExpectedMissing && !(await runtime.results.expected.exists)) {
+            runOpts.submit = true;
+        }
+        const response = await this.doSubmit(requestObject, runOpts);
         const result = new PlyResult(
             this.name,
             requestObject,
