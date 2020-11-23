@@ -2,7 +2,7 @@ import * as minimatch from 'minimatch';
 import * as flowbee from 'flowbee';
 import { Logger } from './logger';
 import { RunOptions } from './options';
-import { Result } from './result';
+import { Result, ResultStatus } from './result';
 import { Runtime } from './runtime';
 import { PlyTest, Test } from './test';
 import { PlyStep } from './step';
@@ -24,6 +24,21 @@ export class PlyFlow implements Flow, PlyTest {
     start = 0;
     end?: number | undefined;
     readonly instance: flowbee.FlowInstance;
+
+    private _onFlow = new flowbee.TypedEvent<flowbee.FlowEvent>();
+    onFlow(listener: flowbee.Listener<flowbee.FlowEvent>) {
+        this._onFlow.on(listener);
+    }
+
+    private _onSubflow = new flowbee.TypedEvent<flowbee.SubflowEvent>();
+    onSubflow(listener: flowbee.Listener<flowbee.SubflowEvent>) {
+        this._onSubflow.on(listener);
+    }
+
+    private _onStep = new flowbee.TypedEvent<flowbee.StepEvent>();
+    onStep(listener: flowbee.Listener<flowbee.StepEvent>) {
+        this._onStep.on(listener);
+    }
 
     constructor(
         readonly flow: flowbee.Flow,
@@ -62,27 +77,47 @@ export class PlyFlow implements Flow, PlyTest {
         this.instance.values = runtime.values as flowbee.Values;
         this.instance.start = new Date();
 
+        this._onFlow.emit({ type: 'start', instance: this.instance });
         await this.exec(startStep, runtime, runOptions);
 
+        // compiler doesn't know that this.instance.status may have changed
+        if ((this.instance.status as any) === 'Errored' && runtime.options.bail) {
+            return { name: this.name, status: this.mapInstanceStatus(), message: '' }; // TODO message?
+        }
         await this.runSubflows(this.getSubflows('After'), runtime, runOptions);
 
         this.instance.end = new Date();
-        this.instance.status = 'Completed';
 
-        return {
-            name: this.name,
-            status: 'Pending',
-            message: ''
-        };
+        // compiler doesn't know that this.instance.status may have changed
+        if ((this.instance.status as any) === 'Errored') {
+            this._onFlow.emit({ type: 'error', instance: this.instance });
+        } else {
+            this.instance.status = 'Completed';
+            this._onFlow.emit({ type: 'finish', instance: this.instance });
+        }
+
+        return { name: this.name, status: this.mapInstanceStatus(), message: '' }; // TODO message?
     }
 
-    async exec(step: flowbee.Step, runtime: Runtime, runOptions?: RunOptions): Promise<void> {
+    /**
+     * Map instance status to result status
+     */
+    private mapInstanceStatus(): ResultStatus {
+        if (this.instance.status === 'Pending' || this.instance.status === 'In Progress' || this.instance.status === 'Waiting') {
+            return 'Pending';
+        } else if (this.instance.status === 'Completed' || this.instance.status === 'Canceled') {
+            return 'Passed';
+        } else {
+            return this.instance.status;
+        }
+    }
+
+    async exec(step: flowbee.Step, runtime: Runtime, runOptions?: RunOptions, subflow?: Subflow): Promise<void> {
 
         await this.runSubflows(this.getSubflows('Before', step), runtime, runOptions);
 
         const plyStep = new PlyStep(step, this.requestSuite, this.logger, this.instance.id);
-
-        this.logger.info('Executing step', plyStep.name);
+        this._onStep.emit({ type: 'start', instance: plyStep.instance });
 
         if (!this.instance.stepInstances) {
             this.instance.stepInstances = [];
@@ -90,8 +125,17 @@ export class PlyFlow implements Flow, PlyTest {
 
         this.instance.stepInstances.push(plyStep.instance);
 
+        this.logger.info('Executing step', plyStep.name);
+        this._onStep.emit({ type: 'exec', instance: plyStep.instance });
         await plyStep.exec(runtime, runOptions);
-        if (plyStep.instance.status === 'Waiting' || (plyStep.instance.status !== 'Completed' && runtime.options.bail)) {
+        if (plyStep.instance.status === 'Failed' || plyStep.instance.status === 'Errored') {
+            this.instance.status = 'Errored';
+            if (subflow) subflow.instance.status = 'Errored';
+            this._onStep.emit({ type: 'error', instance: plyStep.instance });
+        } else {
+            this._onStep.emit({ type: 'finish', instance: plyStep.instance });
+        }
+        if (plyStep.instance.status !== 'Completed' && runtime.options.bail) {
             return;
         }
 
@@ -168,10 +212,17 @@ export class PlyFlow implements Flow, PlyTest {
             }
             subflow.instance.status = 'In Progress';
             subflow.instance.start = new Date();
+            this._onFlow.emit({ type: 'start', instance: this.instance });
             this.logger.info('Executing subflow', subflow.subflow.name);
-            await this.exec(startStep, runtime, runOptions);
+            await this.exec(startStep, runtime, runOptions, subflow);
             subflow.instance.end = new Date();
-            subflow.instance.status = 'Completed';
+            // compiler doesn't know that this.instance.status may have changed
+            if ((subflow.instance.status as any) === 'Errored') {
+                this._onSubflow.emit({ type: 'error', instance: subflow.instance });
+            } else {
+                subflow.instance.status = 'Completed';
+                this._onSubflow.emit({ type: 'finish', instance: subflow.instance });
+            }
         }
     }
 }

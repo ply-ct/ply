@@ -7,11 +7,13 @@ import { Compare, Diff } from './compare';
 import { Yaml } from './yaml';
 import { lines } from './util';
 
+export type ResultStatus = 'Pending' | 'Passed' | 'Failed' | 'Errored' | 'Submitted';
+
 export interface Outcome {
     /**
      * Status of test execution
      */
-    status: 'Pending' | 'Passed' | 'Failed' | 'Errored' | 'Submitted'
+    status: ResultStatus
     message: string
     /**
      * One-based line number of first diff, relative to starting line of test
