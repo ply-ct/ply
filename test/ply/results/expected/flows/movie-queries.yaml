@@ -1,7 +1,9 @@
 # flow results for movie queries (illustrates previous request access)
 Start:
+  id: s1
   status: Completed
 Movies by Year & Rating:
+  id: s3
   request:
     url: '${baseUrl}?year=${year}&rating=${rating}'
     method: GET
@@ -96,6 +98,7 @@ Movies by Year & Rating:
       }
   status: Completed
 Movie by ID:
+  id: s4
   request:
     url: '${baseUrl}/${@["Movies by Year & Rating"].response.body.movies[0].id}'
     method: GET
@@ -148,6 +151,7 @@ Movie by ID:
       }
   status: Completed
 Great Films of 1935:
+  id: s5
   request:
     url: '${baseUrl}?${query}'
     method: GET
@@ -242,4 +246,5 @@ Great Films of 1935:
       }
   status: Completed
 Stop:
+  id: s2
   status: Completed

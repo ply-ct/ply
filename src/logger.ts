@@ -39,7 +39,7 @@ export class Logger implements Log {
                 if (obj) {
                     if (obj.stack) {
                         console.error(message);
-                        console.error(obj);
+                        console.error(obj.stack);
                     }
                     else {
                         console.error(message + ': ' + JSON.stringify(obj, null, this.options.prettyIndent));

@@ -50,6 +50,22 @@ export class Retrieval {
         }
     }
 
+    write(contents: string) {
+        if (this.storage) {
+            this.storage.write(contents);
+        } else {
+            throw new Error('Retrieval.write() not supported for remote path: ' + this);
+        }
+    }
+
+    append(contents: string) {
+        if (this.storage) {
+            this.storage.append(contents);
+        } else {
+            throw new Error('Retrieval.append() not supported for remote path: ' + this);
+        }
+    }
+
     remove() {
         if (this.storage) {
             this.storage.remove();

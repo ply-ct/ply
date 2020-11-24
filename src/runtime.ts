@@ -94,15 +94,21 @@ export class ResultPaths {
     /**
      * Newlines are always \n.
      */
-    async getExpectedYaml(name?: string, isFlowRequest = false): Promise<Yaml> {
+    async getExpectedYaml(name?: string, subName?: string, isFlowRequest = false): Promise<Yaml> {
         let expected = await this.expected.read();
         if (typeof expected === 'undefined') {
             throw new Error(`Expected result file not found: ${this.expected}`);
         }
         if (name) {
-            const expectedObj = yaml.load(this.expected.toString(), expected, true)[name];
+            let expectedObj = yaml.load(this.expected.toString(), expected, true)[name];
             if (!expectedObj) {
                 throw new Error(`Expected result not found: ${this.expected}#${name}`);
+            }
+            if (subName) {
+                expectedObj = expectedObj[subName];
+            }
+            if (!expectedObj) {
+                throw new Error(`Expected result not found: ${this.expected}#${name}/${subName}`);
             }
             let expectedLines: string[];
             if (isFlowRequest) {
@@ -110,6 +116,7 @@ export class ResultPaths {
                 const {
                     __start: _start,
                     __end: _end,
+                    id: _id,
                     status: _status,
                     result: _result,
                     message: _message,
@@ -132,24 +139,30 @@ export class ResultPaths {
         }
     }
 
-    async expectedExists(name: string): Promise<boolean> {
+    async expectedExists(name?: string): Promise<boolean> {
         const expected = await this.expected.read();
         if (typeof expected === 'undefined') return false;
-        return !!yaml.load(this.expected.toString(), expected, true)[name];
+        return name ? !!yaml.load(this.expected.toString(), expected, true)[name] : true;
     }
 
     /**
      * Newlines are always \n.  Trailing \n is appended.
      */
-    getActualYaml(name?: string): Yaml {
+    getActualYaml(name?: string, subName?: string): Yaml {
         const actual = this.actual.read();
         if (typeof actual === 'undefined') {
             throw new Error(`Actual result file not found: ${this.actual}`);
         }
         if (name) {
-            const actualObj = yaml.load(this.actual.toString(), actual, true)[name];
+            let actualObj = yaml.load(this.actual.toString(), actual, true)[name];
             if (!actualObj) {
                 throw new Error(`Actual result not found: ${this.actual}#${name}`);
+            }
+            if (subName) {
+                actualObj = actualObj[subName];
+            }
+            if (!actualObj) {
+                throw new Error(`Actual result not found: ${this.actual}#${name}/${subName}`);
             }
             const actualLines = lines(actual);
             return {
@@ -203,6 +216,14 @@ export class Runtime {
 
     get suitePath(): string {
         return this.retrieval.location.relativeTo(this.options.testsLocation);
+    }
+
+    appendResult(line: string, level = 0, withExpected = false, comment?: string) {
+        line = line.padStart(line.length + level * (this.options.prettyIndent || 0));
+        this.results.actual.append(`${line}${comment ? '  # ' + comment : ''}\n`);
+        if (withExpected) {
+            this.results.expected.append(`${line}\n`);
+        }
     }
 }
 

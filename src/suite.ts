@@ -235,7 +235,7 @@ export class Suite<T extends Test> {
                         // status could be 'Submitted' if runOptions so specify
                         if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/flow is complete)
-                            const expectedYaml = await this.runtime.results.getExpectedYaml(test.name, !!this.callingFlowInfo);
+                            const expectedYaml = await this.runtime.results.getExpectedYaml(test.name, undefined, !!this.callingFlowInfo);
                             if (expectedYaml.start > 0) {
                                 actualYaml = this.runtime.results.getActualYaml(test.name);
                                 if (padActualStart && expectedYaml.start > actualYaml.start) {
@@ -254,7 +254,9 @@ export class Suite<T extends Test> {
                 else {
                     // case/flow run complete -- verify result
                     actualYaml = this.runtime.results.getActualYaml(this.type === 'flow' ? '' : test.name);
-                    result = this.handleResultRunOptions(test, result, actualYaml.text, i === 0, expectedExists, runOptions) || result;
+                    if (this.type !== 'flow') { // handled in flow test
+                        result = this.handleResultRunOptions(test, result, actualYaml.text, i === 0, expectedExists, runOptions) || result;
+                    }
                     // status could be 'Submitted' if runOptions so specify
                     if (result.status === 'Pending') {
                         const expectedYaml = await this.runtime.results.getExpectedYaml(this.type === 'flow' ? '' : test.name);
@@ -378,9 +380,6 @@ export class Suite<T extends Test> {
                 expected.write(actualYamlText);
             }
             else {
-                if (this.callingFlowInfo) {
-                    expected.append(`${test.name}:\n`);
-                }
                 expected.append(actualYamlText);
             }
         }
