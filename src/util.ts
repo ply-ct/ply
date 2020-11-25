@@ -37,3 +37,8 @@ export function lines(input: string): string[] {
 export function fwdSlashes(path: string): string {
     return path.replace(/\\/g, '/');
 }
+
+export function genId(): string {
+    // TODO: consider microseconds or nanoseconds (process.hrtime())
+    return Date.now().toString(16);
+}

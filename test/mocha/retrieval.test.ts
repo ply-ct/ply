@@ -9,7 +9,6 @@ describe('Retrieval', () => {
         const exists = await retrieval.exists;
         assert.ok(exists);
         const contents = await retrieval.read();
-        console.log("contents: " + contents);
         assert.ok(contents && contents.indexOf('node_modules') >= 0);
     });
 
@@ -18,7 +17,6 @@ describe('Retrieval', () => {
         const exists = await retrieval.exists;
         assert.ok(exists);
         const contents = await retrieval.read();
-        console.log("contents: " + contents);
         assert.ok(contents && contents.indexOf('node_modules') >= 0);
     });
 });

@@ -14,6 +14,7 @@ import { Plyee } from './ply';
 import { PlyEvent, SuiteEvent, OutcomeEvent } from './event';
 import { PlyResponse } from './response';
 import { TsCompileOptions } from './compile';
+import { PlyFlow } from './flow';
 
 interface Tests<T extends Test> {
     [key: string]: T
@@ -210,9 +211,16 @@ export class Suite<T extends Test> {
             try {
                 this.logger.debug(`Running ${test.type}: ${test.name}`);
                 if (this.emitter) {
-                    this.emitter.emit('test', {
-                        plyee: new Plyee(this.runtime.options.testsLocation + '/' + this.path, test).path
-                    } as PlyEvent );
+                    const plyEvent: PlyEvent = { plyee: new Plyee(this.runtime.options.testsLocation + '/' + this.path, test).path };
+                    if (test.type === 'flow') {
+                        const flow: PlyFlow = test as any;
+                        flow.onFlow(flowEvent => {
+                            if (flowEvent.eventType !== 'exec') { // exec not applicable for ply subscribers
+                                this.emitter?.emit('flow', flowEvent);
+                            }
+                        });
+                    }
+                    this.emitter.emit('test', plyEvent );
                 }
                 // determine wanted headers (for requests)
                 if (test.type === 'request') {

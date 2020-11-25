@@ -26,7 +26,7 @@ export class PlyStep implements Step {
     ) {
         this.name = step.name.replace(/\r?\n/g, ' ');
         this.instance = {
-            id: Date.now().toString(16),
+            id: util.genId(),
             flowInstanceId,
             stepId: step.id,
             status: 'In Progress'
@@ -122,7 +122,7 @@ export class PlyStep implements Step {
     /**
      * Handles step instance result.
      */
-    async handleResult(runtime: Runtime, runOptions?: RunOptions, subflow?: Subflow) {
+    async handleResult(_runtime: Runtime, runOptions?: RunOptions, subflow?: Subflow) {
         const resName = subflow ? subflow?.subflow.name : this.name;
         const resSubName = subflow ? this.name : undefined;
         let actualYaml = this.requestSuite.runtime.results.getActualYaml(resName, resSubName);
