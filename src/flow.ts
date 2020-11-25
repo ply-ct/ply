@@ -136,13 +136,19 @@ export class PlyFlow implements Flow, PlyTest {
         if (subflowStatus === 'Errored' && runtime.options.bail) return;
 
         const plyStep = new PlyStep(step, this.requestSuite, this.logger, this.instance.id);
-        this.emit('start', 'step', plyStep.instance);
+        if (subflow) {
+            if (!subflow.instance.stepInstances) {
+                subflow.instance.stepInstances = [];
+            }
+            subflow.instance.stepInstances.push(plyStep.instance);
 
-        if (!this.instance.stepInstances) {
-            this.instance.stepInstances = [];
+        } else {
+            if (!this.instance.stepInstances) {
+                this.instance.stepInstances = [];
+            }
+            this.instance.stepInstances.push(plyStep.instance);
         }
-
-        this.instance.stepInstances.push(plyStep.instance);
+        this.emit('start', 'step', plyStep.instance);
 
         this.logger.info('Executing step', plyStep.name);
         this.emit('exec', 'step', plyStep.instance);
@@ -225,6 +231,11 @@ export class PlyFlow implements Flow, PlyTest {
             }
             subflow.instance.status = 'In Progress';
             subflow.instance.start = new Date();
+            if (!this.instance.subflowInstances) {
+                this.instance.subflowInstances = [];
+            }
+            this.instance.subflowInstances.push(subflow.instance);
+
             this.emit('start', 'subflow', subflow.instance);
             this.logger.info('Executing subflow', subflow.subflow.name);
             runtime.appendResult(`${subflow.subflow.name}:`, 0, runOptions?.createExpected, util.timestamp(subflow.instance.start));
