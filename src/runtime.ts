@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as minimatch from 'minimatch';
 import * as yaml from './yaml';
+import * as flowbee from 'flowbee';
 import { Location } from './location';
 import { Retrieval } from './retrieval';
 import { Storage } from './storage';
@@ -171,6 +172,57 @@ export class ResultPaths {
             };
         } else {
             return { start: 0, text: actual };
+        }
+    }
+
+    flowInstanceFromActual(flowPath: string): flowbee.FlowInstance | undefined {
+
+        let flowInstance: flowbee.FlowInstance;
+
+        if (this.actual.exists) {
+            const actualObj = yaml.load(this.actual.toString(), this.getActualYaml().text, true);
+            flowInstance = {
+                id: 'todo',
+                runId: 'todo',
+                flowPath,
+                status: 'Completed' as flowbee.FlowStatus,
+                start: new Date(),
+                end: new Date
+            };
+
+            const getStepInstances = (obj: any): flowbee.StepInstance[] => {
+                const stepInstances: flowbee.StepInstance[] = [];
+                for (const stepKey of Object.keys(obj)) {
+                    const stepObj = obj[stepKey];
+                    if (stepObj.id?.startsWith('s')) {
+                        stepInstances.push({
+                            id: 'todo',
+                            stepId: stepObj.id,
+                            status: stepObj.status,
+                            flowInstanceId: flowInstance.id
+                        });
+                    }
+                }
+                return stepInstances;
+            };
+
+            for (const key of Object.keys(actualObj)) {
+                const obj = actualObj[key];
+                if (obj.id.startsWith('f')) {
+                    const subflowInstance: flowbee.SubflowInstance = {
+                        id: 'todo',
+                        subflowId: obj.id,
+                        status: obj.status,
+                        flowInstanceId: flowInstance.id,
+                        stepInstances: []
+                    };
+                    subflowInstance.stepInstances = getStepInstances(obj);
+                    if (!flowInstance.subflowInstances) flowInstance.subflowInstances = [];
+                    flowInstance.subflowInstances!.push(subflowInstance);
+                }
+            }
+            flowInstance.stepInstances = getStepInstances(actualObj);
+            return flowInstance;
         }
     }
 }

@@ -33,4 +33,15 @@ describe('Flows', async () => {
 
         assert.strictEqual(results[0].status, 'Passed');
     });
+
+    it('can parse instance', async () => {
+        const ply = new Ply();
+        const suites = await ply.loadFlows('test/ply/flows/movies-api.ply.flow');
+        const suite = suites[0];
+        const results = await suite.run(values);
+        assert.strictEqual(results[0].status, 'Passed');
+
+        const instance = suite.runtime.results.flowInstanceFromActual('test/ply/results/actual/flows/movies-api');
+        console.log("INSTANCE: " + JSON.stringify(instance, null, 2));
+    });
 });
