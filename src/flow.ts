@@ -2,7 +2,7 @@ import * as minimatch from 'minimatch';
 import * as flowbee from 'flowbee';
 import { Logger } from './logger';
 import { RunOptions } from './options';
-import { Result, ResultStatus, Verifier } from './result';
+import { Result, ResultStatus } from './result';
 import { Runtime } from './runtime';
 import { PlyTest, Test } from './test';
 import { PlyStep } from './step';
@@ -37,9 +37,6 @@ export class PlyFlow implements Flow, PlyTest {
         private readonly logger: Logger
     ) {
         this.name = flowbee.getFlowName(flow);
-        if (this.name.endsWith('.ply')) {
-            this.name = this.name.substring(0, this.name.length - 4);
-        }
         const id = util.genId();
         this.instance = {
             id,
@@ -104,14 +101,6 @@ export class PlyFlow implements Flow, PlyTest {
         } else {
             this.instance.status = 'Completed';
             this.emit('finish', 'flow', this.instance);
-            // verify overall result
-            const verifier = new Verifier(this.name, await runtime.results.getExpectedYaml(), this.logger);
-            this.logger.debug(`Comparing ${runtime.results.expected.location} vs ${runtime.results.actual.location}`);
-            const outcome = { ...verifier.verify(runtime.results.getActualYaml(), runtime.values) };
-            this.requestSuite.logOutcome(this, outcome);
-            if (outcome.status !== 'Passed' && outcome.status !== 'Submitted') {
-                return { name: this.name, status: outcome.status, message: outcome.message };
-            }
         }
 
         return { name: this.name, status: this.mapInstanceStatus(), message: '' }; // TODO message?

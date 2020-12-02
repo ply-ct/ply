@@ -258,15 +258,12 @@ export class Suite<T extends Test> {
                         }
                     }
                     this.addResult(results, result);
-                }
-                else {
-                    // case/flow run complete -- verify result
+                } else {
+                    // case or flow complete -- verify result
                     actualYaml = this.runtime.results.getActualYaml(this.type === 'flow' ? '' : test.name);
-                    if (this.type !== 'flow') { // handled in flow test
-                        result = this.handleResultRunOptions(test, result, actualYaml.text, i === 0, expectedExists, runOptions) || result;
-                    }
-                    // status could be 'Submitted' if runOptions so specify
-                    if (result.status === 'Pending') {
+                    result = this.handleResultRunOptions(test, result, actualYaml.text, i === 0, expectedExists, runOptions) || result;
+                    // for cases status could be 'Submitted' if runOptions so specify (this check is handled at step level for flows)
+                    if (result.status === 'Pending' || this.type === 'flow') {
                         const expectedYaml = await this.runtime.results.getExpectedYaml(this.type === 'flow' ? '' : test.name);
                         if (padActualStart && expectedYaml.start > actualYaml.start) {
                             this.runtime.results.actual.padLines(actualYaml.start, expectedYaml.start - actualYaml.start);

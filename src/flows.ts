@@ -67,7 +67,7 @@ export class FlowLoader {
         const requestSuite = new Suite<Request>(
             retrieval.location.base,
             'request',
-            retrieval.location.relativeTo(runtime.options.testsLocation),
+            retrieval.location.relativeTo(this.options.testsLocation),
             runtime,
             logger,
             0, 0
@@ -76,7 +76,6 @@ export class FlowLoader {
         const flowbeeFlow = FlowLoader.parse(contents, retrieval.location.path);
         requestSuite.callingFlowInfo = {
             results: resultPaths,
-            suiteName: retrieval.location.base,
             flowPath: flowbeeFlow.path
         };
 

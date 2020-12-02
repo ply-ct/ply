@@ -183,7 +183,6 @@ export type CallingCaseInfo = {
 
 export type CallingFlowInfo = {
     results: ResultPaths,
-    suiteName: string,
     flowPath: string
 };
 
