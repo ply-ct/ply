@@ -106,8 +106,7 @@ export class PlyStep implements Step {
         // append status, result and message to actual result
         if (this.instance.end) {
             const elapsed = this.instance.end.getTime() - this.instance.start.getTime();
-            const comment = this.step.attributes?.submit === 'true' ? `(submit only) ${elapsed} ms` : `${elapsed} ms`;
-            runtime.appendResult(`status: ${this.instance.status}`, level + 1, runOptions?.createExpected, comment);
+            runtime.appendResult(`status: ${this.instance.status}`, level + 1, runOptions?.createExpected, `${elapsed} ms`);
 
             if (typeof res === 'boolean' || typeof res === 'number' || res) {
                 this.instance.result = '' + res;

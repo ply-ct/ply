@@ -9,7 +9,58 @@ import { Options, PlyOptions } from './options';
 import { TEST, BEFORE, AFTER, SUITE } from './names';
 import { TestSuite, TestCase, Before, After } from './decorators';
 import { Yaml } from './yaml';
-import { lines } from './util';
+import * as util from './util';
+
+/**
+ * Runtime information for a test suite.
+ */
+export class Runtime {
+
+    testsLocation: Location;
+
+    decoratedSuite?: DecoratedSuite;
+    values: object = {};
+    /**
+     * Verified response header names.
+     */
+    responseHeaders: string[] | undefined;
+
+    constructor(
+        readonly options: PlyOptions,
+        readonly retrieval: Retrieval,
+        public results: ResultPaths) {
+
+        if (path.isAbsolute(this.options.testsLocation)) {
+            this.testsLocation = new Location(this.options.testsLocation);
+        }
+        else {
+            this.testsLocation = new Location(path.resolve(process.cwd() + '/' + this.options.testsLocation));
+        }
+    }
+
+    get suitePath(): string {
+        return this.retrieval.location.relativeTo(this.options.testsLocation);
+    }
+
+    appendResult(line: string, level = 0, withExpected = false, comment?: string) {
+        line = line.padStart(line.length + level * (this.options.prettyIndent || 0));
+        this.results.actual.append(`${line}${comment ? '  # ' + comment : ''}\n`);
+        if (withExpected) {
+            this.results.expected.append(`${line}\n`);
+        }
+    }
+}
+
+export type CallingCaseInfo = {
+    results: ResultPaths,
+    suiteName: string,
+    caseName: string
+};
+
+export type CallingFlowInfo = {
+    results: ResultPaths,
+    flowPath: string
+};
 
 export class ResultPaths {
 
@@ -125,10 +176,10 @@ export class ResultPaths {
                 } = expectedObj;
                 const indent = this.options.prettyIndent || 0;
                 expected = yaml.dump(rawObj, indent);
-                expectedLines = lines(expected).map(l => l.padStart(l.length + indent));
+                expectedLines = util.lines(expected).map(l => l.padStart(l.length + indent));
                 return { start: 0, text: expectedLines.join('\n') };
             } else {
-                expectedLines = lines(expected);
+                expectedLines = util.lines(expected);
                 return {
                     start: expectedObj.__start || 0,
                     text: expectedLines.slice(expectedObj.__start, expectedObj.__end + 1).join('\n')
@@ -143,7 +194,7 @@ export class ResultPaths {
     async expectedExists(name?: string): Promise<boolean> {
         const expected = await this.expected.read();
         if (typeof expected === 'undefined') return false;
-        return name ? !!yaml.load(this.expected.toString(), expected, true)[name] : true;
+        return name ? !!yaml.load(this.expected.toString(), expected)[name] : true;
     }
 
     /**
@@ -165,7 +216,7 @@ export class ResultPaths {
             if (!actualObj) {
                 throw new Error(`Actual result not found: ${this.actual}#${name}/${subName}`);
             }
-            const actualLines = lines(actual);
+            const actualLines = util.lines(actual);
             return {
                 start: actualObj.__start || 0,
                 text: actualLines.slice(actualObj.__start, actualObj.__end + 1).join('\n') + '\n'
@@ -176,104 +227,90 @@ export class ResultPaths {
     }
 
     flowInstanceFromActual(flowPath: string): flowbee.FlowInstance | undefined {
-
-        let flowInstance: flowbee.FlowInstance;
-
         if (this.actual.exists) {
-            const actualObj = yaml.load(this.actual.toString(), this.getActualYaml().text, true);
-            flowInstance = {
-                id: 'todo',
-                runId: 'todo',
-                flowPath,
-                status: 'Completed' as flowbee.FlowStatus,
-                start: new Date(),
-                end: new Date
-            };
-
-            const getStepInstances = (obj: any): flowbee.StepInstance[] => {
-                const stepInstances: flowbee.StepInstance[] = [];
-                for (const stepKey of Object.keys(obj)) {
-                    const stepObj = obj[stepKey];
-                    if (stepObj.id?.startsWith('s')) {
-                        stepInstances.push({
-                            id: 'todo',
-                            stepId: stepObj.id,
-                            status: stepObj.status,
-                            flowInstanceId: flowInstance.id
-                        });
-                    }
-                }
-                return stepInstances;
-            };
-
-            for (const key of Object.keys(actualObj)) {
-                const obj = actualObj[key];
-                if (obj.id.startsWith('f')) {
-                    const subflowInstance: flowbee.SubflowInstance = {
-                        id: 'todo',
-                        subflowId: obj.id,
-                        status: obj.status,
-                        flowInstanceId: flowInstance.id,
-                        stepInstances: []
-                    };
-                    subflowInstance.stepInstances = getStepInstances(obj);
-                    if (!flowInstance.subflowInstances) flowInstance.subflowInstances = [];
-                    flowInstance.subflowInstances!.push(subflowInstance);
-                }
-            }
-            flowInstance.stepInstances = getStepInstances(actualObj);
-            return flowInstance;
+            return new ResultFlowParser(this.actual).parse(flowPath);
         }
     }
 }
 
-export type CallingCaseInfo = {
-    results: ResultPaths,
-    suiteName: string,
-    caseName: string
-};
-
-export type CallingFlowInfo = {
-    results: ResultPaths,
-    flowPath: string
-};
-
 /**
- * Runtime information for a test suite.
+ * Parses a flow instance from actual results.
  */
-export class Runtime {
+export class ResultFlowParser {
 
-    testsLocation: Location;
+    private actualYaml: string;
+    private yamlLines: string[];
+    private actualObj: any;
 
-    decoratedSuite?: DecoratedSuite;
-    values: object = {};
-    /**
-     * Verified response header names.
-     */
-    responseHeaders: string[] | undefined;
-
-    constructor(
-        readonly options: PlyOptions,
-        readonly retrieval: Retrieval,
-        public results: ResultPaths) {
-
-        if (path.isAbsolute(this.options.testsLocation)) {
-            this.testsLocation = new Location(this.options.testsLocation);
+    constructor(private readonly actualResult: Storage) {
+        const contents = actualResult.read();
+        if (typeof contents === 'undefined') {
+            throw new Error(`Actual result not found: ${actualResult}`);
         }
-        else {
-            this.testsLocation = new Location(path.resolve(process.cwd() + '/' + this.options.testsLocation));
-        }
+        this.actualYaml = contents;
+        this.yamlLines = util.lines(this.actualYaml);
+        this.actualObj = yaml.load(actualResult.toString(), this.actualYaml, true);
     }
 
-    get suitePath(): string {
-        return this.retrieval.location.relativeTo(this.options.testsLocation);
+    parse(flowPath: string): flowbee.FlowInstance | undefined {
+
+        // TODO request/response
+        const flowInstance: flowbee.FlowInstance = {
+            id: '',
+            flowPath,
+            status: 'Completed' as flowbee.FlowStatus
+        };
+
+        for (const key of Object.keys(this.actualObj)) {
+            const obj = this.actualObj[key];
+            if (obj.id.startsWith('f')) {
+                const subflowInstance: flowbee.SubflowInstance = {
+                    id: '',
+                    subflowId: obj.id,
+                    status: obj.status,
+                    flowInstanceId: ''
+                };
+                this.parseStartEnd(subflowInstance, obj);
+                // reparse subflow for step instance line numbers
+                const subflowObj = yaml.load(key, yaml.dump(obj, 2), true);
+                subflowInstance.stepInstances = this.getStepInstances(subflowObj, obj.__start + 1);
+                if (!flowInstance.subflowInstances) flowInstance.subflowInstances = [];
+                flowInstance.subflowInstances!.push(subflowInstance);
+            }
+        }
+        flowInstance.stepInstances = this.getStepInstances(this.actualObj);
+        return flowInstance;
     }
 
-    appendResult(line: string, level = 0, withExpected = false, comment?: string) {
-        line = line.padStart(line.length + level * (this.options.prettyIndent || 0));
-        this.results.actual.append(`${line}${comment ? '  # ' + comment : ''}\n`);
-        if (withExpected) {
-            this.results.expected.append(`${line}\n`);
+    getStepInstances(obj: any, offset = 0): flowbee.StepInstance[] {
+        const stepInstances: flowbee.StepInstance[] = [];
+        for (const stepKey of Object.keys(obj)) {
+            const stepObj = obj[stepKey];
+            if (stepObj.id?.startsWith('s')) {
+                const stepInstance: flowbee.StepInstance = {
+                    id: '',
+                    stepId: stepObj.id,
+                    status: stepObj.status,
+                    flowInstanceId: ''
+                };
+                this.parseStartEnd(stepInstance, stepObj, offset);
+                stepInstances.push(stepInstance);
+            }
+        }
+        return stepInstances;
+    }
+
+    parseStartEnd(flowElementInstance: flowbee.StepInstance | flowbee.SubflowInstance, obj: any, offset = 0) {
+        const startTimeComment = util.lineComment(this.yamlLines[obj.__start + offset]);
+        if (startTimeComment) {
+            flowElementInstance.start = util.timeparse(startTimeComment);
+            if (flowElementInstance.start && this.yamlLines.length > obj.__end) {
+                const elapsedMsComment = util.lineComment(this.yamlLines[obj.__end + offset]);
+                if (elapsedMsComment) {
+                    const elapsedMs = parseInt(elapsedMsComment.substring(0, elapsedMsComment.length - 2));
+                    flowElementInstance.end = new Date(flowElementInstance.start.getTime() + elapsedMs);
+                }
+            }
         }
     }
 }

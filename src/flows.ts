@@ -103,7 +103,7 @@ export class FlowLoader {
                 throw new Error(`Failed to parse ${file}: ${err.message}`);
             }
         } else {
-            flow = yaml.load(file, text, false);
+            flow = yaml.load(file, text);
         }
         flow.type = 'flow';
         flow.path = file.replace(/\\/g, '/');

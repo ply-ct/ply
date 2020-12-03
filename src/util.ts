@@ -18,6 +18,33 @@ export function timestamp(date: Date, withTimeZone = false): string {
 }
 
 /**
+ * Expected format is per timestamp() --
+ * TODO: Only works for these two locale formats:
+ *     MM/DD/YYYY, HH:mm:ss
+ *     DD/MM/YYYY, HH:mm:ss (not tested actually)
+ */
+export function timeparse(time: string): Date | undefined {
+
+    const parser = /(\d+?)\/(\d+?)\/(\d+?), (\d+?):(\d+?):(\d+?):(\d+?)$/;
+    const match = time.match(parser);
+    if (match) {
+        const formatObj: any = new Intl.DateTimeFormat(locale()).formatToParts(new Date());
+        const first = formatObj[Object.keys(formatObj)[0]].type;
+        const month = first === 'month' ? 1 : 2;
+        const day = month === 1 ? 2 : 1;
+        return new Date(
+            parseInt(match[3]),         // year
+            parseInt(match[month]) - 1, // monthIndex
+            parseInt(match[day]),       // day
+            parseInt(match[4]),         // hours
+            parseInt(match[5]),         // minutes
+            parseInt(match[6]),         // seconds
+            parseInt(match[7])          // millis
+        );
+    }
+}
+
+/**
  * Remove windows newline characters (\r)
  */
 export function newlines(input: string): string {
@@ -29,6 +56,17 @@ export function newlines(input: string): string {
  */
 export function lines(input: string): string[] {
     return input.split(/\r?\n/);
+}
+
+/**
+ * Return the trailing comment portion of a line. Only works with no
+ * embedded comment tokens (in string content, etc).
+ */
+export function lineComment(line: string, token = '#'): string | undefined {
+    const hash = line.indexOf(token);
+    if (hash >= 0 && hash < line.length - 1) {
+        return line.substr(hash + 1).trim();
+    }
 }
 
 /**

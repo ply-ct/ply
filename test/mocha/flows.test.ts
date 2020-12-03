@@ -2,6 +2,7 @@ import * as assert from 'assert';
 import { Ply } from '../../src/ply';
 import { Config } from '../../src/options';
 import { Storage } from '../../src/storage';
+import * as util from '../../src/util';
 
 const values = {
     baseUrl: 'http://localhost:3000/movies',
@@ -42,6 +43,38 @@ describe('Flows', async () => {
         assert.strictEqual(results[0].status, 'Passed');
 
         const instance = suite.runtime.results.flowInstanceFromActual('test/ply/results/actual/flows/movies-api');
-        console.log("INSTANCE: " + JSON.stringify(instance, null, 2));
+        assert.ok(instance);
+
+        const checkDate = (date?: Date) => {
+            assert.ok(date);
+            assert.ok(util.timestamp(date));
+            const today = new Date();
+            assert.strictEqual(date.getFullYear(), today.getFullYear());
+            assert.strictEqual(date.getMonth(), today.getMonth());
+            assert.strictEqual(date.getDate(), today.getDate());
+        };
+
+        assert.ok(instance.subflowInstances);
+        const beforeAllSubflow = instance.subflowInstances[0];
+        assert.strictEqual(beforeAllSubflow.status, 'Completed');
+        checkDate(beforeAllSubflow.start);
+        checkDate(beforeAllSubflow.end);
+
+        assert.ok(beforeAllSubflow.stepInstances);
+        assert.strictEqual(beforeAllSubflow.stepInstances.length, 3);
+        const deleteMovie = beforeAllSubflow.stepInstances[1];
+        assert.strictEqual(deleteMovie.stepId, 's5');
+        assert.strictEqual(deleteMovie.status, 'Completed');
+        checkDate(deleteMovie.start);
+        checkDate(deleteMovie.end);
+
+        // TODO request/response
+        assert.ok(instance.stepInstances);
+        assert.strictEqual(instance.stepInstances.length, 7);
+        const createMovie = instance.stepInstances[1];
+        assert.strictEqual(createMovie.stepId, 's7');
+        assert.strictEqual(createMovie.status, 'Completed');
+        checkDate(createMovie.start);
+        checkDate(createMovie.end);
     });
 });
