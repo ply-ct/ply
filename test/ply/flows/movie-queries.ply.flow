@@ -1,6 +1,7 @@
 attributes:
   NodeStyle: BoxIcon
   display: 'x=23,y=18,w=156,h=27'
+  bail: 'true'
 steps:
   - id: s1
     name: Start

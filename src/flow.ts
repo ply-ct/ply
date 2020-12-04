@@ -46,6 +46,9 @@ export class PlyFlow implements Flow, PlyTest {
         };
     }
 
+    /**
+     * Run a ply flow.
+     */
     async run(runtime: Runtime, runOptions?: RunOptions): Promise<Result> {
 
         if (this.flow.attributes?.values) {
@@ -53,6 +56,10 @@ export class PlyFlow implements Flow, PlyTest {
             for (const row of rows) {
                 (runtime.values as any)[row[0]] = row[1];
             }
+        }
+
+        if (this.flow.attributes?.bail) {
+            runtime.options.bail = true;
         }
 
         runtime.results.actual.write('');
@@ -119,6 +126,9 @@ export class PlyFlow implements Flow, PlyTest {
         }
     }
 
+    /**
+     * Executes a step within a flow and recursively executes the following step(s).
+     */
     async exec(step: flowbee.Step, runtime: Runtime, runOptions?: RunOptions, subflow?: Subflow): Promise<void> {
 
         let subflowStatus = await this.runSubflows(this.getSubflows('Before', step), runtime, runOptions);

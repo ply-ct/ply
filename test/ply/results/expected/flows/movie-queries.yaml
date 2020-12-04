@@ -48,7 +48,7 @@ Movies by Year & Rating:
             "description": "What's even more amazing than Lugosi's out-of-body performance is the fact that the finest horror movie ever made was filmed within 2 years of the advent of talking pictures.",
             "id": "${~[a-f0-9]}+",
             "poster": "drac.jpg",
-            "rating": ${rating},
+            "rating": 4,
             "title": "Dracula",
             "webRef": {
               "ref": "tt0021814",
