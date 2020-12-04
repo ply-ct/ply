@@ -77,7 +77,7 @@ export class PlyRequest implements Request, PlyTest {
      * REST resources before/after testing (see Case.before()/after()).
      */
     async submit(values: object, options?: Options, runOptions?: RunOptions): Promise<Response> {
-        return await this.doSubmit(this.getRequest(values, options), runOptions);
+        return await this.doSubmit(this.getRequest(values, options, true), runOptions);
     }
 
     private async doSubmit(requestObj: Request, runOptions?: RunOptions): Promise<PlyResponse> {
@@ -101,7 +101,7 @@ export class PlyRequest implements Request, PlyTest {
     /**
      * Request object with substituted values
      */
-    private getRequest(values: object, options?: Options): Request {
+    getRequest(values: object, options?: Options, includeAuthHeader = false): Request {
         const url = subst.replace(this.url, values, this.logger);
         if (!url.startsWith('http://') && !url.startsWith('https://')) {
             throw new Error('Invalid url: ' + url);
@@ -113,6 +113,9 @@ export class PlyRequest implements Request, PlyTest {
         const headers: {[key: string]: string} = {};
         for (const key of Object.keys(this.headers)) {
             headers[key] = subst.replace(this.headers[key], values, this.logger);
+        }
+        if (!includeAuthHeader) {
+            delete headers.Authorization;
         }
 
         let body = this.body;
@@ -153,7 +156,7 @@ export class PlyRequest implements Request, PlyTest {
      */
     async run(runtime: Runtime, runOptions?: RunOptions): Promise<PlyResult> {
         this.submitted = new Date();
-        const requestObject = this.getRequest(runtime.values, runtime.options);
+        const requestObject = this.getRequest(runtime.values, runtime.options, true);
         this.logger.info(`Request '${this.name}' submitted at ${timestamp(this.submitted, this.logger.level === LogLevel.debug)}`);
         const runOpts: RunOptions = { ...runOptions };
         if (runOptions?.submitIfExpectedMissing && !(await runtime.results.expected.exists)) {

@@ -5,7 +5,8 @@ import { Suite } from './suite';
 import { Case, PlyCase } from './case';
 import { Retrieval } from './retrieval';
 import { Location } from './location';
-import { ResultPaths, Runtime } from './runtime';
+import { Runtime } from './runtime';
+import { ResultPaths } from './result';
 import { Logger, LogLevel } from './logger';
 import { Skip } from './skip';
 

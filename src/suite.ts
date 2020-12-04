@@ -1,11 +1,11 @@
 import * as yaml from './yaml';
 import * as util from './util';
 import { TestType, Test, PlyTest } from './test';
-import { Result, Outcome, Verifier, PlyResult } from './result';
+import { Result, Outcome, Verifier, PlyResult, ResultPaths } from './result';
 import { Location } from './location';
 import { Storage } from './storage';
 import { Logger } from './logger';
-import { Runtime, DecoratedSuite, ResultPaths, CallingCaseInfo, CallingFlowInfo } from './runtime';
+import { Runtime, DecoratedSuite, CallingCaseInfo, CallingFlowInfo } from './runtime';
 import { RunOptions } from './options';
 import { SUITE, TEST, RESULTS } from './names';
 import { Retrieval } from './retrieval';

@@ -7,6 +7,7 @@ import { Suite } from './suite';
 import { Subflow } from './flow';
 import * as subst from './subst';
 import * as util from './util';
+import * as yaml from './yaml';
 
 export interface Step {
     step: flowbee.Step;
@@ -78,14 +79,27 @@ export class PlyStep implements Step {
                     body = JSON.stringify({ query: body }, null, runtime.options?.prettyIndent);
                 }
 
+                this.instance.data = {
+                    request: yaml.dump(request.getRequest(runtime.values, runtime.options), runtime.options.prettyIndent)
+                };
+
                 if (this.step.attributes?.submit === 'true') {
-                    await request.submit(runtime.values, runtime.options, { ...runOptions, submit: true });
+                    const response = await request.submit(runtime.values, runtime.options, { ...runOptions, submit: true });
+                    this.instance.data.response = yaml.dump(response, runtime.options.prettyIndent);
                 } else {
                     this.requestSuite.tests[this.name] = request;
                     const result = await this.requestSuite.run(this.name, runtime.values, runOptions);
                     if (result.status !== 'Passed' && result.status !== 'Submitted') {
                         this.instance.status = result.status === 'Failed' ? 'Failed' : 'Errored';
                         this.instance.message = result.message;
+                    }
+                    if (result.response) {
+                        let response = result.response;
+                        if (result.response.body) {
+                            // convert from object
+                            response = { ...result.response, body: JSON.stringify(result.response.body, null, runtime.options.prettyIndent) };
+                        }
+                        this.instance.data.response = yaml.dump(response, runtime.options.prettyIndent);
                     }
                 }
             }
