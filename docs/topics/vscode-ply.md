@@ -1,6 +1,8 @@
 ---
 layout: topic
 ---
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ply-ct/ply/ply%20ci)
+
 ## VS Code Ply
 Install Ply's [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=ply-ct.vscode-ply).
 
