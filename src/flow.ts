@@ -2,15 +2,14 @@ import * as minimatch from 'minimatch';
 import * as flowbee from 'flowbee';
 import { Logger } from './logger';
 import { RunOptions } from './options';
-import { Result, ResultStatus } from './result';
 import { Runtime } from './runtime';
-import { PlyTest, Test } from './test';
 import { PlyStep } from './step';
 import { Suite } from './suite';
 import { Request } from './request';
 import * as util from './util';
+import { Step } from 'flowbee';
 
-export interface Flow extends Test {
+export interface Flow {
     flow: flowbee.Flow;
     instance: flowbee.FlowInstance;
 }
@@ -19,7 +18,7 @@ export interface Subflow {
     instance: flowbee.SubflowInstance;
 }
 
-export class PlyFlow implements Flow, PlyTest {
+export class PlyFlow implements Flow {
     readonly name: string;
     readonly type = 'flow';
     start = 0;
@@ -49,7 +48,7 @@ export class PlyFlow implements Flow, PlyTest {
     /**
      * Run a ply flow.
      */
-    async run(runtime: Runtime, runOptions?: RunOptions): Promise<Result> {
+    async run(runtime: Runtime, runOptions?: RunOptions): Promise<flowbee.FlowStatus> {
 
         if (this.flow.attributes?.values) {
             const rows = JSON.parse(this.flow.attributes?.values);
@@ -81,7 +80,7 @@ export class PlyFlow implements Flow, PlyTest {
 
         let subflowStatus = await this.runSubflows(this.getSubflows('Before'), runtime, runOptions);
         if (subflowStatus === 'Errored' && runtime.options.bail) {
-            return { name: this.name, status: this.mapInstanceStatus(), message: '' };
+            return 'Errored';
         }
 
         const startStep = this.flow.steps?.find(s => s.path === 'start');
@@ -93,11 +92,11 @@ export class PlyFlow implements Flow, PlyTest {
 
         // compiler doesn't know that this.instance.status may have changed
         if ((this.instance.status as any) === 'Errored' && runtime.options.bail) {
-            return { name: this.name, status: this.mapInstanceStatus(), message: '' }; // TODO message?
+            return 'Errored';
         }
         subflowStatus = await this.runSubflows(this.getSubflows('After'), runtime, runOptions);
         if (subflowStatus === 'Errored' && runtime.options.bail) {
-            return { name: this.name, status: this.mapInstanceStatus(), message: '' };
+            return 'Errored';
         }
 
         this.instance.end = new Date();
@@ -110,20 +109,7 @@ export class PlyFlow implements Flow, PlyTest {
             this.emit('finish', 'flow', this.instance);
         }
 
-        return { name: this.name, status: this.mapInstanceStatus(), message: '' }; // TODO message?
-    }
-
-    /**
-     * Map instance status to result status
-     */
-    private mapInstanceStatus(): ResultStatus {
-        if (this.instance.status === 'Pending' || this.instance.status === 'In Progress' || this.instance.status === 'Waiting') {
-            return 'Pending';
-        } else if (this.instance.status === 'Completed' || this.instance.status === 'Canceled') {
-            return 'Passed';
-        } else {
-            return this.instance.status;
-        }
+        return this.instance.status;
     }
 
     /**
@@ -134,7 +120,7 @@ export class PlyFlow implements Flow, PlyTest {
         let subflowStatus = await this.runSubflows(this.getSubflows('Before', step), runtime, runOptions);
         if (subflowStatus === 'Errored' && runtime.options.bail) return;
 
-        const plyStep = new PlyStep(step, this.requestSuite, this.logger, this.instance.id);
+        const plyStep = new PlyStep(step, this.requestSuite, this.logger, this.instance.id, this.flow.path, subflow?.subflow);
         if (subflow) {
             if (!subflow.instance.stepInstances) {
                 subflow.instance.stepInstances = [];
@@ -152,7 +138,7 @@ export class PlyFlow implements Flow, PlyTest {
         this.logger.info('Executing step', plyStep.name);
         this.emit('exec', 'step', plyStep.instance);
 
-        await plyStep.exec(runtime, runOptions, subflow);
+        await plyStep.run(runtime, runOptions);
 
         if (plyStep.instance.status === 'Failed' || plyStep.instance.status === 'Errored') {
             this.instance.status = 'Errored';
@@ -173,13 +159,11 @@ export class PlyFlow implements Flow, PlyTest {
             for (const link of step.links) {
                 const result = plyStep.instance.result?.trim();
                 if ((!result && !link.result) || (result === link.result)) {
-                    let outStep = this.flow.steps?.find(s => s.id === link.to);
-                    if (!outStep && this.flow.subflows) {
-                        for (let i = 0; i < this.flow.subflows.length; i++) {
-                            const subflow = this.flow.subflows[i];
-                            outStep = subflow.steps?.find(s => s.id === link.to);
-                            if (outStep) break;
-                        }
+                    let outStep: Step | undefined;
+                    if (subflow) {
+                        outStep = subflow.subflow.steps?.find(s => s.id === link.to);
+                    } else {
+                        outStep = this.flow.steps?.find(s => s.id === link.to);
                     }
                     if (!outStep) {
                         throw new Error(`No such step: ${link.to} (linked from ${link.id})`);
