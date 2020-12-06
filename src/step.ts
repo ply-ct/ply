@@ -6,8 +6,6 @@ import { Runtime } from './runtime';
 import { Suite } from './suite';
 import { PlyTest, Test } from './test';
 import { Result, ResultStatus } from './result';
-import { Subflow } from './flow';
-import { Location } from './location';
 import * as subst from './subst';
 import * as util from './util';
 import * as yaml from './yaml';

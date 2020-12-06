@@ -6,10 +6,73 @@ import { Retrieval } from './retrieval';
 import { Runtime } from './runtime';
 import { ResultPaths } from './result';
 import { Suite } from './suite';
+import { Step } from './step';
 import { Request } from './request';
+import { Skip } from './skip';
 import * as util from './util';
 import * as yaml from './yaml';
-import { Skip } from './skip';
+
+export class FlowSuite extends Suite<Step> {
+
+    /**
+     * @param flow PlyFlow
+     * @param path relative path from tests location (forward slashes)
+     * @param runtime info
+     * @param logger
+     * @param start zero-based start line
+     * @param end zero-based end line
+     */
+    constructor(
+        readonly flow: PlyFlow,
+        readonly path: string,
+        readonly runtime: Runtime,
+        readonly logger: Logger,
+        readonly start: number = 0,
+        readonly end: number
+    ) {
+        super(flow.name, 'flow', path, runtime, logger, start, end);
+    }
+
+    getSteps(): Step[] {
+        const steps: { step: flowbee.Step, subflow?: flowbee.Subflow}[] = [];
+
+        const addSteps = (startStep: flowbee.Step, subflow?: flowbee.Subflow) => {
+            steps.push({ step: startStep, subflow });
+            if (startStep.links) {
+                for (const link of startStep.links) {
+                    let outStep: flowbee.Step | undefined;
+                    if (subflow) {
+                        outStep = subflow.steps?.find(s => s.id === link.to);
+                    } else {
+                        outStep = this.flow.flow.steps?.find(s => s.id === link.to);
+                    }
+                    if (outStep) {
+                        addSteps(outStep, subflow);
+                    }
+                }
+            }
+        };
+
+        this.flow.flow.subflows?.filter(sub => sub.attributes?.when === 'Before')?.forEach(before => {
+            before.steps?.forEach(step => addSteps(step, before));
+        });
+
+        this.flow.flow.steps?.forEach(step => addSteps(step));
+
+        this.flow.flow.subflows?.filter(sub => sub.attributes?.when === 'After')?.forEach(after => {
+            after.steps?.forEach(step => addSteps(step, after));
+        });
+
+        return steps.map(step => {
+            return {
+                name: step.subflow ? `${step.subflow.id}.${step.step.id}` : step.step.id,
+                type: 'flow',
+                step: step.step,
+                ...(step.subflow) && { subflow: step.subflow }
+            };
+        });
+    }
+}
 
 export class FlowLoader {
 
