@@ -129,7 +129,7 @@ export class Suite<T extends Test> {
      * Tests within a suite are run sequentially.
      * @param tests
      */
-    private async runTests(tests: T[], values: object, runOptions?: RunOptions): Promise<Result[]> {
+    async runTests(tests: T[], values: object, runOptions?: RunOptions): Promise<Result[]> {
 
         if (runOptions && Object.keys(runOptions).length > 0) {
             this.log.debug('RunOptions', runOptions);

@@ -12,8 +12,7 @@ import { TsCompileOptions } from './compile';
 import { Logger, LogLevel } from './logger';
 import { Values } from './values';
 import * as util from './util';
-import { Flow } from './flow';
-import { FlowLoader } from './flows';
+import { FlowLoader, FlowSuite } from './flows';
 
 export class Ply {
 
@@ -120,7 +119,7 @@ export class Ply {
     /**
      * Throws if location or suite not found
      */
-    async loadFlowSuites(location: string): Promise<Suite<Flow>[]> {
+    async loadFlowSuites(location: string): Promise<FlowSuite[]> {
         const flowSuites = await this.loadFlows([location]);
         if (flowSuites.length === 0) {
             throw new Error(`No flow suite found in: ${location}`);
@@ -128,10 +127,10 @@ export class Ply {
         return flowSuites;
     }
 
-    async loadFlows(file: string): Promise<Suite<Flow>[]>;
-    async loadFlows(...files: string[]): Promise<Suite<Flow>[]>;
-    async loadFlows(files: string[], ...moreFiles: string[]): Promise<Suite<Flow>[]>;
-    async loadFlows(files: string | string[], ...moreFiles: string[]): Promise<Suite<Flow>[]> {
+    async loadFlows(file: string): Promise<FlowSuite[]>;
+    async loadFlows(...files: string[]): Promise<FlowSuite[]>;
+    async loadFlows(files: string[], ...moreFiles: string[]): Promise<FlowSuite[]>;
+    async loadFlows(files: string | string[], ...moreFiles: string[]): Promise<FlowSuite[]> {
         if (typeof files === 'string') {
             files = [files];
         }
@@ -372,8 +371,8 @@ export class Plier extends EventEmitter {
                     const flowSuites = await this.ply.loadFlowSuites(path);
                     for (const flowSuite of flowSuites) {
                         if (!flowSuite.skip) {
-                            for (const flow of flowSuite) {
-                                plyees.push(this.ply.options.testsLocation + '/' + flowSuite.path + '#' + flow.name);
+                            for (const step of flowSuite) {
+                                plyees.push(this.ply.options.testsLocation + '/' + flowSuite.path + '#' + step.name);
                             }
                         }
                     }

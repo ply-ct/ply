@@ -1,10 +1,10 @@
 import * as flowbee from 'flowbee';
-import { Flow, PlyFlow } from './flow';
+import { PlyFlow } from './flow';
 import { Logger, LogLevel } from './logger';
-import { PlyOptions } from './options';
+import { PlyOptions, RunOptions } from './options';
 import { Retrieval } from './retrieval';
 import { Runtime } from './runtime';
-import { ResultPaths } from './result';
+import { Result, ResultPaths } from './result';
 import { Suite } from './suite';
 import { Step } from './step';
 import { Request } from './request';
@@ -12,10 +12,13 @@ import { Skip } from './skip';
 import * as util from './util';
 import * as yaml from './yaml';
 
+/**
+ * Suite representing a ply flow.
+ */
 export class FlowSuite extends Suite<Step> {
 
     /**
-     * @param flow PlyFlow
+     * @param plyFlow PlyFlow
      * @param path relative path from tests location (forward slashes)
      * @param runtime info
      * @param logger
@@ -23,16 +26,20 @@ export class FlowSuite extends Suite<Step> {
      * @param end zero-based end line
      */
     constructor(
-        readonly flow: PlyFlow,
+        readonly plyFlow: PlyFlow,
         readonly path: string,
         readonly runtime: Runtime,
         readonly logger: Logger,
         readonly start: number = 0,
         readonly end: number
     ) {
-        super(flow.name, 'flow', path, runtime, logger, start, end);
+        super(plyFlow.name, 'flow', path, runtime, logger, start, end);
     }
 
+    /**
+     * Returns all reachable unique steps in this.plyFlow.
+     * These are the tests in this FlowSuite.
+     */
     getSteps(): Step[] {
         const steps: { step: flowbee.Step, subflow?: flowbee.Subflow}[] = [];
 
@@ -44,7 +51,7 @@ export class FlowSuite extends Suite<Step> {
                     if (subflow) {
                         outStep = subflow.steps?.find(s => s.id === link.to);
                     } else {
-                        outStep = this.flow.flow.steps?.find(s => s.id === link.to);
+                        outStep = this.plyFlow.flow.steps?.find(s => s.id === link.to);
                     }
                     if (outStep) {
                         addSteps(outStep, subflow);
@@ -53,13 +60,13 @@ export class FlowSuite extends Suite<Step> {
             }
         };
 
-        this.flow.flow.subflows?.filter(sub => sub.attributes?.when === 'Before')?.forEach(before => {
+        this.plyFlow.flow.subflows?.filter(sub => sub.attributes?.when === 'Before')?.forEach(before => {
             before.steps?.forEach(step => addSteps(step, before));
         });
 
-        this.flow.flow.steps?.forEach(step => addSteps(step));
+        this.plyFlow.flow.steps?.forEach(step => addSteps(step));
 
-        this.flow.flow.subflows?.filter(sub => sub.attributes?.when === 'After')?.forEach(after => {
+        this.plyFlow.flow.subflows?.filter(sub => sub.attributes?.when === 'After')?.forEach(after => {
             after.steps?.forEach(step => addSteps(step, after));
         });
 
@@ -87,7 +94,7 @@ export class FlowLoader {
         }
     }
 
-    async load(): Promise<Suite<Flow>[]> {
+    async load(): Promise<FlowSuite[]> {
         const retrievals = this.locations.map(loc => new Retrieval(loc));
         // load request files in parallel
         const promises = retrievals.map(retr => this.loadSuite(retr));
@@ -96,7 +103,7 @@ export class FlowLoader {
         return suites;
     }
 
-    async loadSuite(retrieval: Retrieval): Promise<Suite<Flow>> {
+    async loadSuite(retrieval: Retrieval): Promise<FlowSuite> {
         const contents = await retrieval.read();
         if (typeof contents === 'undefined') {
             throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
@@ -105,7 +112,7 @@ export class FlowLoader {
         return this.buildSuite(retrieval, contents, resultPaths);
     }
 
-    buildSuite(retrieval: Retrieval, contents: string, resultPaths: ResultPaths): Suite<Flow> {
+    buildSuite(retrieval: Retrieval, contents: string, resultPaths: ResultPaths): FlowSuite {
         const runtime = new Runtime(
             this.options,
             retrieval,
@@ -116,16 +123,6 @@ export class FlowLoader {
             level: this.options.verbose ? LogLevel.debug : (this.options.quiet ? LogLevel.error : LogLevel.info),
             prettyIndent: this.options.prettyIndent
         }, runtime.results.log);
-
-        const suite = new Suite<Flow>(
-            retrieval.location.base,
-            'flow',
-            retrieval.location.relativeTo(this.options.testsLocation),
-            runtime,
-            logger,
-            0,
-            util.lines(contents).length - 1
-        );
 
         // request suite comprising all requests configured in steps
         const requestSuite = new Suite<Request>(
@@ -143,7 +140,20 @@ export class FlowLoader {
             flowPath: flowbeeFlow.path
         };
 
-        suite.add(new PlyFlow(flowbeeFlow, requestSuite, logger));
+        const plyFlow = new PlyFlow(flowbeeFlow, requestSuite, logger);
+
+        const suite = new FlowSuite(
+            plyFlow,
+            retrieval.location.relativeTo(this.options.testsLocation),
+            runtime,
+            logger,
+            0,
+            util.lines(contents).length - 1
+        );
+
+        for (const step of suite.getSteps()) {
+            suite.add(step);
+        }
 
         // mark if skipped
         if (this.skip?.isSkipped(suite.path)) {
