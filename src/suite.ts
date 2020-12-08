@@ -24,6 +24,9 @@ interface Tests<T extends Test> {
  * or one flow file (.ply.flow);
  *
  * Suites cannot be nested.
+ *
+ * TODO: separate RequestSuite and CaseSuite (like FlowSuite)
+ * instead of conditional logic in this class.
  */
 export class Suite<T extends Test> {
 
@@ -134,14 +137,6 @@ export class Suite<T extends Test> {
             this.log.debug('RunOptions', runOptions);
         }
 
-        if (this.emitter) {
-            this.emitter.emit('suite', {
-                plyee: this.runtime.options.testsLocation + '/' + this.path,
-                type: this.type,
-                status: 'Started'
-            } as SuiteEvent);
-        }
-
         // runtime values are a deep copy of passed values
         this.runtime.values = JSON.parse(JSON.stringify(values));
         this.runtime.responseHeaders = undefined;
@@ -149,6 +144,8 @@ export class Suite<T extends Test> {
         let callingCaseInfo: CallingCaseInfo | undefined;
         try {
             if (this.className) {
+                this.emitSuiteStarted();
+
                 // running a case suite --
                 // initialize the decorated suite
                 let testFile;
@@ -176,6 +173,7 @@ export class Suite<T extends Test> {
                         this.logger.storage = callingCaseInfo.results.log;
                     }
                     else {
+                        this.emitSuiteStarted();
                         this.runtime.results.actual.remove();
                     }
                 }
@@ -206,10 +204,7 @@ export class Suite<T extends Test> {
             let result: Result;
             try {
                 this.logger.debug(`Running ${test.type}: ${test.name}`);
-                if (this.emitter) {
-                    const plyEvent: PlyEvent = { plyee: new Plyee(this.runtime.options.testsLocation + '/' + this.path, test).path };
-                    this.emitter.emit('test', plyEvent );
-                }
+                this.emitTest(test);
                 // determine wanted headers (for requests)
                 if (test.type === 'request') {
                     this.runtime.responseHeaders = await this.getExpectedResponseHeaders(test.name, callingCaseInfo?.caseName);
@@ -229,9 +224,9 @@ export class Suite<T extends Test> {
                         const isFirst = i === 0 && !this.callingFlowPath;
                         result = this.handleResultRunOptions(test, result, actualYaml.text, isFirst, expectedExists, runOptions) || result;
                         // status could be 'Submitted' if runOptions so specify
-                        if (result.status === 'Pending') {
+                        if (result.status === 'Pending' || this.callingFlowPath) {
                             // verify request result (otherwise wait until case/flow is complete)
-                            const expectedYaml = await this.runtime.results.getExpectedYaml(test.name, undefined, !!this.callingFlowPath);
+                            const expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
                             if (expectedYaml.start > 0) {
                                 actualYaml = this.runtime.results.getActualYaml(test.name);
                                 if (padActualStart && expectedYaml.start > actualYaml.start) {
@@ -248,11 +243,11 @@ export class Suite<T extends Test> {
                     this.addResult(results, result);
                 } else {
                     // case or flow complete -- verify result
-                    actualYaml = this.runtime.results.getActualYaml(this.type === 'flow' ? '' : test.name);
+                    actualYaml = this.runtime.results.getActualYaml(test.name);
                     result = this.handleResultRunOptions(test, result, actualYaml.text, i === 0, expectedExists, runOptions) || result;
                     // for cases status could be 'Submitted' if runOptions so specify (this check is handled at step level for flows)
                     if (result.status === 'Pending' || this.type === 'flow') {
-                        const expectedYaml = await this.runtime.results.getExpectedYaml(this.type === 'flow' ? '' : test.name);
+                        const expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
                         if (padActualStart && expectedYaml.start > actualYaml.start) {
                             this.runtime.results.actual.padLines(actualYaml.start, expectedYaml.start - actualYaml.start);
                         }
@@ -286,6 +281,31 @@ export class Suite<T extends Test> {
             }
         }
 
+        if (!callingCaseInfo && !this.callingFlowPath) {
+            this.emitSuiteFinished();
+        }
+
+        return results;
+    }
+
+    emitSuiteStarted() {
+        if (this.emitter) {
+            this.emitter.emit('suite', {
+                plyee: this.runtime.options.testsLocation + '/' + this.path,
+                type: this.type,
+                status: 'Started'
+            } as SuiteEvent);
+        }
+    }
+
+    emitTest(test: T) {
+        if (this.emitter) {
+            const plyEvent: PlyEvent = { plyee: new Plyee(this.runtime.options.testsLocation + '/' + this.path, test).path };
+            this.emitter.emit('test', plyEvent );
+        }
+    }
+
+    emitSuiteFinished() {
         if (this.emitter) {
             this.emitter.emit('suite', {
                 plyee: this.runtime.options.testsLocation + '/' + this.path,
@@ -293,8 +313,6 @@ export class Suite<T extends Test> {
                 status: 'Finished'
             } as SuiteEvent);
         }
-
-        return results;
     }
 
     private declaredStartsWith(tests: T[]): boolean {
@@ -334,18 +352,22 @@ export class Suite<T extends Test> {
         results.push(result);
     }
 
-    // TODO: consider caching expected yaml content and possibly loaded obj (since obj is loaded twice for requests)
     private async getExpectedResponseHeaders(requestName: string, caseName?: string): Promise<string[] | undefined> {
-        const expectedYaml = await this.runtime.results.expected.read();
-        if (expectedYaml) {
-            const expectedObj = yaml.load(this.runtime.results.expected.toString(), expectedYaml);
-            let obj = caseName ? expectedObj[caseName] : expectedObj;
+        if (await this.runtime.results.expectedExists()) {
+            const yml = await this.runtime.results.getExpectedYaml(caseName ? caseName : requestName);
+            let obj = yaml.load(this.runtime.results.expected.toString(), yml.text);
             if (obj) {
-                obj = obj[requestName];
+                if (caseName) {
+                    obj = obj[requestName];
+                } else if (this.callingFlowPath) {
+                    obj = Object.values(obj)[0];
+                }
             }
-            const response = obj?.response;
-            if (response) {
-                return response.headers ? Object.keys(response.headers) : [];
+            if (obj) {
+                const response = obj?.response;
+                if (response) {
+                    return response.headers ? Object.keys(response.headers) : [];
+                }
             }
         }
     }

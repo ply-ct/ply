@@ -61,7 +61,7 @@ export class PlyFlow implements Flow {
 
     constructor(
         readonly flow: flowbee.Flow,
-        private readonly requestSuite: Suite<Request>,
+        readonly requestSuite: Suite<Request>,
         private readonly logger: Logger
     ) {
         this.name = flowbee.getFlowName(flow);
@@ -79,7 +79,6 @@ export class PlyFlow implements Flow {
      * Run a ply flow.
      */
     async run(runtime: Runtime, runOptions?: RunOptions): Promise<Result> {
-
         if (this.flow.attributes?.values) {
             const rows = JSON.parse(this.flow.attributes?.values);
             for (const row of rows) {

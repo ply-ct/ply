@@ -80,7 +80,7 @@ export class PlyStep implements Step, PlyTest {
                 }
 
                 const requestObj: Request = {
-                    name: this.stepName,
+                    name: this.name,
                     type: 'request',
                     url,
                     method,
@@ -90,7 +90,7 @@ export class PlyStep implements Step, PlyTest {
                     submit: (_values: object) => { throw new Error('Not implemented'); }
                 };
 
-                const request = new PlyRequest(this.stepName, requestObj, this.logger, runtime.retrieval);
+                const request = new PlyRequest(this.name, requestObj, this.logger, runtime.retrieval);
                 if (request.isGraphQl) {
                     request.graphQl = body;
                     body = JSON.stringify({ query: body }, null, runtime.options?.prettyIndent);
@@ -104,8 +104,8 @@ export class PlyStep implements Step, PlyTest {
                     const response = await request.submit(runtime.values, runtime.options, { ...runOptions, submit: true });
                     this.instance.data.response = yaml.dump(response, runtime.options.prettyIndent);
                 } else {
-                    this.requestSuite.tests[this.stepName] = request;
-                    const result = await this.requestSuite.run(this.stepName, runtime.values, runOptions);
+                    this.requestSuite.tests[this.name] = request;
+                    const result = await this.requestSuite.run(this.name, runtime.values, runOptions);
                     if (result.status !== 'Passed' && result.status !== 'Submitted') {
                         this.instance.status = result.status === 'Failed' ? 'Failed' : 'Errored';
                         this.instance.message = result.message;
@@ -156,22 +156,17 @@ export class PlyStep implements Step, PlyTest {
      * Handles step instance result.
      */
     async handleResult(_runtime: Runtime, runOptions?: RunOptions): Promise<Result> {
-        const resName = this.subflow ? this.subflow.name : this.stepName;
-        const resSubName = this.subflow ? this.stepName : undefined;
-        let actualYaml = this.requestSuite.runtime.results.getActualYaml(resName, resSubName);
-
         if (runOptions?.submit) {
             this.requestSuite.logOutcome(
-                { name: this.stepName, type: 'flow' },
+                { name: this.name, type: 'flow' },
                 { status: 'Submitted', message: this.instance.message || '', start: this.instance.start?.getTime() },
                 'Step'
             );
             return { name: this.stepName, status: 'Submitted', message: this.instance.message || '' };
-        }
-        else if (!runOptions?.createExpected) {
-            const expectedYaml = await this.requestSuite.runtime.results.getExpectedYaml(resName, resSubName);
+        } else if (!runOptions?.createExpected) {
+            const expectedYaml = await this.requestSuite.runtime.results.getExpectedYaml(this.name);
             if (expectedYaml.start > 0) {
-                actualYaml = this.requestSuite.runtime.results.getActualYaml(resName, resSubName);
+                const actualYaml = this.requestSuite.runtime.results.getActualYaml(this.name);
                 if (expectedYaml.start > actualYaml.start) {
                     this.requestSuite.runtime.results.actual.padLines(actualYaml.start, expectedYaml.start - actualYaml.start);
                 }

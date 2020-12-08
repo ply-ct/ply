@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as flowbee from 'flowbee';
 import { PlyFlow } from './flow';
 import { Logger, LogLevel } from './logger';
@@ -11,6 +12,7 @@ import { Request } from './request';
 import { Skip } from './skip';
 import * as util from './util';
 import * as yaml from './yaml';
+import { Plyee } from './ply';
 
 /**
  * Suite representing a ply flow.
@@ -41,20 +43,64 @@ export class FlowSuite extends Suite<Step> {
      * @param steps
      */
     async runTests(steps: Step[], values: object, runOptions?: RunOptions): Promise<Result[]> {
-        this.runtime.values = values;
-        if (this.isFlowSpec(steps)) {
-            this.plyFlow.onFlow(flowEvent => {
-                if (flowEvent.eventType !== 'exec') { // exec not applicable for ply subscribers
-                    this.emitter?.emit('flow', flowEvent);
-                }
-            });
-            return [await this.runFlow(runOptions)];
-        } else {
-            return await this.runSteps(steps, runOptions);
+        if (runOptions && Object.keys(runOptions).length > 0) {
+            this.log.debug('RunOptions', runOptions);
         }
+
+        this.emitSuiteStarted();
+
+        this.runtime.values = values;
+
+        let results: Result[];
+        if (this.isFlowSpec(steps)) {
+            results = [await this.runFlow(runOptions)];
+        } else {
+            results = await this.runSteps(steps, runOptions);
+        }
+
+        this.emitSuiteFinished();
+
+        return results;
+    }
+
+    private getStep(stepId: string): Step {
+        const step = this.all().find(step => step.step.id === stepId);
+        if (!step) throw new Error(`Step not found: ${stepId}`);
+        return step;
     }
 
     async runFlow(runOptions?: RunOptions): Promise<Result> {
+        this.plyFlow.onFlow(flowEvent => {
+            if (flowEvent.eventType === 'exec') {
+                // emit test event (not for request -- emitted in requestSuite)
+                const stepInstance = flowEvent.instance as flowbee.StepInstance;
+                const step = this.getStep(stepInstance.stepId);
+                if (step.step.path !== 'request') {
+                    this.emitTest(step);
+                }
+            } else {
+                // exec not applicable for ply subscribers
+                this.emitter?.emit('flow', flowEvent);
+                if (flowEvent.elementType === 'step' && (flowEvent.eventType === 'finish' || flowEvent.eventType === 'error')) {
+                    const stepInstance = flowEvent.instance as flowbee.StepInstance;
+                    const step = this.getStep(stepInstance.stepId);
+                    if (step.step.path !== 'request') {
+                        if (flowEvent.eventType === 'error') {
+                            this.emitter?.emit('outcome', {
+                                plyee: new Plyee(this.runtime.options.testsLocation + '/' + this.path, step).path,
+                                outcome: { status: 'Errored', message: stepInstance.message || ''}
+                            });
+                        } else if (flowEvent.eventType === 'finish') {
+                            this.emitter?.emit('outcome', {
+                                plyee: new Plyee(this.runtime.options.testsLocation + '/' + this.path, step).path,
+                                outcome: { status: 'Passed', message: '' }
+                            });
+                        }
+                    }
+                }
+            }
+        });
+        this.plyFlow.requestSuite.emitter = this.emitter;
         return await this.plyFlow.run(this.runtime, runOptions);
     }
 
@@ -69,8 +115,10 @@ export class FlowSuite extends Suite<Step> {
             0, 0
         );
         requestSuite.callingFlowPath = this.plyFlow.flow.path;
+        requestSuite.emitter = this.emitter;
         this.runtime.results.actual.clear();
         for (const step of steps) {
+            this.emitTest(step);
             const plyStep = new PlyStep(step.step, requestSuite, this.logger, this.plyFlow.flow.path, '');
             results.push(await plyStep.run(this.runtime, runOptions));
         }
@@ -166,6 +214,7 @@ export class FlowLoader {
             throw new Error('Cannot retrieve: ' + retrieval.location.absolute);
         }
         const resultPaths = await ResultPaths.create(this.options, retrieval);
+        resultPaths.isFlowResult = true;
         return this.buildSuite(retrieval, contents, resultPaths);
     }
 
