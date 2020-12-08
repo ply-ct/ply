@@ -407,7 +407,7 @@ export class ResultFlowParser {
         const flowInstance: flowbee.FlowInstance = {
             id: '',
             flowPath,
-            status: 'Completed' as flowbee.FlowStatus
+            status: 'Completed'
         };
 
         for (const key of Object.keys(this.actualObj)) {

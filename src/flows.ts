@@ -6,7 +6,7 @@ import { Retrieval } from './retrieval';
 import { Runtime } from './runtime';
 import { Result, ResultPaths } from './result';
 import { Suite } from './suite';
-import { Step } from './step';
+import { PlyStep, Step } from './step';
 import { Request } from './request';
 import { Skip } from './skip';
 import * as util from './util';
@@ -34,6 +34,61 @@ export class FlowSuite extends Suite<Step> {
         readonly end: number
     ) {
         super(plyFlow.name, 'flow', path, runtime, logger, start, end);
+    }
+
+    /**
+     * Override to execute flow itself if all steps are specified
+     * @param steps
+     */
+    async runTests(steps: Step[], values: object, runOptions?: RunOptions): Promise<Result[]> {
+        this.runtime.values = values;
+        if (this.isFlowSpec(steps)) {
+            this.plyFlow.onFlow(flowEvent => {
+                if (flowEvent.eventType !== 'exec') { // exec not applicable for ply subscribers
+                    this.emitter?.emit('flow', flowEvent);
+                }
+            });
+            return [await this.runFlow(runOptions)];
+        } else {
+            return await this.runSteps(steps, runOptions);
+        }
+    }
+
+    async runFlow(runOptions?: RunOptions): Promise<Result> {
+        return await this.plyFlow.run(this.runtime, runOptions);
+    }
+
+    async runSteps(steps: Step[], runOptions?: RunOptions): Promise<Result[]> {
+        const results: Result[] = [];
+        const requestSuite = new Suite<Request>(
+            this.plyFlow.name,
+            'request',
+            this.path,
+            this.runtime,
+            this.logger,
+            0, 0
+        );
+        for (const step of steps) {
+            const plyStep = new PlyStep(step.step, requestSuite, this.logger, this.plyFlow.flow.path, '');
+            results.push(await plyStep.run(this.runtime, runOptions));
+        }
+        return results;
+    }
+
+    /**
+     * True if steps array is identical to flow steps.
+     */
+    private isFlowSpec(steps: Step[]): boolean {
+        if (steps.length !== this.size()) {
+            return false;
+        }
+        const flowStepNames = Object.keys(this.tests);
+        for (let i = 0; i < steps.length; i++) {
+            if (steps[i].name !== flowStepNames[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

@@ -2,6 +2,9 @@ import { Runtime } from './runtime';
 import { Result } from './result';
 import { RunOptions } from './options';
 
+/**
+ * step type means flow step(s) in isolation
+ */
 export type TestType = 'request' | 'case' | 'flow';
 
 export interface Test {
