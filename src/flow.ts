@@ -255,15 +255,19 @@ export class PlyFlow implements Flow {
             this.logger.info('Executing subflow', subflow.subflow.name);
             runtime.appendResult(`${subflow.subflow.name}:`, 0, runOptions?.createExpected, util.timestamp(subflow.instance.start));
             runtime.appendResult(`id: ${subflow.subflow.id}`, 1, runOptions?.createExpected);
+            await this.exec(startStep, runtime, runOptions, subflow);
             subflow.instance.end = new Date();
             const elapsed = subflow.instance.end.getTime() - subflow.instance.start.getTime();
-            runtime.appendResult(`status: ${subflow.instance.status}`, 1, runOptions?.createExpected, `${elapsed} ms`);
             if (this.results.latestBad()) {
+                subflow.instance.status = this.results.latest.status === 'Errored' ? 'Errored' : 'Failed';
+                runtime.appendResult(`status: ${subflow.instance.status}`, 1, runOptions?.createExpected, `${elapsed} ms`);
                 this.emit('error', 'subflow', subflow.instance);
                 if (runtime.options.bail) {
                     return;
                 }
             } else {
+                subflow.instance.status = 'Completed';
+                runtime.appendResult(`status: ${subflow.instance.status}`, 1, runOptions?.createExpected, `${elapsed} ms`);
                 this.emit('finish', 'subflow', subflow.instance);
             }
         }

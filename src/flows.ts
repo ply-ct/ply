@@ -68,6 +68,8 @@ export class FlowSuite extends Suite<Step> {
             this.logger,
             0, 0
         );
+        requestSuite.callingFlowPath = this.plyFlow.flow.path;
+        this.runtime.results.actual.clear();
         for (const step of steps) {
             const plyStep = new PlyStep(step.step, requestSuite, this.logger, this.plyFlow.flow.path, '');
             results.push(await plyStep.run(this.runtime, runOptions));
@@ -190,10 +192,7 @@ export class FlowLoader {
         );
 
         const flowbeeFlow = FlowLoader.parse(contents, retrieval.location.path);
-        requestSuite.callingFlowInfo = {
-            results: resultPaths,
-            flowPath: flowbeeFlow.path
-        };
+        requestSuite.callingFlowPath = flowbeeFlow.path;
 
         const plyFlow = new PlyFlow(flowbeeFlow, requestSuite, logger);
 

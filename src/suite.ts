@@ -5,7 +5,7 @@ import { Result, Outcome, Verifier, PlyResult, ResultPaths } from './result';
 import { Location } from './location';
 import { Storage } from './storage';
 import { Logger } from './logger';
-import { Runtime, DecoratedSuite, CallingCaseInfo, CallingFlowInfo } from './runtime';
+import { Runtime, DecoratedSuite, CallingCaseInfo } from './runtime';
 import { RunOptions } from './options';
 import { SUITE, TEST, RESULTS } from './names';
 import { Retrieval } from './retrieval';
@@ -30,7 +30,7 @@ export class Suite<T extends Test> {
     readonly tests: Tests<T> = {};
     emitter?: EventEmitter;
     skip = false;
-    callingFlowInfo?: CallingFlowInfo;
+    callingFlowPath?: string;
 
     /**
      * @param name suite name
@@ -168,11 +168,8 @@ export class Suite<T extends Test> {
                 this.runtime.results.actual.remove();
             }
             else {
-                // running a request or flow suite
-                if (this.callingFlowInfo) {
-                    this.runtime.results = this.callingFlowInfo.results;
-                    this.logger.storage = this.callingFlowInfo.results.log;
-                } else {
+                // running a request suite
+                if (!this.callingFlowPath) {
                     callingCaseInfo = await this.getCallingCaseInfo(runOptions);
                     if (callingCaseInfo) {
                         this.runtime.results = callingCaseInfo.results;
@@ -225,16 +222,16 @@ export class Suite<T extends Test> {
                     actualYaml = { start: 0, text: this.buildResultYaml(plyResult, indent) };
                     this.runtime.results.actual.append(actualYaml.text);
                     if (!callingCaseInfo) {
-                        if (expectedExists && this.callingFlowInfo) {
+                        if (expectedExists && this.callingFlowPath) {
                             // expectedExists based on specific request step
                             expectedExists = await this.runtime.results.expectedExists(test.name);
                         }
-                        const isFirst = i === 0 && !this.callingFlowInfo;
+                        const isFirst = i === 0 && !this.callingFlowPath;
                         result = this.handleResultRunOptions(test, result, actualYaml.text, isFirst, expectedExists, runOptions) || result;
                         // status could be 'Submitted' if runOptions so specify
                         if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/flow is complete)
-                            const expectedYaml = await this.runtime.results.getExpectedYaml(test.name, undefined, !!this.callingFlowInfo);
+                            const expectedYaml = await this.runtime.results.getExpectedYaml(test.name, undefined, !!this.callingFlowPath);
                             if (expectedYaml.start > 0) {
                                 actualYaml = this.runtime.results.getActualYaml(test.name);
                                 if (padActualStart && expectedYaml.start > actualYaml.start) {
@@ -494,7 +491,7 @@ export class Suite<T extends Test> {
             }
         }
 
-        if (this.callingFlowInfo) {
+        if (this.callingFlowPath) {
             // name already appended with step output
             ymlLines.shift();
         }
