@@ -5,6 +5,7 @@ export { Test, TestType } from './test';
 export { Request } from './request';
 export { Case } from './case';
 export { Flow } from './flow';
+export { Step } from './step';
 export { Location } from './location';
 export { Logger, LogLevel, Log } from './logger';
 export { Options, PlyOptions, RunOptions, Defaults, Config, PLY_CONFIGS } from './options';

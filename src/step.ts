@@ -4,28 +4,44 @@ import { RunOptions } from './options';
 import { Request, PlyRequest } from './request';
 import { Runtime } from './runtime';
 import { Suite } from './suite';
-import { Subflow } from './flow';
+import { PlyTest, Test } from './test';
+import { Result, ResultStatus } from './result';
 import * as subst from './subst';
 import * as util from './util';
 import * as yaml from './yaml';
 
-export interface Step {
+export interface Step extends Test {
     step: flowbee.Step;
-    instance: flowbee.StepInstance;
+    instance?: flowbee.StepInstance;
+    subflow?: flowbee.Subflow;
 }
 
-export class PlyStep implements Step {
+export function getStepId(step: Step) {
+    return step.subflow ? `${step.subflow.id}.${step.step.id}` : step.step.id;
+}
 
+export class PlyStep implements Step, PlyTest {
+
+    /**
+     * This is the step id.
+     */
     readonly name: string;
+    readonly type = 'flow';
+    readonly stepName: string;
     readonly instance: flowbee.StepInstance;
+    start?: number | undefined;
+    end?: number | undefined;
 
     constructor(
         readonly step: flowbee.Step,
         private readonly requestSuite: Suite<Request>,
         private readonly logger: Logger,
-        flowInstanceId: string
+        readonly flowPath: string,
+        flowInstanceId: string,
+        readonly subflow?: flowbee.Subflow,
     ) {
-        this.name = step.name.replace(/\r?\n/g, ' ');
+        this.name = getStepId(this);
+        this.stepName = step.name.replace(/\r?\n/g, ' ');
         this.instance = {
             id: util.genId(),
             flowInstanceId,
@@ -34,15 +50,19 @@ export class PlyStep implements Step {
         };
     }
 
-    async exec(runtime: Runtime, runOptions?: RunOptions, subflow?: Subflow): Promise<void> {
+    async run(runtime: Runtime, runOptions?: RunOptions): Promise<Result> {
         this.instance.start = new Date();
-        let res: any;
-        const level = subflow ? 1 : 0;
+        let result: Result;
+        let stepRes: any;
+        const level = this.subflow ? 1 : 0;
         try {
-            runtime.appendResult(`${this.name}:`, level, runOptions?.createExpected, util.timestamp(this.instance.start));
+            runtime.appendResult(`${this.stepName}:`, level, runOptions?.createExpected, util.timestamp(this.instance.start));
             runtime.appendResult(`id: ${this.step.id}`, level + 1, runOptions?.createExpected);
-            if (this.step.path === 'stop' && !subflow) {
-                this.logger.info('Finished flow', this.requestSuite.name);
+            if (this.subflow && this.step.path === 'start' && !runOptions?.submit && !runOptions?.createExpected) {
+                this.padActualStart(this.subflow.id);
+            }
+            else if (this.step.path === 'stop' && !this.subflow) {
+                this.logger.info('Finished flow', this.flowPath);
             } else if (this.step.path === 'request') {
                 let url = this.step.attributes?.url;
                 if (!url) throw new Error('Missing attribute: url');
@@ -109,12 +129,13 @@ export class PlyStep implements Step {
 
             this.instance.end = new Date();
 
-            await this.handleResult(runtime, runOptions, subflow);
+            result = await this.handleResult(runtime, runOptions);
 
         } catch (err) {
             this.logger.error(err.message, err);
             this.instance.status = 'Errored';
             this.instance.message = err.message;
+            result = { name: this.stepName, status: 'Errored', message: this.instance.message || '' };
         }
 
         // append status, result and message to actual result
@@ -122,39 +143,58 @@ export class PlyStep implements Step {
             const elapsed = this.instance.end.getTime() - this.instance.start.getTime();
             runtime.appendResult(`status: ${this.instance.status}`, level + 1, runOptions?.createExpected, `${elapsed} ms`);
 
-            if (typeof res === 'boolean' || typeof res === 'number' || res) {
-                this.instance.result = '' + res;
+            if (typeof stepRes === 'boolean' || typeof stepRes === 'number' || stepRes) {
+                this.instance.result = '' + stepRes;
                 runtime.appendResult(`result: ${this.instance.result}`, level + 1, runOptions?.createExpected);
             }
             if (this.instance.message) {
                 runtime.appendResult(`message: '${this.instance.message}'`, level + 1, runOptions?.createExpected);
             }
         }
+
+        return result;
     }
 
     /**
      * Handles step instance result.
      */
-    async handleResult(_runtime: Runtime, runOptions?: RunOptions, subflow?: Subflow) {
-        const resName = subflow ? subflow?.subflow.name : this.name;
-        const resSubName = subflow ? this.name : undefined;
-        let actualYaml = this.requestSuite.runtime.results.getActualYaml(resName, resSubName);
-
+    async handleResult(_runtime: Runtime, runOptions?: RunOptions): Promise<Result> {
         if (runOptions?.submit) {
             this.requestSuite.logOutcome(
                 { name: this.name, type: 'flow' },
                 { status: 'Submitted', message: this.instance.message || '', start: this.instance.start?.getTime() },
                 'Step'
             );
+            return { name: this.stepName, status: 'Submitted', message: this.instance.message || '' };
+        } else if (!runOptions?.createExpected) {
+            this.padActualStart(this.name);
         }
-        else if (!runOptions?.createExpected) {
-            const expectedYaml = await this.requestSuite.runtime.results.getExpectedYaml(resName, resSubName);
-            if (expectedYaml.start > 0) {
-                actualYaml = this.requestSuite.runtime.results.getActualYaml(resName, resSubName);
-                if (expectedYaml.start > actualYaml.start) {
-                    this.requestSuite.runtime.results.actual.padLines(actualYaml.start, expectedYaml.start - actualYaml.start);
-                }
+        return this.mapResult();
+    }
+
+    private async padActualStart(name: string) {
+        const expectedYaml = await this.requestSuite.runtime.results.getExpectedYaml(name);
+        if (expectedYaml.start > 0) {
+            const actualYaml = this.requestSuite.runtime.results.getActualYaml(name);
+            if (expectedYaml.start > actualYaml.start) {
+                this.requestSuite.runtime.results.actual.padLines(actualYaml.start, expectedYaml.start - actualYaml.start);
             }
         }
+    }
+
+    /**
+     * Maps instance status to ply result
+     */
+    private mapResult(): Result {
+        let resultStatus: ResultStatus;
+        if (this.instance.status === 'In Progress' || this.instance.status === 'Waiting') {
+            resultStatus = 'Pending';
+        } else if (this.instance.status === 'Completed' || this.instance.status === 'Canceled') {
+            resultStatus = 'Passed';
+        } else {
+            resultStatus = this.instance.status;
+        }
+
+        return { name: this.stepName, status: resultStatus, message: this.instance.message || '' };
     }
 }

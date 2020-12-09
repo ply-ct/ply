@@ -53,11 +53,6 @@ export type CallingCaseInfo = {
     caseName: string
 };
 
-export type CallingFlowInfo = {
-    results: ResultPaths,
-    flowPath: string
-};
-
 /**
  * Applicable for Cases
  */

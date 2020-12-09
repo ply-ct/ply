@@ -62,6 +62,9 @@ else {
                 for (const file of glob.sync(arg, globOptions)) {
                     paths.push(file);
                 }
+                if (paths.length === 0) {
+                    throw new Error(`Files(s) not found: ${args}`);
+                }
             }
         }
     } else {
