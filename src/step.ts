@@ -129,7 +129,11 @@ export class PlyStep implements Step, PlyTest {
 
             this.instance.end = new Date();
 
-            result = await this.handleResult(runtime, runOptions);
+            if (!runOptions?.createExpected) {
+                await this.padActualStart(this.name);
+            }
+
+            result = this.mapResult(runOptions);
 
         } catch (err) {
             this.logger.error(err.message, err);
@@ -155,23 +159,6 @@ export class PlyStep implements Step, PlyTest {
         return result;
     }
 
-    /**
-     * Handles step instance result.
-     */
-    async handleResult(_runtime: Runtime, runOptions?: RunOptions): Promise<Result> {
-        if (runOptions?.submit) {
-            this.requestSuite.logOutcome(
-                { name: this.name, type: 'flow' },
-                { status: 'Submitted', message: this.instance.message || '', start: this.instance.start?.getTime() },
-                'Step'
-            );
-            return { name: this.stepName, status: 'Submitted', message: this.instance.message || '' };
-        } else if (!runOptions?.createExpected) {
-            this.padActualStart(this.name);
-        }
-        return this.mapResult();
-    }
-
     private async padActualStart(name: string) {
         const expectedYaml = await this.requestSuite.runtime.results.getExpectedYaml(name);
         if (expectedYaml.start > 0) {
@@ -185,12 +172,12 @@ export class PlyStep implements Step, PlyTest {
     /**
      * Maps instance status to ply result
      */
-    private mapResult(): Result {
+    private mapResult(runOptions?: RunOptions): Result {
         let resultStatus: ResultStatus;
         if (this.instance.status === 'In Progress' || this.instance.status === 'Waiting') {
             resultStatus = 'Pending';
         } else if (this.instance.status === 'Completed' || this.instance.status === 'Canceled') {
-            resultStatus = 'Passed';
+            resultStatus = runOptions?.submit ? 'Submitted' : 'Passed';
         } else {
             resultStatus = this.instance.status;
         }

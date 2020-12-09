@@ -227,7 +227,7 @@ export class Suite<T extends Test> {
                         const isFirst = i === 0 && !this.callingFlowPath;
                         result = this.handleResultRunOptions(test, result, actualYaml.text, isFirst, expectedExists, runOptions) || result;
                         // status could be 'Submitted' if runOptions so specify
-                        if (result.status === 'Pending' || this.callingFlowPath) {
+                        if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/flow is complete)
                             const expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
                             if (expectedYaml.start > 0) {

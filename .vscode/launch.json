@@ -13,7 +13,9 @@
             ],
             "program": "${workspaceFolder}/dist/src/cli.js",
             "args": [
-                "test/ply/flows/movies-api.ply.flow"
+                "test/ply/flows/movie-queries.ply.flow#s3",
+                "test/ply/flows/movie-queries.ply.flow#s5",
+                "--submit"
             ],
             "preLaunchTask": "tsc: build - tsconfig.json",
             "outFiles": [

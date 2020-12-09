@@ -1,4 +1,3 @@
-import * as path from 'path';
 import * as flowbee from 'flowbee';
 import { PlyFlow } from './flow';
 import { Logger, LogLevel } from './logger';
@@ -49,7 +48,9 @@ export class FlowSuite extends Suite<Step> {
 
         this.emitSuiteStarted();
 
-        this.runtime.values = values;
+        // runtime values are a deep copy of passed values
+        this.runtime.values = JSON.parse(JSON.stringify(values));
+        this.runtime.responseHeaders = undefined;
 
         let results: Result[];
         if (this.isFlowSpec(steps)) {
@@ -93,7 +94,7 @@ export class FlowSuite extends Suite<Step> {
                         } else if (flowEvent.eventType === 'finish') {
                             this.emitter?.emit('outcome', {
                                 plyee: new Plyee(this.runtime.options.testsLocation + '/' + this.path, step).path,
-                                outcome: { status: 'Passed', message: '' }
+                                outcome: { status: runOptions?.submit ? 'Submitted' : 'Passed', message: '' }
                             });
                         }
                     }
@@ -120,7 +121,15 @@ export class FlowSuite extends Suite<Step> {
         for (const step of steps) {
             this.emitTest(step);
             const plyStep = new PlyStep(step.step, requestSuite, this.logger, this.plyFlow.flow.path, '');
-            results.push(await plyStep.run(this.runtime, runOptions));
+            const result = await plyStep.run(this.runtime, runOptions);
+            if (step.step.path !== 'request') {
+                super.logOutcome(
+                    step,
+                    { status: result.status, message: result.message, start: plyStep.instance.start?.getTime() },
+                    'Step'
+                );
+            }
+            results.push(result);
         }
         return results;
     }
