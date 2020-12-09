@@ -129,7 +129,7 @@ export class PlyStep implements Step, PlyTest {
 
             this.instance.end = new Date();
 
-            if (!runOptions?.createExpected) {
+            if (!runOptions?.submit && !runOptions?.createExpected) {
                 await this.padActualStart(this.name);
             }
 

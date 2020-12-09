@@ -118,6 +118,15 @@ export class FlowSuite extends Suite<Step> {
         requestSuite.callingFlowPath = this.plyFlow.flow.path;
         requestSuite.emitter = this.emitter;
         this.runtime.results.actual.clear();
+        const expectedExists = await this.runtime.results.expectedExists();
+        if (!expectedExists && runOptions?.submitIfExpectedMissing) {
+            runOptions.submit = true;
+        }
+        if (runOptions?.createExpected || (!expectedExists && runOptions?.createExpectedIfMissing)) {
+            this.logger.info(`Creating expected result: ${this.runtime.results.expected}`);
+            this.runtime.results.expected.write('');
+            runOptions.createExpected = true;
+        }
         for (const step of steps) {
             this.emitTest(step);
             const plyStep = new PlyStep(step.step, requestSuite, this.logger, this.plyFlow.flow.path, '');
