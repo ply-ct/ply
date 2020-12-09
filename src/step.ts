@@ -58,7 +58,10 @@ export class PlyStep implements Step, PlyTest {
         try {
             runtime.appendResult(`${this.stepName}:`, level, runOptions?.createExpected, util.timestamp(this.instance.start));
             runtime.appendResult(`id: ${this.step.id}`, level + 1, runOptions?.createExpected);
-            if (this.step.path === 'stop' && !this.subflow) {
+            if (this.subflow && this.step.path === 'start' && !runOptions?.submit && !runOptions?.createExpected) {
+                this.padActualStart(this.subflow.id);
+            }
+            else if (this.step.path === 'stop' && !this.subflow) {
                 this.logger.info('Finished flow', this.flowPath);
             } else if (this.step.path === 'request') {
                 let url = this.step.attributes?.url;
@@ -164,15 +167,19 @@ export class PlyStep implements Step, PlyTest {
             );
             return { name: this.stepName, status: 'Submitted', message: this.instance.message || '' };
         } else if (!runOptions?.createExpected) {
-            const expectedYaml = await this.requestSuite.runtime.results.getExpectedYaml(this.name);
-            if (expectedYaml.start > 0) {
-                const actualYaml = this.requestSuite.runtime.results.getActualYaml(this.name);
-                if (expectedYaml.start > actualYaml.start) {
-                    this.requestSuite.runtime.results.actual.padLines(actualYaml.start, expectedYaml.start - actualYaml.start);
-                }
-            }
+            this.padActualStart(this.name);
         }
         return this.mapResult();
+    }
+
+    private async padActualStart(name: string) {
+        const expectedYaml = await this.requestSuite.runtime.results.getExpectedYaml(name);
+        if (expectedYaml.start > 0) {
+            const actualYaml = this.requestSuite.runtime.results.getActualYaml(name);
+            if (expectedYaml.start > actualYaml.start) {
+                this.requestSuite.runtime.results.actual.padLines(actualYaml.start, expectedYaml.start - actualYaml.start);
+            }
+        }
     }
 
     /**

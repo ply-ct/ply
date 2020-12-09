@@ -213,7 +213,10 @@ export class Suite<T extends Test> {
                 let actualYaml: yaml.Yaml;
                 if (test.type === 'request') {
                     const plyResult = result as PlyResult;
-                    const indent = callingCaseInfo ? this.runtime.options.prettyIndent : 0;
+                    let indent = callingCaseInfo ? this.runtime.options.prettyIndent : 0;
+                    if (this.callingFlowPath && test.name.startsWith('f')) {
+                        indent += this.runtime.options.prettyIndent; // subflow extra indent
+                    }
                     actualYaml = { start: 0, text: this.buildResultYaml(plyResult, indent) };
                     this.runtime.results.actual.append(actualYaml.text);
                     if (!callingCaseInfo) {
@@ -353,14 +356,17 @@ export class Suite<T extends Test> {
     }
 
     private async getExpectedResponseHeaders(requestName: string, caseName?: string): Promise<string[] | undefined> {
-        if (await this.runtime.results.expectedExists()) {
+        if (await this.runtime.results.expectedExists(caseName ? caseName : requestName)) {
             const yml = await this.runtime.results.getExpectedYaml(caseName ? caseName : requestName);
             let obj = yaml.load(this.runtime.results.expected.toString(), yml.text);
             if (obj) {
-                if (caseName) {
-                    obj = obj[requestName];
-                } else if (this.callingFlowPath) {
+                if (this.callingFlowPath) {
                     obj = Object.values(obj)[0];
+                } else {
+                    obj = obj[caseName ? caseName : requestName];
+                    if (caseName) {
+                        obj = obj[requestName];
+                    }
                 }
             }
             if (obj) {

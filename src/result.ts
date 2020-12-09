@@ -173,6 +173,9 @@ export class Verifier {
     }
 
     private diffLine(line: number, count = 1, name?: string): string {
+        if (typeof this.expectedYaml.start === 'undefined') {
+            return '' + line;
+        }
         let dl = `${line + this.expectedYaml.start}`;
         if (count > 1) {
             dl += `-${line + this.expectedYaml.start + count - 1}`;
@@ -302,7 +305,13 @@ export class ResultPaths {
             id = id.substring(dot + 1);
             for (const key of Object.keys(yamlObj)) {
                 if (yamlObj[key].id === subflowId) {
-                    yamlObj = yamlObj[key];
+                    const subflowStart = (yamlObj[key].__start || 0) + 1;
+                    yamlObj = yaml.load(this.expected.toString(), yaml.dump(yamlObj[key], this.options.prettyIndent || 2), true);
+                    for (const value of Object.values(yamlObj)) {
+                        if (typeof value === 'object' && typeof (value as any).__start === 'number') {
+                            (value as any).__start += subflowStart;
+                        }
+                    }
                     break;
                 }
             }
@@ -345,8 +354,11 @@ export class ResultPaths {
                     ...rawObj
                 } = expectedObj;
                 const startLine = util.lines(expected)[start];
-                const indent = this.options.prettyIndent || 2;
+                let indent = this.options.prettyIndent || 2;
                 expected = yaml.dump(rawObj, indent);
+                if (name.startsWith('f')) {
+                    indent += (this.options.prettyIndent || 2); // extra indent for subflow
+                }
                 expectedLines = util.lines(expected).map(l => l.trim().length > 0 ? l.padStart(l.length + indent) : l);
                 expectedLines.unshift(startLine);
                 return { start, text: expectedLines.join('\n') };
@@ -366,7 +378,16 @@ export class ResultPaths {
     async expectedExists(name?: string): Promise<boolean> {
         const expected = await this.expected.read();
         if (typeof expected === 'undefined') return false;
-        return name ? !!yaml.load(this.expected.toString(), expected)[name] : true;
+        if (name) {
+            const obj = yaml.load(this.expected.toString(), expected);
+            if (this.isFlowResult) {
+                return !!this.extractById(obj, name);
+            } else {
+                return !!obj[name];
+            }
+        } else {
+            return true;
+        }
     }
 
     /**
