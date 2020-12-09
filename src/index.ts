@@ -12,6 +12,7 @@ export { Options, PlyOptions, RunOptions, Defaults, Config, PLY_CONFIGS } from '
 export { Retrieval } from './retrieval';
 export { Storage } from './storage';
 export { Suite } from './suite';
+export { Result, ResultPaths } from './result';
 export { PlyEvent, SuiteEvent, OutcomeEvent } from './event';
 export { Diff } from './compare';
 export { Code } from './code';

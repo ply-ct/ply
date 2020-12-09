@@ -298,7 +298,7 @@ export class ResultPaths {
         );
     }
 
-    private extractById(yamlObj: any, id: string) {
+    static extractById(yamlObj: any, id: string, indent = 2): any {
         const dot = id.indexOf('.');
         if (dot > 0) {
             const subflowId = id.substring(0, dot);
@@ -306,7 +306,7 @@ export class ResultPaths {
             for (const key of Object.keys(yamlObj)) {
                 if (yamlObj[key].id === subflowId) {
                     const subflowStart = (yamlObj[key].__start || 0) + 1;
-                    yamlObj = yaml.load(this.expected.toString(), yaml.dump(yamlObj[key], this.options.prettyIndent || 2), true);
+                    yamlObj = yaml.load(key, yaml.dump(yamlObj[key], indent), true);
                     for (const value of Object.values(yamlObj)) {
                         if (typeof value === 'object' && typeof (value as any).__start === 'number') {
                             (value as any).__start += subflowStart;
@@ -335,7 +335,7 @@ export class ResultPaths {
             let expectedObj;
             if (this.isFlowResult) {
                 // name is (subflowId.)stepId
-                expectedObj = this.extractById(yaml.load(this.expected.toString(), expected, true), name);
+                expectedObj = ResultPaths.extractById(yaml.load(this.expected.toString(), expected, true), name, this.options.prettyIndent);
             } else {
                 expectedObj = yaml.load(this.expected.toString(), expected, true)[name];
             }
@@ -381,7 +381,7 @@ export class ResultPaths {
         if (name) {
             const obj = yaml.load(this.expected.toString(), expected);
             if (this.isFlowResult) {
-                return !!this.extractById(obj, name);
+                return !!ResultPaths.extractById(obj, name);
             } else {
                 return !!obj[name];
             }
@@ -401,7 +401,7 @@ export class ResultPaths {
         if (name) {
             let actualObj;
             if (this.isFlowResult) {
-                actualObj = this.extractById(yaml.load(this.actual.toString(), actual, true), name);
+                actualObj = ResultPaths.extractById(yaml.load(this.actual.toString(), actual, true), name, this.options.prettyIndent);
 
             } else {
                 actualObj = yaml.load(this.actual.toString(), actual, true)[name];

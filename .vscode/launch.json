@@ -13,8 +13,7 @@
             ],
             "program": "${workspaceFolder}/dist/src/cli.js",
             "args": [
-                "test/ply/flows/movie-queries.ply.flow#s3",
-                "--create"
+                "test/ply/flows/movies-api.ply.flow#f1.s4"
             ],
             "preLaunchTask": "tsc: build - tsconfig.json",
             "outFiles": [

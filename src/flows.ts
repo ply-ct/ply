@@ -129,7 +129,13 @@ export class FlowSuite extends Suite<Step> {
         }
         for (const step of steps) {
             this.emitTest(step);
-            const plyStep = new PlyStep(step.step, requestSuite, this.logger, this.plyFlow.flow.path, '');
+            let subflow: flowbee.Subflow | undefined;
+            const dot = step.name.indexOf('.');
+            if (dot > 0) {
+                const subflowId = step.name.substring(0, dot);
+                subflow = this.plyFlow.flow.subflows?.find(sub => sub.id === subflowId);
+            }
+            const plyStep = new PlyStep(step.step, requestSuite, this.logger, this.plyFlow.flow.path, '', subflow);
             const result = await plyStep.run(this.runtime, runOptions);
             if (step.step.path !== 'request') {
                 super.logOutcome(
