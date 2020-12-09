@@ -230,7 +230,7 @@ export class Suite<T extends Test> {
                         if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/flow is complete)
                             const expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
-                            if (expectedYaml.start > 0) {
+                            if (expectedYaml.start > 0 || this.callingFlowPath) { // flows need to re-read actual even if not padding
                                 actualYaml = this.runtime.results.getActualYaml(test.name);
                                 if (padActualStart && expectedYaml.start > actualYaml.start) {
                                     this.runtime.results.actual.padLines(actualYaml.start, expectedYaml.start - actualYaml.start);
