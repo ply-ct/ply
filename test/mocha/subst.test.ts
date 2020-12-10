@@ -17,9 +17,9 @@ describe('subst', () => {
             y: 'bar'
         };
         // note windows newline converted to \n
-        const template = 'here is z: ${x.something()},\r\nand here is y: ${y}';
+        const template = 'here is z: ${b.something},\r\nand here is y: ${y}; finally f: ${x}';
         const res = subst.replace(template, values, logger);
-        assert.strictEqual(res, 'here is z: ${x.something()},\nand here is y: bar');
+        assert.strictEqual(res, 'here is z: ${b.something},\nand here is y: bar; finally f: foo');
     });
 
     it('handles result values', () => {

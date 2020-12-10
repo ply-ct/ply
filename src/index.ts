@@ -17,8 +17,10 @@ export { PlyEvent, SuiteEvent, OutcomeEvent } from './event';
 export { Diff } from './compare';
 export { Code } from './code';
 export { Import } from './import';
+export { Values } from './values';
 export { suite, test, before, after } from './decorators';
 export { load as loadYaml } from './yaml';
+export { replace } from './subst';
 export * as util from './util';
 
 require('ts-node/register');
