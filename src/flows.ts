@@ -173,17 +173,20 @@ export class FlowSuite extends Suite<Step> {
         const steps: { step: flowbee.Step, subflow?: flowbee.Subflow}[] = [];
 
         const addSteps = (startStep: flowbee.Step, subflow?: flowbee.Subflow) => {
-            steps.push({ step: startStep, subflow });
-            if (startStep.links) {
-                for (const link of startStep.links) {
-                    let outStep: flowbee.Step | undefined;
-                    if (subflow) {
-                        outStep = subflow.steps?.find(s => s.id === link.to);
-                    } else {
-                        outStep = this.plyFlow.flow.steps?.find(s => s.id === link.to);
-                    }
-                    if (outStep) {
-                        addSteps(outStep, subflow);
+            const already = steps.find(step => step.step.id === startStep.id);
+            if (!already) {
+                steps.push({ step: startStep, subflow });
+                if (startStep.links) {
+                    for (const link of startStep.links) {
+                        let outStep: flowbee.Step | undefined;
+                        if (subflow) {
+                            outStep = subflow.steps?.find(s => s.id === link.to);
+                        } else {
+                            outStep = this.plyFlow.flow.steps?.find(s => s.id === link.to);
+                        }
+                        if (outStep) {
+                            addSteps(outStep, subflow);
+                        }
                     }
                 }
             }
