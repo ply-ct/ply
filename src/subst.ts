@@ -3,7 +3,7 @@ import { RESULTS } from './names';
 import * as util from './util';
 
 /**
- * TODO: duplicated in vscode-ply/media/values.ts
+ * duplicated in vscode-ply/media/values.ts
  */
 function get(input: string, context: object): string {
 
@@ -14,7 +14,7 @@ function get(input: string, context: object): string {
     // trim ${ and }
     path = path.substring(2, path.length - 1);
 
-    // context directly contains expression (user-entered values in vscode)
+    // directly contains expression (flat obj or user-entered values in vscode)
     if (typeof (context as any)[path] === 'string') {
         return (context as any)[path];
     }
