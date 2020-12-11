@@ -14,6 +14,11 @@ function get(input: string, context: object): string {
     // trim ${ and }
     path = path.substring(2, path.length - 1);
 
+    // context directly contains expression (user-entered values in vscode)
+    if (typeof (context as any)[path] === 'string') {
+        return (context as any)[path];
+    }
+
     let res: any = context;
     for (let seg of path.split('.')) {
         const idx = seg.search(/\[.+?]$/);
