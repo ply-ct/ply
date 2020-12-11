@@ -2,6 +2,9 @@ import { Logger } from './logger';
 import { RESULTS } from './names';
 import * as util from './util';
 
+/**
+ * TODO: duplicated in vscode-ply/media/values.ts
+ */
 function get(input: string, context: object): string {
 
     if (input.startsWith('${~')) return input; // ignore regex
