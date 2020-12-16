@@ -48,7 +48,7 @@ function get(input: string, context: object): string {
  * Ignores regular expressions starting with ${~.
  * Resulting newlines are always \n
  */
-export function replace(template: string, context: object, logger: Logger, explain = false): string {
+export function replace(template: string, context: object, logger: Logger): string {
     const lines: string[] = [];
     for (const line of util.lines(template)) {
         try {

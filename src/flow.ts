@@ -157,7 +157,6 @@ export class PlyFlow implements Flow {
                 subflow.instance.stepInstances = [];
             }
             subflow.instance.stepInstances.push(plyStep.instance);
-
         } else {
             if (!this.instance.stepInstances) {
                 this.instance.stepInstances = [];
