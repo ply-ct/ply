@@ -309,6 +309,7 @@ export class FlowLoader {
         } else {
             flow = yaml.load(file, text);
         }
+        if (!flow) throw new Error(`Unable to load from empty: ${file}`);
         flow.type = 'flow';
         flow.path = file.replace(/\\/g, '/');
         return flow;
