@@ -5,12 +5,7 @@ We welcome your contributions to Ply whether they be fixes/enhancements, automat
   - Issues must have appropriate labels and a concise description of the concern.
 
 ### Pull Requests
-  - All pull requests are against an issue, and your commit message should reference the issue it addresses, eg: `Fix #<issue number>`
-  - These labels are not included in release notes
-    - internal
-    - wontfix
-    - duplicate
-    - documentation
+  - All pull requests are against an issue, and your squashed commit message should reference the issue it addresses, eg: `Fix #<issue number>`
 
 ### Developer Setup
 1. Source Code
