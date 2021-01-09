@@ -9,13 +9,6 @@
         "isDefault": true
       },
       "problemMatcher": []
-    },
-    {
-      "label": "serve docs",
-      "type": "npm",
-      "script": "serve-docs",
-      "isBackground": true,
-      "problemMatcher": [],
     }
   ]
 }
