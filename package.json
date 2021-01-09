@@ -40,7 +40,8 @@
     "stop-movies": "ply-movies stop",
     "test": "npm-run-all mocha ply stop-movies --continue-on-error",
     "typedoc": "typedoc --name 'ply' --mode file --out docs/api-docs --excludePrivate true --excludeNotExported true src",
-    "docs": "echo '---\nlayout: page\n---' > docs/intro.md && cat README.md >> docs/intro.md && npm run typedoc"
+    "docs": "echo '---\nlayout: page\n---' > docs/intro.md && cat README.md >> docs/intro.md && npm run typedoc",
+    "serve-docs": "cd docs && bundle install && bundle exec jekyll serve --incremental --watch --baseurl ''"
   },
   "homepage": "https://github.com/ply-ct/ply#readme",
   "dependencies": {
