@@ -1,33 +1,18 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "cli",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "${workspaceFolder}/dist/src/cli.js",
-            "args": [
-                "test/ply/flows/movie-queries.ply.flow#s4"
-            ],
-            "preLaunchTask": "tsc: build - tsconfig.json",
-            "outFiles": [
-                "${workspaceFolder}/dist/**/*.js"
-            ]
-        },
-        {
-            "name": "Custom debug",
-            "type": "node",
-            "request": "attach",
-            "port": 9229,
-            "protocol": "inspector",
-            "timeout": 10000,
-            "stopOnEntry": false
-        }
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "cli",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/dist/src/cli.js",
+      "args": [
+        "test/ply/cases/movieCrud.ply.ts"
+      ],
+      "preLaunchTask": "tsc: build - tsconfig.json"
+    }
+  ]
 }
