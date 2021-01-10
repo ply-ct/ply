@@ -9,6 +9,8 @@ or [VS Code Ply](vscode-ply).
 ## Prerequisites
 1. Install Node.js:
    <https://nodejs.org/en/download/>
+1. Install Git:
+   <https://git-scm.com/downloads>
 1. Install Visual Studio Code:
    <https://code.visualstudio.com/download>
 1. Install the Ply VS Code extension:
