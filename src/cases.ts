@@ -149,7 +149,7 @@ export class CaseLoader {
                     else {
                         decoratorSymbol = this.checker.getSymbolAtLocation(decorator.expression);
                     }
-                    if (decoratorSymbol && this.checker.getAliasedSymbol(decoratorSymbol).name === 'suite') {
+                    if (decoratorSymbol && (decoratorSymbol.name === 'suite' || this.checker.getAliasedSymbol(decoratorSymbol).name === 'suite')) {
                         let suiteName = classSymbol.name;
                         if (decorator.expression.getChildCount() >= 3) {
                             // suite name arg
@@ -193,7 +193,7 @@ export class CaseLoader {
                     else {
                         decoratorSymbol = this.checker.getSymbolAtLocation(decorator.expression);
                     }
-                    if (decoratorSymbol && this.checker.getAliasedSymbol(decoratorSymbol).name === 'test') {
+                    if (decoratorSymbol && (decoratorSymbol.name === 'test' || this.checker.getAliasedSymbol(decoratorSymbol).name === 'test')) {
                         let testName = methodSymbol.name;
                         if (decorator.expression.getChildCount() >= 3) {
                             const text = decorator.expression.getChildAt(2).getText();

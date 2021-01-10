@@ -58,7 +58,7 @@
     "os-locale": "^5.0.0",
     "stacktracey": "^1.2.127",
     "ts-node": "^9.0.0",
-    "typescript": "^4.0.3",
+    "typescript": "^4.1.2",
     "yargs": "^15.4.1"
   },
   "devDependencies": {

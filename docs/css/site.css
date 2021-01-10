@@ -292,6 +292,30 @@ h5:hover .header-link,
 h6:hover .header-link {
   opacity: 1;
 }
+.copy-txt {
+  font-family: monospace;
+	font-size: 14px;
+	padding: 2px 4px;
+	border: 1px solid gray;
+  border-radius: 3px 0 0 3px;
+  min-width: 325px;
+}
+.copy-btn {
+  font-family: monospace;
+  background-color: #eff3f6;
+  border: 1px solid gray;
+  border-left: none;
+  border-radius: 0 3px 3px 0;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 1px 0 0 10px;
+  -webkit-padding-after: 1px;
+}
+.copy-adj {
+	position: relative;
+	top: 1px;
+}
+
 /* only visible to screen readers */
 .sr-only {
   position: absolute;
