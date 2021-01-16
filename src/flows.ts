@@ -127,6 +127,8 @@ export class FlowSuite extends Suite<Step> {
             this.runtime.results.expected.write('');
             runOptions.createExpected = true;
         }
+        // emit start event for synthetic flow
+        this.emitter?.emit('flow', this.plyFlow.flowEvent('start', 'flow', this.plyFlow.instance));
         for (const step of steps) {
             this.emitTest(step);
             let subflow: flowbee.Subflow | undefined;
@@ -136,7 +138,13 @@ export class FlowSuite extends Suite<Step> {
                 subflow = this.plyFlow.flow.subflows?.find(sub => sub.id === subflowId);
             }
             const plyStep = new PlyStep(step.step, requestSuite, this.logger, this.plyFlow.flow.path, '', subflow);
+            this.emitter?.emit('flow', this.plyFlow.flowEvent('start', 'step', plyStep.instance));
             const result = await plyStep.run(this.runtime, runOptions);
+            if (result.status === 'Failed' || result.status === 'Errored') {
+                this.emitter?.emit('flow', this.plyFlow.flowEvent('error', 'step', plyStep.instance));
+            } else {
+                this.emitter?.emit('flow', this.plyFlow.flowEvent('finish', 'step', plyStep.instance));
+            }
             if (step.step.path !== 'request') {
                 super.logOutcome(
                     step,

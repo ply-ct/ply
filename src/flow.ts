@@ -274,17 +274,25 @@ export class PlyFlow implements Flow {
         }
     }
 
-    emit(
+    flowEvent(
         eventType: flowbee.FlowEventType,
         elementType: flowbee.FlowElementType,
         instance: flowbee.FlowInstance | flowbee.SubflowInstance | flowbee.StepInstance
-    ) {
-        this._onFlow.emit({
+    ): flowbee.FlowEvent {
+        return {
             eventType,
             elementType,
             flowPath: this.flow.path,
             flowInstanceId: this.instance.id,
             instance
-        });
+        };
+    }
+
+    private emit(
+        eventType: flowbee.FlowEventType,
+        elementType: flowbee.FlowElementType,
+        instance: flowbee.FlowInstance | flowbee.SubflowInstance | flowbee.StepInstance
+    ) {
+        this._onFlow.emit(this.flowEvent(eventType, elementType, instance));
     }
 }
