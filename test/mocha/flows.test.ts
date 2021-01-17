@@ -8,7 +8,11 @@ const values = {
     baseUrl: 'http://localhost:3000/movies',
     year: 1931,
     rating: 5,
-    query: 'year=1935&rating=>4&sort=rating&descending=true'
+    queries: {
+        highlyRated1935: "year=1935&rating=>4&sort=rating&descending=true",
+        tipTop1935: "year=1935&sort=rating&descending=true&max=1",
+        poorlyRated1932: "year=1932&rating=<=2"
+  }
 };
 
 describe('Flows', async () => {
