@@ -22,6 +22,7 @@ pre.highlight {
   background-color: #eceff1;
   background: #eceff1;
   border: 1px solid lightgray;
+  margin-top: 3px;
   margin-bottom: 15px;
   max-height: 400px;
 }
@@ -50,6 +51,9 @@ ul {
 }
 li {
   margin-bottom: 3px;
+}
+li > img {
+  margin: 3px 0;
 }
 li > ul {
   top: 1px;
@@ -262,7 +266,7 @@ li > ul {
 .icon-img {
   position: absolute;
   width: 24px;
-  margin-left: 5px;
+  margin: 0 5px;
 }
 .site-footer {
 }
