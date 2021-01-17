@@ -48,6 +48,9 @@ ul {
   top: -7px;
   margin-bottom: 8px;
 }
+li {
+  margin-bottom: 3px;
+}
 li > ul {
   top: 1px;
 }
@@ -256,6 +259,11 @@ li > ul {
 .topic-heading {
   margin-bottom: 8px;
 }
+.icon-img {
+  position: absolute;
+  width: 24px;
+  margin-left: 5px;
+}
 .site-footer {
 }
 .site code {
@@ -298,7 +306,7 @@ h6:hover .header-link {
 	padding: 2px 4px;
 	border: 1px solid gray;
   border-radius: 3px 0 0 3px;
-  min-width: 325px;
+  min-width: 350px;
 }
 .copy-btn {
   font-family: monospace;

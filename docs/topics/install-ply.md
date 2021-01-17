@@ -16,7 +16,7 @@ ply --version
 ```
 npm install --save-dev ply-ct
 ```
-Then you should run ply in your project directory through `npx`:
+Then you can run ply in your project directory through `npx`:
 ```
 npx ply --version
 ```
