@@ -44,10 +44,6 @@ export class PlyRequest implements Request, PlyTest {
         this.method = obj.method.trim();
         this.headers = obj.headers || {};
         this.body = obj.body;
-        if (typeof this.body === 'string' && this.body.startsWith('{') && this.body.endsWith('}')) {
-            // json escaping
-            // this.body = this.body.replace(/\\/g, '\\\\');
-        }
         this.start = obj.start || 0;
         this.end = obj.end;
     }
