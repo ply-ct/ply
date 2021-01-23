@@ -58,7 +58,7 @@ The idea of Ply is to test an API by submitting HTTP requests and validating res
 1. Remove the link joining Start to Stop by selecting it and hitting the Delete key.
 1. From Ply's toolbox view to the right of our diagram, drag in the step that's labeled *Request*. Position it somewhere
    between Start and Stop.
-1. Double-click on this "New Request" step to rename it "Get Dracula" (it should adopt a blue background, enabling you edit its name).
+1. Double-click on this "New Request" step to rename it "Get Dracula" (it should adopt a blue background, enabling you to edit its name).
 1. You'll notice that Ply Configurator also popped up when you double clicked. After renaming, select "Get Dracula" again so that 
    it shows up in Configurator. Then enter this for its URL: {% include copy_to_clipboard.html text="https://ply-ct.com/movies?title=Dracula" %}  
    <img src="../img/get-dracula.png" alt="Get Dracula" width="971px">  
