@@ -145,21 +145,6 @@ export class Postman implements Importer {
         return request;
     }
 
-    private isJson(postmanRequest: any, bodyContent: string): boolean {
-        if (postmanRequest.body?.options?.raw?.language === 'json') {
-            return true;
-        }
-        if (bodyContent.startsWith('{') && bodyContent.endsWith('}')) {
-            try {
-                JSON.parse(bodyContent);
-                return true;
-            } catch (err) {
-                this.logger.debug(`Request not parseable as JSON: ${err.message}`);
-            }
-        }
-        return false;
-    }
-
     private replaceExpressions(input: string): string {
         return input.replace(/\{\{(.*?)}}/g, function(_a, b) {
             return '${' + b + '}';

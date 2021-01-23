@@ -38,7 +38,7 @@ export class PlyResponse implements Response {
         });
 
         let body = this.body;
-        if (typeof body === 'string' && body.startsWith('{')) {
+        if (typeof body === 'string' && (body.startsWith('{') || body.startsWith('['))) {
             try {
                 body = JSON.parse(body);
             } catch (err) {
