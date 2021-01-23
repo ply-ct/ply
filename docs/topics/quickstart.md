@@ -88,17 +88,20 @@ The idea of Ply is to test an API by submitting HTTP requests and validating res
 1. To fix this, scroll to the top of the (left-hand) expected editor, and click the [Code Lens](https://code.visualstudio.com/blogs/2017/02/12/code-lens-roundup)
    labeled "Open result file". (The full expected result file includes outcomes for Start and Stop, so the line numbers are different from 
    the "Get Dracula" result fragment.) Remove the 'date' header (all of line 18). In fact, remove these header lines as well:
-     - 'connection'
-     - 'content-length'
-     - 'etag'
-     - 'server'
-     - 'x-powered-by'  
+     - connection
+     - content-length
+     - etag
+     - server
+     - x-powered-by  
    
    You're left with just 'content-type', which is the only response header we care about matching. When Ply submits a request, for
    comparison it only captures response headers that appear in expected results. This makes it convenient to exclude unimportant headers.
 1. Save and close the expected results and comparison editors; then re-run get-movies.ply.flow. This time it should succeed.
 
 ## Reference previous results in a downstream step
+TODO
+
+## Add runtime values to a flow
 TODO
 
 <br><br><br><br>
