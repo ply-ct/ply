@@ -178,12 +178,10 @@ export class Config {
             alias: 't'
         },
         requestFiles: {
-            describe: 'Request files glob pattern',
-            alias: 'r'
+            describe: 'Request files glob pattern'
         },
         caseFiles: {
-            describe: 'Case files glob pattern',
-            alias: 'c'
+            describe: 'Case files glob pattern'
         },
         ignore: {
             describe: 'File patterns to ignore'
@@ -226,7 +224,6 @@ export class Config {
         },
         import: {
             describe: 'Import requests/values from (\'postman\')',
-            alias: 'i',
             type: 'string'
         },
         create: {
@@ -263,8 +260,9 @@ export class Config {
     private load(defaults: PlyOptions, commandLine: boolean, configPath?: string) : PlyOptions {
         let opts: any;
         if (commandLine) {
-            // TODO config passed on command line
-            if (!configPath && yargs.argv.config) {
+            // help pre-check to avoid premature yargs parsing
+            const needsHelp = process.argv.length > 2 && process.argv[2] === '--help';
+            if (!configPath && !needsHelp && yargs.argv.config) {
                 configPath = '' + yargs.argv.config;
                 console.debug(`Loading config from ${configPath}`);
             }
