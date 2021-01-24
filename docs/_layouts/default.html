@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="{{ page.lang | default: site.lang | default: "en" }}">
   {% assign navgroup = page.url | remove_first: '/' | split: '/' | first %}
+  {% assign navpage = page.url | remove_first: '/' | split: '/' | last | split: '.' | first %}
 
   {% include head.html %}
+
 
   <header class="site-header" role="banner">
     {% include header.html %}

@@ -2,4 +2,44 @@ repository: "ply-ct/ply"
 theme: minima
 markdown: kramdown
 highlighter: rouge
+
 baseurl: /ply
+topics:
+  - category: Start
+    topics:
+      - label: Quickstart
+        nav: quickstart
+        tags: introduction, start, flow, create, build, design, run
+      - label: Install Ply
+        nav: install-ply
+        tags: installation, npm, node, npx, ply-movies, movies, download
+      - label: VS Code Ply
+        nav: vscode-ply
+        tags: visual studio, marketplace, installation
+  - category: Create
+    topics:
+      - label: Requests
+        nav: requests
+        tags: url, method, headers, body, yaml, yml, demo, graphql, test, suite, movie
+      - label: Results
+        nav: results
+        tags: response, headers, body, expected, expression, placeholder, expected, actual, substitution, regular, regex, yaml, yml, previous, pass, fail
+      - label: Values
+        nav: values
+        tags: parameter, dynamic, properties, json, file
+      - label: Flows
+        nav: flows
+      - label: Cases
+        nav: cases
+        tags: typescript, decorator, before, after, test, suite, @test, @suite, movieCrud, chai, programmatic, code, debug, skipped
+      - label: Postman
+        nav: postman
+        tags: import, json, vs, code, echo, collection
+  - category: Run
+    topics:
+      - label: CLI
+        nav: cli
+        tags: command, line, interface, arguments, options, run, verbose
+      - label: Config
+        nav: config
+        tags: options, location, plyconfig, plyconfig.json, plyconfig.yaml, plyconfig.yml, ignored, skipped

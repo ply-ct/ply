@@ -1,0 +1,16 @@
+/* custom styles for api docs */
+.tsd-index-panel a, .tsd-index-panel .tsd-parent-kind-module a {
+  color: #148F9B;
+}
+.tsd-page-title {
+  display: none;
+}
+.title {
+  display: none;
+}
+.container-main {
+  padding-top: 15px;
+}
+.tsd-kind-icon:before {
+  opacity: .75;
+}

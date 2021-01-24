@@ -2,7 +2,6 @@
 layout: page
 ---
 
-
 <h2>API Automated Testing
 <div>
 <a href="https://ply-ct.github.io/ply/topics/requests">
@@ -11,7 +10,31 @@ layout: page
 </div>
 </h2>
 
-Ply is simply a more intuitive way of autotesting your REST and GraphQL APIs. Start with a YAML file describing your requests. Run Ply to submit these requests and compare actual results against expected, with template literal placeholders for dynamic values. The Ply extension gives you a side-by-side diff view so you can compare results at a glance.
+Ply is simply a more intuitive way of autotesting your REST and GraphQL APIs. Here are Ply's chief selling points at a glance:
+1. Something here
+1. Something else here
+1. Lastly something here
+
+
+
+## Autotesting Capabilities
+
+|                     |Ply                     |Postman                 |Insomnia                |REST-Assured            |SOAtest                 |ReadyAPI                 |
+|:---------------------|:----------------------:|:----------------------:|:----------------------:|:----------------------:|:----------------------:|:----------------------:|
+|Open Source           |<span class="y">✓</span>|<span class="n">✗</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="n">✗</span>|<span class="n">✗</span>|
+|Graphical Flows       |<span class="y">✓</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|
+|Side-by-Side Results  |<span class="y">✓</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|
+|Auto-Generate Results |<span class="y">✓</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|
+|GraphQL Support       |<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="y">✓</span>|
+|Dynamic Values        |<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|
+|Previous Response Vals|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|
+|Regular Expressions   |<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|
+|Low Code              |<span class="y">✓</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|
+|Import from Postman   |<span class="y">✓</span>|<span class="y">-</span>|<span class="y">✓</span>|<span class="n">✗</span>|<span class="y">✓</span>|<span class="y">✓</span>|
+|Expect/Assert         |<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|
+|VS Code Extension     |<span class="y">✓</span>|<span class="y">✓</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|
+
+Start with a YAML file describing your requests. Run Ply to submit these requests and compare actual results against expected, with template literal placeholders for dynamic values. The Ply extension gives you a side-by-side diff view so you can compare results at a glance.
 
 <div>
   <img src="img/diff.png" width="945" alt="Diff" />

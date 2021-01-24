@@ -7,6 +7,7 @@
 	<meta name="description" content="Documentation for ply">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
+	<script async src="assets/js/search.js" id="search-script"></script>
 </head>
 <body>
 <header>
@@ -49,11 +50,6 @@
 	</div>
 	<div class="tsd-page-title">
 		<div class="container">
-			<ul class="tsd-breadcrumb">
-				<li>
-					<a href="globals.html">Globals</a>
-				</li>
-			</ul>
 			<h1>ply</h1>
 		</div>
 	</div>
@@ -84,26 +80,30 @@
 				<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
 					<h2>Installation</h2>
 				</a>
-				<pre><code>npm install ply-ct --<span class="hljs-built_in">save</span>-<span class="hljs-built_in">dev</span></code></pre>
+				<pre><code><span style="color: #001080">npm</span><span style="color: #000000"> </span><span style="color: #001080">install</span><span style="color: #000000"> </span><span style="color: #001080">ply</span><span style="color: #000000">-</span><span style="color: #001080">ct</span><span style="color: #000000"> --</span><span style="color: #001080">save</span><span style="color: #000000">-</span><span style="color: #001080">dev</span>
+</code></pre>
 				<p>Or, to run anywhere:</p>
-				<pre><code>npm <span class="hljs-keyword">install</span> -g ply-ct</code></pre>
+				<pre><code><span style="color: #001080">npm</span><span style="color: #000000"> </span><span style="color: #001080">install</span><span style="color: #000000"> -</span><span style="color: #001080">g</span><span style="color: #000000"> </span><span style="color: #001080">ply</span><span style="color: #000000">-</span><span style="color: #001080">ct</span>
+</code></pre>
 				<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
 					<h2>Usage</h2>
 				</a>
 				<p>Ply API testing starts with a YAML file containing requests. Here&#39;s a GET request to retrieve
 					topics for the <a href="https://github.com/ply-ct/ply-demo">ply-demo</a> repository using
 				<a href="https://developer.github.com/v3/repos/#get-all-repository-topics">GitHub API</a> v3:</p>
-				<pre><code class="language-yaml"><span class="hljs-attr">repositoryTopics:</span>
-  <span class="hljs-attr">url:</span> <span class="hljs-string">&#x27;https://api.github.com/repos/ply-ct/ply-demo/topics&#x27;</span>
-  <span class="hljs-attr">method:</span> <span class="hljs-string">GET</span>
-  <span class="hljs-attr">headers:</span>
-    <span class="hljs-attr">Accept:</span> <span class="hljs-string">application/vnd.github.mercy-preview+json</span></code></pre>
+				<pre><code class="language-yaml"><span style="color: #800000">repositoryTopics</span><span style="color: #000000">:</span>
+<span style="color: #000000">  </span><span style="color: #800000">url</span><span style="color: #000000">: </span><span style="color: #0000FF">&#039;https://api.github.com/repos/ply-ct/ply-demo/topics&#039;</span>
+<span style="color: #000000">  </span><span style="color: #800000">method</span><span style="color: #000000">: </span><span style="color: #0000FF">GET</span>
+<span style="color: #000000">  </span><span style="color: #800000">headers</span><span style="color: #000000">:</span>
+<span style="color: #000000">    </span><span style="color: #800000">Accept</span><span style="color: #000000">: </span><span style="color: #0000FF">application/vnd.github.mercy-preview+json</span>
+</code></pre>
 				<a href="#run-a-request" id="run-a-request" style="color: inherit; text-decoration: none;">
 					<h3>Run a request</h3>
 				</a>
 				<p>Suppose you save this in a file named &quot;github.ply.yml&quot;. Then you can submit the
 				<code>repositoryTopics</code> request from a command line by typing:</p>
-				<pre><code><span class="hljs-selector-tag">ply</span> <span class="hljs-selector-tag">-x</span> <span class="hljs-selector-tag">github</span><span class="hljs-selector-class">.ply</span><span class="hljs-selector-class">.yml</span></code></pre>
+				<pre><code><span style="color: #001080">ply</span><span style="color: #000000"> -</span><span style="color: #001080">x</span><span style="color: #000000"> </span><span style="color: #001080">github</span><span style="color: #000000">.</span><span style="color: #001080">ply</span><span style="color: #000000">.</span><span style="color: #001080">yml</span>
+</code></pre>
 				<p>The <code>-x</code> argument tells Ply not to verify the response (<code>-s</code> is short for <code>--submit</code>,
 				meaning submit an <em>ad hoc</em> request and don&#39;t bother with verification).</p>
 				<a href="#verify-response" id="verify-response" style="color: inherit; text-decoration: none;">
@@ -112,11 +112,13 @@
 				<p>If you run without <code>-x</code> you&#39;ll get an error saying, &quot;Expected result file not found&quot;. Ply verification
 					works by comparing expected vs actual. So a complete test requires an expected result file. Run again
 				with <code>--create</code>, and the expected result file will be created from the actual response.</p>
-				<pre><code><span class="hljs-selector-tag">ply</span> <span class="hljs-selector-tag">--create</span> <span class="hljs-selector-tag">github</span><span class="hljs-selector-class">.ply</span><span class="hljs-selector-class">.yml</span></code></pre>
+				<pre><code><span style="color: #001080">ply</span><span style="color: #000000"> --</span><span style="color: #001080">create</span><span style="color: #000000"> </span><span style="color: #001080">github</span><span style="color: #000000">.</span><span style="color: #001080">ply</span><span style="color: #000000">.</span><span style="color: #001080">yml</span>
+</code></pre>
 				<p>Output looks like this:</p>
-				<pre><code>Request &#x27;repositoryTopics&#x27; submitted at 8/28/2020, 10:54:40:667
-Creating expected result: ./results/expected/github.yml
-<span class="hljs-keyword">Test </span>&#x27;repositoryTopics&#x27; PASSED in 303 ms</code></pre>
+				<pre><code><span style="color: #001080">Request</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;repositoryTopics&#039;</span><span style="color: #000000"> </span><span style="color: #001080">submitted</span><span style="color: #000000"> </span><span style="color: #001080">at</span><span style="color: #000000"> </span><span style="color: #098658">8</span><span style="color: #000000">/</span><span style="color: #098658">28</span><span style="color: #000000">/</span><span style="color: #098658">2020</span><span style="color: #000000">, </span><span style="color: #098658">10</span><span style="color: #000000">:</span><span style="color: #098658">54</span><span style="color: #000000">:</span><span style="color: #098658">40</span><span style="color: #000000">:</span><span style="color: #098658">667</span>
+<span style="color: #001080">Creating</span><span style="color: #000000"> </span><span style="color: #001080">expected</span><span style="color: #000000"> result: ./</span><span style="color: #001080">results</span><span style="color: #000000">/</span><span style="color: #001080">expected</span><span style="color: #000000">/</span><span style="color: #001080">github</span><span style="color: #000000">.</span><span style="color: #001080">yml</span>
+<span style="color: #001080">Test</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;repositoryTopics&#039;</span><span style="color: #000000"> </span><span style="color: #0070C1">PASSED</span><span style="color: #000000"> </span><span style="color: #0000FF">in</span><span style="color: #000000"> </span><span style="color: #098658">303</span><span style="color: #000000"> </span><span style="color: #001080">ms</span>
+</code></pre>
 				<p>During execution Ply submits the request and writes <strong>actual</strong> result file &quot;./results/actual/github.yml&quot;
 					based on the response. Because of <code>--create</code>, Ply then copies the actual result over <strong>expected</strong> result file &quot;./results/expected/github.yml&quot;
 				before comparing. This test naturally passes since the results are identical.</p>
@@ -126,31 +128,32 @@ Creating expected result: ./results/expected/github.yml
 				<p>Auto-creating an expected result provides a good starting point. But looking at &quot;./results/expected/github.yml&quot;,
 					you&#39;ll notice that it includes many response headers that are not of interest for testing purposes. Here&#39;s a
 				cleaned-up version of similar expected results from <a href="https://github.com/ply-ct/ply-demo/blob/master/test/requests/github-api.ply.yaml#L1">ply-demo</a>:</p>
-				<pre><code class="language-yaml"><span class="hljs-attr">repositoryTopics:</span>
-  <span class="hljs-attr">request:</span>
-    <span class="hljs-attr">url:</span> <span class="hljs-string">&#x27;https://api.github.com/repos/${github.organization}/${github.repository}/topics&#x27;</span>
-    <span class="hljs-attr">method:</span> <span class="hljs-string">GET</span>
-    <span class="hljs-attr">headers:</span>
-      <span class="hljs-attr">Accept:</span> <span class="hljs-string">application/vnd.github.mercy-preview+json</span>
-  <span class="hljs-attr">response:</span>
-    <span class="hljs-attr">status:</span>
-      <span class="hljs-attr">code:</span> <span class="hljs-number">200</span>
-      <span class="hljs-attr">message:</span> <span class="hljs-string">OK</span>
-    <span class="hljs-attr">headers:</span>
-      <span class="hljs-attr">content-type:</span> <span class="hljs-string">application/json;</span> <span class="hljs-string">charset=utf-8</span>
-      <span class="hljs-attr">status:</span> <span class="hljs-number">200</span> <span class="hljs-string">OK</span>
-    <span class="hljs-attr">body:</span> <span class="hljs-string">|-
-      {
-        &quot;names&quot;: [
-          &quot;rest-api&quot;,
-          &quot;testing&quot;,
-          &quot;ply&quot;,
-          &quot;example-project&quot;,
-          &quot;graphql&quot;,
-          &quot;typescript&quot;,
-          &quot;github-workflow&quot;
-        ]
-      }</span></code></pre>
+				<pre><code class="language-yaml"><span style="color: #800000">repositoryTopics</span><span style="color: #000000">:</span>
+<span style="color: #000000">  </span><span style="color: #800000">request</span><span style="color: #000000">:</span>
+<span style="color: #000000">    </span><span style="color: #800000">url</span><span style="color: #000000">: </span><span style="color: #0000FF">&#039;https://api.github.com/repos/${github.organization}/${github.repository}/topics&#039;</span>
+<span style="color: #000000">    </span><span style="color: #800000">method</span><span style="color: #000000">: </span><span style="color: #0000FF">GET</span>
+<span style="color: #000000">    </span><span style="color: #800000">headers</span><span style="color: #000000">:</span>
+<span style="color: #000000">      </span><span style="color: #800000">Accept</span><span style="color: #000000">: </span><span style="color: #0000FF">application/vnd.github.mercy-preview+json</span>
+<span style="color: #000000">  </span><span style="color: #800000">response</span><span style="color: #000000">:</span>
+<span style="color: #000000">    </span><span style="color: #800000">status</span><span style="color: #000000">:</span>
+<span style="color: #000000">      </span><span style="color: #800000">code</span><span style="color: #000000">: </span><span style="color: #098658">200</span>
+<span style="color: #000000">      </span><span style="color: #800000">message</span><span style="color: #000000">: </span><span style="color: #0000FF">OK</span>
+<span style="color: #000000">    </span><span style="color: #800000">headers</span><span style="color: #000000">:</span>
+<span style="color: #000000">      </span><span style="color: #800000">content-type</span><span style="color: #000000">: </span><span style="color: #0000FF">application/json; charset=utf-8</span>
+<span style="color: #000000">      </span><span style="color: #800000">status</span><span style="color: #000000">: </span><span style="color: #0000FF">200 OK</span>
+<span style="color: #000000">    </span><span style="color: #800000">body</span><span style="color: #000000">: </span><span style="color: #AF00DB">|</span><span style="color: #0000FF">-</span>
+<span style="color: #0000FF">      {</span>
+<span style="color: #0000FF">        &quot;names&quot;: [</span>
+<span style="color: #0000FF">          &quot;rest-api&quot;,</span>
+<span style="color: #0000FF">          &quot;testing&quot;,</span>
+<span style="color: #0000FF">          &quot;ply&quot;,</span>
+<span style="color: #0000FF">          &quot;example-project&quot;,</span>
+<span style="color: #0000FF">          &quot;graphql&quot;,</span>
+<span style="color: #0000FF">          &quot;typescript&quot;,</span>
+<span style="color: #0000FF">          &quot;github-workflow&quot;</span>
+<span style="color: #0000FF">        ]</span>
+<span style="color: #0000FF">      }</span>
+</code></pre>
 				<p>The subset of response headers included in expected results YAML are those we care about for comparison.
 				In this test, body content is our main concern.</p>
 				<a href="#expressions" id="expressions" style="color: inherit; text-decoration: none;">
@@ -162,7 +165,8 @@ Creating expected result: ./results/expected/github.yml
 				as described in the docs under <a href="https://ply-ct.github.io/ply/topics/values">Values</a>.</p>
 				<p>Even more powerfully, your multi-request suites can embed expressions that reference runtime values from previous responses.
 				For instance, the URL or body of a subsequent request in our github.ply.yml file could have something like this:</p>
-				<pre><code>${@repositoryTopics<span class="hljs-selector-class">.response</span><span class="hljs-selector-class">.body</span><span class="hljs-selector-class">.names</span>[<span class="hljs-number">0</span>]</code></pre>
+				<pre><code><span style="color: #001080">$</span><span style="color: #000000">{@</span><span style="color: #001080">repositoryTopics</span><span style="color: #000000">.</span><span style="color: #001080">response</span><span style="color: #000000">.</span><span style="color: #001080">body</span><span style="color: #000000">.</span><span style="color: #001080">names</span><span style="color: #000000">[</span><span style="color: #098658">0</span><span style="color: #000000">]</span>
+</code></pre>
 				<p>which uses the special <code>@</code> character to reference the first topic name from above (resolving to &#39;rest-api&#39;).
 					This enables you to string together sequential requests that each depend on response output from preceding ones.
 				Check out the <a href="https://ply-ct.github.io/ply/topics/results">Results</a> topic for details and examples.</p>
@@ -173,22 +177,25 @@ Creating expected result: ./results/expected/github.yml
 					Implement a Ply <a href="https://ply-ct.github.io/ply/topics/cases">case</a> suite using TypeScript for programmatic
 					access to your requests/responses. Here&#39;s <a href="https://github.com/ply-ct/ply-demo/blob/master/test/cases/movieCrud.ply.ts#L31">add new movie</a>
 				from ply-demo:</p>
-				<pre><code class="language-typescript"><span class="hljs-meta">@test</span>(<span class="hljs-string">&#x27;add new movie&#x27;</span>)
-<span class="hljs-keyword">async</span> createMovie(values: <span class="hljs-built_in">any</span>) {
-    <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> <span class="hljs-built_in">this</span>.requestSuite.run(<span class="hljs-string">&#x27;createMovie&#x27;</span>, values);
-    assert.exists(result.response);
-    assert.exists(result.response?.body);
-    <span class="hljs-comment">// capture movie id from response -- used in downstream values</span>
-    <span class="hljs-built_in">this</span>.movieId = result.response?.body?.id;
-    <span class="hljs-built_in">this</span>.requestSuite.log.info(<span class="hljs-string">`Created movie: id=<span class="hljs-subst">${<span class="hljs-built_in">this</span>.movieId}</span>`</span>);
-}</code></pre>
+				<pre><code class="language-typescript"><span style="color: #000000">@</span><span style="color: #795E26">test</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;add new movie&#039;</span><span style="color: #000000">)</span>
+<span style="color: #001080">async</span><span style="color: #000000"> </span><span style="color: #795E26">createMovie</span><span style="color: #000000">(</span><span style="color: #001080">values</span><span style="color: #000000">: </span><span style="color: #001080">any</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">result</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">requestSuite</span><span style="color: #000000">.</span><span style="color: #795E26">run</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;createMovie&#039;</span><span style="color: #000000">, </span><span style="color: #001080">values</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #001080">assert</span><span style="color: #000000">.</span><span style="color: #795E26">exists</span><span style="color: #000000">(</span><span style="color: #001080">result</span><span style="color: #000000">.</span><span style="color: #001080">response</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #001080">assert</span><span style="color: #000000">.</span><span style="color: #795E26">exists</span><span style="color: #000000">(</span><span style="color: #001080">result</span><span style="color: #000000">.</span><span style="color: #001080">response</span><span style="color: #000000">?.</span><span style="color: #001080">body</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #008000">// capture movie id from response -- used in downstream values</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">movieId</span><span style="color: #000000"> = </span><span style="color: #001080">result</span><span style="color: #000000">.</span><span style="color: #001080">response</span><span style="color: #000000">?.</span><span style="color: #001080">body</span><span style="color: #000000">?.</span><span style="color: #001080">id</span><span style="color: #000000">;</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">requestSuite</span><span style="color: #000000">.</span><span style="color: #001080">log</span><span style="color: #000000">.</span><span style="color: #795E26">info</span><span style="color: #000000">(</span><span style="color: #A31515">`Created movie: id=</span><span style="color: #0000FF">${</span><span style="color: #0000FF">this</span><span style="color: #000000FF">.</span><span style="color: #001080">movieId</span><span style="color: #0000FF">}</span><span style="color: #A31515">`</span><span style="color: #000000">);</span>
+<span style="color: #000000">}</span>
+</code></pre>
 				<p>Applying the <code>@test</code> decorator to a method automatically makes it a Ply case. At this point <code>this.requestSuite</code> has already
 				been loaded from request YAML (in the case suite&#39;s constructor):</p>
-				<pre><code class="language-typescript"><span class="hljs-built_in">this</span>.requestSuite = ply.loadSuiteSync(<span class="hljs-string">&#x27;test/requests/movies-api.ply.yaml&#x27;</span>);</code></pre>
+				<pre><code class="language-typescript"><span style="color: #0000FF">this</span><span style="color: #000000">.</span><span style="color: #001080">requestSuite</span><span style="color: #000000"> = </span><span style="color: #001080">ply</span><span style="color: #000000">.</span><span style="color: #795E26">loadSuiteSync</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;test/requests/movies-api.ply.yaml&#039;</span><span style="color: #000000">);</span>
+</code></pre>
 				<p>Then in <code>createMovie()</code> above, the request named &#39;createMovie&#39; from movies-api.ply.yaml is invoked by calling Ply&#39;s API
 				method <a href="https://ply-ct.github.io/ply/api-docs/classes/suite.html#run">Suite.run()</a>.</p>
 				<p>Running a case suite from the command line is similar to running a request suite:</p>
-				<pre><code>ply test<span class="hljs-regexp">/cases/m</span>ovieCrud.ply.ts</code></pre>
+				<pre><code><span style="color: #001080">ply</span><span style="color: #000000"> </span><span style="color: #001080">test</span><span style="color: #000000">/</span><span style="color: #001080">cases</span><span style="color: #000000">/</span><span style="color: #001080">movieCrud</span><span style="color: #000000">.</span><span style="color: #001080">ply</span><span style="color: #000000">.</span><span style="color: #001080">ts</span>
+</code></pre>
 				<p>This executes all cases in movieCrud.ply.ts (in the order they&#39;re declared), and compiles actual results from all requests
 					into a file named after the <code>@suite</code> (&quot;movie-crud.yaml&quot;). At the end of the run, actual results are compared against expected
 				to determine whether the suite has passed. </p>
@@ -197,27 +204,28 @@ Creating expected result: ./results/expected/github.yml
 				</a>
 				<p>Body content in request YAML can be any text payload (typically JSON). GraphQL syntax is also supported, as in this
 				example which queries the <a href="https://docs.github.com/en/graphql">GitHub GraphQL API</a> for ply-demo repository topics: </p>
-				<pre><code class="language-yaml"><span class="hljs-attr">repositoryTopicsQuery:</span>
-  <span class="hljs-attr">url:</span> <span class="hljs-string">&#x27;https://api.github.com/graphql&#x27;</span>
-  <span class="hljs-attr">method:</span> <span class="hljs-string">POST</span>
-  <span class="hljs-attr">headers:</span>
-    <span class="hljs-attr">Authorization:</span> <span class="hljs-string">Bearer</span> <span class="hljs-string">${githubToken}</span>
-    <span class="hljs-attr">Content-Type:</span> <span class="hljs-string">application/json</span>
-    <span class="hljs-attr">User-Agent:</span> <span class="hljs-string">${github.organization}</span>
-  <span class="hljs-attr">body:</span> <span class="hljs-string">|-
-    query {
-      repository(owner: &quot;${github.organization}&quot;, name: &quot;${github.repository}&quot;) {
-        repositoryTopics(first: 10) {
-          edges {
-            node {
-              topic {
-                name
-              }
-            }
-          }
-        }
-      }
-    }</span></code></pre>
+				<pre><code class="language-yaml"><span style="color: #800000">repositoryTopicsQuery</span><span style="color: #000000">:</span>
+<span style="color: #000000">  </span><span style="color: #800000">url</span><span style="color: #000000">: </span><span style="color: #0000FF">&#039;https://api.github.com/graphql&#039;</span>
+<span style="color: #000000">  </span><span style="color: #800000">method</span><span style="color: #000000">: </span><span style="color: #0000FF">POST</span>
+<span style="color: #000000">  </span><span style="color: #800000">headers</span><span style="color: #000000">:</span>
+<span style="color: #000000">    </span><span style="color: #800000">Authorization</span><span style="color: #000000">: </span><span style="color: #0000FF">Bearer ${githubToken}</span>
+<span style="color: #000000">    </span><span style="color: #800000">Content-Type</span><span style="color: #000000">: </span><span style="color: #0000FF">application/json</span>
+<span style="color: #000000">    </span><span style="color: #800000">User-Agent</span><span style="color: #000000">: </span><span style="color: #0000FF">${github.organization}</span>
+<span style="color: #000000">  </span><span style="color: #800000">body</span><span style="color: #000000">: </span><span style="color: #AF00DB">|</span><span style="color: #0000FF">-</span>
+<span style="color: #0000FF">    query {</span>
+<span style="color: #0000FF">      repository(owner: &quot;${github.organization}&quot;, name: &quot;${github.repository}&quot;) {</span>
+<span style="color: #0000FF">        repositoryTopics(first: 10) {</span>
+<span style="color: #0000FF">          edges {</span>
+<span style="color: #0000FF">            node {</span>
+<span style="color: #0000FF">              topic {</span>
+<span style="color: #0000FF">                name</span>
+<span style="color: #0000FF">              }</span>
+<span style="color: #0000FF">            }</span>
+<span style="color: #0000FF">          }</span>
+<span style="color: #0000FF">        }</span>
+<span style="color: #0000FF">      }</span>
+<span style="color: #0000FF">    }</span>
+</code></pre>
 				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
 					<h2>Documentation</h2>
 				</a>
@@ -242,280 +250,109 @@ Creating expected result: ./results/expected/github.yml
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 			<nav class="tsd-navigation primary">
 				<ul>
-					<li class="globals  ">
-						<a href="globals.html"><em>Globals</em></a>
+					<li class=" ">
+						<a href="modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/case.html">case</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/cases.html">cases</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/cli.html">cli</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/code.html">code</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/compare.html">compare</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/compile.html">compile</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/decorators.html">decorators</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/event.html">event</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/flow.html">flow</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/flows.html">flows</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/import.html">import</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/index.html">index</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/location.html">location</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/logger.html">logger</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/names.html">names</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/options.html">options</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/ply.html">ply</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/request.html">request</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/requests.html">requests</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/response.html">response</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/result.html">result</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/retrieval.html">retrieval</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/runtime.html">runtime</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/skip.html">skip</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/step.html">step</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/storage.html">storage</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/subst.html">subst</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/suite.html">suite</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/test.html">test</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/util.html">util</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/values.html">values</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/yaml.html">yaml</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-enum">
-						<a href="enums/loglevel.html" class="tsd-kind-icon">Log<wbr>Level</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/caseloader.html" class="tsd-kind-icon">Case<wbr>Loader</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/code.html" class="tsd-kind-icon">Code</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/compare.html" class="tsd-kind-icon">Compare</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/config.html" class="tsd-kind-icon">Config</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/decoratedsuite.html" class="tsd-kind-icon">Decorated<wbr>Suite</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/defaults.html" class="tsd-kind-icon">Defaults</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/import.html" class="tsd-kind-icon">Import</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/location.html" class="tsd-kind-icon">Location</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/logoptions.html" class="tsd-kind-icon">Log<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/logger.html" class="tsd-kind-icon">Logger</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/plier.html" class="tsd-kind-icon">Plier</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/ply.html" class="tsd-kind-icon">Ply</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/plycase.html" class="tsd-kind-icon">Ply<wbr>Case</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/plyrequest.html" class="tsd-kind-icon">Ply<wbr>Request</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/plyresponse.html" class="tsd-kind-icon">Ply<wbr>Response</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/plyresult.html" class="tsd-kind-icon">Ply<wbr>Result</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/plyee.html" class="tsd-kind-icon">Plyee</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/postman.html" class="tsd-kind-icon">Postman</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/requestloader.html" class="tsd-kind-icon">Request<wbr>Loader</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/resultpaths.html" class="tsd-kind-icon">Result<wbr>Paths</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/retrieval.html" class="tsd-kind-icon">Retrieval</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/runtime.html" class="tsd-kind-icon">Runtime</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/skip.html" class="tsd-kind-icon">Skip</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/storage.html" class="tsd-kind-icon">Storage</a>
-					</li>
-					<li class=" tsd-kind-class tsd-has-type-parameter">
-						<a href="classes/suite.html" class="tsd-kind-icon">Suite</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/tscompileoptions.html" class="tsd-kind-icon">Ts<wbr>Compile<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/values.html" class="tsd-kind-icon">Values</a>
-					</li>
-					<li class=" tsd-kind-class">
-						<a href="classes/verifier.html" class="tsd-kind-icon">Verifier</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/after.html" class="tsd-kind-icon">After</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/before.html" class="tsd-kind-icon">Before</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/case.html" class="tsd-kind-icon">Case</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/casedecoration.html" class="tsd-kind-icon">Case<wbr>Decoration</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/importer.html" class="tsd-kind-icon">Importer</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/log.html" class="tsd-kind-icon">Log</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/options.html" class="tsd-kind-icon">Options</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/outcome.html" class="tsd-kind-icon">Outcome</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/outcomeevent.html" class="tsd-kind-icon">Outcome<wbr>Event</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/plyevent.html" class="tsd-kind-icon">Ply<wbr>Event</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/plyoptions.html" class="tsd-kind-icon">Ply<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/plytest.html" class="tsd-kind-icon">Ply<wbr>Test</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/request.html" class="tsd-kind-icon">Request</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/response.html" class="tsd-kind-icon">Response</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/result.html" class="tsd-kind-icon">Result</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/runoptions.html" class="tsd-kind-icon">Run<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/status.html" class="tsd-kind-icon">Status</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/suitedecoration.html" class="tsd-kind-icon">Suite<wbr>Decoration</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/suiteevent.html" class="tsd-kind-icon">Suite<wbr>Event</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/test.html" class="tsd-kind-icon">Test</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/testcase.html" class="tsd-kind-icon">Test<wbr>Case</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/testsuite.html" class="tsd-kind-icon">Test<wbr>Suite</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-has-type-parameter">
-						<a href="interfaces/tests.html" class="tsd-kind-icon">Tests</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="interfaces/yaml.html" class="tsd-kind-icon">Yaml</a>
-					</li>
-					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#callingcaseinfo" class="tsd-kind-icon">Calling<wbr>Case<wbr>Info</a>
-					</li>
-					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#classtarget" class="tsd-kind-icon">Class<wbr>Target</a>
-					</li>
-					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#codeline" class="tsd-kind-icon">Code<wbr>Line</a>
-					</li>
-					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#diff" class="tsd-kind-icon">Diff</a>
-					</li>
-					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#importformat" class="tsd-kind-icon">Import<wbr>Format</a>
-					</li>
-					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#marker" class="tsd-kind-icon">Marker</a>
-					</li>
-					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#plyeventlistener" class="tsd-kind-icon">Ply<wbr>Event<wbr>Listener</a>
-					</li>
-					<li class=" tsd-kind-type-alias">
-						<a href="globals.html#testtype" class="tsd-kind-icon">Test<wbr>Type</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#after" class="tsd-kind-icon">AFTER</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#before" class="tsd-kind-icon">BEFORE</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#ply_configs" class="tsd-kind-icon">PLY_<wbr>CONFIGS</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#ply_prefix" class="tsd-kind-icon">PLY_<wbr>PREFIX</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#ply_values" class="tsd-kind-icon">PLY_<wbr>VALUES</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#results" class="tsd-kind-icon">RESULTS</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#suite" class="tsd-kind-icon">SUITE</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#test" class="tsd-kind-icon">TEST</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#options" class="tsd-kind-icon">options</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#opts" class="tsd-kind-icon">opts</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#plier" class="tsd-kind-icon">plier</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#runoptions" class="tsd-kind-icon">run<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-variable">
-						<a href="globals.html#start" class="tsd-kind-icon">start</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#after" class="tsd-kind-icon">after</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#before" class="tsd-kind-icon">before</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#dump" class="tsd-kind-icon">dump</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#fwdslashes" class="tsd-kind-icon">fwd<wbr>Slashes</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#get" class="tsd-kind-icon">get</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#getendline" class="tsd-kind-icon">get<wbr>End<wbr>Line</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#getlines" class="tsd-kind-icon">get<wbr>Lines</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#lines" class="tsd-kind-icon">lines</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#load" class="tsd-kind-icon">load</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#locale" class="tsd-kind-icon">locale</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#newlines" class="tsd-kind-icon">newlines</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#replace" class="tsd-kind-icon">replace</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#suite" class="tsd-kind-icon">suite</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#test" class="tsd-kind-icon">test</a>
-					</li>
-					<li class=" tsd-kind-function">
-						<a href="globals.html#timestamp" class="tsd-kind-icon">timestamp</a>
-					</li>
 				</ul>
 			</nav>
 		</div>
@@ -526,19 +363,19 @@ Creating expected result: ./results/expected/github.yml
 		<h2>Legend</h2>
 		<div class="tsd-legend-group">
 			<ul class="tsd-legend">
-				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
 			</ul>
 			<ul class="tsd-legend">
-				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
 			</ul>
 		</div>
 	</div>

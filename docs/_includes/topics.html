@@ -1,62 +1,12 @@
-<h3 class="topic-heading">Start</h3>
+{% for t in site.topics %}
+<h3 class="topic-heading">{{ t.category }}</h3>
 <ul>
+  {% for topic in t.topics %}
   <li>
-    <a href="quickstart" {% if navpage=='quickstart' %}class="active-nav" {% endif %}>
-      Quickstart
+    <a href="{{ topic.nav }}" {% if navpage == topic.nav %} class="active-nav" {% endif %}>
+      {{ topic.label }}
     </a>
   </li>
+  {% endfor %}
 </ul>
-<h3 class="topic-heading">Install</h3>
-<ul>
-  <li>
-    <a href="install-ply" {% if navpage == 'install-ply' %}class="active-nav"{% endif %}>
-      Install Ply
-    </a>
-  </li>
-  <li>
-    <a href="vscode-ply" {% if navpage == 'vscode-ply' %}class="active-nav"{% endif %}>
-      VS Code Ply
-    </a>
-  </li>
-</ul>
-<h3 class="topic-heading">Build</h3>
-<ul>
-  <li>
-    <a href="requests" {% if navpage == 'requests' %}class="active-nav"{% endif %}>
-      Requests
-    </a>
-  </li>
-  <li>
-    <a href="results" {% if navpage == 'results' %}class="active-nav"{% endif %}>
-      Results
-    </a>
-  </li>
-  <li>
-    <a href="values" {% if navpage == 'values' %}class="active-nav"{% endif %}>
-      Values
-    </a>
-  </li>
-  <li>
-    <a href="cases" {% if navpage == 'cases' %}class="active-nav"{% endif %}>
-      Cases
-    </a>
-  </li>
-  <li>
-    <a href="postman" {% if navpage == 'postman' %}class="active-nav"{% endif %}>
-      Postman
-    </a>
-  </li>
-</ul>
-<h3 class="topic-heading">Run</h3>
-<ul>
-  <li>
-    <a href="cli" {% if navpage == 'cli' %}class="active-nav"{% endif %}>
-      CLI
-    </a>
-  </li>
-  <li>
-    <a href="config" {% if navpage == 'config' %}class="active-nav"{% endif %}>
-      Config
-    </a>
-  </li>
-</ul>
+{% endfor %}

@@ -1,0 +1,14 @@
+---
+layout: none
+---
+[
+  {% for t in site.topics %}
+    {% for topic in t.topics %}
+    {
+      "title": "{{ topic.label | escape }}",
+      "category": "{{ t.category }}",
+      "url": "{{ site.baseurl }}/topics/{{ topic.nav }}",
+      "tags": "{{ topic.tags }}"
+    }{% unless forloop.last %},{% endunless %}{% endfor %}{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+]
