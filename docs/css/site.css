@@ -11,6 +11,9 @@ h3 {
   font-size: 1.25em;
   margin-bottom: 10px;
 }
+h5 {
+  margin-top: 15px;
+}
 pre {
   font-size: 14px;
 }
@@ -165,6 +168,16 @@ li > ul {
   font-weight: 600;
   line-height: 1.1;
   margin-top: 5px;
+}
+.definition {
+  margin-top: 10px;
+}
+.definition a {
+  font-size: 14px;
+  color: black;
+  position: relative;
+  top: -28px;
+  left: -5px;
 }
 .subtext {
   font-size: 25px;

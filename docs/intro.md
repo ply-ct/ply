@@ -2,22 +2,28 @@
 layout: page
 ---
 
-<h2>API Automated Testing
-<div>
-<a href="https://ply-ct.github.io/ply/topics/requests">
-  <img src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/wares.png" width="128" alt="Ply your wares" />
-</a>
+<h1>Friendly API Autotesting
+<div class="definition">
+  <img src="./img/dict.png" alt="ply definition" width="366px">
+  <a href="#---merriam-websters-collegiate-dictionary-tenth-edition">*</a>
 </div>
-</h2>
+</h1>
 
-Ply is simply a more intuitive way of autotesting your REST and GraphQL APIs. Here are Ply's chief selling points at a glance:
+Ply is simply a more intuitive way of automating REST and GraphQL API tests.
+
+## Visual, side-by-side results
+
+
+
+We aim to Our aim is to make it easy . Here are Ply's chief selling points at a glance.
+
 1. Something here
 1. Something else here
 1. Lastly something here
 
 
 
-## Autotesting Capabilities
+## Autotesting capabilities
 
 |                     |Ply                     |Postman                 |Insomnia                |REST-Assured            |SOAtest                 |ReadyAPI                 |
 |:---------------------|:----------------------:|:----------------------:|:----------------------:|:----------------------:|:----------------------:|:----------------------:|
@@ -79,3 +85,6 @@ Import Ply requests from Postman collections
 
 </tbody>
 </table>
+
+---
+##### * - <a href="https://www.merriam-webster.com/">Merriam-Webster’s Collegiate Dictionary</a>, Tenth Edition
