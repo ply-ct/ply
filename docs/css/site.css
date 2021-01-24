@@ -77,12 +77,17 @@ li > ul {
   z-index: 100;
 }
 .wrapper {
-  margin-top: 75px;
-  max-width: 960px;
-  margin-right: auto;
-  margin-left: auto;
-  padding-right: 30px;
-  padding-left: 30px;
+  margin: 75px auto 0 auto;
+  max-width: 1100px;
+  padding: 0 30px;
+  text-align: center;
+}
+.wrapper h1 {
+  margin-bottom: 10px;
+  color: #148F9B;
+}
+.wrapper h2 {
+  color: #148F9B;
 }
 .page-content {
   padding: 30px;
@@ -170,14 +175,20 @@ li > ul {
   margin-top: 5px;
 }
 .definition {
-  margin-top: 10px;
+  margin-bottom: 20px;
+}
+.definition img {
+  border: 1px solid gray;
+  border-radius: 10px;
 }
 .definition a {
   font-size: 14px;
-  color: black;
+  color: #00838f;
   position: relative;
   top: -28px;
-  left: -5px;
+}
+.intro-shot {
+  margin-top: -20px;
 }
 .subtext {
   font-size: 25px;
