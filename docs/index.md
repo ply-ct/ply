@@ -3,10 +3,6 @@ layout: page
 ---
 
 <h1>Friendly API Autotesting</h1>
-<div class="definition">
-  <img src="./img/dict.png" alt="ply definition" width="366px">
-  <a href="#---merriam-websters-collegiate-dictionary-tenth-edition">*</a>
-</div>
 
 <div style="font-size:18px">
 Ply is simply a more intuitive way of automating REST and GraphQL API tests.
