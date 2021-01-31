@@ -355,11 +355,11 @@ h6:hover .header-link {
 }
 .copy-txt {
   font-family: monospace;
-	font-size: 14px;
+  font-size: 14px;
+  margin-right: 0;
 	padding: 2px 4px;
 	border: 1px solid gray;
   border-radius: 3px 0 0 3px;
-  min-width: 350px;
 }
 .copy-btn {
   font-family: monospace;
@@ -369,12 +369,22 @@ h6:hover .header-link {
   border-radius: 0 3px 3px 0;
   cursor: pointer;
   overflow: hidden;
-  padding: 1px 0 0 10px;
+  padding: 1px 0 1px 10px;
   -webkit-padding-after: 1px;
 }
+@-moz-document url-prefix() {
+  .copy-btn {
+    padding-bottom: 2px;
+  }
+}
+@supports (-webkit-hyphens:none)
+{
+  .copy-btn {
+    padding-top: 0;
+  }
+}
 .copy-adj {
-	position: relative;
-	top: 1px;
+  vertical-align: text-top;
 }
 
 /* only visible to screen readers */

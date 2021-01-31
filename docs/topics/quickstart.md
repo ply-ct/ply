@@ -23,7 +23,7 @@ or [VS Code Ply](vscode-ply).
    <img src="../img/test-explorer.png" alt="Text Explorer Icon" class="icon-img">
 1. Drop down Test Explorer's meatball menu
    <img src="../img/meatball.png" alt="Meatball Menu" class="icon-img" style="margin:0"><span class="after-icon">, then select "New Ply Flow".</span>
-1. Name the flow "get-movies.ply.flow".
+1. Name the flow "get-movies.ply.flow", saving to an empty folder somewhere.
 1. Your newly-created flow should appear containing two steps: Start and Stop:  
    <img src="../img/get-movies-1.png" alt="get-movies 1" width="540px">
 1. Expand the Flows group in Test Explorer, and you should see get-movies.ply.flow.
@@ -86,11 +86,19 @@ The idea of Ply is to test an API by submitting HTTP requests and validating res
      - content-length
      - etag
      - server
-     - x-powered-by  
-   
+     - x-powered-by
+
    You're left with just 'content-type', which is the only response header we care about matching. When Ply submits a request, for
    comparison it captures just those response headers that appear in expected results. This makes it convenient to exclude unimportant headers.
 1. Save and close the expected results and comparison editors; then re-run get-movies.ply.flow. This time it should succeed.
+
+## Use runtime values in a flow
+[Values](values) let you externalize parts of your requests and results, making them dynamic as well as reusable. For example: you might want to run
+"get-movies.ply.flow" against different environments, so you'd parameterize its request URLs using values.
+1. Configure the "Movie by Title" step by double-clicking, or by right-clicking and selecting "Configure".
+1. On the Request tab, change the URL to this: {% include copy_to_clipboard.html text="${baseUrl}/movies?title=${title}" %}
+1. Now save and run the flow again. You'll be prompted to enter `baseUrl` and `title`. Enter values as shown here and click Run.
+   <img src="../img/values-prompt.png" alt="Values prompt" width="774px">  
 
 ## Reference previous results in a downstream step
 TODO
