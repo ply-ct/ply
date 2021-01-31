@@ -20,7 +20,7 @@ export interface Options {
      */
     caseFiles?: string;
     /**
-     * Flow files glob pattern, relative to testsLocation ('**\/*.ply.flow').
+     * Flow files glob pattern, relative to testsLocation ('**\/*.flow').
      */
     flowFiles?: string;
     /**
@@ -142,7 +142,7 @@ export class Defaults implements PlyOptions {
     constructor(readonly testsLocation: string = '.') {}
     requestFiles = '**/*.{ply.yaml,ply.yml}';
     caseFiles = '**/*.ply.ts';
-    flowFiles = '**/*.ply.flow';
+    flowFiles = '**/*.flow';
     ignore = '**/{node_modules,bin,dist,out}/**';
     skip = '';
     get expectedLocation() {

@@ -26,14 +26,12 @@ We aim to make it easy . Here are Ply's chief selling points at a glance.
 ## TODO
 
 ## Features
-Test Explorer sidebar shows all Ply requests/cases/suites along with their statuses
-CodeLens segments in your Ply test files for running tests and debugging cases
-Gutter decorations on your Ply test files showing test statuses
-Test log displayed in Output view when a test is selected in Test Explorer
-Diff editor for comparing expected/actual results, with smart decorations aware of runtime values
-Import Ply requests from Postman collections
+
+ - Test Explorer sidebar shows all Ply requests/cases/suites along with their statuses
+ - CodeLens segments in your Ply test files for running tests and debugging cases
+ - Gutter decorations on your Ply test files showing test statuses
+ - Test log displayed in Output view when a test is selected in Test Explorer
+ - Diff editor for comparing expected/actual results, with smart decorations aware of runtime values
+ - Import Ply requests from Postman collections
 
 
-
----
-##### * - <a href="https://www.merriam-webster.com/">Merriam-Webster’s Collegiate Dictionary</a>, Tenth Edition
