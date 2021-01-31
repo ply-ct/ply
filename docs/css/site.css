@@ -56,7 +56,7 @@ li {
   margin-bottom: 3px;
 }
 li > img {
-  margin: 3px 0;
+  margin: 5px 0;
 }
 li > ul {
   top: 1px;
@@ -303,6 +303,9 @@ li > ul {
   position: absolute;
   width: 24px;
   margin: 0 5px;
+}
+.after-icon {
+  margin-left: 27px;
 }
 .y {
   font-size: 18px;
