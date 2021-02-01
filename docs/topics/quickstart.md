@@ -98,7 +98,7 @@ The idea of Ply is to test an API by submitting HTTP requests and validating res
 "get-movies.ply.flow" against different environments, so you'd parameterize its request URLs using values.
 1. Configure the "Movie by Title" step by double-clicking, or by right-clicking and selecting "Configure".
 1. On the Request tab, change the URL to this: {% include copy_to_clipboard.html text="${baseUrl}/movies?title=${title}" %}
-1. Now save and run the flow again. You'll be prompted to enter `${baseUrl}` and `${title}`. Enter values as shown here and click Run.
+1. Now save and run the flow again. You'll be prompted to enter `${baseUrl}` and `${title}`. Enter values as shown here and click Run.  
    <img src="../img/values-prompt.png" alt="Values prompt" width="774px">  
 
 ## Reference previous results in a downstream step
