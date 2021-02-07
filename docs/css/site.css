@@ -305,6 +305,8 @@ li > ul {
   position: absolute;
   width: 24px;
   margin: 0 5px;
+  border-radius: 0;
+  box-shadow: none;
 }
 .after-icon {
   margin-left: 27px;

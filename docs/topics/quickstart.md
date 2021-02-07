@@ -4,9 +4,6 @@ layout: topic
 ## Ply Flows Quickstart
 If you want to get straight to building Ply test-flows in less than 10 minutes, this guide is for you.
 
-If you already know your way around npm and vscode, you may want to skip to [Install Ply](install-ply) 
-or [VS Code Ply](vscode-ply).
-
 ## Prerequisites
 1. Install Node.js:
    <https://nodejs.org/en/download/>
@@ -101,8 +98,16 @@ The idea of Ply is to test an API by submitting HTTP requests and validating res
 1. Now save and run the flow again. You'll be prompted to enter `${baseUrl}` and `${title}`. Enter values as shown here and click Run.  
    <img src="../img/values-prompt.png" alt="Values prompt" width="774px">  
 
+The value for "title" is available to reference in any of your requests. You can also define a flow-wide value as part
+of the flow itself:
+1. Open the configurator at flow-level by double-clicking or right-clicking a blank spot on the canvas.
+1. Add a value named "title" and again set it to "Dracula"  
+   <img src="../img/flow-values.png" alt="Values prompt" width="829px">  
+This technique provides a fixed value that's available to anyone running your flow without them having to enter it.  
+**Food for thought:** Why is "baseUrl" not a good candidate to fix in a flow definition this way?
+
 ## Reference previous results in a downstream step
-TODO
+Suppose we add a request in our flow to test a slightly different endpoint.
 
 ## Run a step by itself
 In isolation
