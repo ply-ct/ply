@@ -69,7 +69,7 @@ The idea of Ply is to test an API by submitting HTTP requests and validating res
 1. Notice that this time, the Output view displays a line saying: Request 's3' PASSED. What actually happened was that Ply
    executed get-movies.ply.flow, created actual runtime results, and then copied those results to create an expected-results
    file before comparing.
-1. Double-click the "Movie by Title" step (not it's label) to inspect its Request and Response.
+1. Double-click the "Movie by Title" step to inspect its Request and Response.
 1. Run your flow again - you won't get prompted since expected results now exist. This time the flow fails, and "Movie by Title"
    is bordered in red.
 1. To understand why the test failed, right-click on "Movie by Title" and select "Compare Results":  
@@ -108,6 +108,83 @@ This technique provides a fixed value that's available to anyone running your fl
 
 ## Reference previous results in a downstream step
 Suppose we add a request in our flow to test a slightly different endpoint.
+1. Drag another Request step onto the canvas and label it "Movie by ID".
+1. Link it downstream of the "Movie by Title" request.
+1. We know Dracula's `id` from our previous request, so enter this URL: {% include copy_to_clipboard.html text="http://localhost:3000/movies/269b34c1" %}  
+   <img src="../img/movie-by-id.png" alt="Movie by ID" width="803px">  
+1. Now save and run get-movies.ply.flow. The new step will fail since we haven't added it's expected results.
+1. Right-click on "Movie by ID" and select "Compare Results". The expected result (on the left) is empty.
+   Select all lines in the actual result on the right and copy to the clipboard.
+1. Now click the "Open Result File" Code Lens in **expected** result, and paste everything right before the Stop step near the bottom.
+   As before, edit the response headers to include only 'content-type'.
+1. Run the flow again, and it should succeed. You may need to iterate a time or two to make things work.
+
+There's an obvious drawback here in our hardcoding of `id` in "Movie by ID". We can avoid hardcoding using an expression 
+that references our previous "Movie by Title" response.
+1. Reconfigure "Movie by Title" step to specify its request URL like this:
+   ```
+   ${baseUrl}/movies/${@s3.response.body.movies[0].id}
+   ```
+   An expression that starts with `${@` is Ply's special syntax for referring to previous requests/responses. Here we're grabbing the 
+   's3' ("Movie by Title") step's response body, indexing to the zeroth element of the movies array, and getting its `id` value. 
+   So effectively our flow is testing that the same movie we retrieved by title can also be retrieved by its ID.
+1. Change the expected result for "Movie by ID" to also use dynamic placeholders for `url`, `id` and `title`:
+   ```yaml
+   Movie by ID:
+   id: s4
+   request:
+      url: '${baseUrl}/movies/${@s3.response.body.movies[0].id}'
+      method: GET
+      headers:
+         Accept: application/json
+   response:
+      status:
+         code: 200
+         message: OK
+      headers:
+         content-type: application/json; charset=utf-8
+      body: |-
+         {
+         "credits": [
+            {
+               "name": "Tod Browning",
+               "role": "director"
+            },
+            {
+               "name": "Bela Lugosi",
+               "role": "actor"
+            },
+            {
+               "name": "Helen Chandler",
+               "role": "actor"
+            },
+            {
+               "name": "David Manners",
+               "role": "actor"
+            },
+            {
+               "name": "Dwight Frye",
+               "role": "actor"
+            },
+            {
+               "name": "Edward Van Sloan",
+               "role": "actor"
+            }
+         ],
+         "description": "What's even more amazing than Lugosi's out-of-body performance is the fact that the finest horror movie ever made was filmed within 2 years of the advent of talking pictures.",
+         "id": "${@s3.response.body.movies[0].id}",
+         "poster": "drac.jpg",
+         "rating": 5,
+         "title": "${@s3.response.body.movies[0].title}",
+         "webRef": {
+            "ref": "tt0021814",
+            "site": "imdb.com"
+         },
+         "year": 1931
+         }
+   status: 200
+   message: OK
+   ``` 
 
 ## Run a step by itself
 In isolation
