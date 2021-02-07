@@ -93,7 +93,7 @@ The idea of Ply is to test an API by submitting HTTP requests and validating res
    comparison it captures just those response headers that appear in expected results. This makes it convenient to exclude unimportant headers.
 1. Save and close the expected results and comparison editors; then re-run get-movies.ply.flow. This time it should succeed.
 
-## Use runtime values in a flow
+## Use input values in a flow
 [Values](values) let you externalize parts of your requests and results, making them dynamic as well as reusable. For example: you might want to run
 "get-movies.ply.flow" against different environments, so you'd parameterize its request URLs using values.
 1. Configure the "Movie by Title" step by double-clicking, or by right-clicking and selecting "Configure".
@@ -104,8 +104,9 @@ The idea of Ply is to test an API by submitting HTTP requests and validating res
 ## Reference previous results in a downstream step
 TODO
 
-## Add runtime values to a flow
-TODO
+## Run a step by itself
+In isolation
+
 
 <br><br><br><br>
 
