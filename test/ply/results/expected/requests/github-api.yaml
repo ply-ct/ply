@@ -10,7 +10,6 @@ repositoryTopics:
       message: OK
     headers:
       content-type: application/json; charset=utf-8
-      status: 200 OK
     body: |-
       {
         "names": [

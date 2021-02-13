@@ -7,8 +7,8 @@ import { Values } from '../../src/values';
 
 const values = {
     baseUrl: 'http://localhost:3000/movies',
-    year: 1931,
-    rating: 5,
+    year: '1931',
+    rating: '5',
     query: 'year=1935&rating=>4&sort=rating&descending=true'
 };
 
@@ -137,12 +137,7 @@ describe('Requests', async () => {
         const ply = new Ply();
         const suites = await ply.loadRequests('test/ply/requests/github-api.ply.yaml');
         const suite = suites[0];
-        const vals = await new Values([], suite.logger).read({
-            github: {
-                organization: 'ply-ct',
-                repository: 'ply'
-            }
-        });
+        const vals = await new Values(['test/ply/values/global.json'], suite.logger).read();
 
         const result = await suite.run('repositoryTopicsQuery', vals);
         assert.strictEqual(result.status, 'Passed');
@@ -164,7 +159,7 @@ describe('Requests', async () => {
 
     it('can run plyee', async () => {
         const plier = new Plier();
-        const results = await plier.run(['test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating'], values);
+        const results = await plier.run(['test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating'], { values });
         assert.strictEqual(results[0].status, 'Passed');
         assert.strictEqual(results[0].message, 'Test succeeded');
     });
@@ -175,7 +170,7 @@ describe('Requests', async () => {
             'test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating',
             'test/ply/requests/movie-queries.ply.yaml#movieById',
             'test/ply/requests/movie-queries.ply.yaml#moviesQuery'
-          ], values);
+          ], { values });
         assert.strictEqual(results[0].status, 'Passed');
         assert.strictEqual(results[0].message, 'Test succeeded');
         assert.strictEqual(results[1].status, 'Passed');

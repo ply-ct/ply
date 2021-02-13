@@ -88,6 +88,10 @@ export class PlyFlow implements Flow {
                 (runtime.values as any)[row[0]] = row[1];
             }
         }
+        // run values override even flow-configured vals
+        if (runOptions?.values) {
+            runtime.values = { ...runtime.values, ...runOptions.values };
+        }
 
         if (this.flow.attributes?.bail === 'true') {
             runtime.options.bail = true;

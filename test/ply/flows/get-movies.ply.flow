@@ -1,0 +1,55 @@
+attributes:
+  NodeStyle: BoxIcon
+  display: 'x=23,y=18,w=156,h=27'
+  values: '[["title","Dracula"]]'
+steps:
+  - attributes:
+      display: 'x=41,y=71,w=60,h=40'
+    id: s1
+    links:
+      - attributes:
+          display: 'type=Elbow,x=145,y=91,xs=105&176,ys=91&91'
+        id: l1
+        to: s3
+        type: link
+    name: Start
+    path: start
+  - attributes:
+      display: 'x=550,y=70,w=60,h=40'
+    id: s2
+    name: Stop
+    path: stop
+  - attributes:
+      display: 'x=180,y=50,w=100,h=80'
+      headers: '[["Accept","application/json"]]'
+      method: GET
+      url: '${baseUrl}?title=${title}'
+    id: s3
+    links:
+      - attributes:
+          display: 'type=Elbow,x=320,y=90,xs=284&356,ys=90&90'
+        id: l2
+        to: s4
+        type: link
+    name: |-
+      Movie
+      by Title
+    path: request
+    type: step
+  - attributes:
+      display: 'x=360,y=50,w=100,h=80'
+      headers: '[["Accept","application/json"]]'
+      method: GET
+      url: '${baseUrl}/${@s3.response.body.movies[0].id}'
+    id: s4
+    links:
+      - attributes:
+          display: 'type=Elbow,x=515,y=96,xs=464&546,ys=90&90'
+        id: l3
+        to: s2
+        type: link
+    name: |-
+      Movie
+      by ID
+    path: request
+    type: step

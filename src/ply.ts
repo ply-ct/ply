@@ -283,10 +283,10 @@ export class Plier extends EventEmitter {
     /**
      * Plyees should be test paths (not suites).
      */
-    async run(plyees: string[], extraValues?: object, runOptions?: RunOptions): Promise<Result[]> {
+    async run(plyees: string[], runOptions?: RunOptions): Promise<Result[]> {
         this.logger.debug('Options', this.ply.options);
 
-        const values = await new Values(this.ply.options.valuesFiles, this.logger).read(extraValues);
+        const values = await new Values(this.ply.options.valuesFiles, this.logger).read();
 
         const promises: Promise<Result[]>[] = [];
 

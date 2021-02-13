@@ -129,7 +129,11 @@ export interface RunOptions {
      * This runOption needs to be set in your case's calls to Suite.run (for requests),
      * and also in originating the call to Suite.run (for the case(s)).
      */
-    useDist?: boolean
+    useDist?: boolean;
+    /**
+     * Runtime override values
+     */
+    values?: {[key: string]: string};
 }
 
 /**

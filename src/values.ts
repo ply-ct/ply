@@ -14,7 +14,7 @@ export class Values {
         private readonly logger: Logger
     ) { }
 
-    async read(extras?: object): Promise<any> {
+    async read(): Promise<any> {
         let values = {};
         for (const location of this.locations) {
             const contents = await new Retrieval(location).read();
@@ -38,9 +38,6 @@ export class Values {
             } catch (err) {
                 throw new Error(`Cannot parse ${PLY_VALUES} (${err.message})`);
             }
-        }
-        if (extras) {
-            values = deepmerge(values, extras);
         }
         return values;
     }

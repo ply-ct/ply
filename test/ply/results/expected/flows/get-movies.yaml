@@ -1,0 +1,117 @@
+Start:
+  id: s1
+  status: Completed
+Movie by Title:
+  id: s3
+  request:
+    url: '${baseUrl}/?title=${title}'
+    method: GET
+    headers:
+      Accept: application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      content-type: application/json; charset=utf-8
+    body: |-
+      {
+        "movies": [
+          {
+            "credits": [
+              {
+                "name": "Tod Browning",
+                "role": "director"
+              },
+              {
+                "name": "Bela Lugosi",
+                "role": "actor"
+              },
+              {
+                "name": "Helen Chandler",
+                "role": "actor"
+              },
+              {
+                "name": "David Manners",
+                "role": "actor"
+              },
+              {
+                "name": "Dwight Frye",
+                "role": "actor"
+              },
+              {
+                "name": "Edward Van Sloan",
+                "role": "actor"
+              }
+            ],
+            "description": "What's even more amazing than Lugosi's out-of-body performance is the fact that the finest horror movie ever made was filmed within 2 years of the advent of talking pictures.",
+            "id": "${~[a-f0-9]}+",
+            "poster": "drac.jpg",
+            "rating": 5,
+            "title": "${title}",
+            "webRef": {
+              "ref": "tt0021814",
+              "site": "imdb.com"
+            },
+            "year": 1931
+          }
+        ]
+      }
+  status: Completed
+Movie by ID:
+  id: s4
+  request:
+    url: '${baseUrl}/${@s3.response.body.movies[0].id}'
+    method: GET
+    headers:
+      Accept: application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      content-type: application/json; charset=utf-8
+    body: |-
+      {
+        "credits": [
+          {
+            "name": "Tod Browning",
+            "role": "director"
+          },
+          {
+            "name": "Bela Lugosi",
+            "role": "actor"
+          },
+          {
+            "name": "Helen Chandler",
+            "role": "actor"
+          },
+          {
+            "name": "David Manners",
+            "role": "actor"
+          },
+          {
+            "name": "Dwight Frye",
+            "role": "actor"
+          },
+          {
+            "name": "Edward Van Sloan",
+            "role": "actor"
+          }
+        ],
+        "description": "What's even more amazing than Lugosi's out-of-body performance is the fact that the finest horror movie ever made was filmed within 2 years of the advent of talking pictures.",
+        "id": "${@s3.response.body.movies[0].id}",
+        "poster": "drac.jpg",
+        "rating": 5,
+        "title": "${@s3.response.body.movies[0].title}",
+        "webRef": {
+          "ref": "tt0021814",
+          "site": "imdb.com"
+        },
+        "year": 1931
+      }
+  status: 200
+  message: OK
+Stop:
+  id: s2
+  status: Completed

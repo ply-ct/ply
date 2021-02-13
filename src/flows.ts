@@ -107,6 +107,9 @@ export class FlowSuite extends Suite<Step> {
 
     async runSteps(steps: Step[], runOptions?: RunOptions): Promise<Result[]> {
         const results: Result[] = [];
+        if (runOptions?.values) {
+            this.runtime.values = { ...this.runtime.values, ...runOptions.values };
+        }
         const requestSuite = new Suite<Request>(
             this.plyFlow.name,
             'request',

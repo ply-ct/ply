@@ -119,7 +119,7 @@ describe('Cases', async () => {
 
     it('can run plyee', async () => {
         const plier = new Plier();
-        const results = await plier.run(['test/ply/cases/movieCrud.ply.ts#add new movie'], values);
+        const results = await plier.run(['test/ply/cases/movieCrud.ply.ts#add new movie'], { values });
         assert.strictEqual(results[0].status, 'Passed');
         assert.strictEqual(results[0].message, 'Test succeeded');
     });
@@ -130,7 +130,7 @@ describe('Cases', async () => {
             'test/ply/cases/movieCrud.ply.ts#add new movie',
             'test/ply/cases/movieCrud.ply.ts#update rating',
             'test/ply/cases/movieCrud.ply.ts#remove movie'
-          ], values);
+          ], { values });
         assert.strictEqual(results[0].status, 'Passed');
         assert.strictEqual(results[0].message, 'Test succeeded');
         assert.strictEqual(results[1].status, 'Passed');
