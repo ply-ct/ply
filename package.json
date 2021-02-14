@@ -16,12 +16,14 @@
     "url": "git+https://github.com/ply-ct/ply.git"
   },
   "keywords": [
-    "REST",
-    "API",
-    "GraphQL",
-    "Test",
-    "Automated Testing",
-    "Continuous Testing"
+    "rest",
+    "api",
+    "graphql",
+    "automated",
+    "continuous",
+    "test",
+    "flow",
+    "yaml"
   ],
   "author": "Donald Oakes",
   "license": "MIT",

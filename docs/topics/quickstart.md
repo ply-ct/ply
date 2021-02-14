@@ -29,7 +29,7 @@ If you want to get straight to building Ply test-flows in less than 10 minutes, 
 ## Run your flow
 1. In Ply's flow diagram toolbar (or in the Test Explorer item hover menu), click the run icon:
    <img src="../img/run.svg" alt="Run Icon" class="icon-img">  
-   When prompted, select "Submit without verifying" (Submit is Ply-speak for "don't check run results").
+   When prompted, select "Submit without verifying" (*Submit* is Ply-speak for "don't check run results").
 1. To show flow/step statuses, the diagram automatically switches to Inspect mode, indicated by the check icon in the toolbar:
    <img src="../img/check.png" alt="Inspect Mode Icon" class="icon-img" style="width:22px;">
 1. So far our flow doesn't do anything interesting. However, this illustrates a couple of points:
