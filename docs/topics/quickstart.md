@@ -93,6 +93,7 @@ The idea of Ply is to test an API by submitting HTTP requests and validating res
 ## Use input values in a flow
 [Values](values) let you externalize parts of your requests and results, making them dynamic as well as reusable. For example: you might want to run
 "get-movies.ply.flow" against different environments, so you'd parameterize its request URLs using values.
+1. Switch back to Select mode
 1. Configure the "Movie by Title" step by double-clicking, or by right-clicking and selecting "Configure".
 1. On the Request tab, change the URL to this: {% include copy_to_clipboard.html text="${baseUrl}/movies?title=${title}" %}
 1. Now save and run the flow again. You'll be prompted to enter `${baseUrl}` and `${title}`. Enter values as shown here and click Run.  
