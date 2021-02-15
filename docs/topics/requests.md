@@ -81,7 +81,7 @@ ply test/requests/movie-queries.ply.yaml#moviesByYearAndRating
 ### Run without verifying
 You can tell Ply to submit *ad hoc* requests without verifying results (see [CLI commands](cli#command-line-only-arguments)):
 ```
-ply -x test/requests/movie-queries.ply.yaml
+ply -s test/requests/movie-queries.ply.yaml
 ```
 
 ## GraphQL

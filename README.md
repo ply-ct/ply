@@ -44,13 +44,13 @@ repositoryTopics:
 Suppose you save this in a file named "github.ply.yml". Then you can submit the
 `repositoryTopics` request from a command line by typing:
 ```
-ply -x github.ply.yml
+ply -s github.ply.yml
 ```
-The `-x` argument tells Ply not to verify the response (`-s` is short for `--submit`, 
+The `-s` argument tells Ply not to verify the response (`-s` is short for `--submit`, 
 meaning submit an *ad hoc* request and don't bother with verification).
 
 ### Verify response
-If you run without `-x` you'll get an error saying, "Expected result file not found". Ply verification
+If you run without `-s` you'll get an error saying, "Expected result file not found". Ply verification
 works by comparing expected vs actual. So a complete test requires an expected result file. Run again
 with `--create`, and the expected result file will be created from the actual response.
 ```
