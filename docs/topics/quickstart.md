@@ -176,7 +176,7 @@ that references our previous "Movie by Title" response.
          "id": "${@s3.response.body.movies[0].id}",
          "poster": "drac.jpg",
          "rating": 5,
-         "title": "${@s3.response.body.movies[0].title}",
+         "title": "Dracula",
          "webRef": {
             "ref": "tt0021814",
             "site": "imdb.com"
@@ -188,10 +188,15 @@ that references our previous "Movie by Title" response.
    ``` 
 
 ## Run a step by itself
-In isolation
-
-
-<br><br><br><br>
+As you're building out a Ply flow by adding new requests, sometimes you may want to run a single step in isolation
+to test it without running the whole flow. Let's run the "Movie by ID" step that we just inserted.
+1. Open get-movies.ply.flow in Select mode.
+1. Right-click on "Movie by ID", and select Run.
+1. This time when you're prompted for values, you'll observe that `${@s3.response.body.movies[0].id}` is required,
+   and that Ply remembers the value from our previous flow run. 
+   <img src="../img/movie-by-id-values.png" alt="Values prompt" width="724px">  
+1. Double-click "Movie by ID" to review its request and response to make sure they're as expected.
+   <img src="../img/movie-by-id-response.png" alt="Values prompt" width="760px">  
 
 ## Further Learning
 ### Clone the ply-demo project
