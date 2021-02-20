@@ -105,6 +105,7 @@ and you won't be bothered with a prompt. Try running with a different value:
    <img src="../img/values.svg" alt="Values Icon" class="icon-img">  
 1. Instead of "Dracula", enter "Frankenstein" for `${title}`; then click Run.
 1. Right-click on the failed step and select Compare Results to see how the response compares for a different title.
+1. Click the Values toolbar button again to switch back to "Dracula" and confirm that Run succeeds.
 
 You can also define a flow-wide value as part of the flow itself:
 1. Open the configurator at flow-level by double-clicking or right-clicking a blank spot on the canvas.
