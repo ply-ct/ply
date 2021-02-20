@@ -129,62 +129,61 @@ that references our previous "Movie by Title" response.
    An expression that starts with `${@` is Ply's special syntax for referring to previous requests/responses. Here we're grabbing the 
    's3' ("Movie by Title") step's response body, indexing to the zeroth element of the movies array, and getting its `id` value. 
    So effectively our flow is testing that the same movie we retrieved by title can also be retrieved by its ID.
-1. Change the expected result for "Movie by ID" to also use dynamic placeholders for `url`, `id` and `title`:
+1. Change the expected result for "Movie by ID" to also use dynamic placeholders for `url` and `id`:
    ```yaml
    Movie by ID:
-   id: s4
-   request:
-      url: '${baseUrl}/movies/${@s3.response.body.movies[0].id}'
-      method: GET
-      headers:
-         Accept: application/json
-   response:
-      status:
+     id: s4
+     request:
+       url: '${baseUrl}/movies/${@s3.response.body.movies[0].id}'
+       method: GET
+       headers: {}
+     response:
+       status:
          code: 200
          message: OK
-      headers:
+       headers:
          content-type: application/json; charset=utf-8
-      body: |-
+       body: |-
          {
-         "credits": [
-            {
+           "credits": [
+             {
                "name": "Tod Browning",
                "role": "director"
-            },
-            {
+             },
+             {
                "name": "Bela Lugosi",
                "role": "actor"
-            },
-            {
+             },
+             {
                "name": "Helen Chandler",
                "role": "actor"
-            },
-            {
+             },
+             {
                "name": "David Manners",
                "role": "actor"
-            },
-            {
+             },
+             {
                "name": "Dwight Frye",
                "role": "actor"
-            },
-            {
+             },
+             {
                "name": "Edward Van Sloan",
                "role": "actor"
-            }
-         ],
-         "description": "What's even more amazing than Lugosi's out-of-body performance is the fact that the finest horror movie ever made was filmed within 2 years of the advent of talking pictures.",
-         "id": "${@s3.response.body.movies[0].id}",
-         "poster": "drac.jpg",
-         "rating": 5,
-         "title": "Dracula",
-         "webRef": {
-            "ref": "tt0021814",
-            "site": "imdb.com"
-         },
-         "year": 1931
+             }
+           ],
+           "description": "What's even more amazing than Lugosi's out-of-body performance is the fact that the finest horror movie ever made was filmed within 2 years of the advent of talking pictures.",
+           "id": "${@s3.response.body.movies[0].id}",
+           "poster": "drac.jpg",
+           "rating": 5,
+           "title": "Dracula",
+           "webRef": {
+             "ref": "tt0021814",
+             "site": "imdb.com"
+           },
+           "year": 1931
          }
-   status: 200
-   message: OK
+     status: 200
+     message: OK
    ``` 
 
 ## Run a step by itself
