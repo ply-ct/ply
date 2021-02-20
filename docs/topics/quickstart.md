@@ -99,13 +99,21 @@ The idea of Ply is to test an API by submitting HTTP requests and validating res
 1. Now save and run the flow again. You'll be prompted to enter `${baseUrl}` and `${title}`. Enter values as shown here and click Run.  
    <img src="../img/values-prompt.png" alt="Values prompt" width="774px">  
 
-The value for "title" is available to reference in any of your requests. You can also define a flow-wide value as part
-of the flow itself:
+The value for "title" is available to reference in any of your requests. If you run the flow again, Ply will remember to use "Dracula" for `${title}`
+and you won't be bothered with a prompt. Try running with a different value:
+1. In the flow diagram toolbar, click the Values button:
+   <img src="../img/values.svg" alt="Values Icon" class="icon-img">  
+1. Instead of "Dracula", enter "Frankenstein" for `${title}`; then click Run.
+1. Right-click on the failed step and select Compare Results to see how the response compares for a different title.
+
+You can also define a flow-wide value as part of the flow itself:
 1. Open the configurator at flow-level by double-clicking or right-clicking a blank spot on the canvas.
 1. Add a value named "title" and again set it to "Dracula"  
    <img src="../img/flow-values.png" alt="Values prompt" width="829px">  
 This technique provides a fixed value that's available to anyone running your flow without them having to enter it.  
-**Food for thought:** Why is "baseUrl" not a good candidate to fix in a flow definition this way?
+
+### Food for thought:
+ Why is "baseUrl" not a good candidate to specify in a flow definition this way?
 
 ## Reference previous results in a downstream step
 Suppose we add a request in our flow to test a slightly different endpoint.
