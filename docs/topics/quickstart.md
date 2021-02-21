@@ -120,7 +120,7 @@ This technique provides a fixed value that's available to anyone running your fl
 Suppose we add a request in our flow to test a slightly different endpoint.
 1. Drag another Request step onto the canvas and label it "Movie by ID".
 1. Link it downstream of the "Movie by Title" request.
-1. We know Dracula's `id` from our previous request, so enter this URL: {% include copy_to_clipboard.html text="http://localhost:3000/movies/269b34c1" %}  
+1. We know Dracula's `id` from our previous request, so enter this URL: {% include copy_to_clipboard.html text="${baseUrl}/movies/269b34c1" %}  
    <img src="../img/movie-by-id.png" alt="Movie by ID" width="803px">  
 1. Now save and run get-movies.ply.flow. The new step will fail since we haven't added it's expected results.
 1. Right-click on "Movie by ID" and select "Compare Results". The expected result (on the left) is empty.
@@ -131,14 +131,11 @@ Suppose we add a request in our flow to test a slightly different endpoint.
 
 There's an obvious drawback here in our hardcoding of `id` in "Movie by ID". We can avoid hardcoding using an expression 
 that references our previous "Movie by Title" response.
-1. Reconfigure "Movie by Title" step to specify its request URL like this:
-   ```
-   ${baseUrl}/movies/${@s3.response.body.movies[0].id}
-   ```
+1. Reconfigure "Movie by Title" step to specify its request URL like this: {% include copy_to_clipboard.html text="${baseUrl}/movies/${@s3.response.body.movies[0].id}" %}
    An expression that starts with `${@` is Ply's special syntax for referring to previous requests/responses. Here we're grabbing the 
    's3' ("Movie by Title") step's response body, indexing to the zeroth element of the movies array, and getting its `id` value. 
    So effectively our flow is testing that the same movie we retrieved by title can also be retrieved by its ID.
-1. Change the expected result for "Movie by ID" to also use dynamic placeholders for `url` and `id`:
+1. In fact, it's a good idea to change the expected result for "Movie by ID" to also use dynamic placeholders for `url` and `id`:
    ```yaml
    Movie by ID:
      id: s4
