@@ -199,7 +199,7 @@ to test it without running the whole flow. Let's run the "Movie by ID" step that
 1. Right-click on "Movie by ID", and select Run.
 1. This time when you're prompted for values, you'll observe that `${@s3.response.body.movies[0].id}` is required,
    and that Ply remembers the value from our previous flow run. 
-   <img src="../img/movie-by-id-values.png" alt="Values prompt" width="724px">  
+   <img src="../img/movie-by-id-values.png" alt="Values prompt" width="759px">  
 1. Double-click "Movie by ID" to review its request and response to make sure they're as expected.
    <img src="../img/movie-by-id-response.png" alt="Values prompt" width="760px">  
 
