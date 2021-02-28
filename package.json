@@ -2,15 +2,15 @@
   "name": "ply-ct",
   "version": "2.2.6",
   "description": "REST API Automated Testing",
-  "main": "dist/src",
+  "main": "dist",
   "bin": {
-    "ply": "dist/src/cli.js"
+    "ply": "dist/cli.js"
   },
   "files": [
-    "dist/src",
+    "dist",
     "src"
   ],
-  "types": "dist/src",
+  "types": "dist",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ply-ct/ply.git"
@@ -38,7 +38,7 @@
     "start-movies": "ply-movies start &",
     "pretest": "npm run start-movies",
     "mocha": "mocha --require ts-node/register test/mocha/**/*.ts",
-    "ply": "dist/src/cli.js",
+    "ply": "dist/cli.js",
     "stop-movies": "ply-movies stop",
     "test": "npm-run-all mocha ply stop-movies --continue-on-error",
     "typedoc": "typedoc --name 'ply' --out docs/api-docs --excludePrivate true src",

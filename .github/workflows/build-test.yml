@@ -19,5 +19,5 @@ jobs:
         node-version: '12.x'
     - run: npm install
     - run: npm run build
-    - run: chmod +x dist/src/cli.js
+    - run: chmod +x dist/cli.js
     - run: npm test

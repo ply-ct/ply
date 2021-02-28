@@ -8,7 +8,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/dist/src/cli.js",
+      "program": "${workspaceFolder}/dist/cli.js",
       "args": [
         "test/ply/cases/movieCrud.ply.ts"
       ],
