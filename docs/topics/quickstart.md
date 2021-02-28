@@ -131,7 +131,7 @@ Suppose we add a request in our flow to test a slightly different endpoint.
 
 There's an obvious drawback here in our hardcoding of `id` in "Movie by ID". We can avoid hardcoding using an expression 
 that references our previous "Movie by Title" response.
-1. Reconfigure "Movie by Title" step to specify its request URL like this: {% include copy_to_clipboard.html text="${baseUrl}/movies/${@s3.response.body.movies[0].id}" %}
+1. Reconfigure "Movie by ID" step to specify its request URL like this: {% include copy_to_clipboard.html text="${baseUrl}/movies/${@s3.response.body.movies[0].id}" %}
    An expression that starts with `${@` is Ply's special syntax for referring to previous requests/responses. Here we're grabbing the 
    's3' ("Movie by Title") step's response body, indexing to the zeroth element of the movies array, and getting its `id` value. 
    So effectively our flow is testing that the same movie we retrieved by title can also be retrieved by its ID.
