@@ -106,10 +106,20 @@ export class FlowSuite extends Suite<Step> {
     }
 
     async runSteps(steps: Step[], runOptions?: RunOptions): Promise<Result[]> {
-        const results: Result[] = [];
+
+        // flow-configured values
+        if (this.plyFlow.flow.attributes?.values) {
+            const rows = JSON.parse(this.plyFlow.flow.attributes?.values);
+            for (const row of rows) {
+                (this.runtime.values as any)[row[0]] = row[1];
+            }
+        }
+
+        // run values override even flow-configured vals
         if (runOptions?.values) {
             this.runtime.values = { ...this.runtime.values, ...runOptions.values };
         }
+
         const requestSuite = new Suite<Request>(
             this.plyFlow.name,
             'request',
@@ -130,6 +140,8 @@ export class FlowSuite extends Suite<Step> {
             this.runtime.results.expected.write('');
             runOptions.createExpected = true;
         }
+
+        const results: Result[] = [];
         // emit start event for synthetic flow
         this.emitter?.emit('flow', this.plyFlow.flowEvent('start', 'flow', this.plyFlow.instance));
         for (const step of steps) {
