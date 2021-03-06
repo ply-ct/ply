@@ -66,6 +66,10 @@ export interface Options {
      */
     bail?: boolean;
     /**
+     * Run suites in parallel.
+     */
+    parallel?: boolean;
+    /**
      * Predictable ordering of response body JSON property keys -- needed for verification (true).
      */
     responseBodySortedKeys?: boolean;
@@ -93,6 +97,7 @@ export interface PlyOptions extends Options {
     verbose: boolean;
     quiet: boolean;
     bail: boolean;
+    parallel: boolean;
     responseBodySortedKeys: boolean;
     prettyIndent: number;
     args?: any;
@@ -172,6 +177,7 @@ export class Defaults implements PlyOptions {
     verbose = false;
     quiet = false;
     bail = false;
+    parallel = false;
     responseBodySortedKeys = true;
     prettyIndent = 2;
 }
@@ -234,6 +240,9 @@ export class Config {
         },
         bail: {
             describe: 'Stop on first failure'
+        },
+        parallel: {
+            describe: 'Run suites in parallel'
         },
         import: {
             describe: 'Import requests/values from (\'postman\')',

@@ -289,6 +289,7 @@ export class Plier extends EventEmitter {
         const values = await new Values(this.ply.options.valuesFiles, this.logger).read();
 
         const promises: Promise<Result[]>[] = [];
+        let combined: Result[] = [];
 
         // requests
         for (const [loc, requestPlyee] of Plyee.requests(plyees)) {
@@ -300,7 +301,9 @@ export class Plier extends EventEmitter {
             });
             const requestSuite = await this.ply.loadRequestSuite(loc);
             requestSuite.emitter = this;
-            promises.push(requestSuite.run(tests, values, runOptions));
+            const promise = requestSuite.run(tests, values, runOptions);
+            if (this.ply.options.parallel) promises.push(promise);
+            else combined = [...combined, ...(await promise) ];
         }
 
         // cases
@@ -314,7 +317,9 @@ export class Plier extends EventEmitter {
             const caseSuites = await this.ply.loadCaseSuites(loc);
             for (const caseSuite of caseSuites) {
                 caseSuite.emitter = this;
-                promises.push(caseSuite.run(tests, values, runOptions));
+                const promise = caseSuite.run(tests, values, runOptions);
+                if (this.ply.options.parallel) promises.push(promise);
+                else combined = [...combined, ...(await promise)];
             }
         }
 
@@ -329,13 +334,16 @@ export class Plier extends EventEmitter {
             const flowSuites = await this.ply.loadFlowSuites(loc);
             for (const flowSuite of flowSuites) {
                 flowSuite.emitter = this;
-                promises.push(flowSuite.run(tests, values, runOptions));
+                const promise = flowSuite.run(tests, values, runOptions);
+                if (this.ply.options.parallel) promises.push(promise);
+                else combined = [...combined, ...(await promise)];
             }
         }
 
-        let combined: Result[] = [];
-        for (const results of await Promise.all(promises)) {
-            combined = [ ...combined, ...results ];
+        if (this.ply.options.parallel) {
+            for (const results of await Promise.all(promises)) {
+                combined = [...combined, ...results];
+            }
         }
         return combined;
     }
