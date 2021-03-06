@@ -30,8 +30,8 @@ If you want to get straight to building Ply test-flows in less than 10 minutes, 
 1. In Ply's flow diagram toolbar (or in the Test Explorer item hover menu), click the run icon:
    <img src="../img/run.svg" alt="Run Icon" class="icon-img">  
    When prompted, select "Submit without verifying" (*Submit* is Ply-speak for "don't check run results").
-1. To show flow/step statuses, the diagram automatically switches to Inspect mode, indicated by the check icon in the toolbar:
-   <img src="../img/check.png" alt="Inspect Mode Icon" class="icon-img" style="width:22px;">
+1. To show flow/step statuses, the diagram automatically switches to Inspect mode, indicated by this icon in the toolbar mode dropdown:
+   <img src="../img/inspect.png" alt="Inspect Mode Icon" class="icon-img" style="width:22px;">
 1. So far our flow doesn't do anything interesting. However, this illustrates a couple of points:
    - In Inspect mode, each step that executed is drawn with a heavy border around it:  
    <img src="../img/get-movies-1-inspect.png" alt="get-movies 1 Inspect" width="540px">
@@ -45,7 +45,7 @@ If you want to get straight to building Ply test-flows in less than 10 minutes, 
 
 ## Add a Request step to your flow
 The idea of Ply is to test an API by submitting HTTP requests and validating results. That's where Request steps come in.
-1. Switch back to Select mode by clicking on its icon in the toolbar:
+1. Switch back to Select mode using the flow toolbar dropdown:
    <img src="../img/select.png" alt="Select Mode Icon" class="icon-img" style="width:22px;">
 1. Remove the link joining Start to Stop by selecting it and hitting the Delete key.
 1. From Ply's toolbox view to the right of our diagram, drag in the step that's labeled *Request*. Position it somewhere
