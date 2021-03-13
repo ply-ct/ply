@@ -450,7 +450,7 @@ export class ResultFlowParser {
         const flowInstance: flowbee.FlowInstance = {
             id: '',
             flowPath,
-            status: 'Completed'
+            status: 'Pending'
         };
 
         for (const key of Object.keys(this.actualObj)) {
@@ -471,8 +471,16 @@ export class ResultFlowParser {
             }
         }
         flowInstance.stepInstances = this.getStepInstances(this.actualObj);
+        flowInstance.stepInstances.forEach(stepInst => {
+            if (flowInstance.status === 'Pending') flowInstance.status = 'In Progress';
+            if (flowInstance.status === 'In Progress' && stepInst.status !== 'Completed') {
+                flowInstance.status = stepInst.status;
+            }
+        });
+        if (flowInstance.status === 'In Progress') flowInstance.status = 'Completed';
         return flowInstance;
     }
+
 
     getStepInstances(obj: any, offset = 0): flowbee.StepInstance[] {
         const stepInstances: flowbee.StepInstance[] = [];
