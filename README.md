@@ -109,7 +109,7 @@ as described in the docs under [Values](https://ply-ct.github.io/ply/topics/valu
 Even more powerfully, your multi-request suites can embed expressions that reference runtime values from previous responses.
 For instance, the URL or body of a subsequent request in our github.ply.yml file could have something like this:
 ```
-${@repositoryTopics.response.body.names[0]
+${@repositoryTopics.response.body.names[0]}
 ```
 which uses the special `@` character to reference the first topic name from above (resolving to 'rest-api').
 This enables you to string together sequential requests that each depend on response output from preceding ones.
