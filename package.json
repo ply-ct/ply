@@ -23,7 +23,8 @@
     "continuous",
     "test",
     "flow",
-    "yaml"
+    "yaml",
+    "postman"
   ],
   "author": "Donald Oakes",
   "license": "MIT",

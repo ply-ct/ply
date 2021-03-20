@@ -63,6 +63,11 @@ li > img {
 li > ul {
   top: 1px;
 }
+table {
+  max-width: 1000px;
+  margin: auto;
+}
+
 .header {
   max-width: 100%;
   margin-left: 35px;
@@ -136,16 +141,16 @@ li > ul {
   line-height: 54px;
 }
 .site-nav a {
-  color: #78909c;
+  color: #404040;
   margin-right: 20px;
   font-weight: bold;
 }
 .site-nav a:visited {
-  color: #78909c;
+  color: #404040;
 }
 .site-nav a:hover {
-  text-decoration: underline;
-  color: #455a64;
+  text-decoration: none;
+  color: #148F9B;
 }
 .search-input {
   margin-right: 10px;
@@ -176,6 +181,36 @@ li > ul {
   line-height: 1.1;
   margin-top: 5px;
 }
+.site-content {
+  text-align: left;
+  max-width: 1000px;
+  margin: auto;
+}
+.split {
+  display: flex;
+}
+.split-two {
+  flex: 50%;
+  margin-left: 30px;
+  margin-right: 30px;
+}
+.split-two li {
+  list-style-type: none;
+}
+.split-two li::before {
+  color: #00838f;
+  content: '■';
+  position: absolute;
+  font-size: 20px;
+  margin-top: -4px;
+  left: -20px;
+}
+@supports (-moz-appearance:none) {
+  .split-two li::before {
+    font-size: 16px;
+    margin-top: -2px;
+  }
+}
 .definition {
   margin-bottom: 20px;
 }
@@ -202,7 +237,7 @@ li > ul {
   font-size: 17px;
 }
 .active-group {
-  color: #455a64 !important;
+  color: #148F9B !important;
 }
 .highlighter-rouge {
   background-color: #d9e0e3;
@@ -286,6 +321,7 @@ li > ul {
   color: #263238;
 }
 .active-nav {
+  color: #148F9B !important;
   font-weight: bold;
 }
 .page-right {

@@ -1,7 +1,7 @@
 ---
 layout: topic
 ---
-## Ply Flows Quickstart
+## Getting Started with Ply Flows
 If you want to get straight to building Ply test-flows in less than 10 minutes, this guide is for you.
 
 ## Prerequisites

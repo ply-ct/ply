@@ -7,9 +7,9 @@ baseurl: /ply
 topics:
   - category: Start
     topics:
-      - label: Quickstart
-        nav: quickstart
-        tags: introduction, start, flow, create, build, design, run
+      - label: Getting Started
+        nav: getting-started
+        tags: introduction, quickstart, flow, create, build, design, run
       - label: Install Ply
         nav: install-ply
         tags: installation, npm, node, npx, ply-movies, movies, download
