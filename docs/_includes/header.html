@@ -7,9 +7,9 @@
   </a>
   <nav class="site-nav" style="float:left;">
     <a href="{{site.baseurl}}/why-ply" {% if navgroup == 'why-ply.html' %}class="active-group"{% endif %}>Why Ply?</a>
-    <a href="{{site.baseurl}}/topics/intro" {% if navgroup=='topics' and navpage=='intro' %}class="active-group" {% endif %}>Getting Started</a>
-    <a href="{{site.baseurl}}/topics/install" {% if navgroup == 'topics' and navgroup='install' %}class="active-group"{% endif %}>Installation</a>
-    <a href="{{site.baseurl}}/topics/flows" {% if navgroup == 'topics' and navpage='flows' %}class="active-group"{% endif %}>Guide</a>
+    <a href="{{site.baseurl}}/topics/intro" {% if navgroup == 'topics' and navpage == 'intro' %}class="active-group" {% endif %}>Getting Started</a>
+    <a href="{{site.baseurl}}/topics/install" {% if navgroup == 'topics' and navpage == 'install' %}class="active-group"{% endif %}>Installation</a>
+    <a href="{{site.baseurl}}/topics/flows" {% if navgroup == 'topics' and navpage != 'intro' and navpage != 'install' %}class="active-group"{% endif %}>Guide</a>
     <a href="{{site.baseurl}}/api" {% if navgroup == 'api.html' %}class="active-group"{% endif %}>API</a>
   </nav>
 
