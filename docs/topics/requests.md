@@ -2,9 +2,6 @@
 layout: topic
 ---
 # Requests
-Ply is all about automated testing of REST (and GraphQL) APIs. By running Ply tests, 
-you're sending actual HTTP requests to exercise your service endpoints.
-
 Requests are the reusable building blocks you can arrange to create test sequences, or suites.
 Each request represents an HTTP request with these elements:
   - url

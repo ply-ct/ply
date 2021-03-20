@@ -1,7 +1,7 @@
 ---
 layout: topic
 ---
-# Ply Flows
+# Flows
 
 ## Create a Ply flow
 1. Launch VS Code, and in its Activity Bar click the Test Explorer icon:
@@ -9,7 +9,7 @@ layout: topic
 1. Drop down Test Explorer's meatball menu
    <img src="../img/meatball.png" alt="Meatball Menu" class="icon-img" style="margin:0"><span class="after-icon">, then select "New Ply Flow".</span>
 1. Name the flow "get-movies.ply.flow", saving to an empty folder somewhere.
-1. Your newly-created flow should appear containing two steps: Start and Stop:  
+1. Your newly-created flow should appear, containing two steps: Start and Stop:  
    <img src="../img/get-movies-1.png" alt="get-movies 1" width="540px">
 1. Expand the Flows group in Test Explorer, and you should see get-movies.ply.flow.
 
