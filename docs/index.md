@@ -20,11 +20,12 @@ Ply is simply a more intuitive way to automate REST and GraphQL API testing.
       <h2>Techniques</h2>
       <ul>
         <li>Ply works over HTTP and doesn't care what platform your API runs on</li>
-        <li>Three different types of test artifacts: <a href="topics/flows">Flows</a>, <a href="topics/requests">Requests</a>, and <a href="cases">Cases</a></li>
+        <li>Three different types of test artifacts: <a href="topics/flows">Flows</a>, <a href="topics/requests">Requests</a>, and <a href="topics/cases">Cases</a></li>
         <li>Expected results are YAML files, compared with actual results during verification</li>
         <li>Auto-generate result files by capturing actual good responses</li>
         <li>Reference environment values and/or upstream response props using <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals">template expressions</a></li>
         <li>Built-in GraphQL support providing the same intuitive workflow as REST</li>
+        <li>The <a href="https://github.com/ply-ct/ply-demo">ply-demo</a> project illustrates best practices</li>
         <li>Import Ply requests from <a href="https://www.postman.com/" target="_blank" rel="noreferrer noopener nofollow">Postman</a> collections</li>
       </ul>
     </div>

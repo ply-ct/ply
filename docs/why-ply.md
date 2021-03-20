@@ -10,8 +10,8 @@ If tests are easier to build, they're more likely to be comprehensive.
 </p>
 <p>
 Postman and Insomnia are awesome tools for sending HTTP requests. Where they fall short is in automated testing.
-For super complex scenarios, sometimes their programmatic approach is a necessary effort (and Ply <a href="../topics/cases">supports that too</a>, 
-by the way). But for 90% of API testing Ply's workflow-based, declarative approach is a more maintainable alternative.
+For super complex scenarios, sometimes their programmatic approach is a necessary effort (and Ply <a href="../topics/cases">supports that too</a>).
+But for 90% of API testing Ply's workflow-based, declarative approach is a more maintainable alternative.
 </p>
 </div>
 

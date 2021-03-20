@@ -5,9 +5,9 @@ highlighter: rouge
 
 baseurl: /ply
 topics:
-  - category: Start
+  - category: Getting Started
     topics:
-      - label: Getting Started
+      - label: Flows Quickstart
         nav: getting-started
         tags: introduction, quickstart, flow, create, build, design, run
       - label: Install Ply
@@ -16,8 +16,11 @@ topics:
       - label: VS Code Ply
         nav: vscode-ply
         tags: visual studio, marketplace, installation
-  - category: Create
+  - category: User Guide
     topics:
+      - label: Flows
+        nav: flows
+        tags: workflow, graphical, start, stop, configurator
       - label: Requests
         nav: requests
         tags: url, method, headers, body, yaml, yml, demo, graphql, test, suite, movie
@@ -27,8 +30,6 @@ topics:
       - label: Values
         nav: values
         tags: parameter, dynamic, properties, json, file
-      - label: Flows
-        nav: flows
       - label: Cases
         nav: cases
         tags: typescript, decorator, before, after, test, suite, @test, @suite, movieCrud, chai, programmatic, code, debug, skipped

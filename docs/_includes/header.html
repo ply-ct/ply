@@ -13,10 +13,16 @@
     <a href="{{site.baseurl}}/api" {% if navgroup == 'api.html' %}class="active-group"{% endif %}>API</a>
   </nav>
 
-  <div class="site-nav" style="float:right;">
+  <div class="site-nav" style="float:right;margin-left:20px;margin-right:25px;">
     <input type="text" id="search-input" class="search-input" placeholder="🔎 Search">
     <ul id="results-container" class="search-results"></ul>
-    <a href="https://github.com/ply-ct/ply">GitHub</a>
+    <a href="https://github.com/ply-ct/ply" class="github" style="margin-right:10px">
+      <img src="{{site.baseurl}}/img/github.svg" width="24px" alt="Ply on GitHub">
+    </a>
+    <span class="github-star">
+      <a href="https://github.com/ply-ct/ply" class="github-button" data-icon="octicon-star"
+        aria-label="Star ply-ct/ply on GitHub">Star</a>
+    </span>
   </div>
 </div>
 
@@ -27,3 +33,4 @@
     json: '{{ site.baseurl }}/search.json'
   })
 </script>
+<script async defer src="https://buttons.github.io/buttons.js"></script>

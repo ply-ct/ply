@@ -136,7 +136,7 @@ table {
 .site-nav {
   display: flex;
   align-items: center;
-  margin-left: 100px;
+  margin-left: 50px;
   margin-top: -3px;
   line-height: 54px;
 }
@@ -180,6 +180,21 @@ table {
   font-weight: 600;
   line-height: 1.1;
   margin-top: 5px;
+}
+.github {
+  position: relative;
+  top: -3px;
+  margin-left: 5px;
+}
+.github img {
+  opacity: .8;
+}
+.github img:hover {
+  opacity: .6;
+}
+.github-star {
+  position: relative;
+  top: 3px;
 }
 .site-content {
   text-align: left;
