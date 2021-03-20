@@ -1,4 +1,4 @@
-<a href="https://ply-ct.github.io/ply/topics/requests">
+<a href="https://ply-ct.com">
   <img alt="ply-logo" src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/ply-logo.png" width="128">
 </a>
 <br><br>
@@ -7,7 +7,7 @@
 
 <h2>API Automated Testing
 <div>
-<a href="https://ply-ct.github.io/ply/topics/requests">
+<a href="https://ply-ct.com">
   <img src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/wares.png" width="128" alt="Ply your wares" />
 </a>
 </div>
