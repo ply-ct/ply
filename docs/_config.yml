@@ -7,20 +7,17 @@ baseurl: /ply
 topics:
   - category: Startup
     topics:
-      - label: Tutorial
-        nav: getting-started
-        tags: introduction, quickstart, flow, create, build, design, run
       - label: Install Ply
-        nav: install-ply
-        tags: installation, npm, node, npx, ply-movies, movies, download
-      - label: VS Code Ply
-        nav: vscode-ply
-        tags: visual studio, marketplace, installation
+        nav: install
+        tags: installation, npm, node, npx, ply-movies, movies, download, visual studio, marketplace
+      - label: Getting Started
+        nav: intro
+        tags: introduction, startup, start, quickstart, how-to
   - category: Guide
     topics:
       - label: Flows
         nav: flows
-        tags: workflow, graphical, start, stop, configurator
+        tags: workflow, graphical, flow, create, build, design, run, start, stop, configurator
       - label: Requests
         nav: requests
         tags: url, method, headers, body, yaml, yml, demo, graphql, test, suite, movie
@@ -47,3 +44,8 @@ topics:
       - label: API
         nav: ../api
         tags: typescript, javascript, api
+  - category: Examples
+    topics:
+      - label: ply-demo
+        nav: https://github.com/ply-ct/ply-demo#readme
+        tags: example, demo, ply-demo, repository, practices

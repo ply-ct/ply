@@ -1,7 +1,7 @@
 ---
 layout: topic
 ---
-## Values
+# Values
 Values provide a way to parameterize request content and response matching per environment or other varying condition. Values files are JSON format.
 For example, here's ply-demo's [ply-ct.json](https://github.com/ply-ct/ply-demo/blob/master/test/values/ply-ct.json) values file:
 ```json

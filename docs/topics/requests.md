@@ -1,7 +1,7 @@
 ---
 layout: topic
 ---
-## Requests
+# Requests
 Ply is all about automated testing of REST (and GraphQL) APIs. By running Ply tests, 
 you're sending actual HTTP requests to exercise your service endpoints.
 
@@ -49,7 +49,7 @@ Before we move on to show how you can run your Ply request suites, a few points 
 Requests can be run via [Ply CLI](cli), or within Visual Studio Code by installing the [Ply Extension]().
 
 For now let's use the CLI to run ply-demo's movie-queries.ply.yaml request suite. First, if you haven't already,
-[install Ply](install-ply). Then clone ply-demo and run the request suite:
+[install Ply](install). Then clone ply-demo and run the request suite:
 ```
 git clone https://github.com/ply-ct/ply-demo.git
 cd ply-demo

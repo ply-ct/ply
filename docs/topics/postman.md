@@ -1,7 +1,8 @@
 ---
 layout: topic
 ---
-## Postman
+# Postman
+
 Ply can import [Postman](https://www.postman.com/) collections into request YAML files.
 In fact, the [ply-demo](https://github.com/ply-ct/ply-demo) repository already contains 
 the Postman Echo collection, which you can import like this:
@@ -31,7 +32,7 @@ ply "test/Postman Echo/**/*"
 Overall Results: {"Passed":36,"Failed":0,"Errored":0,"Pending":0,"Submitted":0}
 ```
 
-### VS Code
+## VS Code
 To import from Postman using the Ply VS Code extension, open Test Explorer view, dropdown the meatball menu
 (`...`) in the toolbar, and select "Import from Postman". Then browse for your exported Postman collection file.
 

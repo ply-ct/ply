@@ -1,10 +1,11 @@
 ---
 layout: topic
 ---
-## Results
+# Results
 When you run a request in Ply, it generates actual results in [YAML](http://yaml.org/) format representing
 each submitted request along with its corresponding response. These results are saved to a file named after your request
 suite. The location of this file is governed by [Ply config](config) value `actualLocation` (eg: "test/results/actual").
+
 The result fragment below comes from running the `movieById` request in ply-demo's "movie-queries.ply.yaml". Notice that 
 ply inserts comments to reflect start time and response time. YAML comments are ignored when comparing results.
 ```yaml

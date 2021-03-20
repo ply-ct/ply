@@ -1,7 +1,7 @@
 ---
 layout: topic
 ---
-## Cases
+# Cases
 Real-world APIs need powerful test automation. Ply cases deliver ultimate control by enabling you to run your 
 requests programmatically using [TypeScript](https://www.typescriptlang.org/).
 

@@ -4,8 +4,8 @@ body {
   font-feature-settings: "kern" 1;
   font-kerning: normal;
 }
-h2 {
-  margin-top: 20px;
+h1 {
+  color: #148F9B;
 }
 h3 {
   font-size: 1.25em;
@@ -344,6 +344,7 @@ table {
   width: calc(100% - 240px);
   min-width: 500px;
   min-height: 800px;
+  margin-top: 20px;
   margin-right: 40px;
 }
 .topic {

@@ -1,7 +1,7 @@
 ---
 layout: topic
 ---
-## CLI
+# CLI
 The CLI is how you can run Ply directly from the command line and also automatically as part of your 
 continuous integration cycle. Running ply without any arguments will execute all requests/cases (except
 those that are ignored or skipped).
