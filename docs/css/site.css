@@ -139,10 +139,12 @@ table {
   50% { transform: translate(0, -6px) rotate(0deg); }
   75% { transform: translate(0, -3px) rotate(10deg); }
 }
-.logo-img:hover {
-  animation: wave 3s infinite linear;
+.logo-wave {
+  animation: wave 3s linear 1;
 }
-
+.logo-img:hover {
+  animation: wave 3s linear infinite;
+}
 .site-nav {
   display: flex;
   align-items: center;

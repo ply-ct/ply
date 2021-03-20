@@ -34,3 +34,11 @@
   })
 </script>
 <script async defer src="https://buttons.github.io/buttons.js"></script>
+<script>
+  let perSession = sessionStorage.getItem('perSession');
+  if (!perSession) {
+    const logoImg = document.querySelector('.logo-img');
+    if (logoImg) logoImg.classList.add('logo-wave');
+    sessionStorage.setItem('perSession', 'true');
+  }
+</script>
