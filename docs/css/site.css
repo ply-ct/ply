@@ -133,6 +133,16 @@ table {
 .logo-text {
   margin-left: 10px;
 }
+@keyframes wave {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(0, -3px) rotate(-10deg); }
+  50% { transform: translate(0, -6px) rotate(0deg); }
+  75% { transform: translate(0, -3px) rotate(10deg); }
+}
+.logo-img:hover {
+  animation: wave 3s infinite linear;
+}
+
 .site-nav {
   display: flex;
   align-items: center;
