@@ -80,7 +80,7 @@ export class Ply {
         return requestSuites[0];
     }
 
-        async loadSuite(location: string): Promise<Suite<Request>> {
+    async loadSuite(location: string): Promise<Suite<Request>> {
         return await this.loadRequestSuite(location);
     }
 

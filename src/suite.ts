@@ -138,6 +138,10 @@ export class Suite<T extends Test> {
             this.log.debug('RunOptions', runOptions);
         }
 
+        if (runOptions?.requireTsNode) {
+            require('ts-node/register');
+        }
+
         // runtime values are a deep copy of passed values
         this.runtime.values = JSON.parse(JSON.stringify(values));
         this.runtime.responseHeaders = undefined;

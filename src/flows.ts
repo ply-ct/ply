@@ -46,6 +46,10 @@ export class FlowSuite extends Suite<Step> {
             this.log.debug('RunOptions', runOptions);
         }
 
+        if (runOptions?.requireTsNode) {
+            require('ts-node/register');
+        }
+
         this.emitSuiteStarted();
 
         // runtime values are a deep copy of passed values

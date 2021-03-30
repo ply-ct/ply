@@ -23,5 +23,4 @@ export { load as loadYaml } from './yaml';
 export { replace } from './subst';
 export * as util from './util';
 
-require('ts-node/register');
 export default new Ply();

@@ -135,6 +135,9 @@ export interface RunOptions {
      * and also in originating the call to Suite.run (for the case(s)).
      */
     useDist?: boolean;
+
+    requireTsNode?: boolean;
+
     /**
      * Runtime override values
      */
