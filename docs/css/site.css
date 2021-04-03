@@ -140,7 +140,7 @@ table {
   75% { transform: translate(0, -3px) rotate(10deg); }
 }
 .logo-wave {
-  animation: wave 3s linear 1;
+  animation: wave 3s linear 2;
 }
 .logo-img:hover {
   animation: wave 3s linear infinite;
