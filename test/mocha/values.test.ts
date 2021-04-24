@@ -33,7 +33,7 @@ describe('Values', () => {
 
         const values = await new Values(options.valuesFiles, logger).read();
 
-        assert.strictEqual(values.baseUrl, 'http://localhost:3000/movies');
+        assert.strictEqual(values.baseUrl, 'http://localhost:3000');
         assert.strictEqual(values.year, 1931);
         assert.strictEqual(values.rating, 5);
         assert.strictEqual(values.query, 'year=1935&rating=>4&sort=rating&descending=true');

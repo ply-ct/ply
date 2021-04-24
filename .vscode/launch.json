@@ -10,7 +10,7 @@
       ],
       "program": "${workspaceFolder}/dist/cli.js",
       "args": [
-        "test/ply/cases/movieCrud.ply.ts"
+        "test/ply/flows/plain-text-id.ply.flow"
       ],
       "preLaunchTask": "tsc: build - tsconfig.json"
     }

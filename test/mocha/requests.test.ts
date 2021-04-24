@@ -6,7 +6,7 @@ import { Storage } from '../../src/storage';
 import { Values } from '../../src/values';
 
 const values = {
-    baseUrl: 'http://localhost:3000/movies',
+    baseUrl: 'http://localhost:3000',
     year: '1931',
     rating: '5',
     query: 'year=1935&rating=>4&sort=rating&descending=true'
@@ -97,7 +97,7 @@ describe('Requests', async () => {
         const suite = suites[0];
 
         const values = {
-            baseUrl: "http://localhost:3000/movies",
+            baseUrl: "http://localhost:3000",
             year: 1931,
             rating: 5
         };
@@ -113,7 +113,7 @@ describe('Requests', async () => {
         const suite = suites[0];
 
         const values = {
-            baseUrl: "http://localhost:3000/movies",
+            baseUrl: "http://localhost:3000",
             year: 1932,  // instead of 1931
             rating: 5
         };

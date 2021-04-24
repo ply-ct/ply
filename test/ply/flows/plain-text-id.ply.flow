@@ -1,0 +1,52 @@
+attributes:
+  NodeStyle: BoxIcon
+  display: 'x=23,y=18,w=156,h=27'
+steps:
+  - attributes:
+      display: 'x=56,y=97,w=60,h=40'
+    id: s1
+    links:
+      - attributes:
+          display: 'type=Elbow,x=154,y=115,xs=120&186,ys=117&117'
+        id: l1
+        to: s3
+    name: Start
+    path: start
+  - attributes:
+      display: 'x=580,y=100,w=60,h=40'
+    id: s2
+    name: Stop
+    path: stop
+  - attributes:
+      display: 'x=190,y=80,w=100,h=80'
+      method: GET
+      url: '${baseUrl}/randomId'
+    id: s3
+    links:
+      - attributes:
+          display: 'type=Elbow,x=345,y=120,xs=294&396,ys=120&120'
+        id: l2
+        to: s4
+        type: link
+    name: |-
+      Get ID
+      Plain Text
+    path: request
+    type: step
+  - attributes:
+      display: 'x=400,y=80,w=100,h=80'
+      headers: '[["Accept","application/json"]]'
+      method: GET
+      url: '${baseUrl}/movies/${@s3.response.body}'
+    id: s4
+    links:
+      - attributes:
+          display: 'type=Elbow,x=540,y=120,xs=504&576,ys=120&120'
+        id: l3
+        to: s2
+        type: link
+    name: |-
+      Movie
+      by ID
+    path: request
+    type: step

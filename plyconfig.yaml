@@ -6,8 +6,9 @@ requestFiles: '**/*.ply.yaml'
 caseFiles: '**/*.ply.ts'
 flowFiles: '**/*.ply.flow'
 
-# don't run these directly (they're for use by cases)
-skip: 'requests/movies-api.ply.yaml'
+skip: '{requests/movies-api.ply.yaml,flows/plain-text-id.ply.flow}'
+# needs ply-movies branch
+ignore: 'flows/plain-text-id.ply.flow'
 
 verbose: false
 

@@ -2,7 +2,7 @@
 
 moviesByYearAndRating:
   request:
-    url: '${baseUrl}?year=${year}&rating=${rating}'
+    url: ${baseUrl}/movies?year=${year}&rating=${rating}
     method: GET
     headers:
       Accept: application/json
@@ -96,7 +96,7 @@ moviesByYearAndRating:
 
 movieById:
   request:
-    url: '${baseUrl}/${@moviesByYearAndRating.response.body.movies[0].id}' # id from previous response
+    url: ${baseUrl}/movies/${@moviesByYearAndRating.response.body.movies[0].id} # id from previous response
     method: GET
     headers:
       Accept: application/json
@@ -148,7 +148,7 @@ movieById:
 
 moviesQuery:
   request:
-    url: '${baseUrl}?${query}'
+    url: ${baseUrl}/movies?${query}
     method: GET
     headers:
       Accept: application/json

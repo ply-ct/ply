@@ -24,7 +24,7 @@ describe('subst', () => {
 
     it('handles result values', () => {
         const values = {
-            baseUrl: 'http://localhost:3000/movies',
+            baseUrl: 'http://localhost:3000',
             __ply_results: {
                 moviesByYearAndRating: {
                     response: {
@@ -39,7 +39,7 @@ describe('subst', () => {
             }
         };
 
-        const template = '${baseUrl}/${@moviesByYearAndRating.response.body.movies[1].id}';
+        const template = '${baseUrl}/movies/${@moviesByYearAndRating.response.body.movies[1].id}';
         const res = subst.replace(template, values, logger);
         assert.strictEqual(res, 'http://localhost:3000/movies/eec22a97');
     });

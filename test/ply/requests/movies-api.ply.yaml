@@ -1,7 +1,7 @@
 # This file appears in .plyignore to indicate that these requests
 # are not to be run directly, but only through case file movieCrud.ply.ts.
 createMovie: # POST
-  url: '${baseUrl}'
+  url: ${baseUrl}/movies
   method: POST
   headers:
     Accept: application/json
@@ -44,7 +44,7 @@ createMovie: # POST
     }
 
 updateMovie: # PATCH
-  url: '${baseUrl}/${id}'
+  url: ${baseUrl}/movies/${id}
   method: PATCH
   headers:
     Accept: application/json
@@ -55,19 +55,19 @@ updateMovie: # PATCH
     }
 
 retrieveMovie: # GET
-  url: '${baseUrl}/${id}'
+  url: ${baseUrl}/movies/${id}
   method: GET
   headers:
     Accept: application/json
 
 deleteMovie: # DELETE
-  url: '${baseUrl}/${id}'
+  url: ${baseUrl}/movies/${id}
   method: DELETE
   headers:
     Accept: application/json
 
 replaceMovie: # POST
-  url: '${baseUrl}/${id}'
+  url: ${baseUrl}/movies/${id}
   method: PUT
   headers:
     Accept: application/json

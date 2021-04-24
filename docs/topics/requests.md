@@ -13,7 +13,7 @@ A request suite is a YAML file containing one or more named requests. Here's an 
 movie-queries.ply.yaml in the [ply-demo](https://github.com/ply-ct/ply-demo) project:
 ```yaml
 moviesByYearAndRating:
-  url: '${baseUrl}?year=${year}&rating=${rating}'
+  url: '${baseUrl}/movies?year=${year}&rating=${rating}'
   method: GET
   headers:
     Accept: application/json
@@ -27,7 +27,7 @@ The next request in this suite illustrates another important feature of expressi
 ```yaml
 movieById:
   # id comes from previous response body
-  url:  '${baseUrl}/${@moviesByYearAndRating.response.body.movies[0].id}'
+  url:  '${baseUrl}/movies/${@moviesByYearAndRating.response.body.movies[0].id}'
   method: GET
   headers:
     Accept: application/json

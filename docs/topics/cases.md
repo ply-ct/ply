@@ -66,7 +66,7 @@ to set id to what we previously captured, and rating to 4.5. These are used by '
 movies-api.ply.yaml request suite we've loaded:
 ```yaml
 updateMovie: # PATCH
-  url: '${baseUrl}/${id}'
+  url: '${baseUrl}/movies/${id}'
   method: PATCH
   headers:
     Accept: application/json

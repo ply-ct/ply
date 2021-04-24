@@ -1,71 +1,71 @@
 attributes:
   NodeStyle: BoxIcon
-  display: 'x=23,y=18,w=156,h=27'
   bail: 'false'
+  display: 'x=23,y=18,w=156,h=27'
 steps:
-  - id: s1
+  - attributes:
+      display: 'x=60,y=110,w=60,h=40'
+    id: s1
+    links:
+      - attributes:
+          display: 'type=Elbow,x=155,y=130,xs=124&186,ys=130&130'
+        id: l1
+        to: s3
     name: Start
     path: start
-    attributes:
-      display: 'x=60,y=110,w=60,h=40'
-    links:
-      - id: l1
-        attributes:
-          display: 'type=Elbow,x=155,y=130,xs=124&186,ys=130&130'
-        to: s3
-  - id: s2
+  - attributes:
+      display: 'x=722,y=112,w=60,h=40'
+    id: s2
     name: Stop
     path: stop
-    attributes:
-      display: 'x=722,y=112,w=60,h=40'
-  - id: s3
+  - attributes:
+      display: 'x=190,y=90,w=100,h=80'
+      headers: '[["Accept","application/json"]]'
+      method: GET
+      url: '${baseUrl}/movies?year=${year}&rating=${rating}'
+    id: s3
+    links:
+      - attributes:
+          display: 'type=Elbow,x=330,y=130,xs=294&366,ys=130&130'
+        id: l2
+        to: s4
+        type: link
     name: |-
       Movies by
       Year & Rating
     path: request
-    attributes:
-      display: 'x=190,y=90,w=100,h=80'
-      method: GET
-      url: '${baseUrl}?year=${year}&rating=${rating}'
-      headers: '[["Accept","application/json"]]'
-    links:
-      - id: l2
-        to: s4
-        type: link
-        attributes:
-          display: 'type=Elbow,x=330,y=130,xs=294&366,ys=130&130'
     type: step
-  - id: s4
+  - attributes:
+      display: 'x=370,y=90,w=100,h=80'
+      headers: '[["Accept","application/json"]]'
+      method: GET
+      url: '${baseUrl}/movies/${@s3.response.body.movies[0].id}'
+    id: s4
+    links:
+      - attributes:
+          display: 'type=Elbow,x=513,y=130,xs=474&546,ys=130&130'
+        id: l3
+        to: s5
+        type: link
     name: |-
       Movie by
       ID
     path: request
-    attributes:
-      display: 'x=370,y=90,w=100,h=80'
-      method: GET
-      url: '${baseUrl}/${@s3.response.body.movies[0].id}'
-      headers: '[["Accept","application/json"]]'
-    links:
-      - id: l3
-        to: s5
-        type: link
-        attributes:
-          display: 'type=Elbow,x=513,y=130,xs=474&546,ys=130&130'
     type: step
-  - id: s5
+  - attributes:
+      display: 'x=550,y=90,w=100,h=80'
+      headers: '[["Accept","application/json"]]'
+      method: GET
+      url: '${baseUrl}/movies?${queries.highlyRated1935}'
+    id: s5
+    links:
+      - attributes:
+          display: 'type=Elbow,x=688,y=132,xs=654&718,ys=132&132'
+        id: l4
+        to: s2
+        type: link
     name: |-
       Great Films
       of 1935
     path: request
-    attributes:
-      display: 'x=550,y=90,w=100,h=80'
-      method: GET
-      url: '${baseUrl}?${queries.highlyRated1935}'
-      headers: '[["Accept","application/json"]]'
-    links:
-      - id: l4
-        to: s2
-        type: link
-        attributes:
-          display: 'type=Elbow,x=688,y=132,xs=654&718,ys=132&132'
     type: step

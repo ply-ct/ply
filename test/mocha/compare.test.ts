@@ -37,7 +37,7 @@ describe('Compare', () => {
         const expected = 'before\n' +
           'headers:\n' +
           '  content-type: application/json${~.*}\n' +
-          '  location: \'${baseUrl}/${~[0-9a-f]+}\'\n';
+          '  location: \'${baseUrl}/movies/${~[0-9a-f]+}\'\n';
           'after\n';
 
         const actual = 'before\n' +
@@ -47,7 +47,7 @@ describe('Compare', () => {
         'after\n';
 
         const values = {
-            baseUrl: 'http://localhost:3000/movies'
+            baseUrl: 'http://localhost:3000'
         };
 
         const diffs = compare.diffLines(expected, actual, values);
@@ -67,7 +67,7 @@ describe('Compare', () => {
         const expected = 'before\n' +
           'headers:\n' +
           '  content-type: application/json${~.*}\r\n' +  // windows newline
-          '  location: \'${baseUrl}/${id}\'\n';
+          '  location: \'${baseUrl}/movies/${id}\'\n';
           'after\n';
 
         const actual = 'before\n' +
@@ -82,7 +82,7 @@ describe('Compare', () => {
 
         const diffs = compare.diffLines(expected, actual, values);
         assert.strictEqual(diffs.length, 3);
-        assert.strictEqual(diffs[1].value, "  content-type: application/json${~.*}\n  location: '${baseUrl}/${id}'\n");
+        assert.strictEqual(diffs[1].value, "  content-type: application/json${~.*}\n  location: '${baseUrl}/movies/${id}'\n");
         assert.strictEqual(diffs[1].ignored, undefined);
     });
 });

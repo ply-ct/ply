@@ -10,7 +10,7 @@ import { Storage } from '../../src/storage';
 import { UnnamedSuite } from './suites';
 
 const values = {
-    baseUrl: 'http://localhost:3000/movies'
+    baseUrl: 'http://localhost:3000'
 };
 
 describe('Cases', async () => {

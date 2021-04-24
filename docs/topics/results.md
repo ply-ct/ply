@@ -73,7 +73,7 @@ expected results. Expected results are named after your request suite and are fo
 ```yaml
 movieById:
   request:
-    url: '${baseUrl}/${@moviesByYearAndRating.response.body.movies[0].id}' # id from previous response
+    url: '${baseUrl}/movies/${@moviesByYearAndRating.response.body.movies[0].id}' # id from previous response
     method: GET
     headers:
       Accept: application/json

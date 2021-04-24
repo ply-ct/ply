@@ -13,7 +13,7 @@ Properties such as `baseUrl` are referenced in requests ([movie-queries.ply.yaml
 like so:
 ```yaml
 moviesByYearAndRating:
-  url: '${baseUrl}?year=${year}&rating=${rating}'
+  url: '${baseUrl}/movies?year=${year}&rating=${rating}'
 ```
 The expression syntax here is that of JavaScript [template literals](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals). 
 

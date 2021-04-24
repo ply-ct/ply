@@ -7,12 +7,12 @@ export interface Yaml {
 }
 
 export function dump(obj: object, indent: number): string {
-    return jsYaml.safeDump(obj, { noCompatMode: true, skipInvalid: true, indent, lineWidth: -1 });
+    return jsYaml.dump(obj, { noCompatMode: true, skipInvalid: true, indent, lineWidth: -1 });
 }
 
 export function load(file: string, contents: string, assignLines = false): any {
     const lines: any = {};
-    const obj = jsYaml.safeLoad(contents, {
+    const obj = jsYaml.load(contents, {
         filename: file,
         listener: function (op, state) {
             if (assignLines && op === 'open' && state.kind === 'scalar') {

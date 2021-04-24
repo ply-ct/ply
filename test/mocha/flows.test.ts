@@ -5,7 +5,7 @@ import { Storage } from '../../src/storage';
 import * as util from '../../src/util';
 
 const values = {
-    baseUrl: 'http://localhost:3000/movies',
+    baseUrl: 'http://localhost:3000',
     year: 1931,
     rating: 5,
     queries: {

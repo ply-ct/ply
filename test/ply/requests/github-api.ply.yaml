@@ -1,11 +1,11 @@
 repositoryTopics:
-  url: 'https://api.github.com/repos/${github.organization}/${github.repository}/topics'
+  url: https://api.github.com/repos/${github.organization}/${github.repository}/topics
   method: GET
   headers:
     Accept: application/vnd.github.mercy-preview+json # topics still in preview
 
 repositoryTopicsQuery:
-  url: 'https://api.github.com/graphql'
+  url: https://api.github.com/graphql
   method: POST
   headers:
     Authorization: Bearer ${githubToken}

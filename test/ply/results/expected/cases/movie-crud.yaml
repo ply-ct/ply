@@ -1,7 +1,7 @@
 add new movie:
   createMovie:
     request:
-      url: '${baseUrl}'
+      url: ${baseUrl}/movies
       method: POST
       headers:
         Accept: application/json
@@ -48,7 +48,7 @@ add new movie:
         message: Created
       headers:
         content-type: application/json${~.*}  # charset is optional (regex)
-        location: '${baseUrl}/${~[0-9a-f]+}' # id is unknown but should be hex digits
+        location: ${baseUrl}/movies/${~[0-9a-f]+} # id is unknown but should be hex digits
       body: |-
         {
           "credits": [
@@ -89,7 +89,7 @@ add new movie:
 update rating:
   updateMovie:
     request:
-      url: '${baseUrl}/${id}'
+      url: ${baseUrl}/movies/${id}
       method: PATCH
       headers:
         Accept: application/json
@@ -113,7 +113,7 @@ update rating:
         }
   retrieveMovie:
     request:
-      url: '${baseUrl}/${id}'
+      url: ${baseUrl}/movies/${id}
       method: GET
       headers:
         Accept: application/json
@@ -164,7 +164,7 @@ update rating:
 remove movie:
   deleteMovie:
     request:
-      url: '${baseUrl}/${id}'
+      url: ${baseUrl}/movies/${id}
       method: DELETE
       headers:
         Accept: application/json
@@ -183,7 +183,7 @@ remove movie:
         }
   retrieveMovie:
     request:
-      url: '${baseUrl}/${id}'
+      url: ${baseUrl}/movies/${id}
       method: GET
       headers:
         Accept: application/json

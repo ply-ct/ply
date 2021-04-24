@@ -23,11 +23,11 @@ describe('Import', () => {
         assert.ok(topRequests);
 
         const after1935 = topRequests.get('after 1935') as Request;
-        assert.strictEqual(after1935.url, '${baseUrl}?year=>1935');
+        assert.strictEqual(after1935.url, '${baseUrl}/movies?year=>1935');
         assert.strictEqual(after1935.method, 'GET');
 
         const create = topRequests.get('create') as Request;
-        assert.strictEqual(create.url, '${baseUrl}');
+        assert.strictEqual(create.url, '${baseUrl}/movies');
         assert.strictEqual(create.method, 'POST');
         assert.strictEqual(create.headers['Content-Type'], 'application/json');
         assert.ok(create.body);
@@ -39,22 +39,22 @@ describe('Import', () => {
         assert.ok(moviesRequests);
 
         const lugosi = moviesRequests.get('Lugosi') as Request;
-        assert.strictEqual(lugosi.url, '${baseUrl}?search=Bela%20Lugosi');
+        assert.strictEqual(lugosi.url, '${baseUrl}/movies?search=Bela%20Lugosi');
         assert.strictEqual(lugosi.method, 'GET');
 
         const karloff = moviesRequests.get('Karloff') as Request;
-        assert.strictEqual(karloff.url, '${baseUrl}?search=Boris%20Karloff');
+        assert.strictEqual(karloff.url, '${baseUrl}/movies?search=Boris%20Karloff');
         assert.strictEqual(karloff.method, 'GET');
 
         const greatRequests = ply.loadSuiteSync(`${reqRoot}/movies/by rating/great.ply.yaml`);
         assert.ok(greatRequests);
 
         const greatsOf1931 = greatRequests.get('great movies of 1931') as Request;
-        assert.strictEqual(greatsOf1931.url, '${baseUrl}?rating=5&year=1931');
+        assert.strictEqual(greatsOf1931.url, '${baseUrl}/movies?rating=5&year=1931');
         assert.strictEqual(greatsOf1931.method, 'GET');
 
         const greatsAfter1935 = greatRequests.get('great movies after 1935') as Request;
-        assert.strictEqual(greatsAfter1935.url, '${baseUrl}?rating=5&year=>1935');
+        assert.strictEqual(greatsAfter1935.url, '${baseUrl}/movies?rating=5&year=>1935');
         assert.strictEqual(greatsAfter1935.method, 'GET');
     });
 
@@ -94,7 +94,7 @@ describe('Import', () => {
         const values = new Values([`${valRoot}/localhost.json`], new Logger());
         const obj = await values.read();
         assert.ok(obj);
-        assert.strictEqual(obj.baseUrl, 'http://localhost:8080/movies');
+        assert.strictEqual(obj.baseUrl, 'http://localhost:8080');
     });
 
 });

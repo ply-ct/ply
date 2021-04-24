@@ -1,19 +1,19 @@
 moviesByYearAndRating:
-  url: '${baseUrl}?year=${year}&rating=${rating}'
+  url: ${baseUrl}/movies?year=${year}&rating=${rating}
   method: GET
   headers:
     Accept: application/json
 
 movieById:
   # id comes from previous response body
-  url:  '${baseUrl}/${@moviesByYearAndRating.response.body.movies[0].id}'
+  url: ${baseUrl}/movies/${@moviesByYearAndRating.response.body.movies[0].id}
   method: GET
   headers:
     Accept: application/json
 
 # general purpose query
 moviesQuery:
-  url: '${baseUrl}?${query}'
+  url: ${baseUrl}/movies?${query}
   method: GET
   headers:
     Accept: application/json

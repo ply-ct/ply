@@ -5,7 +5,7 @@ Start:
 Movies by Year & Rating:
   id: s3
   request:
-    url: '${baseUrl}?year=${year}&rating=${rating}'
+    url: ${baseUrl}/movies?year=${year}&rating=${rating}
     method: GET
     headers:
       Accept: application/json
@@ -100,7 +100,7 @@ Movies by Year & Rating:
 Movie by ID:
   id: s4
   request:
-    url: '${baseUrl}/${@s3.response.body.movies[0].id}'
+    url: ${baseUrl}/movies/${@s3.response.body.movies[0].id}
     method: GET
     headers:
       Accept: application/json
@@ -153,7 +153,7 @@ Movie by ID:
 Great Films of 1935:
   id: s5
   request:
-    url: '${baseUrl}?${queries.highlyRated1935}'
+    url: ${baseUrl}/movies?${queries.highlyRated1935}
     method: GET
     headers:
       Accept: application/json

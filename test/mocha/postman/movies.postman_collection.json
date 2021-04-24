@@ -17,7 +17,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{baseUrl}}?rating=>3.5&year=>1935",
+									"raw": "{{baseUrl}}/movies?rating=>3.5&year=>1935",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -48,7 +48,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{baseUrl}}?rating=5&year=1931",
+									"raw": "{{baseUrl}}/movies?rating=5&year=1931",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -72,7 +72,7 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{baseUrl}}?rating=5&year=>1935",
+									"raw": "{{baseUrl}}/movies?rating=5&year=>1935",
 									"host": [
 										"{{baseUrl}}"
 									],
@@ -126,7 +126,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}?search=Bela%20Lugosi",
+							"raw": "{{baseUrl}}/movies?search=Bela%20Lugosi",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -146,7 +146,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}?search=Boris%20Karloff",
+							"raw": "{{baseUrl}}/movies?search=Boris%20Karloff",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -169,7 +169,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}?year=>1935",
+					"raw": "{{baseUrl}}/movies?year=>1935",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -189,7 +189,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/38a917a5",
+					"raw": "{{baseUrl}}/movies/38a917a5",
 					"host": [
 						"{{baseUrl}}"
 					],
@@ -221,7 +221,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}",
+					"raw": "{{baseUrl}}/movies",
 					"host": [
 						"{{baseUrl}}"
 					]

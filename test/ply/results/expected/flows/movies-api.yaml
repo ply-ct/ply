@@ -16,7 +16,7 @@ Start:
 Create Movie:
   id: s7
   request:
-    url: 'http://localhost:3000/movies'
+    url: http://localhost:3000/movies
     method: POST
     headers:
       Accept: application/json
@@ -104,7 +104,7 @@ Create Movie:
 Update Rating:
   id: s8
   request:
-    url: 'http://localhost:3000/movies/435b30ad'
+    url: http://localhost:3000/movies/435b30ad
     method: PATCH
     headers:
       Accept: application/json
@@ -130,7 +130,7 @@ Update Rating:
 Confirm Update:
   id: s9
   request:
-    url: 'http://localhost:3000/movies/435b30ad'
+    url: http://localhost:3000/movies/435b30ad
     method: GET
     headers:
       Accept: application/json
@@ -182,7 +182,7 @@ Confirm Update:
 Delete Movie:
   id: s10
   request:
-    url: 'http://localhost:3000/movies/435b30ad'
+    url: http://localhost:3000/movies/435b30ad
     method: DELETE
     headers:
       Accept: application/json
@@ -203,7 +203,7 @@ Delete Movie:
 Confirm Delete:
   id: s11
   request:
-    url: 'http://localhost:3000/movies/435b30ad'
+    url: http://localhost:3000/movies/435b30ad
     method: GET
     headers:
       Accept: application/json
