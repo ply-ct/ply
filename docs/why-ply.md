@@ -46,7 +46,7 @@ Here's what a similar test looks like in <a href="https://blog.postman.com/writi
 <p>
 Notice the difference? With Ply you maintain your expected response body as an entire JSON payload embedded in YAML; whereas in Postman you'll
 need to craft JavaScript to evaluate each and every element. <a href="https://support.insomnia.rest/article/194-unit-testing">Insomnia tests</a>
-work much the same way. Not only are Ply tests much easier to understand, but also they can be <a href="topics/flows#run-with-expected-results">auto-generated</a>
+work much the same way as Postman. Not only are Ply tests much easier to understand, but also they can be <a href="topics/flows#run-with-expected-results">auto-generated</a>
 by capturing a good response.
 </p>
 <p>
