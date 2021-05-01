@@ -19,7 +19,8 @@ repositoryTopics:
           "nodejs",
           "test-automation",
           "continuous-testing",
-          "graphql"
+          "graphql",
+          "workflow"
         ]
       }
 
@@ -102,6 +103,13 @@ repositoryTopicsQuery:
                   "node": {
                     "topic": {
                       "name": "graphql"
+                    }
+                  }
+                },
+                {
+                  "node": {
+                    "topic": {
+                      "name": "workflow"
                     }
                   }
                 }
