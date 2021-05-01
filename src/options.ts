@@ -54,6 +54,10 @@ export interface Options {
      */
     valuesFiles?: string[];
     /**
+     * Results summary output JSON
+     */
+    outputFile?: string;
+    /**
      * Verbose output (false). Takes precedence over 'quiet' if both are true.
      */
     verbose?: boolean;
@@ -94,6 +98,7 @@ export interface PlyOptions extends Options {
     resultFollowsRelativePath: boolean;
     logLocation: string;
     valuesFiles: string[];
+    outputFile?: string;
     verbose: boolean;
     quiet: boolean;
     bail: boolean;
@@ -233,6 +238,10 @@ export class Config {
         },
         valuesFiles: {
             describe: 'Values files (comma-separated)',
+            type: 'string'
+        },
+        outputFile: {
+            describe: 'Results summary json file path',
             type: 'string'
         },
         verbose: {

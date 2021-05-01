@@ -5,6 +5,7 @@ import * as glob from 'glob';
 import { Plier } from './ply';
 import { Config, Defaults } from './options';
 import { Location } from  './location';
+import { Storage } from './storage';
 import { Retrieval } from './retrieval';
 import { Import } from './import';
 import * as tsNode from 'ts-node';
@@ -86,6 +87,9 @@ else {
             results.forEach(result => res[result.status]++);
             plier.logger.error('\nOverall Results: ' + JSON.stringify(res));
             plier.logger.info(`Overall Time: ${Date.now() - start} ms`);
+            if (plier.options.outputFile) {
+                new Storage(plier.options.outputFile).write(JSON.stringify(res, null, plier.options.prettyIndent));
+            }
             if (res.Failed || res.Errored) {
                 process.exit(1);
             }

@@ -270,6 +270,8 @@ export class Plier extends EventEmitter {
      */
     readonly logger: Logger;
 
+    get options() { return this.ply.options; }
+
     constructor(options?: Options) {
         super({ captureRejections: true });
 

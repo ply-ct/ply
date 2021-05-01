@@ -6,3 +6,4 @@ dist/
 temp/
 /movies.json
 .DS_Store
+/ply-results.json
