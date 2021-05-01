@@ -2,8 +2,9 @@
   <img alt="ply-logo" src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/ply-logo.png" width="128">
 </a>
 <br><br>
-
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ply-ct/ply/ply%20ci)
+<a href="https://github.com/ply-ct/ply/actions">
+  <img src="https://github.com/ply-ct/ply/workflows/ply%2Fci/badge.svg" />
+</a>
 
 <h2>API Automated Testing
 <div>
