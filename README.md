@@ -3,7 +3,7 @@
 </a>
 <br><br>
 <a href="https://github.com/ply-ct/ply/actions">
-  <img src="https://github.com/ply-ct/ply/workflows/ply%20ci/badge.svg" />
+  <img src="https://github.com/ply-ct/ply/workflows/build/badge.svg" />
 </a>
 
 <h2>API Automated Testing
