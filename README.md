@@ -6,7 +6,7 @@
   <img src="https://github.com/ply-ct/ply/workflows/build/badge.svg" />
 </a>
 <a href="https://github.com/ply-ct/ply/actions">
-  <img src="https://badgen.net/badge/ply/passing/148f99?color=148f99&icon=https://raw.githubusercontent.com/ply-ct/ply/master/docs/brand/Logo/Icon/Icon_white.svg" />
+  <img src="https://ply-ct.com/badges/ply-ct/ply/workflows/build" />
 </a>
 
 <h2>API Automated Testing
