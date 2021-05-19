@@ -18,6 +18,10 @@ Ply tests come in three flavors:
     Cases are written in TypeScript, ending in .ts (or .ply.ts). Write a Ply case when you need to
     programmatically execute requests and interrogate responses.
 
+## Results
+When responses are received by Ply, they're compared against an [Expected Results](results#expected-results)
+file, which is in YAML format and may contain [expressions](results#expected-results) to parameterize dynamic values.
+
 ## Jump right in
 Want to get straight to building a Ply flow? Proceed to the [walkthrough](flows) topic in this guide.
 
