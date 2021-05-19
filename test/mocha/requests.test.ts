@@ -256,7 +256,7 @@ value2
         const multipartForm = new MultipartForm(formDataRequest);
         const boundary = multipartForm.getBoundary(formDataRequest.headers['Content-Type']);
         assert.strictEqual(boundary, '--boundary');
-        const parts = multipartForm.getParts(formDataRequest.body, boundary);
+        const parts = multipartForm.getParts(formDataRequest.body!, boundary);
         assert.strictEqual(parts.length, 2);
         const part1 = parts[0];
         assert.strictEqual(part1.name, 'field1');
