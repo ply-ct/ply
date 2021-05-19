@@ -80,3 +80,10 @@ export function genId(): string {
     // TODO: consider microseconds or nanoseconds (process.hrtime())
     return Date.now().toString(16);
 }
+
+export function header(headers: { [key: string]: string }, name: string): [string, string] | undefined {
+    const key = name.toLowerCase();
+    const match = Object.keys(headers).find(h => h.toLowerCase() === key);
+    if (match) return [match, headers[match]];
+}
+

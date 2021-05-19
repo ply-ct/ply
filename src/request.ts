@@ -6,7 +6,8 @@ import { Retrieval } from './retrieval';
 import { Runtime } from './runtime';
 import { Options, RunOptions } from './options';
 import { PlyResult } from './result';
-import { timestamp } from './util';
+import { MultipartForm } from './form';
+import { timestamp, header } from './util';
 import * as subst from './subst';
 
 export interface Request extends Test {
@@ -86,6 +87,11 @@ export class PlyRequest implements Request, PlyTest {
         const before = new Date().getTime();
         const { Authorization: _auth, ...loggedHeaders } = requestObj.headers;
         this.logger.log(logLevel, 'Request', { ...requestObj, headers: loggedHeaders });
+
+        const ctHeader = header(requestObj.headers, 'content-type');
+        if (ctHeader && ctHeader[1].startsWith('multipart/form-data')) {
+            requestObj = new MultipartForm(requestObj).getRequest();
+        }
 
         const { url: _url, ...fetchRequest } = requestObj;
         const response = await fetch(requestObj.url, fetchRequest);

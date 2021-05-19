@@ -4,6 +4,7 @@ import { Config } from '../../src/options';
 import { Request, PlyRequest } from '../../src/request';
 import { Storage } from '../../src/storage';
 import { Values } from '../../src/values';
+import { MultipartForm } from '../../src/form';
 
 const values = {
     baseUrl: 'http://localhost:3000',
@@ -227,5 +228,43 @@ describe('Requests', async () => {
 
         const expected = new Storage('test/mocha/results/expected/requests/movie-queries.yaml');
         assert.ok(expected.exists);
+    });
+
+    const formDataRequest: Request = {
+        name: 'attach',
+        type: 'request',
+        url: '${baseUrl}/attachments/naked.png',
+        method: 'POST',
+        headers: {
+            Accept: 'application/ json',
+            'Content-Type': 'multipart/form-data;boundary="--boundary"'
+        },
+        body: `--boundary
+Content-Disposition: form-data; name="field1"
+
+value1
+--boundary
+Content-Disposition: form-data; name="field2"; filename="example.txt"
+
+value2
+--boundary--
+`,
+        submit: () => { throw new Error('Not implemented'); }
+    };
+
+    it('parses form data', () => {
+        const multipartForm = new MultipartForm(formDataRequest);
+        const boundary = multipartForm.getBoundary(formDataRequest.headers['Content-Type']);
+        assert.strictEqual(boundary, '--boundary');
+        const parts = multipartForm.getParts(formDataRequest.body, boundary);
+        assert.strictEqual(parts.length, 2);
+        const part1 = parts[0];
+        assert.strictEqual(part1.name, 'field1');
+        assert.strictEqual(part1.data?.toString(), 'value1');
+        const part2 = parts[1];
+        assert.strictEqual(part2.name, 'field2');
+        assert.strictEqual(part2.data?.toString(), 'value2');
+        assert.strictEqual(part2.filename, 'example.txt');
+
     });
 });
