@@ -402,19 +402,12 @@ export class Suite<T extends Test> {
                 throw new Error('Run option createExpected not supported for remote results');
             }
             runOptions.createExpected = true; // remember for downstream tests
-
-            let actualYamlText = actualYaml.text;
-            if (this.runtime.options.genExcludeResponseHeaders?.length) {
-                const resultObj = yaml.load(this.runtime.results.actual.location.name, actualYaml.text)[test.name];
-                if (resultObj?.response?.headers) {
-                    for (const key of Object.keys(resultObj.response?.headers)) {
-                        if (this.runtime.options.genExcludeResponseHeaders.includes(key.toLowerCase())) {
-                            delete resultObj.response.headers[key];
-                        }
-                    }
-                    actualYamlText = yaml.dump({ [test.name]: resultObj }, this.runtime.options.prettyIndent);
-                }
-            }
+            // remove comments
+            const actualYamlText = util.lines(actualYaml.text).reduce((yamlLines: string[], line) => {
+                const lastHash = line.lastIndexOf('#');
+                yamlLines.push(lastHash === -1 ? line : line.substring(0, lastHash - 1).trimEnd());
+                return yamlLines;
+            }, []).join('\n');
 
             const expected = new Storage(this.runtime.results.expected.location.toString());
             if (isFirst) {

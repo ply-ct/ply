@@ -18,5 +18,5 @@
 | **<code>bail</code>**<br>**<code>--bail</code>** | `false` | Stop execution on first failure.
 | **<code>parallel</code>**<br>**<code>--parallel</code>** | `false` | Run requests/cases/flows in parallel.
 | **<code>responseBodySortedKeys</code>**<br>**<code>--responseBodySortedKeys</code>** | `true` | Predictable ordering of response body JSON property keys in result files. Usually needed for verification.
-| **<code>genExcludeResponseHeaders</code>**<br>**<code>--genExcludeResponseHeaders</code>** | `cache-control, connection, content-length, date, etag, x-powered-by` | Response headers to exclude when generating expected results.
+| **<code>genExcludeResponseHeaders</code>**<br>**<code>--genExcludeResponseHeaders</code>** | `cache-control, connection, content-length, date, etag, server, transfer-encoding, x-powered-by` | Response headers to exclude when generating expected results.
 | **<code>prettyIndent</code>**<br>**<code>--prettyIndent</code>** | `2` | JSON format indenting for response body content in result files.

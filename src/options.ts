@@ -192,7 +192,16 @@ export class Defaults implements PlyOptions {
     bail = false;
     parallel = false;
     responseBodySortedKeys = true;
-    genExcludeResponseHeaders = [ 'cache-control', 'connection', 'content-length', 'date', 'etag', 'x-powered-by' ];
+    genExcludeResponseHeaders = [
+        'cache-control',
+        'connection',
+        'content-length',
+        'date',
+        'etag',
+        'server',
+        'transfer-encoding',
+        'x-powered-by'
+    ];
     prettyIndent = 2;
 }
 
