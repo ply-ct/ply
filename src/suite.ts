@@ -230,7 +230,8 @@ export class Suite<T extends Test> {
                             expectedExists = await this.runtime.results.expectedExists(test.name);
                         }
                         const isFirst = i === 0 && !this.callingFlowPath;
-                        result = this.handleResultRunOptions(test, result, actualYaml.text, isFirst, expectedExists, runOptions) || result;
+                        result = this.handleResultRunOptions(test, result, actualYaml, isFirst, expectedExists, runOptions) || result;
+
                         // status could be 'Submitted' if runOptions so specify
                         if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/flow is complete)
@@ -252,7 +253,7 @@ export class Suite<T extends Test> {
                 } else {
                     // case or flow complete -- verify result
                     actualYaml = this.runtime.results.getActualYaml(test.name);
-                    result = this.handleResultRunOptions(test, result, actualYaml.text, i === 0, expectedExists, runOptions) || result;
+                    result = this.handleResultRunOptions(test, result, actualYaml, i === 0, expectedExists, runOptions) || result;
                     // for cases status could be 'Submitted' if runOptions so specify (this check is handled at step level for flows)
                     if (result.status === 'Pending' || this.type === 'flow') {
                         const expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
@@ -383,7 +384,7 @@ export class Suite<T extends Test> {
         }
     }
 
-    private handleResultRunOptions(test: Test, result: Result, actualYamlText: string,
+    private handleResultRunOptions(test: Test, result: Result, actualYaml: yaml.Yaml,
         isFirst: boolean, expectedExists: boolean, runOptions?: RunOptions): Result | undefined {
 
         if (runOptions?.submit || (!expectedExists && runOptions?.submitIfExpectedMissing)) {
@@ -400,6 +401,21 @@ export class Suite<T extends Test> {
             if (this.runtime.results.expected.location.isUrl) {
                 throw new Error('Run option createExpected not supported for remote results');
             }
+            runOptions.createExpected = true; // remember for downstream tests
+
+            let actualYamlText = actualYaml.text;
+            if (this.runtime.options.genExcludeResponseHeaders?.length) {
+                const resultObj = yaml.load(this.runtime.results.actual.location.name, actualYaml.text)[test.name];
+                if (resultObj?.response?.headers) {
+                    for (const key of Object.keys(resultObj.response?.headers)) {
+                        if (this.runtime.options.genExcludeResponseHeaders.includes(key.toLowerCase())) {
+                            delete resultObj.response.headers[key];
+                        }
+                    }
+                    actualYamlText = yaml.dump({ [test.name]: resultObj }, this.runtime.options.prettyIndent);
+                }
+            }
+
             const expected = new Storage(this.runtime.results.expected.location.toString());
             if (isFirst) {
                 this.log.info(`Creating expected result: ${expected}`);

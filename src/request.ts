@@ -165,10 +165,18 @@ export class PlyRequest implements Request, PlyTest {
         const requestObject = this.getRequest(runtime.values, runtime.options, true);
         this.logger.info(`Request '${this.name}' submitted at ${timestamp(this.submitted, this.logger.level === LogLevel.debug)}`);
         const runOpts: RunOptions = { ...runOptions };
-        if (runOptions?.submitIfExpectedMissing && !(await runtime.results.expected.exists)) {
+        const expectedExists = await runtime.results.expected.exists;
+        if (runOptions?.submitIfExpectedMissing && !expectedExists) {
             runOpts.submit = true;
         }
         const response = await this.doSubmit(requestObject, runOpts);
+        if (response.headers && (runOptions?.createExpected || runOptions?.createExpectedIfMissing && !expectedExists) && runtime.options.genExcludeResponseHeaders?.length) {
+            for (const key of Object.keys(response.headers)) {
+                if (runtime.options.genExcludeResponseHeaders.includes(key)) {
+                    delete response.headers[key];
+                }
+            }
+        }
         const result = new PlyResult(
             this.name,
             requestObject,

@@ -78,6 +78,10 @@ export interface Options {
      */
     responseBodySortedKeys?: boolean;
     /**
+     * Response headers to exclude when generating expected results.
+     */
+    genExcludeResponseHeaders?: string[];
+    /**
      * Prettification indent for yaml and response body (2).
      */
     prettyIndent?: number;
@@ -104,6 +108,7 @@ export interface PlyOptions extends Options {
     bail: boolean;
     parallel: boolean;
     responseBodySortedKeys: boolean;
+    genExcludeResponseHeaders?: string[];
     prettyIndent: number;
     args?: any;
     runOptions?: RunOptions;
@@ -187,6 +192,7 @@ export class Defaults implements PlyOptions {
     bail = false;
     parallel = false;
     responseBodySortedKeys = true;
+    genExcludeResponseHeaders = [ 'cache-control', 'connection', 'content-length', 'date', 'etag', 'x-powered-by' ];
     prettyIndent = 2;
 }
 
@@ -271,6 +277,10 @@ export class Config {
         responseBodySortedKeys: {
             describe: 'Sort response body JSON keys'
         },
+        genExcludeResponseHeaders: {
+            describe: 'Exclude from generated results',
+            type: 'string'
+        },
         prettyIndent: {
             describe: 'Format response JSON'
         }
@@ -330,6 +340,13 @@ export class Config {
             if (typeof opts.valuesFiles === 'string') {
                 opts.valuesFiles = opts.valuesFiles.split(',').map((v: string) => v.trim());
             }
+            if (opts.genExcludeResponseHeaders) {
+                if (typeof opts.genExcludeResponseHeaders === 'string') {
+                    opts.genExcludeResponseHeaders = opts.genExcludeResponseHeaders.split(',').map((v: string) => v.trim());
+                }
+                opts.genExcludeResponseHeaders = opts.genExcludeResponseHeaders.map((v: string) => v.toLowerCase());
+            }
+
             opts.args = opts._;
             delete opts._;
         } else {
