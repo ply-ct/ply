@@ -58,14 +58,19 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<a href="https://ply-ct.github.io/ply/topics/requests">
+				<a href="https://ply-ct.com">
 					<img alt="ply-logo" src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/ply-logo.png" width="128">
 				</a>
 				<br><br>
-				<p><img src="https://img.shields.io/github/workflow/status/ply-ct/ply/ply%20ci" alt="GitHub Workflow Status"></p>
+				<a href="https://github.com/ply-ct/ply/actions">
+					<img src="https://github.com/ply-ct/ply/workflows/build/badge.svg" />
+				</a>
+				<a href="https://github.com/ply-ct/ply/actions">
+					<img src="https://ply-ct.com/badges/ply-ct/ply/workflows/build" />
+				</a>
 				<h2>API Automated Testing
 					<div>
-						<a href="https://ply-ct.github.io/ply/topics/requests">
+						<a href="https://ply-ct.com">
 							<img src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/wares.png" width="128" alt="Ply your wares" />
 						</a>
 					</div>
@@ -102,14 +107,14 @@
 				</a>
 				<p>Suppose you save this in a file named &quot;github.ply.yml&quot;. Then you can submit the
 				<code>repositoryTopics</code> request from a command line by typing:</p>
-				<pre><code><span style="color: #001080">ply</span><span style="color: #000000"> -</span><span style="color: #001080">x</span><span style="color: #000000"> </span><span style="color: #001080">github</span><span style="color: #000000">.</span><span style="color: #001080">ply</span><span style="color: #000000">.</span><span style="color: #001080">yml</span>
+				<pre><code><span style="color: #001080">ply</span><span style="color: #000000"> -</span><span style="color: #001080">s</span><span style="color: #000000"> </span><span style="color: #001080">github</span><span style="color: #000000">.</span><span style="color: #001080">ply</span><span style="color: #000000">.</span><span style="color: #001080">yml</span>
 </code></pre>
-				<p>The <code>-x</code> argument tells Ply not to verify the response (<code>-s</code> is short for <code>--submit</code>,
+				<p>The <code>-s</code> argument tells Ply not to verify the response (<code>-s</code> is short for <code>--submit</code>,
 				meaning submit an <em>ad hoc</em> request and don&#39;t bother with verification).</p>
 				<a href="#verify-response" id="verify-response" style="color: inherit; text-decoration: none;">
 					<h3>Verify response</h3>
 				</a>
-				<p>If you run without <code>-x</code> you&#39;ll get an error saying, &quot;Expected result file not found&quot;. Ply verification
+				<p>If you run without <code>-s</code> you&#39;ll get an error saying, &quot;Expected result file not found&quot;. Ply verification
 					works by comparing expected vs actual. So a complete test requires an expected result file. Run again
 				with <code>--create</code>, and the expected result file will be created from the actual response.</p>
 				<pre><code><span style="color: #001080">ply</span><span style="color: #000000"> --</span><span style="color: #001080">create</span><span style="color: #000000"> </span><span style="color: #001080">github</span><span style="color: #000000">.</span><span style="color: #001080">ply</span><span style="color: #000000">.</span><span style="color: #001080">yml</span>
@@ -165,7 +170,7 @@
 				as described in the docs under <a href="https://ply-ct.github.io/ply/topics/values">Values</a>.</p>
 				<p>Even more powerfully, your multi-request suites can embed expressions that reference runtime values from previous responses.
 				For instance, the URL or body of a subsequent request in our github.ply.yml file could have something like this:</p>
-				<pre><code><span style="color: #001080">$</span><span style="color: #000000">{@</span><span style="color: #001080">repositoryTopics</span><span style="color: #000000">.</span><span style="color: #001080">response</span><span style="color: #000000">.</span><span style="color: #001080">body</span><span style="color: #000000">.</span><span style="color: #001080">names</span><span style="color: #000000">[</span><span style="color: #098658">0</span><span style="color: #000000">]</span>
+				<pre><code><span style="color: #001080">$</span><span style="color: #000000">{@</span><span style="color: #001080">repositoryTopics</span><span style="color: #000000">.</span><span style="color: #001080">response</span><span style="color: #000000">.</span><span style="color: #001080">body</span><span style="color: #000000">.</span><span style="color: #001080">names</span><span style="color: #000000">[</span><span style="color: #098658">0</span><span style="color: #000000">]}</span>
 </code></pre>
 				<p>which uses the special <code>@</code> character to reference the first topic name from above (resolving to &#39;rest-api&#39;).
 					This enables you to string together sequential requests that each depend on response output from preceding ones.
@@ -282,6 +287,9 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/flows.html">flows</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/form.html">form</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="modules/import.html">import</a>

@@ -105,7 +105,9 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="options.defaults.html#bail" class="tsd-kind-icon">bail</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="options.defaults.html#casefiles" class="tsd-kind-icon">case<wbr>Files</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="options.defaults.html#flowfiles" class="tsd-kind-icon">flow<wbr>Files</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="options.defaults.html#genexcluderesponseheaders" class="tsd-kind-icon">gen<wbr>Exclude<wbr>Response<wbr>Headers</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="options.defaults.html#ignore" class="tsd-kind-icon">ignore</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="options.defaults.html#parallel" class="tsd-kind-icon">parallel</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="options.defaults.html#prettyindent" class="tsd-kind-icon">pretty<wbr>Indent</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="options.defaults.html#quiet" class="tsd-kind-icon">quiet</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="options.defaults.html#requestfiles" class="tsd-kind-icon">request<wbr>Files</a></li>
@@ -140,7 +142,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ply-ct/ply/blob/f004e22/src/options.ts#L141">src/options.ts:141</a></li>
+									<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L163">src/options.ts:163</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -163,9 +165,14 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#bail">bail</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/f004e22/src/options.ts#L170">src/options.ts:170</a></li>
+							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L192">src/options.ts:192</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Bail on first failure (false).</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="casefiles" class="tsd-anchor"></a>
@@ -174,20 +181,46 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#casefiles">caseFiles</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/f004e22/src/options.ts#L144">src/options.ts:144</a></li>
+							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L166">src/options.ts:166</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Case files glob pattern, relative to testsLocation (&#39;*<em>/</em>.ply.ts&#39;).</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="flowfiles" class="tsd-anchor"></a>
 					<h3>flow<wbr>Files</h3>
-					<div class="tsd-signature tsd-kind-icon">flow<wbr>Files<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x27;**/*.ply.flow&#x27;</span></div>
+					<div class="tsd-signature tsd-kind-icon">flow<wbr>Files<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x27;**/*.flow&#x27;</span></div>
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#flowfiles">flowFiles</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/f004e22/src/options.ts#L145">src/options.ts:145</a></li>
+							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L167">src/options.ts:167</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Flow files glob pattern, relative to testsLocation (&#39;*<em>/</em>.flow&#39;).</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="genexcluderesponseheaders" class="tsd-anchor"></a>
+					<h3>gen<wbr>Exclude<wbr>Response<wbr>Headers</h3>
+					<div class="tsd-signature tsd-kind-icon">gen<wbr>Exclude<wbr>Response<wbr>Headers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#genexcluderesponseheaders">genExcludeResponseHeaders</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L195">src/options.ts:195</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Response headers to exclude when generating expected results.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="ignore" class="tsd-anchor"></a>
@@ -196,9 +229,30 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#ignore">ignore</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/f004e22/src/options.ts#L146">src/options.ts:146</a></li>
+							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L168">src/options.ts:168</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>File pattern to ignore, relative to testsLocation (&#39;<strong>/{node_modules,bin,dist,out}/</strong>&#39;).</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="parallel" class="tsd-anchor"></a>
+					<h3>parallel</h3>
+					<div class="tsd-signature tsd-kind-icon">parallel<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+					<aside class="tsd-sources">
+						<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#parallel">parallel</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L193">src/options.ts:193</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Run suites in parallel.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="prettyindent" class="tsd-anchor"></a>
@@ -207,9 +261,14 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#prettyindent">prettyIndent</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/f004e22/src/options.ts#L172">src/options.ts:172</a></li>
+							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L205">src/options.ts:205</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Prettification indent for yaml and response body (2).</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="quiet" class="tsd-anchor"></a>
@@ -218,9 +277,14 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#quiet">quiet</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/f004e22/src/options.ts#L169">src/options.ts:169</a></li>
+							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L191">src/options.ts:191</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The opposite of &#39;verbose&#39; (false).</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="requestfiles" class="tsd-anchor"></a>
@@ -229,9 +293,14 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#requestfiles">requestFiles</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/f004e22/src/options.ts#L143">src/options.ts:143</a></li>
+							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L165">src/options.ts:165</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Request files glob pattern, relative to testsLocation (&#39;*<em>/</em>.{ply.yaml,ply.yml}&#39;).</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="responsebodysortedkeys" class="tsd-anchor"></a>
@@ -240,9 +309,14 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#responsebodysortedkeys">responseBodySortedKeys</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/f004e22/src/options.ts#L171">src/options.ts:171</a></li>
+							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L194">src/options.ts:194</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Predictable ordering of response body JSON property keys -- needed for verification (true).</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="resultfollowsrelativepath" class="tsd-anchor"></a>
@@ -251,9 +325,16 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#resultfollowsrelativepath">resultFollowsRelativePath</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/f004e22/src/options.ts#L166">src/options.ts:166</a></li>
+							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L188">src/options.ts:188</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Result files live under a similar subpath as request/case files (true).
+								(eg: Expected result relative to &#39;expectedLocation&#39; is the same as
+							request file relative to &#39;testsLocation&#39;).</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="skip" class="tsd-anchor"></a>
@@ -262,9 +343,14 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#skip">skip</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/f004e22/src/options.ts#L147">src/options.ts:147</a></li>
+							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L169">src/options.ts:169</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>File pattern for requests/cases/flows that shouldn&#39;t be directly executed, relative to testsLocation.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="testslocation" class="tsd-anchor"></a>
@@ -273,17 +359,27 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#testslocation">testsLocation</a></p>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Tests base directory (&#39;.&#39;).</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="valuesfiles" class="tsd-anchor"></a>
 					<h3>values<wbr>Files</h3>
-					<div class="tsd-signature tsd-kind-icon">values<wbr>Files<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">never</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<div class="tsd-signature tsd-kind-icon">values<wbr>Files<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">never</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#valuesfiles">valuesFiles</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/f004e22/src/options.ts#L167">src/options.ts:167</a></li>
+							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L189">src/options.ts:189</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Files containing values JSON.</p>
+						</div>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="verbose" class="tsd-anchor"></a>
@@ -292,9 +388,14 @@
 					<aside class="tsd-sources">
 						<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#verbose">verbose</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/f004e22/src/options.ts#L168">src/options.ts:168</a></li>
+							<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L190">src/options.ts:190</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Verbose output (false). Takes precedence over &#39;quiet&#39; if both are true.</p>
+						</div>
+					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -308,10 +409,16 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#actuallocation">actualLocation</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ply-ct/ply/blob/f004e22/src/options.ts#L154">src/options.ts:154</a></li>
+									<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L176">src/options.ts:176</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Actual results base dir (this.testsLocation + &#39;/results/actual&#39;).</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
@@ -325,10 +432,16 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#expectedlocation">expectedLocation</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ply-ct/ply/blob/f004e22/src/options.ts#L148">src/options.ts:148</a></li>
+									<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L170">src/options.ts:170</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Expected results base dir (testsLocation + &#39;/results/expected&#39;).</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
@@ -342,10 +455,16 @@
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/options.plyoptions.html">PlyOptions</a>.<a href="../interfaces/options.plyoptions.html#loglocation">logLocation</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ply-ct/ply/blob/f004e22/src/options.ts#L160">src/options.ts:160</a></li>
+									<li>Defined in <a href="https://github.com/ply-ct/ply/blob/766a2a6/src/options.ts#L182">src/options.ts:182</a></li>
 								</ul>
 							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Log file base dir (this.actualLocation).</p>
+								</div>
+							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
@@ -386,7 +505,13 @@
 								<a href="options.defaults.html#flowfiles" class="tsd-kind-icon">flow<wbr>Files</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="options.defaults.html#genexcluderesponseheaders" class="tsd-kind-icon">gen<wbr>Exclude<wbr>Response<wbr>Headers</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="options.defaults.html#ignore" class="tsd-kind-icon">ignore</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="options.defaults.html#parallel" class="tsd-kind-icon">parallel</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="options.defaults.html#prettyindent" class="tsd-kind-icon">pretty<wbr>Indent</a>
