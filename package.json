@@ -1,6 +1,6 @@
 {
   "name": "ply-ct",
-  "version": "3.0.4",
+  "version": "3.0.5",
   "description": "REST API Automated Testing",
   "main": "dist",
   "bin": {
@@ -51,7 +51,7 @@
     "deepmerge": "^4.2.2",
     "diff-match-patch": "^1.0.5",
     "find-up": "^4.1.0",
-    "flowbee": "^0.2.8",
+    "flowbee": "^0.2.9",
     "form-data": "^4.0.0",
     "glob": "^7.1.7",
     "js-yaml": "^4.1.0",
