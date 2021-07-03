@@ -7,8 +7,9 @@ import { Runtime } from './runtime';
 import { Options, RunOptions } from './options';
 import { PlyResult } from './result';
 import { MultipartForm } from './form';
-import { timestamp, header } from './util';
+import * as util from './util';
 import * as subst from './subst';
+import { RUN_ID } from './names';
 
 export interface Request extends Test {
     url: string;
@@ -72,23 +73,28 @@ export class PlyRequest implements Request, PlyTest {
         return false;
     }
 
+    getRunId(values: any): string {
+        return values[RUN_ID];
+    }
+
     /**
      * Call submit() to send the request without producing actual results
      * or comparing with expected.  Useful for cleaning up or restoring
      * REST resources before/after testing (see Case.before()/after()).
      */
     async submit(values: object, options?: Options, runOptions?: RunOptions): Promise<Response> {
-        return await this.doSubmit(this.getRequest(values, options, true), runOptions);
+        return await this.doSubmit(this.getRunId(values), this.getRequest(values, options, true), runOptions);
     }
 
-    private async doSubmit(requestObj: Request, runOptions?: RunOptions): Promise<PlyResponse> {
+    private async doSubmit(runId: string, requestObj: Request, runOptions?: RunOptions): Promise<PlyResponse> {
         const logLevel = runOptions?.submit ? LogLevel.info : LogLevel.debug;
 
         const before = new Date().getTime();
         const { Authorization: _auth, ...loggedHeaders } = requestObj.headers;
-        this.logger.log(logLevel, 'Request', { ...requestObj, headers: loggedHeaders });
+        const loggedRequest = { ...requestObj, runId, headers: loggedHeaders };
+        this.logger.log(logLevel, 'Request', loggedRequest);
 
-        const ctHeader = header(requestObj.headers, 'content-type');
+        const ctHeader = util.header(requestObj.headers, 'content-type');
         if (ctHeader && ctHeader[1].startsWith('multipart/form-data')) {
             requestObj = new MultipartForm(requestObj).getRequest();
         }
@@ -99,7 +105,7 @@ export class PlyRequest implements Request, PlyTest {
         const headers = this.responseHeaders(response.headers);
         const body = await response.text();
         const time = new Date().getTime() - before;
-        const plyResponse = new PlyResponse(status, headers, body, time);
+        const plyResponse = new PlyResponse(runId, status, headers, body, time);
         this.logger.log(logLevel, 'Response', plyResponse);
         return plyResponse;
     }
@@ -160,16 +166,18 @@ export class PlyRequest implements Request, PlyTest {
      * Or to send a request without testing, call submit().
      * @returns result with request invocation and status of 'Pending'
      */
-    async run(runtime: Runtime, runOptions?: RunOptions): Promise<PlyResult> {
+    async run(runtime: Runtime, values: object, runOptions?: RunOptions): Promise<PlyResult> {
         this.submitted = new Date();
-        const requestObject = this.getRequest(runtime.values, runtime.options, true);
-        this.logger.info(`Request '${this.name}' submitted at ${timestamp(this.submitted, this.logger.level === LogLevel.debug)}`);
+        const requestObject = this.getRequest(values, runtime.options, true);
+        const id = this.logger.level === LogLevel.debug ? ` (${this.getRunId(values)})` : '';
+        this.logger.info(`Request '${this.name}'${id} submitted at ${util.timestamp(this.submitted, this.logger.level === LogLevel.debug)}`);
         const runOpts: RunOptions = { ...runOptions };
         const expectedExists = await runtime.results.expected.exists;
         if (runOptions?.submitIfExpectedMissing && !expectedExists) {
             runOpts.submit = true;
         }
-        const response = await this.doSubmit(requestObject, runOpts);
+        const runId = this.getRunId(values);
+        const response = await this.doSubmit(runId, requestObject, runOpts);
         if (response.headers && (runOptions?.createExpected || runOptions?.createExpectedIfMissing && !expectedExists) && runtime.options.genExcludeResponseHeaders?.length) {
             for (const key of Object.keys(response.headers)) {
                 if (runtime.options.genExcludeResponseHeaders.includes(key)) {
@@ -180,7 +188,7 @@ export class PlyRequest implements Request, PlyTest {
         const result = new PlyResult(
             this.name,
             requestObject,
-            response.getResponse(runtime.options, runtime.responseHeaders, true)
+            response.getResponse(runId, runtime.options, runtime.responseHeaders, true)
         );
         if (this.graphQl) {
             result.graphQl = this.graphQl;

@@ -267,4 +267,38 @@ value2
         assert.strictEqual(part2.filename, 'example.txt');
 
     });
+
+    it('runs tests from csv', async () => {
+        const plier = new Plier({
+            ...new Config().options,
+            expectedLocation: 'test/mocha/results/expected',
+            actualLocation: 'test/mocha/results/actual',
+            valuesFiles: [
+                'test/mocha/values/movies.csv',
+                'test/ply/values/localhost.json'
+            ]
+        });
+        const results = await plier.run([
+            'test/mocha/requests/row-requests.ply.yaml#createMovie',
+            'test/mocha/requests/row-requests.ply.yaml#updateMovie',
+            'test/mocha/requests/row-requests.ply.yaml#retrieveMovie',
+            'test/mocha/requests/row-requests.ply.yaml#deleteMovie'
+        ]);
+
+        // three rows times four requests
+        assert.strictEqual(results.length, 12);
+        for (let i = 0; i < results.length; i++) {
+            const result = results[i];
+            const rem = i % 4;
+            if (rem === 0) assert.strictEqual(result.name, 'createMovie');
+            else if (rem === 1) assert.strictEqual(result.name, 'updateMovie');
+            else if (rem === 2) assert.strictEqual(result.name, 'retrieveMovie');
+            else if (rem === 3) assert.strictEqual(result.name, 'deleteMovie');
+
+            assert.strictEqual(result.status, 'Passed');
+        }
+
+        assert.strictEqual(results[2].response.body.id, '3492d3d0');
+        assert.strictEqual(results[2].response.body.credits[0].name, 'Michael Curtiz');
+    });
 });

@@ -50,7 +50,7 @@ export interface Options {
      */
     logLocation?: string;
     /**
-     * Files containing values JSON.
+     * Files containing values JSON (or CSV or XLSX).
      */
     valuesFiles?: string[];
     /**
@@ -73,6 +73,14 @@ export interface Options {
      * Run suites in parallel.
      */
     parallel?: boolean;
+    /**
+     * (For use with rowwise values). Number of rows to run per batch.
+     */
+    batchRows?: number;
+    /**
+     * (For use with rowwise values). Delay in ms between row batches.
+     */
+    batchDelay?: number;
     /**
      * Predictable ordering of response body JSON property keys -- needed for verification (true).
      */
@@ -107,6 +115,8 @@ export interface PlyOptions extends Options {
     quiet: boolean;
     bail: boolean;
     parallel: boolean;
+    batchRows: number;
+    batchDelay: number;
     responseBodySortedKeys: boolean;
     genExcludeResponseHeaders?: string[];
     prettyIndent: number;
@@ -191,6 +201,8 @@ export class Defaults implements PlyOptions {
     quiet = false;
     bail = false;
     parallel = false;
+    batchRows = 1;
+    batchDelay = 0;
     responseBodySortedKeys = true;
     genExcludeResponseHeaders = [
         'cache-control',
@@ -271,6 +283,12 @@ export class Config {
         parallel: {
             describe: 'Run suites in parallel'
         },
+        batchRows: {
+            describe: '(Rowwise values) rows per batch'
+        },
+        batchDelay: {
+            describe: '(Rowwise values) ms delay betw batches'
+        },
         import: {
             describe: 'Import requests/values from (\'postman\')',
             type: 'string'
@@ -325,7 +343,7 @@ export class Config {
             const config = configPath ? this.read(configPath) : {};
             let spec = yargs
                 .usage('Usage: $0 <tests> [options]')
-                .help('h')
+                .help('help').alias('help', 'h')
                 .version().alias('version', 'v')
                 .config(config)
                 .option('config', { description: 'Ply config location', type: 'string', alias: 'c' });

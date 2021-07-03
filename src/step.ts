@@ -1,5 +1,5 @@
 import * as flowbee from 'flowbee';
-import { Logger } from './logger';
+import { Logger, LogLevel } from './logger';
 import { RunOptions } from './options';
 import { Request, PlyRequest } from './request';
 import { Runtime } from './runtime';
@@ -50,7 +50,7 @@ export class PlyStep implements Step, PlyTest {
         };
     }
 
-    async run(runtime: Runtime, runOptions?: RunOptions): Promise<Result> {
+    async run(runtime: Runtime, values: object, runOptions?: RunOptions): Promise<Result> {
         this.instance.start = new Date();
         let result: Result;
         let stepRes: any;
@@ -62,24 +62,28 @@ export class PlyStep implements Step, PlyTest {
                 this.padActualStart(this.subflow.id);
             }
             else if (this.step.path === 'stop' && !this.subflow) {
-                this.logger.info('Finished flow', this.flowPath);
+                let name = this.flowPath;
+                const lastSlash = name.lastIndexOf('/');
+                if (lastSlash > 0 && lastSlash < name.length - 1) name = name.substring(lastSlash + 1);
+                const runId = this.logger.level === LogLevel.debug ? ` (${this.instance.flowInstanceId})` : '';
+                this.logger.info(`Finished flow: ${name}${runId}`);
             } else if (this.step.path === 'request') {
                 let url = this.step.attributes?.url;
                 if (!url) throw new Error('Missing attribute: url');
-                url = subst.replace(url, runtime.values, this.logger);
+                url = subst.replace(url, values, this.logger);
                 let method = this.step.attributes?.method;
                 if (!method) throw new Error('Missing attribute: method');
-                method = subst.replace(method, runtime.values, this.logger);
+                method = subst.replace(method, values, this.logger);
                 const headers: {[key: string]: string} = {};
                 if (this.step.attributes?.headers) {
                     const rows = JSON.parse(this.step.attributes.headers);
                     for (const row of rows) {
-                        headers[row[0]] = subst.replace(row[1], runtime.values, this.logger);
+                        headers[row[0]] = subst.replace(row[1], values, this.logger);
                     }
                 }
                 let body = this.step.attributes?.body;
                 if (body) {
-                    body = subst.replace(body, runtime.values, this.logger);
+                    body = subst.replace(body, values, this.logger);
                 }
 
                 const requestObj: Request = {
@@ -100,15 +104,15 @@ export class PlyStep implements Step, PlyTest {
                 }
 
                 this.instance.data = {
-                    request: yaml.dump(request.getRequest(runtime.values, runtime.options), runtime.options.prettyIndent)
+                    request: yaml.dump(request.getRequest(values, runtime.options), runtime.options.prettyIndent)
                 };
 
                 if (this.step.attributes?.submit === 'true') {
-                    const response = await request.submit(runtime.values, runtime.options, { ...runOptions, submit: true });
+                    const response = await request.submit(values, runtime.options, { ...runOptions, submit: true });
                     this.instance.data.response = yaml.dump(response, runtime.options.prettyIndent);
                 } else {
                     this.requestSuite.tests[this.name] = request;
-                    const result = await this.requestSuite.run(this.name, runtime.values, runOptions);
+                    const result = await this.requestSuite.run(this.name, values, runOptions);
                     if (result.status !== 'Passed' && result.status !== 'Submitted') {
                         this.instance.status = result.status === 'Failed' ? 'Failed' : 'Errored';
                         this.instance.message = result.message;

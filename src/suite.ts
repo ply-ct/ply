@@ -4,10 +4,10 @@ import { TestType, Test, PlyTest } from './test';
 import { Result, Outcome, Verifier, PlyResult, ResultPaths } from './result';
 import { Location } from './location';
 import { Storage } from './storage';
-import { Logger } from './logger';
+import { Logger, LogLevel } from './logger';
 import { Runtime, DecoratedSuite, CallingCaseInfo } from './runtime';
 import { RunOptions } from './options';
-import { SUITE, TEST, RESULTS } from './names';
+import { SUITE, TEST, RESULTS, RUN_ID } from './names';
 import { Retrieval } from './retrieval';
 import { EventEmitter } from 'events';
 import { Plyee } from './ply';
@@ -110,8 +110,7 @@ export class Suite<T extends Test> {
             }
             const results = await this.runTests([test], valuesOrRunOptions || {}, runOptions);
             return results[0];
-        }
-        else if (Array.isArray(namesOrValues)) {
+        } else if (Array.isArray(namesOrValues)) {
             const names = typeof namesOrValues === 'string' ? [namesOrValues] : namesOrValues;
             const tests = names.map(name => {
                 const test = this.get(name);
@@ -121,15 +120,14 @@ export class Suite<T extends Test> {
                 return test;
             }, this);
             return await this.runTests(tests, valuesOrRunOptions || {}, runOptions);
-        }
-        else {
+        } else {
             // run all tests
             return await this.runTests(this.all(), namesOrValues, valuesOrRunOptions);
         }
     }
 
     /**
-     * Tests within a suite are run sequentially.
+     * Tests within a suite are always run sequentially.
      * @param tests
      */
     async runTests(tests: T[], values: object, runOptions?: RunOptions): Promise<Result[]> {
@@ -143,7 +141,11 @@ export class Suite<T extends Test> {
         }
 
         // runtime values are a deep copy of passed values
-        this.runtime.values = JSON.parse(JSON.stringify(values));
+        const runValues = this.callingFlowPath ? values : JSON.parse(JSON.stringify(values));
+        // runId unique per suite exec (already populated for flow requests)
+        if (!runValues[RUN_ID]) {
+            runValues[RUN_ID] = util.genId();
+        }
         this.runtime.responseHeaders = undefined;
 
         let callingCaseInfo: CallingCaseInfo | undefined;
@@ -156,8 +158,7 @@ export class Suite<T extends Test> {
                 let testFile;
                 if (runOptions?.useDist && this.outFile) {
                     testFile = this.outFile;
-                }
-                else {
+                } else {
                     testFile = this.runtime.testsLocation.toString() + '/' + this.path;
                 }
                 const mod = await import(testFile);
@@ -168,16 +169,14 @@ export class Suite<T extends Test> {
                 const inst = new mod[clsName]();
                 this.runtime.decoratedSuite = new DecoratedSuite(inst);
                 this.runtime.results.actual.remove();
-            }
-            else {
+            } else {
                 // running a request suite
                 if (!this.callingFlowPath) {
                     callingCaseInfo = await this.getCallingCaseInfo(runOptions);
                     if (callingCaseInfo) {
                         this.runtime.results = callingCaseInfo.results;
                         this.logger.storage = callingCaseInfo.results.log;
-                    }
-                    else {
+                    } else {
                         this.emitSuiteStarted();
                         this.runtime.results.actual.remove();
                     }
@@ -214,7 +213,7 @@ export class Suite<T extends Test> {
                 if (test.type === 'request') {
                     this.runtime.responseHeaders = await this.getExpectedResponseHeaders(test.name, callingCaseInfo?.caseName);
                 }
-                result = await (test as unknown as PlyTest).run(this.runtime, runOptions);
+                result = await (test as unknown as PlyTest).run(this.runtime, runValues, runOptions);
                 let actualYaml: yaml.Yaml;
                 if (test.type === 'request') {
                     const plyResult = result as PlyResult;
@@ -244,12 +243,12 @@ export class Suite<T extends Test> {
                             }
                             const verifier = new Verifier(test.name, expectedYaml, this.logger);
                             this.log.debug(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
-                            const outcome = { ...verifier.verify(actualYaml, this.runtime.values), start };
+                            const outcome = { ...verifier.verify(actualYaml, runValues), start };
                             result = { ...result as Result, ...outcome };
                             this.logOutcome(test, outcome);
                         }
                     }
-                    this.addResult(results, result);
+                    this.addResult(results, result, runValues);
                 } else {
                     // case or flow complete -- verify result
                     actualYaml = this.runtime.results.getActualYaml(test.name);
@@ -267,11 +266,11 @@ export class Suite<T extends Test> {
                         // This allows us to accumulate programmatic values changes like those in updateRating() in movieCrud.ply.ts
                         // so that they can be accessed when verifying here, even though the changes are not present the passed 'values' parameter.
                         // TODO: Revisit when implementing a comprehensive values specification mechanism.
-                        const outcome = { ...verifier.verify(actualYaml, this.runtime.values), start };
+                        const outcome = { ...verifier.verify(actualYaml, runValues), start };
                         result = { ...result as Result, ...outcome };
                         this.logOutcome(test, outcome);
                     }
-                    this.addResult(results, result);
+                    this.addResult(results, result, runValues);
                 }
             } catch (err) {
                 this.logger.error(err.message, err);
@@ -281,7 +280,7 @@ export class Suite<T extends Test> {
                     message: err.message,
                     start
                 };
-                this.addResult(results, result);
+                this.addResult(results, result, runValues);
                 this.logOutcome(test, result);
             }
 
@@ -340,7 +339,7 @@ export class Suite<T extends Test> {
      * @param results
      * @param result
      */
-    private addResult(results: Result[], result: Result) {
+    private addResult(results: Result[], result: Result, runValues: any) {
         let plyResult;
         if (result instanceof PlyResult) {
             plyResult = result as PlyResult;
@@ -352,10 +351,10 @@ export class Suite<T extends Test> {
         if (plyResult) {
             result = plyResult.getResult(this.runtime.options);
         }
-        let resultsVal = (this.runtime.values as any)[RESULTS];
+        let resultsVal = runValues[RESULTS];
         if (!resultsVal) {
             resultsVal = {};
-            (this.runtime.values as any)[RESULTS] = resultsVal;
+            runValues[RESULTS] = resultsVal;
         }
         resultsVal[result.name] = result;
         results.push(result);
@@ -424,18 +423,19 @@ export class Suite<T extends Test> {
         outcome.end = Date.now();
         const ms = outcome.start ? ` in ${outcome.end - outcome.start} ms` : '';
         const testLabel = label || test.type.charAt(0).toLocaleUpperCase() + test.type.substring(1);
+        const id = this.logger.level === LogLevel.debug && (test as any).id ? ` (${(test as any).id})` : '';
         if (outcome.status === 'Passed') {
-            this.logger.info(`${testLabel} '${test.name}' PASSED${ms}`);
+            this.logger.info(`${testLabel} '${test.name}'${id} PASSED${ms}`);
         }
         else if (outcome.status === 'Failed') {
             const diff = outcome.diff ? '\n' + outcome.diff : '';
-            this.logger.error(`${testLabel} '${test.name}' FAILED${ms}: ${outcome.message}${diff}`);
+            this.logger.error(`${testLabel} '${test.name}'${id} FAILED${ms}: ${outcome.message}${diff}`);
         }
         else if (outcome.status === 'Errored') {
-            this.logger.error(`${testLabel} '${test.name}' ERRORED${ms}: ${outcome.message}`);
+            this.logger.error(`${testLabel} '${test.name}'${id} ERRORED${ms}: ${outcome.message}`);
         }
         else if (outcome.status === 'Submitted') {
-            this.logger.info(`${testLabel} '${test.name}' SUBMITTED${ms}`);
+            this.logger.info(`${testLabel} '${test.name}'${id} SUBMITTED${ms}`);
         }
         if (this.emitter) {
             this.emitter.emit('outcome', {
@@ -495,7 +495,7 @@ export class Suite<T extends Test> {
         if (result.graphQl) {
             leanRequest.body = result.graphQl;  // restore graphQl for better comparisons
         }
-        const { time: _time, ...leanResponse } = result.response;
+        const { runId: _requestId, time: _time, ...leanResponse } = result.response;
 
         let invocationObject = {
             [result.name]: {

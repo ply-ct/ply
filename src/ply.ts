@@ -10,9 +10,10 @@ import { RequestLoader } from './requests';
 import { Result } from './result';
 import { TsCompileOptions } from './compile';
 import { Logger, LogLevel } from './logger';
-import { Values } from './values';
 import * as util from './util';
 import { FlowLoader, FlowSuite } from './flows';
+import { Values } from './values';
+import { PlyRunner } from './runner';
 
 export class Ply {
 
@@ -284,16 +285,20 @@ export class Plier extends EventEmitter {
 
     /**
      * Plyees should be test paths (not suites).
+     * TODO: DRY this out
      */
     async run(plyees: string[], runOptions?: RunOptions): Promise<Result[]> {
         this.logger.debug('Options', this.ply.options);
 
-        const values = await new Values(this.ply.options.valuesFiles, this.logger).read();
+        const plyValues = new Values(this.ply.options.valuesFiles, this.logger);
+        const values = await plyValues.read();
 
-        const promises: Promise<Result[]>[] = [];
+        let promises: Promise<Result[]>[] = [];
         let combined: Result[] = [];
 
+
         // requests
+        const requestTests = new Map<Suite<Request>, string[]>();
         for (const [loc, requestPlyee] of Plyee.requests(plyees)) {
             const tests = requestPlyee.map(plyee => {
                 if (!plyee.test) {
@@ -303,29 +308,17 @@ export class Plier extends EventEmitter {
             });
             const requestSuite = await this.ply.loadRequestSuite(loc);
             requestSuite.emitter = this;
-            const promise = requestSuite.run(tests, values, runOptions);
-            if (this.ply.options.parallel) promises.push(promise);
-            else combined = [...combined, ...(await promise) ];
+            requestTests.set(requestSuite, tests);
         }
 
-        // cases
-        for (const [loc, casePlyee] of Plyee.cases(plyees)) {
-            const tests = casePlyee.map(plyee => {
-                if (!plyee.test) {
-                    throw new Error(`Plyee is not a test: ${plyee}`);
-                }
-                return plyee.test;
-            });
-            const caseSuites = await this.ply.loadCaseSuites(loc);
-            for (const caseSuite of caseSuites) {
-                caseSuite.emitter = this;
-                const promise = caseSuite.run(tests, values, runOptions);
-                if (this.ply.options.parallel) promises.push(promise);
-                else combined = [...combined, ...(await promise)];
-            }
-        }
+        const requestRunner = new PlyRunner(this.ply.options, requestTests, plyValues, this.logger);
+        await requestRunner.runSuiteTests(values, runOptions);
+        if (this.ply.options.parallel) promises = [ ...promises, ...requestRunner.promises ];
+        else combined = [ ...combined, ...requestRunner.results ];
+
 
         // flows
+        const flowTests = new Map<FlowSuite, string[]>();
         for (const [loc, flowPlyee] of Plyee.flows(plyees)) {
             const tests = flowPlyee.map(plyee => {
                 if (!plyee.test) {
@@ -335,18 +328,47 @@ export class Plier extends EventEmitter {
             });
             const flowSuites = await this.ply.loadFlowSuites(loc);
             for (const flowSuite of flowSuites) {
+                // should only be one per loc
                 flowSuite.emitter = this;
-                const promise = flowSuite.run(tests, values, runOptions);
-                if (this.ply.options.parallel) promises.push(promise);
-                else combined = [...combined, ...(await promise)];
+                flowTests.set(flowSuite, tests);
             }
         }
+
+        const flowRunner = new PlyRunner(this.ply.options, flowTests, plyValues, this.logger);
+        await flowRunner.runSuiteTests(values, runOptions);
+        if (this.ply.options.parallel) promises = [...promises, ...flowRunner.promises];
+        else combined = [...combined, ...flowRunner.results];
+
+
+        // cases
+        const caseTests = new Map<Suite<Case>, string[]>();
+        for (const [loc, casePlyee] of Plyee.cases(plyees)) {
+            const tests = casePlyee.map(plyee => {
+                if (!plyee.test) {
+                    throw new Error(`Plyee is not a test: ${plyee}`);
+                }
+                return plyee.test;
+            });
+            const caseSuites = await this.ply.loadCaseSuites(loc);
+            for (const caseSuite of caseSuites) {
+                // should only be one per loc
+                caseSuite.emitter = this;
+                caseTests.set(caseSuite, tests);
+            }
+        }
+
+        const caseRunner = new PlyRunner(this.ply.options, caseTests, plyValues, this.logger);
+        await caseRunner.runSuiteTests(values, runOptions);
+        if (this.ply.options.parallel) promises = [...promises, ...caseRunner.promises];
+        else combined = [...combined, ...caseRunner.results];
+
 
         if (this.ply.options.parallel) {
             for (const results of await Promise.all(promises)) {
                 combined = [...combined, ...results];
             }
         }
+
         return combined;
     }
 
