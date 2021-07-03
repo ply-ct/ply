@@ -10,7 +10,9 @@ export function locale() {
 }
 
 /**
- * turn a date into a timestamp based on the OS locale
+ * Turn a date into a timestamp based on the OS locale
+ * Note: Node/V8 bug causes hour = 24 (https://github.com/nodejs/node/issues/33089)
+ * eg: 7/3/2021, 24:52:33:347
  */
 export function timestamp(date: Date, withTimeZone = false): string {
     const millis = String(date.getMilliseconds()).padStart(3, '0');

@@ -46,8 +46,6 @@ describe('Flows', async () => {
         const results = await suite.run(values);
         assert.strictEqual(results[0].status, 'Passed');
 
-        console.log("LOCALE:" + util.locale());
-        console.log("ACTUAL RESULT:\n" + suite.runtime.results.actual.read());
         const instance = suite.runtime.results.flowInstanceFromActual('test/ply/results/actual/flows/movies-api');
         assert.ok(instance);
 
@@ -57,14 +55,14 @@ describe('Flows', async () => {
             const today = new Date();
             assert.strictEqual(date.getFullYear(), today.getFullYear());
             assert.strictEqual(date.getMonth(), today.getMonth());
-            assert.strictEqual(date.getDate(), today.getDate());  // TODO off by 1 day in GitHub workflows
+            // TODO off by 1 day in GitHub workflows between 6p - 7p MDT
+            // Due to Node/V8 bug: https://github.com/nodejs/node/issues/33089
+            assert.strictEqual(date.getDate(), today.getDate());
         };
 
         assert.ok(instance.subflowInstances);
         const beforeAllSubflow = instance.subflowInstances[0];
         assert.strictEqual(beforeAllSubflow.status, 'Completed');
-        console.log("START DATE: " + beforeAllSubflow.start);
-        console.log("GITHUB DATE: " + new Date());
         checkDate(beforeAllSubflow.start);
         checkDate(beforeAllSubflow.end);
 
