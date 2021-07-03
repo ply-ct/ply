@@ -46,6 +46,7 @@ describe('Flows', async () => {
         const results = await suite.run(values);
         assert.strictEqual(results[0].status, 'Passed');
 
+        console.log("ACTUAL RESULT:\n" + suite.runtime.results.actual.read());
         const instance = suite.runtime.results.flowInstanceFromActual('test/ply/results/actual/flows/movies-api');
         assert.ok(instance);
 
@@ -55,7 +56,7 @@ describe('Flows', async () => {
             const today = new Date();
             assert.strictEqual(date.getFullYear(), today.getFullYear());
             assert.strictEqual(date.getMonth(), today.getMonth());
-            assert.strictEqual(date.getDate(), today.getDate());  // TODO this can sometimes fail in GitHub workflows
+            assert.strictEqual(date.getDate(), today.getDate());  // TODO off by 1 day in GitHub workflows
         };
 
         assert.ok(instance.subflowInstances);
