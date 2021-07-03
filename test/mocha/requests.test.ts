@@ -298,7 +298,7 @@ value2
             assert.strictEqual(result.status, 'Passed');
         }
 
-        assert.strictEqual(results[2].response.body.id, '3492d3d0');
-        assert.strictEqual(results[2].response.body.credits[0].name, 'Michael Curtiz');
+        assert.strictEqual(results[2].response!.body.id, '3492d3d0');
+        assert.strictEqual(results[2].response!.body.credits[0].name, 'Michael Curtiz');
     });
 });
