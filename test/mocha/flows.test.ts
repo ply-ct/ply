@@ -55,12 +55,14 @@ describe('Flows', async () => {
             const today = new Date();
             assert.strictEqual(date.getFullYear(), today.getFullYear());
             assert.strictEqual(date.getMonth(), today.getMonth());
-            assert.strictEqual(date.getDate(), today.getDate());
+            assert.strictEqual(date.getDate(), today.getDate());  // TODO this can sometimes fail in GitHub workflows
         };
 
         assert.ok(instance.subflowInstances);
         const beforeAllSubflow = instance.subflowInstances[0];
         assert.strictEqual(beforeAllSubflow.status, 'Completed');
+        console.log("START DATE: " + beforeAllSubflow.start);
+        console.log("GITHUB DATE: " + new Date());
         checkDate(beforeAllSubflow.start);
         checkDate(beforeAllSubflow.end);
 
