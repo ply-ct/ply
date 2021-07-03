@@ -46,6 +46,7 @@ describe('Flows', async () => {
         const results = await suite.run(values);
         assert.strictEqual(results[0].status, 'Passed');
 
+        console.log("LOCALE:" + util.locale());
         console.log("ACTUAL RESULT:\n" + suite.runtime.results.actual.read());
         const instance = suite.runtime.results.flowInstanceFromActual('test/ply/results/actual/flows/movies-api');
         assert.ok(instance);
