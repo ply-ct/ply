@@ -67,7 +67,7 @@ Ply supports [iterative test execution](iterate), which is indicated simply by i
 {
   "valuesFiles": [
     "test/values/localhost.json",
-    "test/values/movies.csv"
+    "test/values/forties-movies.csv"
   ]
 }
 ```
