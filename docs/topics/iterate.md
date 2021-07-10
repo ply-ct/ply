@@ -107,7 +107,9 @@ Each run (one per row) executes with the corresponding values from the dataset.
 ## Load testing
 For large datasets such as might be used in load-testing, .csv values are recommended over .xlsx.
 The reason for this is that .xlsx files are always loaded into memory; whereas .csv files are [streamed
-and buffered](https://nodejs.org/api/stream.html#stream_types_of_streams).
+and buffered](https://nodejs.org/api/stream.html#stream_types_of_streams). Also, running [Flows](flows) with large datasets,
+is best done from the command-line rather than through [VS Code](https://marketplace.visualstudio.com/items?itemName=ply-ct.vscode-ply),
+which can get bogged-down listening for flow run updates.
 
 Two [config options](config) can help control how fast requests are submitted against an API:
   - `batchRows` - Number of rows included with each batch of requests (default = 1)

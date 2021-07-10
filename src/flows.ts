@@ -148,6 +148,7 @@ export class FlowSuite extends Suite<Step> {
         const results: Result[] = [];
         // emit start event for synthetic flow
         this.emitter?.emit('flow', this.plyFlow.flowEvent('start', 'flow', this.plyFlow.instance));
+        this.plyFlow.instance.stepInstances = [];
         for (const step of steps) {
             this.emitTest(step);
             let subflow: flowbee.Subflow | undefined;
@@ -172,7 +173,11 @@ export class FlowSuite extends Suite<Step> {
                 );
             }
             results.push(result);
+            if (plyStep.instance) this.plyFlow.instance.stepInstances.push(plyStep.instance);
         }
+        // stop event for synthetic flow
+        const evt = results.reduce((overall, res) => res.status === 'Failed' || res.status === 'Errored' ? 'error' : overall, 'finish');
+        this.emitter?.emit('flow', this.plyFlow.flowEvent(evt as flowbee.FlowEventType, 'flow', this.plyFlow.instance));
         return results;
     }
 
