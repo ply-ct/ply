@@ -211,7 +211,7 @@ export class Plyee {
     }
 
     static isRequest(path: string): boolean {
-        return path.endsWith('.yml') || path.endsWith('.yaml');
+        return path.endsWith('.ply') || path.endsWith('.yml') || path.endsWith('.yaml');
     }
 
     static isCase(path: string): boolean {
@@ -295,7 +295,6 @@ export class Plier extends EventEmitter {
 
         let promises: Promise<Result[]>[] = [];
         let combined: Result[] = [];
-
 
         // requests
         const requestTests = new Map<Suite<Request>, string[]>();
