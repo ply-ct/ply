@@ -309,10 +309,11 @@ value2
         assert.strictEqual(results[0].status, 'Passed');
 
         const response = suite.runtime.results.responseFromActual('test/ply/requests/movie-queries.ply.yaml#movieById');
-        assert.strictEqual(response.status.code, 200);
+        assert.strictEqual(response?.status?.code, 200);
+        assert.ok(response?.headers);
         assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8');
-        assert.ok(response.submitted);
-        assert.strictEqual(typeof response.time, 'number');
+        assert.ok(response?.submitted);
+        assert.strictEqual(typeof response?.time, 'number');
     });
 
 });
