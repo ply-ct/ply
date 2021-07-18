@@ -172,7 +172,7 @@ export class Defaults implements PlyOptions {
     private _actualLocation?: string;
     private _logLocation?: string;
     constructor(readonly testsLocation: string = '.') {}
-    requestFiles = '**/*.{ply.yaml,ply.yml}';
+    requestFiles = '**/*.{ply,ply.yaml,ply.yml}';
     caseFiles = '**/*.ply.ts';
     flowFiles = '**/*.flow';
     ignore = '**/{node_modules,bin,dist,out}/**';

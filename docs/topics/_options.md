@@ -2,7 +2,7 @@
 | Option | Default |
 | :----- | :------ |
 | **<code>testsLocation</code>**<br>**<code>--testsLocation, -t</code>** | `"."` | Tests base directory. Ply finds requests/cases/flows under here.
-| **<code>requestFiles</code>**<br>**<code>--requestFiles</code>** | `"**\/*.{ply.yaml,ply.yml}"` | Request files glob pattern, relative to testsLocation.
+| **<code>requestFiles</code>**<br>**<code>--requestFiles</code>** | `"**\/*.{ply,ply.yaml,ply.yml}"` | Request files glob pattern, relative to testsLocation.
 | **<code>caseFiles</code>**<br>**<code>--caseFiles</code>** | `"**\/*.ply.ts"` | Case files glob pattern, relative to testsLocation.
 | **<code>flowFiles</code>**<br>**<code>--flowFiles</code>** | `"**\/*.flow"` | Flow files glob pattern, relative to testsLocation.
 | **<code>ignore</code>**<br>**<code>--ignore</code>** | `"**\/{node_modules,bin,dist,out}\/**"` | File pattern to ignore, relative to testsLocation. Ignored files are not even parsed by Ply.

@@ -419,9 +419,67 @@ export class ResultPaths {
         }
     }
 
+    responseFromActual(requestPath: string): Response & { submitted?: Date } | undefined {
+        if (this.actual.exists) {
+            return new ResponseParser(this.actual, this.options).parse(requestPath);
+        }
+    }
+
     flowInstanceFromActual(flowPath: string): flowbee.FlowInstance | undefined {
         if (this.actual.exists) {
             return new ResultFlowParser(this.actual, this.options).parse(flowPath);
+        }
+    }
+}
+
+/**
+ * Parses a request's response from actual results.
+ */
+export class ResponseParser {
+
+    private actualYaml: string;
+    private yamlLines: string[];
+    private actualObj: any;
+
+    constructor(actualResult: Storage, private readonly options: Options) {
+        const contents = actualResult.read();
+        if (typeof contents === 'undefined') {
+            throw new Error(`Actual result not found: ${actualResult}`);
+        }
+        this.actualYaml = contents;
+        this.yamlLines = util.lines(this.actualYaml);
+        this.actualObj = yaml.load(actualResult.toString(), this.actualYaml, true);
+    }
+
+    parse(requestPath: string): Response & { submitted?: Date } | undefined {
+        const lastHash = requestPath.lastIndexOf('#');
+        if (lastHash === -1) throw new Error(`Request path must be qualified: ${requestPath}`);
+        const requestName = requestPath.substring(lastHash + 1);
+        let resultObj = this.actualObj[requestName];
+        if (resultObj) {
+            let submitted: Date | undefined;
+            const submittedComment = util.lineComment(this.yamlLines[resultObj.__start]);
+            if (submittedComment) {
+                submitted = util.timeparse(submittedComment);
+            }
+            if (resultObj.response) {
+                // reparse result to get response line nums
+                resultObj = yaml.load(requestName, yaml.dump(resultObj, this.options.prettyIndent || 2), true);
+                const responseObj = resultObj.response;
+                let elapsedMs: Number | undefined;
+                const elapsedMsComment = util.lineComment(this.yamlLines[responseObj.__start + resultObj.__start + 1]);
+                if (elapsedMsComment) {
+                    elapsedMs = parseInt(elapsedMsComment.substring(0, elapsedMsComment.length - 2));
+                }
+                const { __start, __end, ...response } = responseObj;
+                if (submitted) {
+                    response.submitted = submitted;
+                }
+                if (elapsedMs) {
+                    response.time = elapsedMs;
+                }
+                return response;
+            }
         }
     }
 }
@@ -480,7 +538,6 @@ export class ResultFlowParser {
         if (flowInstance.status === 'In Progress') flowInstance.status = 'Completed';
         return flowInstance;
     }
-
 
     getStepInstances(obj: any, offset = 0): flowbee.StepInstance[] {
         const stepInstances: flowbee.StepInstance[] = [];

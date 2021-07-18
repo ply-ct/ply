@@ -3,6 +3,7 @@ import { Ply } from './ply';
 export { Ply, Plyee, Plier } from './ply';
 export { Test, TestType } from './test';
 export { Request } from './request';
+export { Response } from './response';
 export { Case } from './case';
 export { Flow } from './flow';
 export { Step } from './step';

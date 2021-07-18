@@ -301,4 +301,18 @@ value2
         assert.strictEqual(results[2].response!.body.id, '3492d3d0');
         assert.strictEqual(results[2].response!.body.credits[0].name, 'Michael Curtiz');
     });
+
+    it('can parse response', async () => {
+        const ply = new Ply();
+        const suite = await ply.loadRequestSuite('test/ply/requests/movie-queries.ply.yaml');
+        const results = await suite.run(values);
+        assert.strictEqual(results[0].status, 'Passed');
+
+        const response = suite.runtime.results.responseFromActual('test/ply/requests/movie-queries.ply.yaml#movieById');
+        assert.strictEqual(response.status.code, 200);
+        assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8');
+        assert.ok(response.submitted);
+        assert.strictEqual(typeof response.time, 'number');
+    });
+
 });
