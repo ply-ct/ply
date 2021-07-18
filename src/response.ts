@@ -10,6 +10,7 @@ export interface Response {
     status: Status;
     headers: {[key: string]: string};
     body?: any;
+    submitted?: Date;
     time?: number;
 }
 

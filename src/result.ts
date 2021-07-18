@@ -419,9 +419,11 @@ export class ResultPaths {
         }
     }
 
-    responseFromActual(requestPath: string): Response & { submitted?: Date } | undefined {
+    responsesFromActual(): { [key: string]: Response } {
         if (this.actual.exists) {
-            return new ResponseParser(this.actual, this.options).parse(requestPath);
+            return new ResponseParser(this.actual, this.options).parse();
+        } else {
+            return {};
         }
     }
 
@@ -451,36 +453,37 @@ export class ResponseParser {
         this.actualObj = yaml.load(actualResult.toString(), this.actualYaml, true);
     }
 
-    parse(requestPath: string): Response & { submitted?: Date } | undefined {
-        const lastHash = requestPath.lastIndexOf('#');
-        if (lastHash === -1) throw new Error(`Request path must be qualified: ${requestPath}`);
-        const requestName = requestPath.substring(lastHash + 1);
-        let resultObj = this.actualObj[requestName];
-        if (resultObj) {
-            let submitted: Date | undefined;
-            const submittedComment = util.lineComment(this.yamlLines[resultObj.__start]);
-            if (submittedComment) {
-                submitted = util.timeparse(submittedComment);
-            }
-            if (resultObj.response) {
-                // reparse result to get response line nums
-                resultObj = yaml.load(requestName, yaml.dump(resultObj, this.options.prettyIndent || 2), true);
-                const responseObj = resultObj.response;
-                let elapsedMs: Number | undefined;
-                const elapsedMsComment = util.lineComment(this.yamlLines[responseObj.__start + resultObj.__start + 1]);
-                if (elapsedMsComment) {
-                    elapsedMs = parseInt(elapsedMsComment.substring(0, elapsedMsComment.length - 2));
+    parse(): { [key: string]: Response } {
+        const responses: { [key: string]: Response } = {};
+        for (const requestName of Object.keys(this.actualObj)) {
+            let resultObj = this.actualObj[requestName];
+            if (resultObj) {
+                let submitted: Date | undefined;
+                const submittedComment = util.lineComment(this.yamlLines[resultObj.__start]);
+                if (submittedComment) {
+                    submitted = util.timeparse(submittedComment);
                 }
-                const { __start, __end, ...response } = responseObj;
-                if (submitted) {
-                    response.submitted = submitted;
+                if (resultObj.response) {
+                    // reparse result to get response line nums
+                    resultObj = yaml.load(requestName, yaml.dump(resultObj, this.options.prettyIndent || 2), true);
+                    const responseObj = resultObj.response;
+                    let elapsedMs: Number | undefined;
+                    const elapsedMsComment = util.lineComment(this.yamlLines[responseObj.__start + resultObj.__start + 1]);
+                    if (elapsedMsComment) {
+                        elapsedMs = parseInt(elapsedMsComment.substring(0, elapsedMsComment.length - 2));
+                    }
+                    const { __start, __end, ...response } = responseObj;
+                    if (submitted) {
+                        response.submitted = submitted;
+                    }
+                    if (elapsedMs) {
+                        response.time = elapsedMs;
+                    }
+                    responses[requestName] = response;
                 }
-                if (elapsedMs) {
-                    response.time = elapsedMs;
-                }
-                return response;
             }
         }
+        return responses;
     }
 }
 

@@ -308,7 +308,8 @@ value2
         const results = await suite.run(values);
         assert.strictEqual(results[0].status, 'Passed');
 
-        const response = suite.runtime.results.responseFromActual('test/ply/requests/movie-queries.ply.yaml#movieById');
+        const responses = suite.runtime.results.responsesFromActual();
+        const response = responses['movieById'];
         assert.strictEqual(response?.status?.code, 200);
         assert.ok(response?.headers);
         assert.strictEqual(response.headers['content-type'], 'application/json; charset=utf-8');
