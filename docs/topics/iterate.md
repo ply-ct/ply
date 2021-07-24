@@ -16,7 +16,7 @@ The Ape,       1940, 3,      ta.jpg,  William Nigh,    director,        Boris Ka
 Before I Hang, 1940, 3.5,    bih.jpg, Nick Grinde,     director,        Boris Karloff,   actor,           Evelyn Keyes,    actor,           Bruce Bennet,    actor,           Edward Van Sloan, actor,           Ben Taggart,      actor,           imdb.com,    tt0032245,  Karloff gives great face as the kindly doctor who inadvertantly turns himself into a maniacal killer in this rather stuffy melodramatic thriller from Columbia Pictures.
 Black Friday,  1940, 3,      bf.jpg,  Arthur Lubin,    director,        Boris Karloff,   actor,           Bela Lugosi,     actor,           Stanley Ridges,  actor,           Ann Nagel,        actor,           Anne Gwynne,      actor,           imdb.com,    tt0032258,  Karloff and Lugosi team up in what amounts to more of a crime drama with supernatural elements than a straight horror film.
 ```
-This translates into the following values object structure:
+The first data row here translates into the following values object structure:
 ```json
 {
   "title": "The Ape",
