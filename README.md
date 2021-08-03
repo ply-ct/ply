@@ -1,5 +1,5 @@
 <a href="https://ply-ct.com">
-  <img alt="ply-logo" src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/ply-logo.png" width="128">
+  <img alt="ply-logo" src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/ply.png" width="128">
 </a>
 <br><br>
 <a href="https://github.com/ply-ct/ply/actions">

@@ -5,3 +5,6 @@ VS Code Requirements:
 128 x 128 png
 Actual Size:
 256 x 256 png
+
+og:image
+1200 x 1200 png
