@@ -1,13 +1,11 @@
 import * as process from 'process';
 import * as osLocale from 'os-locale';
 
-export function locale() {
-    let locale = osLocale.sync();
-    if (!locale || locale.toLocaleLowerCase() === 'c') {
-        locale = 'en-US';
-    }
-    return locale;
+let _locale = osLocale.sync();
+if (!_locale || _locale.toLocaleLowerCase() === 'c') {
+    _locale = 'en-US';
 }
+export const locale = _locale;
 
 /**
  * Turn a date into a timestamp based on the OS locale
@@ -17,7 +15,7 @@ export function locale() {
 export function timestamp(date: Date, withTimeZone = false): string {
     const millis = String(date.getMilliseconds()).padStart(3, '0');
     const tz = withTimeZone ? date.toTimeString().substring(date.toTimeString().indexOf(' ')) : '';
-    return `${date.toLocaleString(locale(), { hour12: false })}:${millis}${tz}`;
+    return `${date.toLocaleString(locale, { hour12: false })}:${millis}${tz}`;
 }
 
 /**
@@ -43,7 +41,7 @@ export function timeparse(time: string): Date | undefined {
     const parser = /(\d+?)\/(\d+?)\/(\d+?), (\d+?):(\d+?):(\d+?):(\d+?)$/;
     const match = time.match(parser);
     if (match) {
-        const formatObj: any = new Intl.DateTimeFormat(locale()).formatToParts(new Date());
+        const formatObj: any = new Intl.DateTimeFormat(locale).formatToParts(new Date());
         const first = formatObj[Object.keys(formatObj)[0]].type;
         const month = first === 'month' ? 1 : 2;
         const day = month === 1 ? 2 : 1;

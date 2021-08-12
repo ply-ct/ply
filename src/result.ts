@@ -299,10 +299,10 @@ export class ResultPaths {
     }
 
     static extractById(yamlObj: any, id: string, indent = 2): any {
-        const dot = id.indexOf('.');
-        if (dot > 0) {
-            const subflowId = id.substring(0, dot);
-            id = id.substring(dot + 1);
+        const hyphen = id.indexOf('-');
+        if (hyphen > 0) {
+            const subflowId = id.substring(0, hyphen);
+            id = id.substring(hyphen + 1);
             for (const key of Object.keys(yamlObj)) {
                 if (yamlObj[key].id === subflowId) {
                     const subflowStart = (yamlObj[key].__start || 0) + 1;

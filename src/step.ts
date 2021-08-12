@@ -17,7 +17,7 @@ export interface Step extends Test {
 }
 
 export function getStepId(step: Step) {
-    return step.subflow ? `${step.subflow.id}.${step.step.id}` : step.step.id;
+    return step.subflow ? `${step.subflow.id}-${step.step.id}` : step.step.id;
 }
 
 export class PlyStep implements Step, PlyTest {
