@@ -1,6 +1,6 @@
 {
   "name": "ply-ct",
-  "version": "3.0.8",
+  "version": "3.0.9",
   "description": "REST API Automated Testing",
   "main": "dist",
   "bin": {
@@ -60,7 +60,7 @@
     "minimatch": "^3.0.4",
     "mkdirp": "^1.0.4",
     "os-locale": "^5.0.0",
-    "read-excel-file": "^5.1.0",
+    "read-excel-file": "^5.2.9",
     "stacktracey": "^1.2.127",
     "stream-transform": "^2.1.0",
     "ts-node": "^9.1.1",

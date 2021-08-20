@@ -30,6 +30,7 @@ Postman and Insomnia are both awesome tools for sending HTTP requests. Where the
 |Expect/Assert         |<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|
 |VS Code Extension     |<span class="y">✓</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|
 |CI/CD Embeddable      |<span class="y">✓</span>|<span class="y">✓</span>|<span class="n">✗</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|
+|Load Tests (Parallel) |<span class="y">✓</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="y">✓</span>|<span class="y">✓</span>|
 
 <br/>
 ## Comparison
