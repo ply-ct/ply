@@ -1,4 +1,4 @@
-<a href="https://ply-ct.com">
+<a href="https://ply-ct.org">
   <img alt="ply-logo" src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/ply.png" width="128">
 </a>
 <br><br>
@@ -6,12 +6,12 @@
   <img src="https://github.com/ply-ct/ply/workflows/build/badge.svg" />
 </a>
 <a href="https://github.com/ply-ct/ply/actions">
-  <img src="https://ply-ct.com/badges/ply-ct/ply/workflows/build" />
+  <img src="https://ply-ct.org/badges/ply-ct/ply/workflows/build" />
 </a>
 
 <h2>API Automated Testing
 <div>
-<a href="https://ply-ct.com">
+<a href="https://ply-ct.org">
   <img src="https://raw.githubusercontent.com/ply-ct/ply/master/docs/img/wares.png" width="128" alt="Ply your wares" />
 </a>
 </div>

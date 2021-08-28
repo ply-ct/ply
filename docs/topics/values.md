@@ -6,7 +6,7 @@ Values provide a way to parameterize request content and response matching per e
 For example, here's ply-demo's [ply-ct.json](https://github.com/ply-ct/ply-demo/blob/master/test/values/ply-ct.json) values file:
 ```json
 {
-  "baseUrl": "https://ply-ct.com/movies"
+  "baseUrl": "https://ply-ct.org/movies"
 }
 ```
 Properties such as `baseUrl` are referenced in requests ([movie-queries.ply.yaml](https://github.com/ply-ct/ply-demo/blob/master/test/requests/movie-queries.ply.yaml))
@@ -21,7 +21,7 @@ JSON objects containing values can also be nested. You could just as well declar
 ```json
 {
   "moviesApi": {
-    "baseUrl": "https://ply-ct.com/movies"
+    "baseUrl": "https://ply-ct.org/movies"
   }
 }
 ```

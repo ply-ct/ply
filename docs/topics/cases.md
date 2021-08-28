@@ -121,7 +121,7 @@ the [Ply Extension](https://marketplace.visualstudio.com/items?itemName=ply-ct.v
 
 ### ply-movies
 Unlike previous exercises in this guide, our movie-crud case suite performs updates and changes
-data. This is not permitted on the movies API hosted at ply-ct.com. Luckily it's easy to run
+data. This is not permitted on the movies API hosted at ply-ct.org. Luckily it's easy to run
 [ply-movies](https://github.com/ply-ct/ply-movies#readme) locally. First, change the valuesFiles
 section in plyconfig.json to use localhost:
 ```json

@@ -39,7 +39,7 @@ The idea of Ply is to test an API by submitting HTTP requests and validating res
    between Start and Stop.
 1. Double-click on the "New Request" label to rename it "Movie by Title".
 1. If you double-click on the Request step somewhere other than its label, Ply Configurator pops up. After renaming, double-click "Movie by Title"
-   (or right-click and select Configure). Then enter this for its URL: {% include copy_to_clipboard.html text="https://ply-ct.com/movies?title=Dracula" %}  
+   (or right-click and select Configure). Then enter this for its URL: {% include copy_to_clipboard.html text="https://ply-ct.org/movies?title=Dracula" %}  
    <img src="../img/get-dracula.png" alt="Movie by Title" width="888px">  
    This points to [ply-movies](https://github.com/ply-ct/ply-movies#readme), Ply's playground REST API containing a few hundred horror movies
    from the 1930s.
