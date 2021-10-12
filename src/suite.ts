@@ -182,7 +182,7 @@ export class Suite<T extends Test> {
                     }
                 }
             }
-        } catch (err) {
+        } catch (err: any) {
             // all tests are Errored
             this.logger.error(err.message, err);
             const results: Result[] = [];
@@ -272,7 +272,7 @@ export class Suite<T extends Test> {
                     }
                     this.addResult(results, result, runValues);
                 }
-            } catch (err) {
+            } catch (err: any) {
                 this.logger.error(err.message, err);
                 result = {
                     name: test.name,

@@ -46,7 +46,7 @@ export class Values {
                     try {
                         const obj = JSON.parse(contents);
                         values = deepmerge(values, obj);
-                    } catch (err) {
+                    } catch (err: any) {
                         throw new Error(`Cannot parse values file: ${location} (${err.message})`);
                     }
                 } else {
@@ -60,7 +60,7 @@ export class Values {
             try {
                 const obj = JSON.parse(envValues);
                 values = deepmerge(values, obj);
-            } catch (err) {
+            } catch (err: any) {
                 throw new Error(`Cannot parse ${PLY_VALUES} (${err.message})`);
             }
         }

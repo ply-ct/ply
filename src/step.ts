@@ -139,7 +139,7 @@ export class PlyStep implements Step, PlyTest {
 
             result = this.mapResult(runOptions);
 
-        } catch (err) {
+        } catch (err: any) {
             this.logger.error(err.message, err);
             this.instance.status = 'Errored';
             this.instance.message = err.message;

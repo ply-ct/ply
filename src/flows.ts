@@ -335,8 +335,8 @@ export class FlowLoader {
         if (text.startsWith('{')) {
             try {
                 flow = JSON.parse(text);
-            } catch (err) {
-                throw new Error(`Failed to parse ${file}: ${err.message}`);
+            } catch (err: unknown) {
+                throw new Error(`Failed to parse ${file}: ${err}`);
             }
         } else {
             flow = yaml.load(file, text);

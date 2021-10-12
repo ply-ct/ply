@@ -56,7 +56,7 @@ export function replace(template: string, context: object, logger: Logger): stri
             let l = line.replace(/\${@\[/g, '${' + RESULTS + '[');
             l = l.replace(/\${@/g, '${' + RESULTS + '.');
             lines.push(l.replace(/\$\{.+?}/g, expr => get(expr, context)));
-        } catch (err) {
+        } catch (err: any) {
             if (err.message === `${RESULTS} is not defined`) {
                 err.message = 'No previous results found';
             }

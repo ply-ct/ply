@@ -26,8 +26,8 @@ if (runOptions?.import) {
             plier.logger.info('Importing', path);
             importer.doImport(new Retrieval(path));
         }
-    } catch (err) {
-        plier.logger.error(err.message, err);
+    } catch (err: unknown) {
+        plier.logger.error(`${err}`, err);
         process.exit(1);
     }
 }

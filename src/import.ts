@@ -106,9 +106,9 @@ export class Postman implements Importer {
                     } else {
                         this.storagePathToRequestsObj.set(storagePath, { [name]: request });
                     }
-                } catch (err) {
-                    this.logger.error(`Request ${path}/${it.name} not imported due to: ${err.message}`);
-                    this.logger.debug(err.message, err);
+                } catch (err: unknown) {
+                    this.logger.error(`Request ${path}/${it.name} not imported due to: ${err}`);
+                    this.logger.debug(`${err}`, err);
                 }
             }
             if (it.item) {
