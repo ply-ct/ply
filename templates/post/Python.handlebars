@@ -1,0 +1,14 @@
+{{name}} = {{type}}()
+# TODO populate {{name}} object
+
+response = requests.post(
+    f"{baseUrl}{{#each chunks}}{{#if this.param}}{{expression this.path}}{{/if}}{{#unless this.param}}{{this.path}}{{/unless}}{{/each}}",
+    headers={
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {authToken}"
+    },
+    json={{name}}.__dict__
+)
+if (response.status_code == HTTPStatus.CREATED):
+    location = response.headers.get("Location")
+    print(f"Created {{name}} at: {baseUrl}{location}")

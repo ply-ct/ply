@@ -1,0 +1,17 @@
+{{#if item}}
+{{item.name}} = "{{item.value}}"
+
+{{/if}}
+response = requests.get(
+    f"{baseUrl}{{#each chunks}}{{#if this.param}}{{expression this.path}}{{/if}}{{#unless this.param}}{{this.path}}{{/unless}}{{/each}}",
+    headers={
+        "Accept": "application/json",
+        "Authorization": f"Bearer {authToken}"
+    }
+)
+if (response.ok):
+    {{name}} = response.json()
+{{#if item}}
+    assert {{name}}["{{item.name}}"] == {{item.name}}
+{{/if}}
+    print(f"{{name}}: {str({{name}})}")

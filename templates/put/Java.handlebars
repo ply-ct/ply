@@ -1,0 +1,18 @@
+{{type}} {{name}} = new {{type}}();
+String {{item.name}} = "{{item.value}}";
+{{name}}.set{{capitalize item.name}}({{item.name}});
+// TODO populate {{name}} object
+
+URI uri = URI.create(baseUrl{{#each chunks}} + {{#unless this.param}}"{{/unless}}{{this.path}}{{#unless this.param}}"{{/unless}}{{/each}});
+HttpClient client = HttpClient.newHttpClient();
+HttpRequest request = HttpRequest.newBuilder()
+        .uri(uri)
+        .setHeader("Content-Type", "application/json")
+        .setHeader("Authorization", "Bearer " + authToken)
+        .PUT(HttpRequest.BodyPublishers.ofString(new Gson().toJson({{name}})))
+        .build();
+
+HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+if (response.statusCode() == HttpURLConnection.HTTP_OK) {
+    System.out.println("Successfully updated {{name}} at: " + uri);
+}

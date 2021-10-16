@@ -1,0 +1,227 @@
+openapi: 3.0.2
+info:
+  title: Greeting API
+  version: 1.0.0
+paths:
+  /greeting:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Greeting'
+              example:
+                name: World
+                salutation: Hello
+          description: OK
+      summary: Retrieve a greeting
+      x-codeSamples:
+        - lang: Java
+          source: |
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/greeting"))
+                    .setHeader("Accept", "application/json")
+                    .setHeader("Authorization", "Bearer " + authToken)
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == HttpURLConnection.HTTP_OK) {
+                Greeting greeting = new Gson().fromJson(response.body(), Greeting.class);
+                System.out.println("greeting: " + response.body());
+            }
+        - lang: Python
+          source: |
+            response = requests.get(
+                f"{baseUrl}/greeting",
+                headers={
+                    "Accept": "application/json",
+                    "Authorization": f"Bearer {authToken}"
+                }
+            )
+            if (response.ok):
+                greeting = response.json()
+                print(f"greeting: {str(greeting)}")
+        - lang: TypeScript
+          source: |
+            const response = await fetch(`${baseUrl}/greeting`, {
+                method: 'get',
+                headers: {
+                    Accept: 'application/json',
+                    Authorization: `Bearer ${authToken}`
+                }
+            });
+            if (response.ok) {
+                const greeting = await response.json() as Greeting;
+                console.log(`greeting: ${JSON.stringify(greeting)}`);
+            }
+    post:
+      requestBody:
+        description: greeting
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Greeting'
+            example:
+              salutation: Howdy
+              name: Cowboy
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: {}
+              example:
+                status:
+                  code: 201
+                  message: Created
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema: {}
+              example:
+                status:
+                  code: 400
+                  errors:
+                    - Greeting should have required property 'name'
+                    - Greeting should NOT have additional property 'notname'
+                    - Greeting/salutation should NOT have more than 10 characters
+                  message: Bad Request
+      summary: Create a greeting
+      description: Emit a greeting based on the greeting payload
+      x-codeSamples:
+        - lang: Java
+          source: |
+            Unknown unknown = new Unknown();
+            // TODO populate unknown object
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/greeting"))
+                    .setHeader("Content-Type", "application/json")
+                    .setHeader("Authorization", "Bearer " + authToken)
+                    .POST(HttpRequest.BodyPublishers.ofString(new Gson().toJson(unknown)))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == HttpURLConnection.HTTP_CREATED) {
+                String location = response.headers().firstValue("Location").get();
+                System.out.println("Created unknown at: " + baseUrl + location);
+            }
+        - lang: Python
+          source: |
+            unknown = Unknown()
+            # TODO populate unknown object
+
+            response = requests.post(
+                f"{baseUrl}/greeting",
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {authToken}"
+                },
+                json=unknown.__dict__
+            )
+            if (response.status_code == HTTPStatus.CREATED):
+                location = response.headers.get("Location")
+                print(f"Created unknown at: {baseUrl}{location}")
+        - lang: TypeScript
+          source: |
+            const unknown = new Unknown();
+            // TODO populate unknown object
+
+            const response = await fetch(`${baseUrl}/greeting`, {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${authToken}`
+                },
+                body: JSON.stringify(unknown)
+            });
+            if (response.status === StatusCodes.CREATED) {
+                const location = response.headers.get('Location');
+                console.log(`Created unknown at: ${baseUrl}${location}`);
+            }
+  /greeting/{name}:
+    get:
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Greeting'
+              example:
+                name: Linus
+                salutation: Hello
+          description: OK
+      summary: Retrieve a greeting
+      x-codeSamples:
+        - lang: Java
+          source: |
+            HttpClient client = HttpClient.newHttpClient();
+            String name = "Linus";
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/greeting/" + name))
+                    .setHeader("Accept", "application/json")
+                    .setHeader("Authorization", "Bearer " + authToken)
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == HttpURLConnection.HTTP_OK) {
+                Greeting greeting = new Gson().fromJson(response.body(), Greeting.class);
+                assert greeting.getName() == name;
+                System.out.println("greeting: " + response.body());
+            }
+        - lang: Python
+          source: |
+            name = "Linus"
+
+            response = requests.get(
+                f"{baseUrl}/greeting/{name}",
+                headers={
+                    "Accept": "application/json",
+                    "Authorization": f"Bearer {authToken}"
+                }
+            )
+            if (response.ok):
+                greeting = response.json()
+                assert greeting["name"] == name
+                print(f"greeting: {str(greeting)}")
+        - lang: TypeScript
+          source: |
+            const name = 'Linus';
+
+            const response = await fetch(`${baseUrl}/greeting/${name}`, {
+                method: 'get',
+                headers: {
+                    Accept: 'application/json',
+                    Authorization: `Bearer ${authToken}`
+                }
+            });
+            if (response.ok) {
+                const greeting = await response.json() as Greeting;
+                assert.equal(greeting.name, name);
+                console.log(`greeting: ${JSON.stringify(greeting)}`);
+            }
+components:
+  schemas:
+    Greeting:
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        salutation:
+          type: string
+      required:
+        - salutation
+        - name
+      type: object

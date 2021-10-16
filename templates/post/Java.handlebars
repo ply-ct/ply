@@ -1,0 +1,16 @@
+{{type}} {{name}} = new {{type}}();
+// TODO populate {{name}} object
+
+HttpClient client = HttpClient.newHttpClient();
+HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(baseUrl{{#each chunks}} + {{#unless this.param}}"{{/unless}}{{this.path}}{{#unless this.param}}"{{/unless}}{{/each}}))
+        .setHeader("Content-Type", "application/json")
+        .setHeader("Authorization", "Bearer " + authToken)
+        .POST(HttpRequest.BodyPublishers.ofString(new Gson().toJson({{name}})))
+        .build();
+
+HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+if (response.statusCode() == HttpURLConnection.HTTP_CREATED) {
+    String location = response.headers().firstValue("Location").get();
+    System.out.println("Created {{name}} at: " + baseUrl + location);
+}

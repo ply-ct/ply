@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": false,
+    "sourceMap": false,
+    "outDir": "out"
+  },
+  "include": ["mocha", "ply"],
+  "exclude": ["out"]
+}

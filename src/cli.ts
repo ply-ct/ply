@@ -9,6 +9,7 @@ import { Storage } from './storage';
 import { Retrieval } from './retrieval';
 import { Import } from './import';
 import * as tsNode from 'ts-node';
+import { Plyex } from './plyex/plyex';
 
 const start = Date.now();
 
@@ -25,6 +26,18 @@ if (runOptions?.import) {
         for (const path of options.args) {
             plier.logger.info('Importing', path);
             importer.doImport(new Retrieval(path));
+        }
+    } catch (err: unknown) {
+        plier.logger.error(`${err}`, err);
+        process.exit(1);
+    }
+} else if (runOptions?.openapi) {
+    plier.logger.debug('Options', options);
+    const plyex = new Plyex(runOptions.openapi, plier.logger, { indent: options.prettyIndent });
+    try {
+        for (const path of options.args) {
+            plier.logger.info('Augmenting', path);
+            plyex.augment(new Retrieval(path));
         }
     } catch (err: unknown) {
         plier.logger.error(`${err}`, err);
@@ -64,7 +77,7 @@ else {
                     paths.push(file);
                 }
                 if (paths.length === 0) {
-                    throw new Error(`Files(s) not found: ${args}`);
+                    throw new Error(`Test files(s) not found: ${args}`);
                 }
             }
         }

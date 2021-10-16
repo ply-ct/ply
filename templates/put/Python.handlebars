@@ -1,0 +1,16 @@
+{{name}} = {{type}}()
+{{item.name}} = "{{item.value}}"
+{{name}}.{{item.name}} = {{item.name}}
+# TODO populate {{name}} object
+
+url = f"{baseUrl}{{#each chunks}}{{#if this.param}}{{expression this.path}}{{/if}}{{#unless this.param}}{{this.path}}{{/unless}}{{/each}}"
+response = requests.put(
+    url,
+    headers={
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {authToken}"
+    },
+    json={{name}}.__dict__
+)
+if (response.ok):
+    print(f"Successfully updated {{name}} at: {url}")

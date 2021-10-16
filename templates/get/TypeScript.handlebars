@@ -1,0 +1,18 @@
+{{#if item}}
+const {{item.name}} = '{{item.value}}';
+
+{{/if}}
+const response = await fetch(`${baseUrl}{{#each chunks}}{{#if this.param}}${{expression this.path}}{{/if}}{{#unless this.param}}{{this.path}}{{/unless}}{{/each}}`, {
+    method: 'get',
+    headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${authToken}`
+    }
+});
+if (response.ok) {
+    const {{name}} = await response.json() as {{type}}{{#if array}}[]{{/if}};
+{{#if item}}
+    assert.equal({{name}}.{{item.name}}, {{item.name}});
+{{/if}}
+    console.log(`{{name}}: ${JSON.stringify({{name}})}`);
+}

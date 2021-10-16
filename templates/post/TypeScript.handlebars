@@ -1,0 +1,15 @@
+const {{name}} = new {{type}}();
+// TODO populate {{name}} object
+
+const response = await fetch(`${baseUrl}{{#each chunks}}{{#if this.param}}${{expression this.path}}{{/if}}{{#unless this.param}}{{this.path}}{{/unless}}{{/each}}`, {
+    method: 'post',
+    headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${authToken}`
+    },
+    body: JSON.stringify({{name}})
+});
+if (response.status === StatusCodes.CREATED) {
+    const location = response.headers.get('Location');
+    console.log(`Created {{name}} at: ${baseUrl}${location}`);
+}

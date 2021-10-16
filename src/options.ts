@@ -149,7 +149,14 @@ export interface RunOptions {
      * Overwrites existing same-named files.
      */
     import?: string;
+
     /**
+     * Augment OpenAPI v3 doc at specified path with operation summaries, request/response samples,
+     * and code snippets from Ply expected results.
+     */
+     openapi?: string;
+
+     /**
      * Import case suite modules from generated .js instead of .ts source (default = false).
      * This runOption needs to be set in your case's calls to Suite.run (for requests),
      * and also in originating the call to Suite.run (for the case(s)).
@@ -293,6 +300,10 @@ export class Config {
             describe: 'Import requests/values from (\'postman\')',
             type: 'string'
         },
+        openapi: {
+            describe: 'Augment OpenAPI 3 docs with examples',
+            type: 'string'
+        },
         create: {
             describe: 'Create expected result from actual',
             type: 'boolean'
@@ -407,6 +418,10 @@ export class Config {
         if (options.import) {
             options.runOptions.import =  options.import;
             delete options.import;
+        }
+        if (options.openapi) {
+            options.runOptions.openapi =  options.openapi;
+            delete options.openapi;
         }
 
         return options;

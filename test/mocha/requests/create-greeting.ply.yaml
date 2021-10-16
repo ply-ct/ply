@@ -1,0 +1,21 @@
+postGreetingGood:
+  url: ${baseUrl}/greeting
+  method: POST
+  headers:
+    Content-Type: application/json
+  body: |-
+    {
+      "salutation": "Howdy",
+      "name": "Cowboy"
+    }
+
+postGreetingBad:
+  url: ${baseUrl}/greeting
+  method: POST
+  headers:
+    Content-Type: application/json
+  body: |-
+    {
+      "salutation": "Howdy There",
+      "notname": "Cowboy"
+    }

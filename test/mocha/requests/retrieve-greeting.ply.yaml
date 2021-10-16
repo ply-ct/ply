@@ -1,0 +1,11 @@
+getGreetingDefault:
+  url: ${baseUrl}/greeting
+  method: GET
+  headers:
+    Accept: application/json
+
+getGreetingLinus:
+  url: ${baseUrl}/greeting/Linus
+  method: GET
+  headers:
+    Accept: application/json

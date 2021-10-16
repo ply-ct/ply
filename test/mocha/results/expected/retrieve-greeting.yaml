@@ -1,0 +1,34 @@
+getGreetingDefault:
+  request:
+    url: ${baseUrl}/greeting
+    method: GET
+    headers:
+      Accept: application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      content-type: application/json; charset=utf-8
+    body: |-
+      {
+        "name": "World",
+        "salutation": "Hello"
+      }
+getGreetingLinus:
+  request:
+    url: ${baseUrl}/greeting/Linus
+    method: GET
+    headers:
+      Accept: application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      content-type: application/json; charset=utf-8
+    body: |-
+      {
+        "name": "Linus",
+        "salutation": "Hello"
+      }

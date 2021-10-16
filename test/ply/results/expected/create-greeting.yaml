@@ -1,0 +1,55 @@
+# actually these results are for mocha plyex testing
+postGreetingGood:
+  request:
+    url: ${baseUrl}/greeting
+    method: POST
+    headers:
+      Content-Type: application/json
+    body: |-
+      {
+        "salutation": "Howdy",
+        "name": "Cowboy"
+      }
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      content-type: application/json; charset=utf-8
+      location: /greetings/Cowboy
+    body: |-
+      {
+        "status": {
+          "code": 201,
+          "message": "Created"
+        }
+      }
+postGreetingBad:
+  request:
+    url: ${baseUrl}/greeting
+    method: POST
+    headers:
+      Content-Type: application/json
+    body: |-
+      {
+        "salutation": "Howdy There",
+        "notname": "Cowboy"
+      }
+  response:
+    status:
+      code: 400
+      message: Bad Request
+    headers:
+      content-type: application/json; charset=utf-8
+    body: |-
+      {
+        "status": {
+          "code": 400,
+          "errors": [
+            "Greeting should have required property 'name'",
+            "Greeting should NOT have additional property 'notname'",
+            "Greeting/salutation should NOT have more than 10 characters"
+          ],
+          "message": "Bad Request"
+        }
+      }

@@ -1,0 +1,19 @@
+HttpClient client = HttpClient.newHttpClient();
+{{#if item}}
+String {{item.name}} = "{{item.value}}";
+
+{{/if}}
+HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(baseUrl{{#each chunks}} + {{#unless this.param}}"{{/unless}}{{this.path}}{{#unless this.param}}"{{/unless}}{{/each}}))
+        .setHeader("Accept", "application/json")
+        .setHeader("Authorization", "Bearer " + authToken)
+        .build();
+
+HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+if (response.statusCode() == HttpURLConnection.HTTP_OK) {
+    {{type}}{{#if array}}[]{{/if}} {{name}} = new Gson().fromJson(response.body(), {{type}}{{#if array}}[]{{/if}}.class);
+{{#if item}}
+    assert {{name}}.get{{capitalize item.name}}() == {{item.name}};
+{{/if}}
+    System.out.println("{{name}}: " + response.body());
+}

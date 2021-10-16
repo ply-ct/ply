@@ -1,0 +1,50 @@
+openapi: 3.0.2
+info:
+  title: Greeting API
+  version: 1.0.0
+paths:
+  /greeting:
+    get:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Greeting' }
+    post:
+      requestBody:
+        description: ''
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Greeting' }
+        required: true
+      responses:
+        '201':
+          description: ''
+        '400':
+          description: ''
+  /greeting/{name}:
+    get:
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Greeting' }
+components:
+  schemas:
+    Greeting:
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        salutation:
+          type: string
+      required:
+        - salutation
+        - name
+      type: object

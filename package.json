@@ -1,13 +1,14 @@
 {
   "name": "ply-ct",
-  "version": "3.0.12",
+  "version": "3.0.13",
   "description": "REST API Automated Testing",
   "main": "dist",
   "bin": {
     "ply": "dist/cli.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "templates"
   ],
   "types": "dist",
   "repository": {
@@ -37,10 +38,11 @@
     "build": "tsc",
     "start-movies": "ply-movies start &",
     "pretest": "npm run start-movies",
-    "mocha": "mocha --require ts-node/register test/mocha/**/*.ts",
+    "mocha": "mocha --require ts-node/register",
     "ply": "dist/cli.js",
     "stop-movies": "ply-movies stop",
-    "test": "npm-run-all mocha ply stop-movies --continue-on-error",
+    "exe": "chmod +x dist/cli.js",
+    "test": "npm-run-all mocha exe ply stop-movies --continue-on-error",
     "typedoc": "typedoc --name 'ply' --out docs/api-docs --excludePrivate true src",
     "api-docs": "npm run typedoc && cat docs/css/api.css >> docs/api-docs/assets/css/main.css",
     "serve-docs": "cd docs && bundle install && bundle exec jekyll serve --incremental --watch --baseurl ''"
@@ -55,6 +57,8 @@
     "flowbee": "^0.2.10",
     "form-data": "^4.0.0",
     "glob": "^7.2.0",
+    "handlebars": "^4.7.7",
+    "http-status-codes": "^2.1.4",
     "js-yaml": "^4.1.0",
     "json-stable-stringify": "^1.0.1",
     "minimatch": "^3.0.4",

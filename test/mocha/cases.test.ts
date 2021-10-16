@@ -33,7 +33,7 @@ describe('Cases', async () => {
         assert.strictEqual(suites[0].className, 'MovieCrud');
         assert.strictEqual(suites[0].type, 'case');
         assert.strictEqual(suites[0].path, 'cases/movieCrud.ply.ts');
-        assert.strictEqual(suites[0].outFile, new Location('dist/test/ply/cases/movieCrud.ply.js').absolute);
+        assert.strictEqual(suites[0].outFile, new Location('out/test/ply/cases/movieCrud.ply.js').absolute);
     });
 
     it('is loaded from ts', async () => {
