@@ -9,7 +9,7 @@ describe('API Docs', () => {
 
     it('should find nestjs endpoints', () => {
         const file = 'test/mocha/plyex/nestjs.ts';
-        const plyex = new Plyex('nestjs', new Logger(), { tsConfig: 'test/tsConfig.json', sourcePatterns: [file] });
+        const plyex = new Plyex('nestjs', new Logger(), { tsConfig: 'test/tsconfig.json', sourcePatterns: [file] });
         const endpointMethods = plyex.getPluginEndpointMethods();
 
         const getBase = endpointMethods.find(em => em.method === 'get' && em.path === '/greeting');
@@ -36,7 +36,7 @@ describe('API Docs', () => {
 
     it('should augment nestjs openapi doc', async () => {
         const file = 'test/mocha/plyex/nestjs.ts';
-        const plyex = new Plyex('nestjs', new Logger(), { tsConfig: 'test/tsConfig.json', sourcePatterns: [file] });
+        const plyex = new Plyex('nestjs', new Logger(), { tsConfig: 'test/tsconfig.json', sourcePatterns: [file] });
         const openApiYaml = fs.readFileSync('test/mocha/plyex/base.yaml', { encoding: 'utf8' });
         const tempDir = 'test/mocha/plyex/temp';
         mkdirp.sync(tempDir);
