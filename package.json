@@ -35,11 +35,9 @@
     "node": ">=12"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && chmod +x dist/cli.js",
     "start-movies": "ply-movies start &",
     "pretest": "npm run start-movies",
-    "exe": "chmod +x dist/cli.js",
-    "prepublish": "npm run exe",
     "mocha": "mocha --require ts-node/register",
     "ply": "dist/cli.js",
     "stop-movies": "ply-movies stop",
