@@ -1,10 +1,8 @@
 import { getReasonPhrase } from 'http-status-codes';
-import { Retrieval } from '../retrieval';
 import { OpenApi, Path, Method, Operation, JsonMedia } from './openapi';
 import { NestJsPlugin } from './nestjs';
 import { JsDocReader, PlyEndpointMeta } from './apidocs';
 import { Log } from '../logger';
-import * as yaml from '../yaml';
 import { Ts } from '../ts';
 import { CodeSamples, PathChunk, TemplateContext } from './code';
 
@@ -18,19 +16,24 @@ export interface EndpointMethod {
 }
 
 export interface PlyexOptions {
-    indent?: number;
-    write?: boolean;
     tsConfig?: string;
     sourcePatterns?: string[];
     addMissingOperations?: boolean;
+    /**
+     * Overwrite existing summaries, descriptions, examples and code samples.
+     */
+    overwrite?: boolean;
+    /**
+     * Add operations summaries/descripts for endpoint methods not tagged with @ply.
+     */
+    includeUntagged?: boolean;
 }
 
 export const defaultOptions: PlyexOptions = {
-    indent: 2,
-    write: true,
     tsConfig: 'tsconfig.json',
     sourcePatterns: ['src/**/*.ts'],
-    addMissingOperations: true
+    addMissingOperations: true,
+    overwrite: false
 };
 
 export class Plyex {
@@ -38,7 +41,6 @@ export class Plyex {
     readonly options: PlyexOptions;
     private ts: Ts;
     private jsDocReaders = new Map<string,JsDocReader>();
-    isYaml = false;
 
     constructor(
         readonly plugin: string,
@@ -49,15 +51,6 @@ export class Plyex {
         this.ts = new Ts(this.options.tsConfig, this.options.sourcePatterns);
     }
 
-    async getOpenApi(apiDoc: Retrieval): Promise<OpenApi> {
-        const contents = await apiDoc.read();
-        if (!contents) {
-            throw new Error(`OpenAPI doc not found: ${apiDoc.location}`);
-        }
-        this.isYaml = !contents.startsWith('{');
-        return this.isYaml ? yaml.load(`${apiDoc.location}`, contents) : JSON.parse(contents);
-    }
-
     getPluginEndpointMethods(): EndpointMethod[] {
         if (this.plugin === 'nestjs') {
             return new NestJsPlugin(this.ts).getEndpointMethods();
@@ -66,8 +59,7 @@ export class Plyex {
         }
     }
 
-    async augment(apiDoc: Retrieval, endpointMethods?: EndpointMethod[]): Promise<string | undefined> {
-        const openApi = await this.getOpenApi(apiDoc);
+    augment(openApi: OpenApi, endpointMethods?: EndpointMethod[]): OpenApi {
 
         if (!endpointMethods) {
             endpointMethods = this.getPluginEndpointMethods();
@@ -84,22 +76,14 @@ export class Plyex {
             }
         }
 
-        if (!openApi.paths) {
-            this.logger.error('No paths found to augment', apiDoc);
-            return await apiDoc.read();
-        }
+        const augmented = this.doAugment(openApi, endpointMethods);
 
-        await this.doAugment(openApi.paths, endpointMethods);
-
-        let updated: string;
-        if (this.isYaml) updated = yaml.dump(openApi, typeof this.options.indent === 'undefined' ? 2 : this.options.indent);
-        else updated = JSON.stringify(openApi, null, this.options.indent);
-
-        if (this.options.write) apiDoc.write(updated);
-        return updated;
+        return augmented;
     }
 
-    async doAugment(openApiPaths: { [path: string]: Path }, endpointMethods: EndpointMethod[]) {
+    doAugment(openApi: OpenApi, endpointMethods: EndpointMethod[]): OpenApi {
+        const deepCopy = JSON.parse(JSON.stringify(openApi));
+        const openApiPaths: { [path: string]: Path } = deepCopy.paths || {};
         for (const path of Object.keys(openApiPaths)) {
             const openApiPath = openApiPaths[path];
             for (const method of Object.keys(openApiPath)) {
@@ -119,17 +103,25 @@ export class Plyex {
                         jsDocReader = new JsDocReader(this.ts, sourceFile);
                         this.jsDocReaders.set(endpointMethod.file, jsDocReader);
                     }
-                    const plyEndpointMeta = jsDocReader.getPlyEndpointMeta(endpointMethod);
+
+                    const plyEndpointMeta = jsDocReader.getPlyEndpointMeta(endpointMethod, 'ply', this.options.includeUntagged);
                     if (plyEndpointMeta) {
-                        if (!operation.summary) operation.summary = plyEndpointMeta.summaries[0];
-                        if (plyEndpointMeta.description && !operation.description) {
+                        if (!operation.summary || this.options.overwrite) {
+                            if (plyEndpointMeta.summaries.length > 1 && endpointMethod.lastSegmentOptional) {
+                                operation.summary = plyEndpointMeta.summaries[1];
+                            } else {
+                                operation.summary = plyEndpointMeta.summaries[0];
+                            }
+                        }
+                        if (plyEndpointMeta.description && (!operation.description || this.options.overwrite)) {
                             operation.description = plyEndpointMeta.description;
                         }
-                        this.examples(operation, endpointMethod, plyEndpointMeta);
+                        this.examples(endpointMethod, operation, plyEndpointMeta);
                     }
                 }
             }
         }
+        return deepCopy;
     }
 
     operation(endpointMethod: EndpointMethod): Operation {
@@ -137,22 +129,21 @@ export class Plyex {
         return { summary: '' };
     }
 
-    examples(operation: Operation, endpointMethod: EndpointMethod, plyEndpointMeta: PlyEndpointMeta) {
+    examples(endpointMethod: EndpointMethod, operation: Operation, plyEndpointMeta: PlyEndpointMeta) {
         if (plyEndpointMeta.examples?.request) {
             if (!operation.requestBody) operation.requestBody = { description: '', content: {}, required: true };
             const reqContent = operation.requestBody.content;
             let jsonPayload = reqContent['application/json'];
-            if (!jsonPayload?.example) {
-                if (!jsonPayload) {
-                    jsonPayload = reqContent['application/json'] = { schema: {} };
+            if (!jsonPayload) {
+                jsonPayload = reqContent['application/json'] = { schema: {} };
+            }
+            if (jsonPayload) {
+                if (!operation.requestBody.description) {
+                    const schemaType = this.schemaType(jsonPayload);
+                    if (schemaType) operation.requestBody.description = this.typeName(schemaType);
                 }
-                if (jsonPayload) {
-                    if (!operation.requestBody.description) {
-                        const schemaType = this.schemaType(jsonPayload);
-                        if (schemaType) operation.requestBody.description = this.typeName(schemaType);
-                    }
-                    const example = this.example(endpointMethod, plyEndpointMeta.examples.request);
-                    jsonPayload.example = example;
+                if (!jsonPayload.example || this.options.overwrite) {
+                    jsonPayload.example = this.example(endpointMethod, plyEndpointMeta.examples.request);
                 }
             }
         }
@@ -181,8 +172,11 @@ export class Plyex {
                                 if (!isNaN(intCode)) {
                                     operation.responses[code].description = getReasonPhrase(intCode);
                                 }
+                                if (!operation.responses[code].description) {
+                                    operation.responses[code].description = '' + code;
+                                }
                             }
-                            if (!jsonPayload.example) {
+                            if (!jsonPayload.example || this.options.overwrite) {
                                 jsonPayload.example = example;
                             }
                             if (jsonPayload.example) {
@@ -200,13 +194,16 @@ export class Plyex {
 
     schemaType(jsonPayload: JsonMedia): string {
         const schema = jsonPayload.schema;
-        let schemaType = '';
-        const ref = schema?.$ref;
-        if (ref) {
-            schemaType = ref.substring(ref.lastIndexOf('/') + 1);
-            if (schema.type === 'array') schemaType = `[${schemaType}]`;
+        let ref = schema.$ref;
+        if (schema.type === 'array' && schema.items?.$ref) {
+            ref = schema.items.$ref;
         }
-        return schemaType;
+        if (ref) {
+            let type = ref.substring(ref.lastIndexOf('/') + 1);
+            if (schema.type === 'array') type = `[${type}]`;
+            return type;
+        }
+        return '';
     }
 
     codeSamples(operation: Operation, endpointMethod: EndpointMethod, schemaType: string, example: any) {

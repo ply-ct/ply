@@ -81,7 +81,7 @@ export class JsDocReader {
     constructor(private ts: Ts, readonly sourceFile: ts.SourceFile) {
     }
 
-    getPlyEndpointMeta(endpointMethod: EndpointMethod, tag = 'ply'): PlyEndpointMeta | undefined {
+    getPlyEndpointMeta(endpointMethod: EndpointMethod, tag = 'ply', untaggedMethods = false): PlyEndpointMeta | undefined {
         const classDecl = this.ts.getClassDeclaration(this.sourceFile.fileName, endpointMethod.class);
         if (classDecl) {
             const methodDecl = Ts.methodDeclarations(classDecl).find(md => md.name.getText() === endpointMethod.name);
@@ -89,11 +89,10 @@ export class JsDocReader {
                 const methodMeta = this.findMethodMeta(methodDecl);
                 if (methodMeta) {
                     const plyMeta = this.readPlyMeta(endpointMethod.class, methodDecl, tag);
-                    if (plyMeta) {
+                    if (plyMeta || untaggedMethods) {
                         const plyEndpointMeta: PlyEndpointMeta = {
                             summaries: [ methodMeta.summary ]
                         };
-                        // @ply tag
                         const pipe = methodMeta.summary.indexOf('|');
                         if (pipe > 0 && pipe < methodMeta.summary.length - 1) {
                             plyEndpointMeta.summaries = [
@@ -105,12 +104,13 @@ export class JsDocReader {
                             plyEndpointMeta.description = methodMeta.description;
                         }
 
+                        // @ply tag
                         let exampleRequest: string | undefined;
-                        if (plyMeta.request) {
+                        if (plyMeta?.request) {
                             exampleRequest = new PlyExampleRequest(plyMeta.request).exampleRequest;
                         }
                         let exampleResponses: { [key: string]: string[] } | undefined;
-                        if (plyMeta.responses) {
+                        if (plyMeta?.responses) {
                             for (const key of Object.keys(plyMeta.responses)) {
                                 const responses = plyMeta.responses[key];
                                 for (const response of responses) {
@@ -161,8 +161,7 @@ export class JsDocReader {
                 name: methodDeclaration.name.getText(),
                 summary: (dot > 0 ? lines[0].substring(0, dot) : lines[0]).trim()
             };
-            let descrip =
-                dot > 0 && dot < lines[0].length + 1 ? lines[0].substring(dot + 1).trim() : '';
+            let descrip = dot > 0 && dot < lines[0].length + 1 ? lines[0].substring(dot + 1).trim() : '';
             for (let i = 1; i < lines.length; i++) {
                 descrip += `\n${lines[i].trim()}`;
             }

@@ -1,6 +1,6 @@
 {
   "name": "ply-ct",
-  "version": "3.0.13",
+  "version": "3.0.15",
   "description": "REST API Automated Testing",
   "main": "dist",
   "bin": {
@@ -38,10 +38,11 @@
     "build": "tsc",
     "start-movies": "ply-movies start &",
     "pretest": "npm run start-movies",
+    "exe": "chmod +x dist/cli.js",
+    "prepublish": "npm run exe",
     "mocha": "mocha --require ts-node/register",
     "ply": "dist/cli.js",
     "stop-movies": "ply-movies stop",
-    "exe": "chmod +x dist/cli.js",
     "test": "npm-run-all mocha exe ply stop-movies --continue-on-error",
     "typedoc": "typedoc --name 'ply' --out docs/api-docs --excludePrivate true src",
     "api-docs": "npm run typedoc && cat docs/css/api.css >> docs/api-docs/assets/css/main.css",

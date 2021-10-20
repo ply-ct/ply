@@ -14,7 +14,8 @@ those that are ignored or skipped).
 | **<code>--version, -v</code>** | Show version number
 | **<code>--config, -c</code>** | Specify path to [plyconfig file](config) (overrides default search mechanism)
 | **<code>--submit, -s</code>** | Submit requests but don't verify actual results against expected (ad hoc run)
-| **<code>--import</code>** | Import requests or values from specified format. Currently 'postman' is the only supported format. Overwrites existing same-named files.
+| **<code>--import</code>** | Import requests or values from specified format. Currently 'postman' is the only supported format. *Overwrites* existing same-named files.
+| **<code>--openapi</code>** | Augment OpenAPI spec with Ply example requests/responses and code samples. *Overwrites* existing OpenAPI spec file.
 | **<code>--create</code>** | Create expected result file from actual responses
 | **<code>--useDist</code>** | Import case modules from build output (eg dist) instead of from TypeScript sources
 

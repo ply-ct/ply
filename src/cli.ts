@@ -1,15 +1,17 @@
 #!/usr/bin/env node
-
+import * as fs from 'fs';
 import * as path from 'path';
 import * as glob from 'glob';
+import * as tsNode from 'ts-node';
 import { Plier } from './ply';
 import { Config, Defaults } from './options';
 import { Location } from  './location';
 import { Storage } from './storage';
 import { Retrieval } from './retrieval';
 import { Import } from './import';
-import * as tsNode from 'ts-node';
+import { OpenApi } from './plyex/openapi';
 import { Plyex } from './plyex/plyex';
+import * as yaml from './yaml';
 
 const start = Date.now();
 
@@ -33,15 +35,17 @@ if (runOptions?.import) {
     }
 } else if (runOptions?.openapi) {
     plier.logger.debug('Options', options);
-    const plyex = new Plyex(runOptions.openapi, plier.logger, { indent: options.prettyIndent });
-    try {
-        for (const path of options.args) {
-            plier.logger.info('Augmenting', path);
-            plyex.augment(new Retrieval(path));
-        }
-    } catch (err: unknown) {
-        plier.logger.error(`${err}`, err);
-        process.exit(1);
+    const plyex = new Plyex(runOptions.openapi, plier.logger);
+    for (const path of options.args) {
+        const contents = fs.readFileSync(path, { encoding: 'utf8' });
+        plier.logger.info('Overwriting', path);
+        const isYaml = !contents.startsWith('{');
+        const openApi: OpenApi = isYaml ? yaml.load(path, contents) : JSON.parse(contents);
+        const augmented = plyex.augment(openApi);
+        let updated: string;
+        if (isYaml) updated = yaml.dump(augmented, options.prettyIndent);
+        else updated = JSON.stringify(augmented, null, options.prettyIndent);
+        fs.writeFileSync(path, updated, { encoding: 'utf8' });
     }
 }
 else {

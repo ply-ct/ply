@@ -23,6 +23,7 @@ export { suite, test, before, after } from './decorators';
 export { load as loadYaml } from './yaml';
 export { replace } from './subst';
 export * as util from './util';
-export * from './plyex/openapi';
-
+export * as openapi from './plyex/openapi';
+export * from './plyex/plyex';
+export * from './plyex/code';
 export default new Ply();

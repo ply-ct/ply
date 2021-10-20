@@ -1,10 +1,9 @@
 import * as assert from 'assert';
 import * as fs from 'fs';
-import * as mkdirp from 'mkdirp';
-import { Retrieval } from '../../src/retrieval';
 import { Logger } from '../../src/logger';
 import { Plyex } from '../../src/plyex/plyex';
-
+import * as yaml from '../../src/yaml';
+import { OpenApi } from '../../src/plyex/openapi';
 describe('API Docs', () => {
 
     it('should find nestjs endpoints', () => {
@@ -36,14 +35,13 @@ describe('API Docs', () => {
 
     it('should augment nestjs openapi doc', async () => {
         const file = 'test/mocha/plyex/nestjs.ts';
+        const base = 'test/mocha/plyex/base.yaml';
+        const openApiYaml = fs.readFileSync(base, { encoding: 'utf8' });
+        const openApi: OpenApi = yaml.load(base, openApiYaml);
         const plyex = new Plyex('nestjs', new Logger(), { tsConfig: 'test/tsconfig.json', sourcePatterns: [file] });
-        const openApiYaml = fs.readFileSync('test/mocha/plyex/base.yaml', { encoding: 'utf8' });
-        const tempDir = 'test/mocha/plyex/temp';
-        mkdirp.sync(tempDir);
-        fs.writeFileSync(`${tempDir}/openapi.yaml`, openApiYaml, { encoding: 'utf8' });
-        await plyex.augment(new Retrieval(`${tempDir}/openapi.yaml`));
-        const outputYaml = fs.readFileSync(`${tempDir}/openapi.yaml`, { encoding: 'utf8' });
+        const augmented = plyex.augment(openApi);
+        const newYaml = yaml.dump(augmented, 2);
         const expectedYaml = fs.readFileSync('test/mocha/plyex/openapi.yaml', { encoding: 'utf8' });
-        assert.strictEqual(outputYaml, expectedYaml);
+        assert.strictEqual(newYaml, expectedYaml);
     });
 });
