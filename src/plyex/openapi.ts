@@ -77,7 +77,7 @@ export interface Schema {
     items?: { $ref: string };
 }
 
-interface Info {
+export interface Info {
     title: string;
     version: string;
     termsOfService?: string;
@@ -85,26 +85,26 @@ interface Info {
     license?: License;
 }
 
-interface Contact {
+export interface Contact {
     email: string;
 }
 
-interface License {
+export interface License {
     name: string;
     url: string;
 }
 
-interface Server {
+export interface Server {
     url: string;
 }
 
-interface Tag {
+export interface Tag {
     name: string;
     description: string;
     externalDocs: { url: string; description?: string };
 }
 
-interface CodeSample {
+export interface CodeSample {
     lang: string;
     source: string;
 }

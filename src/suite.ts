@@ -15,7 +15,7 @@ import { PlyEvent, SuiteEvent, OutcomeEvent } from './event';
 import { PlyResponse } from './response';
 import { TsCompileOptions } from './compile';
 
-interface Tests<T extends Test> {
+export interface Tests<T extends Test> {
     [key: string]: T
 }
 
