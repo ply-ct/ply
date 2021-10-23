@@ -27,6 +27,7 @@ Ply is simply a more intuitive way to automate REST and GraphQL API testing.
         <li>Built-in GraphQL support providing the same intuitive workflow as REST</li>
         <li>The <a href="https://github.com/ply-ct/ply-demo">ply-demo</a> project illustrates best practices</li>
         <li>Import Ply requests from <a href="https://www.postman.com/" target="_blank" rel="noreferrer noopener nofollow">Postman</a> collections</li>
+        <li>Augment <a href="https://www.openapis.org/">OpenAPI</a> specs with example requests/responses and code snippets from Ply autotests</li>
       </ul>
     </div>
     <div class="split-two">

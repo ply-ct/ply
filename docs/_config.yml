@@ -36,6 +36,9 @@ topics:
       - label: Postman
         nav: postman
         tags: import, json, vs, code, echo, collection
+      - label: OpenAPI
+        nav: openapi
+        tags: openapi, swagger, spec, contract, example, code
   - category: Reference
     topics:
       - label: CLI

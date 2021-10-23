@@ -8,9 +8,24 @@
     tags?: Tag[];
     paths?: { [path: string]: Path };
     components?: Components;
+    security?: Auth[];
 }
 
-export type Components = { schemas: { [key: string]: any } };
+export type Auth = { bearerAuth: string[] };
+
+export class BearerAuth {
+    readonly type = 'http';
+    readonly scheme = 'bearer';
+    readonly bearerFormat = 'JWT';
+}
+
+export interface Components {
+    schemas: { [key: string]: any };
+    securitySchemes?: {
+        bearerAuth?: BearerAuth;
+    };
+}
+
 export type Method = 'get' | 'post' | 'put' | 'patch' | 'delete';
 export type Path = { [name in Method]?: Operation };
 
@@ -64,10 +79,10 @@ export interface Schema {
 
 interface Info {
     title: string;
+    version: string;
     termsOfService?: string;
     contact?: Contact;
     license?: License;
-    version: string;
 }
 
 interface Contact {
