@@ -43,7 +43,7 @@
     "stop-movies": "ply-movies stop",
     "test": "npm-run-all mocha ply stop-movies --continue-on-error",
     "typedoc": "typedoc --name 'ply' --out docs/api-docs --excludePrivate true src",
-    "api-docs": "npm run typedoc && cat docs/css/api.css >> docs/api-docs/assets/css/main.css",
+    "api-docs": "npm run typedoc && mkdir docs/api-docs/assets/css && cat docs/css/api.css >> docs/api-docs/assets/css/main.css",
     "serve-docs": "cd docs && bundle install && bundle exec jekyll serve --incremental --watch --baseurl ''"
   },
   "homepage": "https://github.com/ply-ct/ply#readme",
