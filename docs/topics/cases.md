@@ -139,7 +139,7 @@ npm run stop-movies
 ```
 You could also choose to install ply-movies globally, and start the server in a separate command window:
 ```
-npm install -g ply-movies
+npm install -g @ply-ct/ply-movies
 ply-movies start
 ```
 In that case you'd shut it down using `ctrl-c` once you're done testing.

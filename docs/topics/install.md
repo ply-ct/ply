@@ -23,7 +23,7 @@ Use Ply interactively through [VS Code](https://code.visualstudio.com/).
 Install Ply through [npm](https://www.npmjs.com/package/ply-ct) to use the CLI.
 1. Global
    ```
-   npm install -g ply-ct
+   npm install -g @ply-ct/ply
    ```
    This way you can run `ply` directly from the command line:
    ```
@@ -31,7 +31,7 @@ Install Ply through [npm](https://www.npmjs.com/package/ply-ct) to use the CLI.
    ```
 1. Dev Dependency
    ```
-   npm install --save-dev ply-ct
+   npm install --save-dev @ply-ct/ply
    ```
    Then you can run ply in your project directory through `npx`:
    ```

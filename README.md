@@ -25,11 +25,11 @@
 
 ## Installation
 ```
-npm install ply-ct --save-dev
+npm install @ply-ct/ply --save-dev
 ```
 Or, to run anywhere:
 ```
-npm install -g ply-ct
+npm install -g @ply-ct/ply
 ```
 
 ## Usage
