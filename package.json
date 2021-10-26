@@ -1,6 +1,6 @@
 {
   "name": "@ply-ct/ply",
-  "version": "3.0.16",
+  "version": "3.0.17",
   "description": "REST API Automated Testing",
   "main": "dist",
   "bin": {
@@ -38,6 +38,7 @@
     "build": "tsc && chmod +x dist/cli.js",
     "start-movies": "ply-movies start &",
     "pretest": "npm run start-movies",
+    "prepublish": "npm run build",
     "mocha": "mocha --require ts-node/register",
     "ply": "dist/cli.js",
     "stop-movies": "ply-movies stop",
