@@ -37,11 +37,11 @@ export class PlyRequest implements Request, PlyTest {
      */
     constructor(readonly name: string, obj: Request, readonly logger: Logger, retrieval: Retrieval) {
         if (!obj.url) {
-            throw new Error(`Request ${name} in ${retrieval} is missing 'url'`);
+            throw new Error(`Request '${name}' in ${retrieval} is missing 'url'`);
         }
         this.url = obj.url.trim();
         if (!obj.method) {
-            throw new Error(`Request ${name} in ${retrieval} is missing 'method'`);
+            throw new Error(`Request '${name}' in ${retrieval} is missing 'method'`);
         }
         this.method = obj.method.trim();
         this.headers = obj.headers || {};

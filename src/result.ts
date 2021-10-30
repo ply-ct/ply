@@ -419,7 +419,7 @@ export class ResultPaths {
         }
     }
 
-    responsesFromActual(): { [key: string]: Response } {
+    responsesFromActual(): { [key: string]: Response & { source: string }} {
         if (this.actual.exists) {
             return new ResponseParser(this.actual, this.options).parse();
         } else {
@@ -453,8 +453,8 @@ export class ResponseParser {
         this.actualObj = yaml.load(actualResult.toString(), this.actualYaml, true);
     }
 
-    parse(): { [key: string]: Response } {
-        const responses: { [key: string]: Response } = {};
+    parse(): { [key: string]: Response & { source: string } } {
+        const responses: { [key: string]: Response & { source: string } } = {};
         for (const requestName of Object.keys(this.actualObj)) {
             let resultObj = this.actualObj[requestName];
             if (resultObj) {
@@ -473,6 +473,7 @@ export class ResponseParser {
                         elapsedMs = parseInt(elapsedMsComment.substring(0, elapsedMsComment.length - 2));
                     }
                     const { __start, __end, ...response } = responseObj;
+                    response.source = this.yamlLines.slice(responseObj.__start + 1, responseObj.__end).join('\n');
                     if (submitted) {
                         response.submitted = submitted;
                     }
