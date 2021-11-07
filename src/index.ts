@@ -20,7 +20,7 @@ export { Code, CodeLine } from './code';
 export { Import } from './import';
 export { Values } from './values';
 export { suite, test, before, after } from './decorators';
-export { load as loadYaml } from './yaml';
+export { load as loadYaml, dump as dumpYaml } from './yaml';
 export { replace } from './subst';
 export * as util from './util';
 export * as openapi from './plyex/openapi';
