@@ -1,6 +1,8 @@
 const {{name}} = new {{type}}();
+{{#if item}}
 const {{item.name}} = '{{item.value}}';
 {{name}}.{{item.name}} = {{item.name}};
+{{/if}}
 // TODO populate {{name}} object
 
 const url = `${baseUrl}{{#each chunks}}{{#if this.param}}${{expression this.path}}{{/if}}{{#unless this.param}}{{this.path}}{{/unless}}{{/each}}`;

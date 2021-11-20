@@ -9,8 +9,8 @@ import { CodeSamples, PathChunk, TemplateContext } from './code';
 export interface EndpointMethod {
     file: string;
     class: string;
-    path: string;
     name: string;
+    path: string;
     method: 'get' | 'post' | 'put' | 'patch' | 'delete';
     lastSegmentOptional?: boolean;
 }

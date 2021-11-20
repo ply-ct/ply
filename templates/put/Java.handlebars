@@ -1,6 +1,8 @@
 {{type}} {{name}} = new {{type}}();
+{{#if item}}
 String {{item.name}} = "{{item.value}}";
 {{name}}.set{{capitalize item.name}}({{item.name}});
+{{/if}}
 // TODO populate {{name}} object
 
 URI uri = URI.create(baseUrl{{#each chunks}} + {{#unless this.param}}"{{/unless}}{{this.path}}{{#unless this.param}}"{{/unless}}{{/each}});
