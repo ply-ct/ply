@@ -67,7 +67,7 @@ describe('Requests', async () => {
         },
         {
             name: 'Error',
-            message: "Request missingUrl in test/mocha/requests/bad-requests.ply.yaml is missing 'url'"
+            message: "Request 'missingUrl' in test/mocha/requests/bad-requests.ply.yaml is missing 'url'"
         });
     });
 

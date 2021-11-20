@@ -178,7 +178,7 @@ paths:
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == HttpURLConnection.HTTP_OK) {
                 Greeting greeting = new Gson().fromJson(response.body(), Greeting.class);
-                assert greeting.getName() == name;
+                assert greeting.getName().equals(name);
                 System.out.println("greeting: " + response.body());
             }
         - lang: Python
