@@ -31,6 +31,7 @@ export type Path = { [name in Method]?: Operation };
 
 export interface Operation {
     summary: string;
+    operationId?: string;
     tags?: string[];
     description?: string;
     parameters?: Parameter[];

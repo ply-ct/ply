@@ -1,6 +1,6 @@
 {
   "name": "@ply-ct/ply",
-  "version": "3.0.20",
+  "version": "3.0.21",
   "description": "REST API Automated Testing",
   "main": "dist",
   "bin": {
@@ -67,7 +67,7 @@
     "read-excel-file": "^5.2.13",
     "stacktracey": "^1.2.127",
     "stream-transform": "^2.1.3",
-    "ts-node": "^9.1.1",
+    "ts-node": "^10.2.1",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
