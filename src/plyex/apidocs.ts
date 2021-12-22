@@ -21,6 +21,7 @@ export interface PlyMeta {
 }
 
 export interface PlyEndpointMeta {
+    operationId?: string;
     summaries: string[];
     description?: string;
     plyMeta?: PlyMeta;
@@ -93,6 +94,11 @@ export class JsDocReader {
                         const plyEndpointMeta: PlyEndpointMeta = {
                             summaries: [ methodMeta.summary ]
                         };
+
+                        // @operationId tag
+                        const operationId = this.readStringMeta(methodDecl, 'operationId');
+                        if (operationId) plyEndpointMeta.operationId = operationId;
+
                         const pipe = methodMeta.summary.indexOf('|');
                         if (pipe > 0 && pipe < methodMeta.summary.length - 1) {
                             plyEndpointMeta.summaries = [
@@ -167,6 +173,19 @@ export class JsDocReader {
             }
             if (descrip.length) meta.description = descrip.trim();
             return meta;
+        }
+    }
+
+    readStringMeta(methodDeclaration: ts.MethodDeclaration, tag: string): string | undefined {
+        const symbol = Ts.symbolAtNode(methodDeclaration);
+        const jsDocTag = symbol?.getJsDocTags()?.find(t => t.name === tag);
+        if (jsDocTag?.text) {
+            let tagText: any = jsDocTag.text;
+            if (Array.isArray(tagText)) {
+                // depends on typescript version
+                tagText = tagText[0].text;
+            }
+            return tagText;
         }
     }
 

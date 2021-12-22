@@ -20,7 +20,7 @@ export interface PlyexOptions {
     sourcePatterns?: string[];
     addMissingOperations?: boolean;
     /**
-     * Overwrite existing summaries, descriptions, examples and code samples.
+     * Overwrite existing summaries, operationIds, descriptions, examples and code samples.
      */
     overwrite?: boolean;
     /**
@@ -33,7 +33,8 @@ export const defaultOptions: PlyexOptions = {
     tsConfig: 'tsconfig.json',
     sourcePatterns: ['src/**/*.ts'],
     addMissingOperations: true,
-    overwrite: false
+    overwrite: false,
+    includeUntagged: true
 };
 
 export class Plyex {
@@ -112,6 +113,9 @@ export class Plyex {
                             } else {
                                 operation.summary = plyEndpointMeta.summaries[0];
                             }
+                        }
+                        if (plyEndpointMeta.operationId && !operation.operationId || this.options.overwrite) {
+                            operation.operationId = plyEndpointMeta.operationId;
                         }
                         if (plyEndpointMeta.description && (!operation.description || this.options.overwrite)) {
                             operation.description = plyEndpointMeta.description;
