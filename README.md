@@ -8,6 +8,9 @@
 <a href="https://github.com/ply-ct/ply/actions">
   <img src="https://ply-ct.org/badges/ply-ct/ply/workflows/build" />
 </a>
+<a href="https://github.com/ply-ct/ply/actions">
+  <img src="https://github.com/ply-ct/ply/workflows/CodeQL/badge.svg" />
+</a>
 
 <h2>API Automated Testing
 <div>
@@ -45,10 +48,10 @@ repositoryTopics:
 ```
 
 ### Run a request
-Suppose you save this in a file named "github.ply.yml". Then you can submit the
+Suppose you save this in a file named "github.ply.yaml". Then you can submit the
 `repositoryTopics` request from a command line by typing:
 ```
-ply -s github.ply.yml
+ply -s github.ply.yaml
 ```
 The `-s` argument tells Ply not to verify the response (`-s` is short for `--submit`, 
 meaning submit an *ad hoc* request and don't bother with verification).
@@ -58,20 +61,20 @@ If you run without `-s` you'll get an error saying, "Expected result file not fo
 works by comparing expected vs actual. So a complete test requires an expected result file. Run again
 with `--create`, and the expected result file will be created from the actual response.
 ```
-ply --create github.ply.yml
+ply --create github.ply.yaml
 ```
 Output looks like this:
 ```
 Request 'repositoryTopics' submitted at 8/28/2020, 10:54:40:667
-Creating expected result: ./results/expected/github.yml
+Creating expected result: ./results/expected/github.yaml
 Test 'repositoryTopics' PASSED in 303 ms
 ```
-During execution Ply submits the request and writes **actual** result file "./results/actual/github.yml"
-based on the response. Because of `--create`, Ply then copies the actual result over **expected** result file "./results/expected/github.yml"
+During execution Ply submits the request and writes **actual** result file "./results/actual/github.yaml"
+based on the response. Because of `--create`, Ply then copies the actual result over **expected** result file "./results/expected/github.yaml"
 before comparing. This test naturally passes since the results are identical.
 
 ### Expected results
-Auto-creating an expected result provides a good starting point. But looking at "./results/expected/github.yml",
+Auto-creating an expected result provides a good starting point. But looking at "./results/expected/github.yaml",
 you'll notice that it includes many response headers that are not of interest for testing purposes. Here's a
 cleaned-up version of similar expected results from [ply-demo](https://github.com/ply-ct/ply-demo/blob/master/test/requests/github-api.ply.yaml#L1):
 ```yaml
@@ -105,13 +108,13 @@ The subset of response headers included in expected results YAML are those we ca
 In this test, body content is our main concern.
 
 ### Expressions
-Something else about this example may be noticed by sharp-eyed observers: our request URL contains
+Something else about this example that may be noticed by sharp-eyed observers: our request URL contains
 placeholders like `${github.organization}`. Ply supports JavaScript [template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)
 syntax for substituting dynamic values in both requests and results. Values come from JSON files and/or environment variables,
 as described in the docs under [Values](https://ply-ct.github.io/ply/topics/values).
 
 Even more powerfully, your multi-request suites can embed expressions that reference runtime values from previous responses.
-For instance, the URL or body of a subsequent request in our github.ply.yml file could have something like this:
+For instance, the URL or body of a subsequent request in our github.ply.yaml file could have something like this:
 ```
 ${@repositoryTopics.response.body.names[0]}
 ```
@@ -119,8 +122,12 @@ which uses the special `@` character to reference the first topic name from abov
 This enables you to string together sequential requests that each depend on response output from preceding ones.
 Check out the [Results](https://ply-ct.github.io/ply/topics/results) topic for details and examples.
 
+### Flows
+If you have [Visual Studio Code](https://code.visualstudio.com/) with the [Ply extension](https://marketplace.visualstudio.com/items?itemName=ply-ct.vscode-ply),
+you can graphically stitch together multiple requests into a workflow. See the [Ply flows documentation](https://ply-ct.org/ply/topics/flows) for details.
+
 ### Cases
-For complex testing scenarios, you'll want even greater control over request execution.
+For very complex testing scenarios, you'll want even greater control over request execution.
 Implement a Ply [case](https://ply-ct.github.io/ply/topics/cases) suite using TypeScript for programmatic
 access to your requests/responses. Here's [add new movie](https://github.com/ply-ct/ply-demo/blob/master/test/cases/movieCrud.ply.ts#L31) 
 from ply-demo:
