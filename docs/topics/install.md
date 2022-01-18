@@ -3,11 +3,6 @@ layout: topic
 ---
 # Installation
 
-## Node.js
-This is a prerequisite for installing Ply.
-1. Install Node.js:
-   <https://nodejs.org/en/download/>
-
 ## VS Code Extension
 Use Ply interactively through [VS Code](https://code.visualstudio.com/).
 1. Install Visual Studio Code:
@@ -33,7 +28,7 @@ Install Ply through [npm](https://www.npmjs.com/package/ply-ct) to use the CLI.
    ```
    npm install --save-dev @ply-ct/ply
    ```
-   Then you can run ply in your project directory through `npx`:
+   Then you can run ply in your project directory through `npx` or an npm script:
    ```
    npx ply --version
    ```

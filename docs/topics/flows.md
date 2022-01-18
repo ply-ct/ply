@@ -14,7 +14,7 @@ layout: topic
 1. Expand the Flows group in Test Explorer, and you should see get-movies.ply.flow.
 
 ## Run your flow
-1. In Ply's flow diagram toolbar (or in the Test Explorer item hover menu), click the run icon:
+1. In Ply's flow diagram toolbar (or in the Test Explorer item hover menu), click the run icon:  
    <img src="../img/run.svg" alt="Run Icon" class="icon-img">  
    When prompted, select "Submit without verifying" (*Submit* is Ply-speak for "don't check run results").
 1. To show flow/step statuses, the diagram automatically switches to Inspect mode, indicated by this icon in the toolbar mode dropdown:
@@ -32,7 +32,7 @@ layout: topic
 
 ## Add a Request step to your flow
 The idea of Ply is to test an API by submitting HTTP requests and validating results. That's where Request steps come in.
-1. Switch back to Select mode using the flow toolbar dropdown:
+1. Switch back to Select mode using the flow toolbar dropdown:  
    <img src="../img/select.png" alt="Select Mode Icon" class="icon-img" style="width:22px;">
 1. Remove the link joining Start to Stop by selecting it and hitting the Delete key.
 1. From Ply's toolbox view to the right of our diagram, drag in the step that's labeled *Request*. Position it somewhere
@@ -41,11 +41,11 @@ The idea of Ply is to test an API by submitting HTTP requests and validating res
 1. If you double-click on the Request step somewhere other than its label, Ply Configurator pops up. After renaming, double-click "Movie by Title"
    (or right-click and select Configure). Then enter this for its URL: {% include copy_to_clipboard.html text="https://ply-ct.org/movies?title=Dracula" %}  
    <img src="../img/get-dracula.png" alt="Movie by Title" width="888px">  
-   This points to [ply-movies](https://github.com/ply-ct/ply-movies#readme), Ply's playground REST API containing a few hundred horror movies
+   This points to [ply-movies](https://github.com/ply-ct/ply-movies#readme), our playground REST API containing horror movies
    from the 1930s.
 
 ## Draw links between flow steps
-1. To draw new links, switch to Connect mode:
+1. To draw new links, switch to Connect mode:  
    <img src="../img/connect.png" alt="Connect Mode Icon" class="icon-img" style="width:22px;">  
 1. Then click/drag your mouse to draw a link between Start and "Movie by Title".
 1. Do the same between "Movie by Title" and Stop.
@@ -57,25 +57,17 @@ The idea of Ply is to test an API by submitting HTTP requests and validating res
    executed get-movies.ply.flow, created actual runtime results, and then copied those results to create an expected-results
    file before comparing.
 1. Double-click the "Movie by Title" step to inspect its Request and Response.
-1. Run your flow again - you won't get prompted since expected results now exist. This time the flow fails, and "Movie by Title"
-   is bordered in red.
-1. To understand why the test failed, right-click on "Movie by Title" and select "Compare Results":  
-   <img src="../img/get-movies-1-results.png" alt="get-movies-1 Results" width="943px">  
-   VS Code's diff editor indicates there are a few discrepancies between expected (on the left) versus actual (on the right)
-   results. Lines 1 and 7 both differ, but these differences are only comments; hence the checkmark in
-   the left gutter of the editor. However, line 15 has a significant difference in 'date' header values.
-1. To fix this, scroll to the top of the (left-hand) expected editor, and click the [Code Lens](https://code.visualstudio.com/blogs/2017/02/12/code-lens-roundup)
-   labeled "Open result file". (The full expected-results file includes outcomes for Start and Stop, so the line numbers are different from 
-   the "Movie by ID" result fragment.) Remove the 'date' header (all of line 18). In fact, remove these header lines as well:
-     - connection
-     - content-length
-     - etag
-     - server
-     - x-powered-by
-
-   You're left with just 'content-type', which is the only response header we care about matching. When Ply submits a request, for
-   comparison it captures just those response headers that appear in expected results. This makes it convenient to exclude unimportant headers.
-1. Save and close the expected results and comparison editors; then re-run get-movies.ply.flow. This time it should succeed.
+1. Run your flow again. This time you won't get prompted since expected results now exist.
+1. Right-click on "Movie by Title" and select "Compare Results":  
+   <img src="../img/get-movies-1-results.png" alt="get-movies-1 Results" width="1123px">  
+   VS Code's diff editor indicates there are a couple discrepancies between expected results (on the left) versus actual (on the right). 
+   Lines 1 and 7 both differ, but these differences are only comments; hence the checkmark in the left gutter of the editor.
+1. Let's modify expected results to purposely break our test flow. In the left-hand editor, change the director credit from `Tod Browing` to `James Whale`,
+   and save. Then close the result files and run the flow again. This time the flow fails, and "Movie by Title" is bordered in red. Compare results again:  
+   <img src="../img/get-movies-1-result-mismatch.png" alt="get-movies-1 Result mismatch" width="1161px">  
+   Now line 19 shows a significant difference.
+1. Fix the director credit in expected results, save and close the expected results and comparison editors; then re-run get-movies.ply.flow. 
+   Make sure the test passes this time.
 
 ## Use input values in a flow
 [Values](values) let you externalize parts of your requests and results, making them dynamic as well as reusable. For example: you might want to run
@@ -187,7 +179,7 @@ to test it without running the whole flow. Let's run the "Movie by ID" step that
 1. This time when you're prompted for values, you'll observe that `${@s3.response.body.movies[0].id}` is required,
    and that Ply knows this value from our previous flow run.  
    <img src="../img/movie-by-id-values.png" alt="Values prompt" width="695px">  
-1. Double-click "Movie by ID" to review its request and response to make sure they're as expected.
+1. Double-click "Movie by ID" to review its request and response to make sure they're as expected.  
    <img src="../img/movie-by-id-response.png" alt="Movie by ID response" width="760px">  
 
 Next Topic: [Requests](requests)

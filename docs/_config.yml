@@ -15,12 +15,12 @@ topics:
         tags: introduction, startup, start, quickstart, how-to
   - category: Guide
     topics:
+      - label: Requests
+        nav: requests
+        tags: url, method, headers, body, yaml, yml, demo, graphql, test, suite, movie, multipart, form-data
       - label: Flows
         nav: flows
         tags: workflow, graphical, flow, create, build, design, run, start, stop, configurator
-      - label: Requests
-        nav: requests
-        tags: url, method, headers, body, yaml, yml, demo, graphql, test, suite, movie
       - label: Results
         nav: results
         tags: response, headers, body, expected, expression, placeholder, expected, actual, substitution, regular, regex, yaml, yml, previous, pass, fail

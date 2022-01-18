@@ -9,8 +9,12 @@ Each request represents an HTTP request with these elements:
   - headers
   - body
 
-A request suite is a YAML file containing one or more named requests. Here's an example from 
-movie-queries.ply.yaml in the [ply-demo](https://github.com/ply-ct/ply-demo) project:
+Requests are saved as YAML files. Files with the `.ply` extension contain a single request and can be edited visually
+using the [Ply VS Code extension](https://marketplace.visualstudio.com/items?itemName=ply-ct.vscode-ply):
+<img src="../img/request-get-movie-by-title.png" alt="Request: get-movie-by-title" width="928px">
+
+A request suite is a standard YAML file (`.yml`, `.yaml`) containing one or more named requests to be executed in sequence.
+Here's an example from movie-queries.ply.yaml in the [ply-demo](https://github.com/ply-ct/ply-demo) project:
 ```yaml
 moviesByYearAndRating:
   url: '${baseUrl}/movies?year=${year}&rating=${rating}'
@@ -18,9 +22,8 @@ moviesByYearAndRating:
   headers:
     Accept: application/json
 ```
-This defines a GET request against [ply-movies](https://github.com/ply-ct/ply-movies#readme), an
-example API we use to illustrate Ply testing. Our request's name, `moviesByYearAndRating`,
-is the top-level key. Note our use of JavaScript [template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)
+This defines a GET request against [ply-movies](https://github.com/ply-ct/ply-movies#readme), our example API containing horror
+movies from the 1930s. Our request's name, `moviesByYearAndRating`, is the top-level key. Note our use of JavaScript [template literal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)
 expressions embedded in `url`. Every element of a request can be parameterized using [Values](values).
 
 The next request in this suite illustrates another important feature of expressions:
@@ -117,5 +120,21 @@ You'll receive an HTTP 401 (Unauthorized) response unless you include the `githu
 somewhere in your [values](values). Follow the [GitHub token guide](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)
 to obtain your personal access token. This is a good candidate for your [PLY_VALUES](values#environment-variable) 
 environment variable, since you don't want to share your access token in version control.
+
+## Multipart Form Data
+Here's an example showing how to upload multipart/form-data attachments from files:
+```yaml
+createAttachments:
+  url: ${baseUrl}/attachments
+  method: POST
+  headers:
+    Content-Type: multipart/form-data;boundary="--boundary"
+  body: |-
+    --boundary
+    Content-Disposition: form-data; name="textFile"; filename="test/ply/attachments/myText.txt"
+    --boundary
+    Content-Disposition: form-data; name="binaryFile"; filename="test/ply/attachments/mySelfie.png"
+    --boundary--
+```
 
 Next Topic: [Results](results)
