@@ -43,6 +43,8 @@
     "ply": "dist/cli.js",
     "stop-movies": "ply-movies stop",
     "test": "npm-run-all mocha ply stop-movies --continue-on-error",
+    "typedoc": "typedoc --name 'ply' --out docs/api-docs --excludePrivate true src",
+    "api-docs": "npm run typedoc && mkdir docs/api-docs/assets/css && cat docs/css/api.css >> docs/api-docs/assets/css/main.css",
     "serve-docs": "cd docs && bundle install && bundle exec jekyll serve --incremental --watch --baseurl ''"
   },
   "homepage": "https://github.com/ply-ct/ply#readme",
@@ -85,7 +87,8 @@
     "eslint": "^8.6.0",
     "mocha": "^9.1.3",
     "npm-run-all": "^4.1.5",
-    "ply-movies": "^1.1.7"
+    "ply-movies": "^1.1.7",
+    "typedoc": "^0.22.11"
   },
   "peerDependencies": {
     "typescript": ">=4.2"
