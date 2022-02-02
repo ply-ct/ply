@@ -114,7 +114,7 @@ export class Plyex {
                                 operation.summary = plyEndpointMeta.summaries[0];
                             }
                         }
-                        if (plyEndpointMeta.operationId && !operation.operationId || this.options.overwrite) {
+                        if (plyEndpointMeta.operationId && (!operation.operationId || this.options.overwrite)) {
                             operation.operationId = plyEndpointMeta.operationId;
                         }
                         if (plyEndpointMeta.description && (!operation.description || this.options.overwrite)) {

@@ -21,26 +21,36 @@ function get(input: string, context: object): string {
     }
 
     let res: any = context;
-    for (let seg of path.split('.')) {
-        const idx = seg.search(/\[.+?]$/);
-        let indexer;
-        if (idx > 0) {
-            indexer = seg.substring(idx + 1, seg.length - 1);
-            seg = seg.substring(0, idx);
-        }
+    for (const seg of tokenize(path)) {
         if (!res[seg]) return input;
         res = res[seg];
-        if (indexer) {
-            if ((indexer.startsWith("'") || indexer.startsWith('"')) &&
-              (indexer.endsWith("'") || indexer.endsWith('"'))) {
-                res = res[indexer.substring(1, indexer.length - 1)];  // object property
-            } else {
-                res = res[parseInt(indexer)]; // array index
-            }
-        }
     }
 
     return '' + res;
+}
+
+export function tokenize(path: string): (string | number)[] {
+    return path.split(/\.(?![^[]*])/).reduce((segs: (string | number)[], seg) => {
+        if (seg.search(/\[.+?]$/) > 0) {
+            // indexer(s)
+            const start = seg.indexOf('[');
+            segs.push(seg.substring(0, start));
+            let remains = seg.substring(start);
+            while (remains.length > 0) {
+                const indexer = remains.substring(1, remains.indexOf(']'));
+                if ((indexer.startsWith("'") && indexer.startsWith("'")) ||
+                        (indexer.endsWith('"') && indexer.endsWith('"'))) {
+                    segs.push(indexer.substring(1, indexer.length - 1));  // object property
+                } else {
+                    segs.push(parseInt(indexer)); // array index
+                }
+                remains = remains.substring(indexer.length + 2);
+            }
+        } else {
+            segs.push(seg);
+        }
+        return segs;
+    }, []);
 }
 
 /**

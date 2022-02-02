@@ -62,4 +62,50 @@ describe('subst', () => {
         assert.strictEqual(after, 'foo/bar');
     });
 
+    it('handles subprop names with dots', () => {
+        const values = {
+            [RESULTS]: {
+                greeting: {
+                    response: {
+                        body: {
+                            'friendly.greetings': [
+                                {
+                                    salutation: 'hello',
+                                    name: 'stranger'
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        };
+        const before = "${@greeting.response.body['friendly.greetings'][0].salutation}";
+        const after = subst.replace(before, values, logger);
+        assert.strictEqual(after, 'hello');
+    });
+
+    it('tokenizes complex expressions', () => {
+
+        let tokens = subst.tokenize("greeting.response.body['friendly.greetings'][0].salutation");
+        assert.strictEqual(tokens[0], 'greeting');
+        assert.strictEqual(tokens[1], 'response');
+        assert.strictEqual(tokens[2], 'body');
+        assert.strictEqual(tokens[3], 'friendly.greetings');
+        assert.strictEqual(tokens[4], 0);
+        assert.strictEqual(tokens[5], 'salutation');
+
+        tokens = subst.tokenize('multidim[0][3][1001]');
+        assert.strictEqual(tokens[0], 'multidim');
+        assert.strictEqual(tokens[1], 0);
+        assert.strictEqual(tokens[2], 3);
+        assert.strictEqual(tokens[3], 1001);
+
+        tokens = subst.tokenize('foos[12].bar.baz[3]');
+        assert.strictEqual(tokens[0], 'foos');
+        assert.strictEqual(tokens[1], 12);
+        assert.strictEqual(tokens[2], 'bar');
+        assert.strictEqual(tokens[3], 'baz');
+        assert.strictEqual(tokens[4], 3);
+    });
+
 });
