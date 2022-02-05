@@ -365,6 +365,9 @@ table {
 .topic-heading {
   margin-bottom: 10px;
 }
+.topic table {
+  margin: inherit;
+}
 .icon-img {
   position: absolute;
   width: 24px;

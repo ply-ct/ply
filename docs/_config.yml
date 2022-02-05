@@ -39,6 +39,9 @@ topics:
       - label: OpenAPI
         nav: openapi
         tags: openapi, swagger, spec, contract, example, code
+      - label: GitHub Action
+        nav: action
+        tags: github, action, ci, cd, badge
   - category: Reference
     topics:
       - label: CLI

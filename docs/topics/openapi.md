@@ -30,4 +30,4 @@ An API endpoint method implementation can be tied to its respective Ply request/
 As a bonus, if the OpenAPI summary and description for this POST operation are empty in movies.yaml, Ply will set
 summary to 'Create a movie' and description to 'Add a movie with its details to the collection'.
 
-Next Topic: [CLI](cli)
+Next Topic: [GitHub Action](action)
