@@ -9,7 +9,7 @@ repositoryTopicsQuery:
   method: POST
   headers:
     Authorization: Bearer ${githubToken}
-    Content-Type: application/json
+    Content-Type: application/graphql
     User-Agent: ply-ct
   body: |-
     query {

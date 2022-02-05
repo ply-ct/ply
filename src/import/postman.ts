@@ -1,39 +1,9 @@
-import { Retrieval } from './retrieval';
-import { Location } from './location';
-import { Storage } from './storage';
-import { Log } from './logger';
-import * as yaml from './yaml';
-
-export type ImportFormat = 'postman';
-
-export class Import {
-
-    constructor(
-        readonly format: ImportFormat,
-        readonly root: string,
-        readonly indent: number,
-        readonly logger: Log
-    ) { }
-
-    async doImport(retrieval: Retrieval): Promise<void> {
-        switch(this.format) {
-            case 'postman': {
-                await new Postman(this.root, this.indent, this.logger).import(retrieval);
-            }
-        }
-    }
-}
-
-export interface Importer {
-    import(from: Retrieval): Promise<void>;
-}
-
-interface Request {
-    url: string;
-    method: string;
-    headers?: {[key: string]: string};
-    body?: string;
-}
+import { Importer, ImportOptions, Request } from './model';
+import { Retrieval } from '../retrieval';
+import { Location } from '../location';
+import { Storage } from '../storage';
+import { Log } from '../logger';
+import * as yaml from '../yaml';
 
 export class Postman implements Importer {
 
@@ -41,11 +11,11 @@ export class Postman implements Importer {
 
     constructor(
         readonly root: string,
-        readonly indent: number,
         readonly logger: Log
     ) { }
 
-    async import(from: Retrieval): Promise<void> {
+    async import(from: Retrieval, options?: ImportOptions) {
+        const opts = { indent: 2, individualRequests: false, ...(options || {}) };
         const contents = await from.read();
         if (!contents) {
             throw new Error(`Import source not found: ${from.location}`);
@@ -61,13 +31,13 @@ export class Postman implements Importer {
                     values[value.key] = value.value;
                 }
             }
-            this.writeStorage(`${this.root}/${name}.json`, JSON.stringify(values, null, this.indent));
+            this.writeStorage(`${this.root}/${name}.json`, JSON.stringify(values, null, opts.indent));
         } else if (obj.item) {
             // requests
             const name = this.baseName(from.location, 'postman_collection');
             this.processItem(`${this.root}/${name}`, obj.item);
             for (const [path, requestsObj] of this.storagePathToRequestsObj) {
-                this.writeStorage(path, yaml.dump(requestsObj, this.indent));
+                this.writeStorage(path, yaml.dump(requestsObj, opts.indent));
             }
         }
     }

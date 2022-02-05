@@ -24,6 +24,21 @@ export class Ply {
     }
 
     /**
+     * Load request from .ply file
+     */
+    async loadRequest(location: string): Promise<Request> {
+        const suite = await this.loadRequestSuite(location);
+        if (suite.size() === 0) throw new Error(`No request found in: ${suite.name}`);
+        return suite.all()[0];
+    }
+
+    loadRequestSync(location: string): Request {
+        const suite = this.loadRequestSuiteSync(location);
+        if (suite.size() === 0) throw new Error(`No request found in: ${suite.name}`);
+        return suite.all()[0];
+    }
+
+    /**
      * Load request suites.
      * @param locations can be URLs or file paths
      */

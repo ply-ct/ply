@@ -1,0 +1,137 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2022-02-05T22:56:54.534Z",
+  "__export_source": "insomnia.desktop.app:v2021.7.2",
+  "resources": [
+    {
+      "_id": "req_132f33420e574145b17e364f4663b365",
+      "parentId": "fld_35cd61f647b34efda1046d51512ef191",
+      "modified": 1644101704527,
+      "created": 1644088130214,
+      "url": "https://api.github.com/graphql",
+      "name": "repositoryTopicsQuery",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\"query\":\"query {\\n  repository(owner: \\\"ply-ct\\\", name: \\\"ply\\\") {\\n    repositoryTopics(last: 20) {\\n      edges {\\n        node {\\n          topic {\\n            name\\n          }\\n        }\\n      }\\n    }\\n  }\\n}\"}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{token}}",
+          "id": "pair_7dfc872809cf4e3f96776a245d77b7ce"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json",
+          "id": "pair_4599337c75d94d13b0368d89e5f89217"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1644088130214,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_35cd61f647b34efda1046d51512ef191",
+      "parentId": "wrk_0126f6a8692f43f1a142909455466b3a",
+      "modified": 1644088130215,
+      "created": 1644088130215,
+      "name": "GitHub",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1644088130215,
+      "_type": "request_group"
+    },
+    {
+      "_id": "wrk_0126f6a8692f43f1a142909455466b3a",
+      "parentId": null,
+      "modified": 1644088130217,
+      "created": 1644088091985,
+      "name": "github-graphql",
+      "description": "",
+      "scope": "collection",
+      "_type": "workspace"
+    },
+    {
+      "_id": "req_af57b77d764f4cc3a3391571df1c81ac",
+      "parentId": "fld_35cd61f647b34efda1046d51512ef191",
+      "modified": 1644101768832,
+      "created": 1644088130212,
+      "url": "https://api.github.com/graphql",
+      "name": "repositoryIdQuery",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/graphql",
+        "text": "{\"query\":\"query findRepositoryId {\\n  repository(owner: \\\"ply-ct\\\", name:\\\"ply\\\") {\\n    id\\n  }\\n}\",\"operationName\":\"findRepositoryId\"}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{token}}",
+          "id": "pair_8451ffa8498c4f9da1daf26a77bfa6a9"
+        },
+        {
+          "id": "pair_5b6dbb981bbd4f97af1fe2802d43902b",
+          "name": "",
+          "value": "",
+          "description": ""
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1644088130212,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "env_2b28ec4f04c15ac2a97336dee7fa9b2609c467a3",
+      "parentId": "wrk_0126f6a8692f43f1a142909455466b3a",
+      "modified": 1644088223803,
+      "created": 1644088091988,
+      "name": "Base Environment",
+      "data": {},
+      "dataPropertyOrder": {},
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1644088091988,
+      "_type": "environment"
+    },
+    {
+      "_id": "jar_2b28ec4f04c15ac2a97336dee7fa9b2609c467a3",
+      "parentId": "wrk_0126f6a8692f43f1a142909455466b3a",
+      "modified": 1644088091989,
+      "created": 1644088091989,
+      "name": "Default Jar",
+      "cookies": [],
+      "_type": "cookie_jar"
+    },
+    {
+      "_id": "spc_96eccd22c1e444a4bcc82c57fa9e0cd0",
+      "parentId": "wrk_0126f6a8692f43f1a142909455466b3a",
+      "modified": 1644088091986,
+      "created": 1644088091986,
+      "fileName": "github-graphql",
+      "contents": "",
+      "contentType": "yaml",
+      "_type": "api_spec"
+    }
+  ]
+}

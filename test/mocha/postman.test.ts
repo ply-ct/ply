@@ -1,12 +1,12 @@
 import * as assert from 'assert';
 import { Retrieval } from '../../src/retrieval';
-import { Import } from '../../src/import';
+import { Import } from '../../src/import/import';
 import { Logger } from '../../src/logger';
 import { Ply } from '../../src/ply';
 import { Request } from '../../src/request';
 import { Values } from '../../src/values';
 
-describe('Import', () => {
+describe('Postman', () => {
 
     const reqRoot = 'test/mocha/postman/requests';
     const valRoot = 'test/mocha/postman/values';
@@ -15,8 +15,8 @@ describe('Import', () => {
         const retrieval = new Retrieval('test/mocha/postman/movies.postman_collection.json');
         assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
-        const importer = new Import('postman', reqRoot, 2, new Logger());
-        await importer.doImport(retrieval);
+        const importer = new Import('postman', reqRoot, new Logger());
+        await importer.doImport(retrieval, { indent: 2 });
 
         const ply = new Ply();
         const topRequests = ply.loadSuiteSync(`${reqRoot}/movies.ply.yaml`);
@@ -61,8 +61,8 @@ describe('Import', () => {
     it('should import postman graphql', async () => {
         const retrieval = new Retrieval('test/mocha/postman/github.postman_collection.json');
         assert.ok(await retrieval.exists);
-        const importer = new Import('postman', reqRoot, 2, new Logger());
-        await importer.doImport(retrieval);
+        const importer = new Import('postman', reqRoot, new Logger());
+        await importer.doImport(retrieval, { indent: 2 });
 
         const ply = new Ply();
         const githubRequests = ply.loadSuiteSync(`${reqRoot}/github.ply.yaml`);
@@ -89,8 +89,8 @@ describe('Import', () => {
     it('should import postman values', async () => {
         const retrieval = new Retrieval('test/mocha/postman/localhost.postman_environment.json');
         assert.ok(await retrieval.exists);
-        const importer = new Import('postman', valRoot, 2, new Logger());
-        await importer.doImport(retrieval);
+        const importer = new Import('postman', valRoot, new Logger());
+        await importer.doImport(retrieval, { indent: 2 });
         const values = new Values([`${valRoot}/localhost.json`], new Logger());
         const obj = await values.read();
         assert.ok(obj);

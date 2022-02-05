@@ -8,10 +8,11 @@ import { Config, Defaults } from './options';
 import { Location } from  './location';
 import { Storage } from './storage';
 import { Retrieval } from './retrieval';
-import { Import } from './import';
+import { Import } from './import/import';
 import { OpenApi } from './plyex/openapi';
 import { Plyex } from './plyex/plyex';
 import * as yaml from './yaml';
+import { ImportOptions } from './import/model';
 
 const start = Date.now();
 
@@ -23,11 +24,15 @@ const plier = new Plier(options);
 
 if (runOptions?.import) {
     plier.logger.debug('Options', options);
-    const importer = new Import(runOptions.import as any, options.testsLocation, options.prettyIndent, plier.logger);
+    const importer = new Import(runOptions.import as any, options.testsLocation, plier.logger);
     try {
+        const opts: ImportOptions = {
+            indent: options.prettyIndent,
+            individualRequests: runOptions.individualRequests
+        };
         for (const path of options.args) {
             plier.logger.info('Importing', path);
-            importer.doImport(new Retrieval(path));
+            importer.doImport(new Retrieval(path), opts);
         }
     } catch (err: unknown) {
         plier.logger.error(`${err}`, err);

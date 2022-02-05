@@ -17,7 +17,7 @@ export { Result, ResultPaths, Outcome, ResultStatus } from './result';
 export { PlyEvent, SuiteEvent, OutcomeEvent } from './event';
 export { Diff } from './compare';
 export { Code, CodeLine } from './code';
-export { Import } from './import';
+export { Import } from './import/import';
 export { Values } from './values';
 export { suite, test, before, after } from './decorators';
 export { load as loadYaml, dump as dumpYaml } from './yaml';

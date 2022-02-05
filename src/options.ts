@@ -151,10 +151,15 @@ export interface RunOptions {
     import?: string;
 
     /**
+     * Import into individual request (.ply) files instead of into suites (.yml/.yaml).
+     */
+    individualRequests?: boolean;
+
+    /**
      * Augment OpenAPI v3 doc at specified path with operation summaries, request/response samples,
      * and code snippets from Ply expected results.
      */
-     openapi?: string;
+    openapi?: string;
 
      /**
      * Import case suite modules from generated .js instead of .ts source (default = false).
@@ -251,7 +256,7 @@ export class Config {
             describe: 'File patterns to skip'
         },
         submit: {
-            describe: 'Send requests but don\'t verify results',
+            describe: 'Send requests but don\'t verify',
             alias: 's',
             type: 'boolean'
         },
@@ -294,11 +299,15 @@ export class Config {
             describe: '(Rowwise values) rows per batch'
         },
         batchDelay: {
-            describe: '(Rowwise values) ms delay betw batches'
+            describe: '(Rowwise values) ms batch delay'
         },
         import: {
-            describe: 'Import requests/values from (\'postman\')',
+            describe: 'Import requests/values from external',
             type: 'string'
+        },
+        individualRequests: {
+            describe: 'Import into .ply requests files',
+            type: 'boolean'
         },
         openapi: {
             describe: 'Augment OpenAPI 3 docs with examples',
@@ -309,7 +318,7 @@ export class Config {
             type: 'boolean'
         },
         useDist: {
-            describe: 'Load cases from dist instead of source',
+            describe: 'Load cases from compiled js',
             type: 'boolean'
         },
         responseBodySortedKeys: {
@@ -418,6 +427,10 @@ export class Config {
         if (options.import) {
             options.runOptions.import =  options.import;
             delete options.import;
+        }
+        if (options.individualRequests) {
+            options.runOptions.individualRequests = options.individualRequests;
+            delete options.individualRequests;
         }
         if (options.openapi) {
             options.runOptions.openapi =  options.openapi;

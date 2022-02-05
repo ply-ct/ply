@@ -2,7 +2,7 @@ testsLocation: test/ply
 expectedLocation: test/ply/results/expected
 actualLocation: test/ply/results/actual
 
-requestFiles: '**/*.ply.yaml'
+requestFiles: '**/*.{ply,ply.yaml}'
 caseFiles: '**/*.ply.ts'
 flowFiles: '**/*.ply.flow'
 
