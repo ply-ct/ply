@@ -24,9 +24,16 @@ const plier = new Plier(options);
 
 if (runOptions?.import) {
     plier.logger.debug('Options', options);
-    const importer = new Import(runOptions.import as any, options.testsLocation, plier.logger);
+    const importer = new Import(runOptions.import as any, plier.logger);
     try {
+        let valuesLoc = `${options.testsLocation}/values`;
+        if (options.valuesFiles?.length) {
+            const firstValuesFile = options.valuesFiles[0];
+            valuesLoc = path.dirname(firstValuesFile);
+        }
         const opts: ImportOptions = {
+            testsLocation: options.testsLocation,
+            valuesLocation: valuesLoc,
             indent: options.prettyIndent,
             individualRequests: runOptions.individualRequests
         };

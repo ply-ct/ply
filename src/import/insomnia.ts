@@ -5,14 +5,22 @@ import { Log } from '../logger';
 import * as yaml from '../yaml';
 
 interface RequestGroup {
-    id: string
+    id: string;
     name: string;
     path: string;
     requests?: {[name: string]: Request};
     requestGroups?: RequestGroup[];
 }
 
-interface Workspace extends RequestGroup { }
+interface Environment {
+    name: string;
+    data: object;
+}
+
+interface Workspace extends RequestGroup {
+    environments: Environment[];
+}
+
 
 /**
  * TODO: values
@@ -20,12 +28,11 @@ interface Workspace extends RequestGroup { }
 export class Insomnia implements Importer {
 
     constructor(
-        readonly root: string,
         readonly logger: Log
     ) { }
 
-    async import(from: Retrieval, options?: ImportOptions) {
-        const opts = { indent: 2, individualRequests: false, ...(options || {}) };
+    async import(from: Retrieval, options: ImportOptions) {
+        const opts: ImportOptions = { indent: 2, individualRequests: false, ...options };
 
         const contents = await from.read();
         if (!contents) {
@@ -38,13 +45,14 @@ export class Insomnia implements Importer {
             obj = yaml.load(from.location.toString(), contents);
         }
 
-        const workspaces = this.loadWorkspaces(obj);
+        const workspaces = this.loadWorkspaces(obj, options);
         for (const workspace of workspaces) {
             this.writeRequests(workspace, opts);
+            this.writeValues(workspace, opts);
         }
     }
 
-    private loadWorkspaces(obj: any): Workspace[] {
+    private loadWorkspaces(obj: any, options: ImportOptions): Workspace[] {
         const resources = obj.resources;
         if (!Array.isArray(resources)) throw new Error(`Bad format: 'resources' array not found`);
 
@@ -56,9 +64,11 @@ export class Insomnia implements Importer {
             const workspace: Workspace = {
                 id: ws._id,
                 name: ws.name,
-                path: this.root + '/' + this.writeableName(ws.name)
+                path: options.testsLocation + '/' + this.writeableName(ws.name),
+                environments: []
             };
             this.loadRequests(workspace, resources);
+            this.loadEnvironments(workspace, resources);
             workspaces.push(workspace);
         }
         return workspaces;
@@ -136,6 +146,31 @@ export class Insomnia implements Importer {
         if (container.requestGroups) {
             for (const requestGroup of container.requestGroups) {
                 this.writeRequests(requestGroup, options);
+            }
+        }
+    }
+
+    private loadEnvironments(workspace: Workspace, resources: any[]) {
+        const baseEnvs = resources.filter(res => {
+            return res._type === 'environment' && res.parentId === workspace.id;
+        });
+
+        for (const baseEnv of baseEnvs) {
+            workspace.environments.push({ name: baseEnv.name, data: baseEnv.data || {} });
+            const subEnvs = resources.filter(res => {
+                return res._type === 'environment' && res.parentId === baseEnv._id;
+            });
+            for (const subEnv of subEnvs) {
+                workspace.environments.push({ name: subEnv.name, data: subEnv.data || {} });
+            }
+        }
+    }
+
+    private writeValues(workspace: Workspace, options: ImportOptions) {
+        if (workspace.environments) {
+            for (const environment of workspace.environments) {
+                const file = `${options.valuesLocation}/${this.writeableName(environment.name)}.json`;
+                this.writeStorage(file, JSON.stringify(environment.data, null, options.indent));
             }
         }
     }

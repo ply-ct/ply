@@ -16,8 +16,8 @@ describe('Insomnia', () => {
 
         assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
-        const importer = new Import('insomnia', reqRoot, new Logger());
-        await importer.doImport(retrieval, { indent: 2 });
+        const importer = new Import('insomnia', new Logger());
+        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2 });
 
         const ply = new Ply();
         const topRequests = await ply.loadSuite(`${reqRoot}/testing.ply.yaml`);
@@ -69,13 +69,24 @@ describe('Insomnia', () => {
         const greatsAfter1935 = greatRequests.get('great movies after 1935') as Request;
         assert.strictEqual(greatsAfter1935.url, '${baseUrl}/movies?rating=5&year=>1935');
         assert.strictEqual(greatsAfter1935.method, 'GET');
+
+
+        const baseValues = new Values([`${valRoot}/Base Environment.json`], new Logger());
+        const baseObj = await baseValues.read();
+        assert.ok(baseObj);
+        assert.strictEqual(baseObj.movieId, '435b30ad');
+
+        const plyctValues = new Values([`${valRoot}/ply-ct.json`], new Logger());
+        const plyctObj = await plyctValues.read();
+        assert.ok(plyctObj);
+        assert.strictEqual(plyctObj.baseUrl, 'https://ply-ct.org');
     });
 
     it('should import insomnia graphql from json', async () => {
         const retrieval = new Retrieval('test/mocha/insomnia/insomnia-github-graphql.json');
         assert.ok(await retrieval.exists);
-        const importer = new Import('insomnia', reqRoot, new Logger());
-        await importer.doImport(retrieval, { indent: 2, individualRequests: true });
+        const importer = new Import('insomnia', new Logger());
+        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, individualRequests: true });
 
         const ply = new Ply();
         const repositoryTopicsQuery = await ply.loadRequest(`${reqRoot}/github-graphql/GitHub/repositoryTopicsQuery.ply`);

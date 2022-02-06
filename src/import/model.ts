@@ -3,6 +3,8 @@ import { Retrieval } from '../retrieval';
 export type ImportFormat = 'postman' | 'insomnia';
 
 export interface ImportOptions {
+    testsLocation: string;
+    valuesLocation: string;
     indent?: number;
     individualRequests?: boolean;
 }

@@ -10,12 +10,11 @@ export class Postman implements Importer {
     private storagePathToRequestsObj = new Map<string,{[key: string]:Request}>();
 
     constructor(
-        readonly root: string,
         readonly logger: Log
     ) { }
 
-    async import(from: Retrieval, options?: ImportOptions) {
-        const opts = { indent: 2, individualRequests: false, ...(options || {}) };
+    async import(from: Retrieval, options: ImportOptions) {
+        const opts: ImportOptions = { indent: 2, individualRequests: false, ...options };
         const contents = await from.read();
         if (!contents) {
             throw new Error(`Import source not found: ${from.location}`);
@@ -31,13 +30,13 @@ export class Postman implements Importer {
                     values[value.key] = value.value;
                 }
             }
-            this.writeStorage(`${this.root}/${name}.json`, JSON.stringify(values, null, opts.indent));
+            this.writeStorage(`${opts.testsLocation}/${name}.json`, JSON.stringify(values, null, opts.indent));
         } else if (obj.item) {
             // requests
             const name = this.baseName(from.location, 'postman_collection');
-            this.processItem(`${this.root}/${name}`, obj.item);
+            this.processItem(`${opts.testsLocation}/${name}`, obj.item);
             for (const [path, requestsObj] of this.storagePathToRequestsObj) {
-                this.writeStorage(path, yaml.dump(requestsObj, opts.indent));
+                this.writeStorage(path, yaml.dump(requestsObj, opts.indent || 2));
             }
         }
     }
