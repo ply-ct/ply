@@ -18,6 +18,7 @@ export { PlyEvent, SuiteEvent, OutcomeEvent } from './event';
 export { Diff } from './compare';
 export { Code, CodeLine } from './code';
 export { Import } from './import/import';
+export { Importer, ImportOptions } from './import/model';
 export { Values } from './values';
 export { suite, test, before, after } from './decorators';
 export { load as loadYaml, dump as dumpYaml } from './yaml';
