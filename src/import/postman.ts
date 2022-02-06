@@ -34,9 +34,17 @@ export class Postman implements Importer {
         } else if (obj.item) {
             // requests
             const name = this.baseName(from.location, 'postman_collection');
-            this.processItem(`${opts.testsLocation}/${name}`, obj.item);
+            this.processItem(`${opts.testsLocation}/${name}`, obj.item, options.individualRequests || false);
             for (const [path, requestsObj] of this.storagePathToRequestsObj) {
-                this.writeStorage(path, yaml.dump(requestsObj, opts.indent || 2));
+                if (opts.individualRequests) {
+                    for (const name of Object.keys(requestsObj)) {
+                        const reqObj = { [name]: requestsObj[name] };
+                        const reqPath = path + '/' + name.replace(/ \/ /g, '/').replace(/:/g, '-') + '.ply';
+                        this.writeStorage(reqPath, yaml.dump(reqObj, opts.indent || 2));
+                    }
+                } else {
+                    this.writeStorage(path, yaml.dump(requestsObj, opts.indent || 2));
+                }
             }
         }
     }
@@ -60,7 +68,7 @@ export class Postman implements Importer {
         storage.write(content);
     }
 
-    private processItem(path: string, item: any[]) {
+    private processItem(path: string, item: any[], individualRequests: boolean) {
         for (const it of item) {
             if (it.request) {
                 // write the request
@@ -68,7 +76,8 @@ export class Postman implements Importer {
                 try {
                     const request = this.translateRequest(it.request);
                     // windows doesn't support : in file names
-                    const storagePath = `${path.replace(/ \/ /g, '/').replace(/:/g, '-')}.ply.yaml`;
+                    let storagePath = `${path.replace(/ \/ /g, '/').replace(/:/g, '-')}`;
+                    if (!individualRequests) storagePath += '.ply.yaml';
                     const reqsObj = this.storagePathToRequestsObj.get(storagePath);
                     if (reqsObj) {
                         reqsObj[name] = request;
@@ -81,7 +90,7 @@ export class Postman implements Importer {
                 }
             }
             if (it.item) {
-                this.processItem(`${path}/${it.name}`, it.item);
+                this.processItem(`${path}/${it.name}`, it.item, individualRequests);
             }
         }
     }

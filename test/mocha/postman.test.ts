@@ -11,7 +11,7 @@ describe('Postman', () => {
     const reqRoot = 'test/mocha/postman/requests';
     const valRoot = 'test/mocha/postman/values';
 
-    it('should import postman requests', async () => {
+    it('should import postman request suites', async () => {
         const retrieval = new Retrieval('test/mocha/postman/movies.postman_collection.json');
         assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
@@ -54,6 +54,47 @@ describe('Postman', () => {
         assert.strictEqual(greatsOf1931.method, 'GET');
 
         const greatsAfter1935 = greatRequests.get('great movies after 1935') as Request;
+        assert.strictEqual(greatsAfter1935.url, '${baseUrl}/movies?rating=5&year=>1935');
+        assert.strictEqual(greatsAfter1935.method, 'GET');
+    });
+
+    it('should import postman individual requests', async () => {
+        const retrieval = new Retrieval('test/mocha/postman/movies.postman_collection.json');
+        assert.ok(retrieval.location.ext);
+        assert.ok(await retrieval.exists);
+        const importer = new Import('postman', new Logger());
+        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, individualRequests: true });
+
+        const ply = new Ply();
+
+        const after1935 = await ply.loadRequest(`${reqRoot}/movies/after 1935.ply`);
+        assert.strictEqual(after1935.url, '${baseUrl}/movies?year=>1935');
+        assert.strictEqual(after1935.method, 'GET');
+
+        const create = await ply.loadRequest(`${reqRoot}/movies/create.ply`);
+        assert.strictEqual(create.url, '${baseUrl}/movies');
+        assert.strictEqual(create.method, 'POST');
+        assert.strictEqual(create.headers['Content-Type'], 'application/json');
+        assert.ok(create.body);
+        const movie = JSON.parse(create.body);
+        assert.strictEqual(movie.title, 'The Case of the Howling Dog');
+        assert.strictEqual(movie.year, 1934);
+
+        const lugosi = await ply.loadRequest(`${reqRoot}/movies/actors/Lugosi.ply`);
+        assert.ok(lugosi);
+        assert.strictEqual(lugosi.url, '${baseUrl}/movies?search=Bela%20Lugosi');
+        assert.strictEqual(lugosi.method, 'GET');
+
+        const karloff = await ply.loadRequest(`${reqRoot}/movies/actors/Karloff.ply`);
+        assert.ok(karloff);
+        assert.strictEqual(karloff.url, '${baseUrl}/movies?search=Boris%20Karloff');
+        assert.strictEqual(karloff.method, 'GET');
+
+        const greatsOf1931 = await ply.loadRequest(`${reqRoot}/movies/by rating/great/great movies of 1931.ply`);
+        assert.strictEqual(greatsOf1931.url, '${baseUrl}/movies?rating=5&year=1931');
+        assert.strictEqual(greatsOf1931.method, 'GET');
+
+        const greatsAfter1935 = await ply.loadRequest(`${reqRoot}/movies/by rating/great/great movies after 1935.ply`);
         assert.strictEqual(greatsAfter1935.url, '${baseUrl}/movies?rating=5&year=>1935');
         assert.strictEqual(greatsAfter1935.method, 'GET');
     });

@@ -11,7 +11,7 @@ describe('Insomnia', () => {
     const reqRoot = 'test/mocha/insomnia/requests';
     const valRoot = 'test/mocha/insomnia/values';
 
-    it('should import insomnia yaml', async () => {
+    it('should import insomnia yaml suites', async () => {
         const retrieval = new Retrieval('test/mocha/insomnia/insomnia-movies.yaml');
 
         assert.ok(retrieval.location.ext);
@@ -80,6 +80,48 @@ describe('Insomnia', () => {
         const plyctObj = await plyctValues.read();
         assert.ok(plyctObj);
         assert.strictEqual(plyctObj.baseUrl, 'https://ply-ct.org');
+    });
+
+    it('should import insomnia yaml requests', async () => {
+        const retrieval = new Retrieval('test/mocha/insomnia/insomnia-movies.yaml');
+
+        assert.ok(retrieval.location.ext);
+        assert.ok(await retrieval.exists);
+        const importer = new Import('insomnia', new Logger());
+        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, individualRequests: true });
+
+        const ply = new Ply();
+
+        const after1935 = await ply.loadRequest(`${reqRoot}/testing/after 1935.ply`);
+        assert.strictEqual(after1935.url, '${baseUrl}/movies?year=>1935');
+        assert.strictEqual(after1935.method, 'GET');
+
+        const create = await ply.loadRequest(`${reqRoot}/testing/movies/create.ply`);
+        assert.strictEqual(create.url, '${baseUrl}/movies');
+        assert.strictEqual(create.method, 'POST');
+        assert.strictEqual(create.headers['Content-Type'], 'application/json');
+        assert.ok(create.body);
+        const movie = JSON.parse(create.body);
+        assert.strictEqual(movie.title, 'The Case of the Howling Dog');
+        assert.strictEqual(movie.year, 1934);
+
+        const lugosi = await ply.loadRequest(`${reqRoot}/testing/movies/actors/Lugosi.ply`);
+        assert.ok(lugosi);
+        assert.strictEqual(lugosi.url, '${baseUrl}/movies?search=Bela%20Lugosi');
+        assert.strictEqual(lugosi.method, 'GET');
+
+        const karloff = await ply.loadRequest(`${reqRoot}/testing/movies/actors/Karloff.ply`);
+        assert.ok(karloff);
+        assert.strictEqual(karloff.url, '${baseUrl}/movies?search=Boris%20Karloff');
+        assert.strictEqual(karloff.method, 'GET');
+
+        const greatsOf1931 = await ply.loadRequest(`${reqRoot}/testing/movies/by rating/great/great movies of 1931.ply`);
+        assert.strictEqual(greatsOf1931.url, '${baseUrl}/movies?rating=5&year=1931');
+        assert.strictEqual(greatsOf1931.method, 'GET');
+
+        const greatsAfter1935 = await ply.loadRequest(`${reqRoot}/testing/movies/by rating/great/great movies after 1935.ply`);
+        assert.strictEqual(greatsAfter1935.url, '${baseUrl}/movies?rating=5&year=>1935');
+        assert.strictEqual(greatsAfter1935.method, 'GET');
     });
 
     it('should import insomnia graphql from json', async () => {
