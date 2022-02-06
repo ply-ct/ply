@@ -30,7 +30,7 @@ export class Postman implements Importer {
                     values[value.key] = value.value;
                 }
             }
-            this.writeStorage(`${opts.testsLocation}/${name}.json`, JSON.stringify(values, null, opts.indent));
+            this.writeStorage(`${opts.valuesLocation}/${name}.json`, JSON.stringify(values, null, opts.indent));
         } else if (obj.item) {
             // requests
             const name = this.baseName(from.location, 'postman_collection');
