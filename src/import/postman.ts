@@ -23,7 +23,7 @@ export class Postman implements Importer {
         this.storagePathToRequestsObj.clear();
         if (obj.values) {
             // values
-            const name = this.baseName(from.location, 'postman_environment');
+            const name = this.baseName(from.location);
             const values: any = {};
             for (const value of obj.values) {
                 if (value.enabled) {
@@ -33,7 +33,7 @@ export class Postman implements Importer {
             this.writeStorage(`${opts.valuesLocation}/${name}.json`, JSON.stringify(values, null, opts.indent));
         } else if (obj.item) {
             // requests
-            const name = this.baseName(from.location, 'postman_collection');
+            const name = this.baseName(from.location);
             this.processItem(`${opts.testsLocation}/${name}`, obj.item, options.individualRequests || false);
             for (const [path, requestsObj] of this.storagePathToRequestsObj) {
                 if (opts.individualRequests) {
@@ -49,11 +49,11 @@ export class Postman implements Importer {
         }
     }
 
-    private baseName(location: Location, suffix: string): string {
+    private baseName(location: Location): string {
         let name = location.base;
-        const dotPc = name.lastIndexOf(`.${suffix}`);
-        if (dotPc > 0) {
-            name = name.substring(0, dotPc);
+        const dot = name.indexOf('.');
+        if (dot > 0) {
+            name = name.substring(0, dot);
         }
         return name;
     }

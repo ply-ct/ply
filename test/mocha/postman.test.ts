@@ -12,7 +12,7 @@ describe('Postman', () => {
     const valRoot = 'test/mocha/postman/values';
 
     it('should import postman request suites', async () => {
-        const retrieval = new Retrieval('test/mocha/postman/movies.postman_collection.json');
+        const retrieval = new Retrieval('test/mocha/postman/movies.postman.json');
         assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
         const importer = new Import('postman', new Logger());
@@ -59,7 +59,7 @@ describe('Postman', () => {
     });
 
     it('should import postman individual requests', async () => {
-        const retrieval = new Retrieval('test/mocha/postman/movies.postman_collection.json');
+        const retrieval = new Retrieval('test/mocha/postman/movies.postman.json');
         assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
         const importer = new Import('postman', new Logger());
