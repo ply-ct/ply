@@ -35,7 +35,10 @@ topics:
         tags: typescript, decorator, before, after, test, suite, @test, @suite, movieCrud, chai, programmatic, code, debug, skipped
       - label: Postman
         nav: postman
-        tags: import, json, vs, code, echo, collection
+        tags: import, postman, json, vs, code, echo, collection, environment
+      - label: Insomnia
+        nav: insomnia
+        tags: import, insomnia, json, yaml, vs, code, workspace, collection, environment
       - label: OpenAPI
         nav: openapi
         tags: openapi, swagger, spec, contract, example, code
