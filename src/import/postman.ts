@@ -75,8 +75,7 @@ export class Postman implements Importer {
                 const name = it.name as string;
                 try {
                     const request = this.translateRequest(it.request);
-                    // windows doesn't support : in file names
-                    let storagePath = `${path.replace(/ \/ /g, '/').replace(/:/g, '-')}`;
+                    let storagePath = path;
                     if (!individualRequests) storagePath += '.ply.yaml';
                     const reqsObj = this.storagePathToRequestsObj.get(storagePath);
                     if (reqsObj) {
@@ -90,7 +89,8 @@ export class Postman implements Importer {
                 }
             }
             if (it.item) {
-                this.processItem(`${path}/${it.name}`, it.item, individualRequests);
+                // windows doesn't support : in file names
+                this.processItem(`${path}/${it.name.replace(/ \/ /g, '/').replace(/:/g, '-')}`, it.item, individualRequests);
             }
         }
     }
