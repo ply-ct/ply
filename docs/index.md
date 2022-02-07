@@ -28,12 +28,14 @@ Ply is simply a more intuitive way to automate REST and GraphQL API testing.
         <li>The <a href="https://github.com/ply-ct/ply-demo">ply-demo</a> project illustrates best practices</li>
         <li>Import Ply requests from <a href="https://www.postman.com/" target="_blank" rel="noreferrer noopener nofollow">Postman</a> collections</li>
         <li>Augment <a href="https://www.openapis.org/">OpenAPI</a> specs with example requests/responses and code snippets from Ply autotests</li>
+        <li>Test artifacts are simply files that can be committed to version control systems such as Git</li>
       </ul>
     </div>
     <div class="split-two">
       <h2>Toolset</h2>
       <ul>
         <li>Install Ply's <a href="https://marketplace.visualstudio.com/items?itemName=ply-ct.vscode-ply">VS Code extension</a></li>
+        <li>Request editor for intuitive creation of reusable Ply requests</li>
         <li>Graphical flow builder makes it easy to sequence requests</li>
         <li>Side-by-side diff view compares expected/actual, with smart decorations aware of runtime values</li>
         <li><a href="https://github.com/ply-ct/ply#readme">Command-line interface</a> for integrating into CI/CD pipelines</li>
