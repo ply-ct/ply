@@ -1,14 +1,16 @@
 import * as flowbee from 'flowbee';
-import { Logger, LogLevel } from './logger';
+import { Logger } from './logger';
 import { RunOptions } from './options';
 import { Request } from './request';
 import { Runtime } from './runtime';
 import { Suite } from './suite';
 import { PlyTest, Test } from './test';
-import { Result, ResultStatus } from './result';
+import { Result } from './result';
 import * as util from './util';
 import { RequestExec } from './exec/request';
 import { ExecResult } from './exec/exec';
+import { StartExec } from './exec/start';
+import { StopExec } from './exec/stop';
 
 export interface Step extends Test {
     step: flowbee.Step;
@@ -61,30 +63,20 @@ export class PlyStep implements Step, PlyTest {
 
             let execResult: ExecResult;
 
-            if (this.subflow && this.step.path === 'start' && !runOptions?.submit && !runOptions?.createExpected) {
-                this.padActualStart(this.subflow.id);
-            }
-            else if (this.step.path === 'stop' && !this.subflow) {
-                let name = this.flowPath;
-                const lastSlash = name.lastIndexOf('/');
-                if (lastSlash > 0 && lastSlash < name.length - 1) name = name.substring(lastSlash + 1);
-                const runId = this.logger.level === LogLevel.debug ? ` (${this.instance.flowInstanceId})` : '';
-                this.logger.info(`Finished flow: ${name}${runId}`);
-            } else if (this.step.path === 'request') {
-                const exec = new RequestExec(this.name, this.requestSuite, this.step, this.instance, this.logger, this.subflow);
-                execResult = await exec.run(runtime, values, runOptions);
-            }
-
-            if (this.step.path === 'start' || this.step.path === 'stop') {
-                // result simply driven by instance status
-                if (this.instance.status === 'In Progress') { // not overwritten by step execution
-                    this.instance.status = 'Completed';
+            if (this.step.path === 'start') {
+                if (this.subflow && !runOptions?.submit && !runOptions?.createExpected) {
+                    await this.padActualStart(this.subflow.id);
                 }
-                const resultStatus = this.mapToResultStatus(this.instance.status, runOptions);
-                execResult = { status: resultStatus };
+                const startExec = new StartExec(this.requestSuite, this.step, this.instance, this.logger, this.subflow);
+                execResult = await startExec.run();
+            } else if (this.step.path === 'stop') {
+                const stopExec = new StopExec(this.flowPath, this.step, this.instance, this.logger, this.subflow);
+                execResult = await stopExec.run();
+            } else if (this.step.path === 'request') {
+                const requestExec = new RequestExec(this.name, this.requestSuite, this.step, this.instance, this.logger, this.subflow);
+                execResult = await requestExec.run(runtime, values, runOptions);
             } else {
                 // general exec -- instance status driven by exec result
-                // TODO execute
                 execResult = { status: 'Errored', message: 'You know why' };
             }
 
@@ -129,20 +121,5 @@ export class PlyStep implements Step, PlyTest {
                 this.requestSuite.runtime.results.actual.padLines(actualYaml.start, expectedYaml.start - actualYaml.start);
             }
         }
-    }
-
-    /**
-     * Maps instance status to ply result
-     */
-    private mapToResultStatus(instanceStatus: flowbee.FlowElementStatus, runOptions?: RunOptions): ResultStatus {
-        let resultStatus: ResultStatus;
-        if (instanceStatus === 'In Progress' || instanceStatus === 'Waiting') {
-            resultStatus = 'Pending';
-        } else if (instanceStatus === 'Completed' || instanceStatus === 'Canceled') {
-            resultStatus = runOptions?.submit ? 'Submitted' : 'Passed';
-        } else {
-            resultStatus = instanceStatus;
-        }
-        return resultStatus;
     }
 }

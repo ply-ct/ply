@@ -16,7 +16,7 @@ export class RequestExec extends PlyExecBase {
         readonly step: flowbee.Step,
         readonly instance: flowbee.StepInstance,
         readonly logger: Logger,
-        readonly subflow?: flowbee.Subflow,
+        readonly subflow?: flowbee.Subflow
     ) {
         super(step, instance, logger, subflow);
     }
@@ -85,22 +85,6 @@ export class RequestExec extends PlyExecBase {
             this.instance.status = 'Completed';
         }
 
-        return this.mapToExecResult(this.instance.status);
-    }
-
-    /**
-     * Maps instance status to ply result
-     */
-    private mapToExecResult(instanceStatus: flowbee.FlowElementStatus, runOptions?: RunOptions): ExecResult {
-        let execResult: ExecResult;
-        if (instanceStatus === 'In Progress' || instanceStatus === 'Waiting') {
-            execResult = { status: 'Pending' };
-        } else if (instanceStatus === 'Completed' || instanceStatus === 'Canceled') {
-            execResult = { status: runOptions?.submit ? 'Submitted' : 'Passed' };
-        } else {
-            execResult = { status: instanceStatus };
-        }
-        if (this.instance.message) execResult.message = this.instance.message;
-        return execResult;
+        return this.mapToExecResult(this.instance);
     }
 }
