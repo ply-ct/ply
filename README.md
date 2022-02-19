@@ -188,7 +188,7 @@ repositoryTopicsQuery:
 ## Documentation
 
 ### Guide
-<https://ply-ct.github.io/ply/>
+<https://ply-ct.github.io/ply/topics/requests>
 
 ### API
 <https://ply-ct.github.io/ply/api>
