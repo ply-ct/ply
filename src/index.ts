@@ -1,7 +1,7 @@
 import { Ply } from './ply';
 
 export { Ply, Plyee, Plier } from './ply';
-export { Test, TestType } from './test';
+export { Test, TestType, PlyTest } from './test';
 export { Request } from './request';
 export { Response, Status } from './response';
 export { Case } from './case';

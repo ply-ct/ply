@@ -1,5 +1,5 @@
 import { getReasonPhrase } from 'http-status-codes';
-import { OpenApi, Path, Method, Operation, JsonMedia } from './openapi';
+import { OpenApi, Path, Method, Operation, Media } from './openapi';
 import { NestJsPlugin } from './nestjs';
 import { JsDocReader, PlyEndpointMeta } from './apidocs';
 import { Log } from '../logger';
@@ -196,7 +196,7 @@ export class Plyex {
         }
     }
 
-    schemaType(jsonPayload: JsonMedia): string {
+    schemaType(jsonPayload: Media): string {
         const schema = jsonPayload.schema;
         let ref = schema.$ref;
         if (schema.type === 'array' && schema.items?.$ref) {

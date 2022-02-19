@@ -63,11 +63,20 @@ export interface Response {
     content?: BodyContent;
 }
 
-export interface BodyContent {
-    'application/json'?: JsonMedia;
+export type MediaType =
+    | 'application/json'
+    | 'application/x-www-form-urlencoded'
+    | 'multipart/form-data'
+    | 'application/xml'
+    | 'text/plain'
+    | 'text/yaml'
+    | 'application/yaml';
+
+export type BodyContent = {
+    [key in MediaType]?: Media;
 }
 
-export interface JsonMedia {
+export interface Media {
     schema: Schema;
     example?: object | string;
 }
