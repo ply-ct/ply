@@ -1,4 +1,5 @@
 import * as process from 'process';
+import * as fs from 'fs';
 import * as osLocale from 'os-locale';
 
 let _locale = osLocale.sync();
@@ -95,3 +96,30 @@ export function header(headers: { [key: string]: string }, name: string): [strin
     if (match) return [match, headers[match]];
 }
 
+export function plyVersion(): Promise<string> {
+    return new Promise((resolve, reject) => {
+        try {
+            const plyDir = `${process.cwd()}/node_modules/@ply-ct/ply`;
+            if (fs.existsSync(`${plyDir}/package.json`)) {
+                fs.promises.readFile(`${plyDir}/package.json`, { encoding: 'utf-8' })
+                .then(contents => {
+                    resolve(JSON.parse(contents).version);
+                });
+            } else if (fs.existsSync(`${process.cwd()}/package.json`)) {
+                fs.promises.readFile(`${process.cwd()}/package.json`, { encoding: 'utf-8' })
+                .then(contents => {
+                    const pkgJson = JSON.parse(contents);
+                    if (pkgJson.name === '@ply-ct/ply') {
+                        resolve(pkgJson.version);
+                    } else {
+                        resolve('unknown');
+                    }
+                });
+            } else {
+                resolve('unknown');
+            }
+        } catch (err) {
+            reject(err);
+        }
+    });
+}

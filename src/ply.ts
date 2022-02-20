@@ -303,6 +303,7 @@ export class Plier extends EventEmitter {
      * TODO: DRY this out
      */
     async run(plyees: string[], runOptions?: RunOptions): Promise<Result[]> {
+        this.logger.info('Ply version', await util.plyVersion());
         this.logger.debug('Options', this.ply.options);
 
         const plyValues = new Values(this.ply.options.valuesFiles, this.logger);
