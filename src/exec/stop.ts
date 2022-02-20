@@ -5,7 +5,7 @@ import { LogLevel, Logger } from '../logger';
 export class StopExec extends PlyExecBase {
 
     constructor(
-        private readonly flowPath: string,
+        private readonly flowPath: string,  // unique
         readonly step: flowbee.Step,
         readonly instance: flowbee.StepInstance,
         readonly logger: Logger,

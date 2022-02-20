@@ -21,7 +21,7 @@ export class RequestExec extends PlyExecBase {
         super(step, instance, logger, subflow);
     }
 
-    async run(runtime: Runtime, values: object, runOptions?: RunOptions): Promise<ExecResult> {
+    async run(runtime: Runtime, values: any, runOptions?: RunOptions): Promise<ExecResult> {
         let url = this.step.attributes?.url;
         if (!url) throw new Error('Missing attribute: url');
         url = subst.replace(url, values, this.logger);

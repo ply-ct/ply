@@ -1,8 +1,9 @@
 import * as flowbee from 'flowbee';
 import { ExecResult, PlyExecBase } from './exec';
+import { Runtime } from '../runtime';
 import { Logger } from '../logger';
 
-export class StartExec extends PlyExecBase {
+export class GreetingExec extends PlyExecBase {
 
     constructor(
         readonly step: flowbee.Step,
@@ -13,12 +14,9 @@ export class StartExec extends PlyExecBase {
         super(step, instance, logger, subflow);
     }
 
-    async run(): Promise<ExecResult> {
-        // result simply driven by instance status
-        if (this.instance.status === 'In Progress') { // not overwritten by step execution
-            this.instance.status = 'Completed';
-        }
-        return this.mapToExecResult(this.instance);
+    async run(runtime: Runtime, values: any): Promise<ExecResult> {
+        const name = values.name || 'World';
+        this.logger.info(`Hello, ${name} from step ${this.step.name} in flow ${runtime.suitePath}`);
+        return { status: 'Passed' };
     }
-
 }

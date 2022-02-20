@@ -23,7 +23,7 @@ export abstract class PlyExecBase implements PlyExec {
     ) {
     }
 
-    abstract run(runtime: Runtime, values: object, runOptions?: RunOptions): Promise<ExecResult>;
+    abstract run(runtime: Runtime, values: any, runOptions?: RunOptions): Promise<ExecResult>;
 
     /**
      * Maps instance status to ply result

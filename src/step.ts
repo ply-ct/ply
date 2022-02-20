@@ -11,6 +11,8 @@ import { RequestExec } from './exec/request';
 import { ExecResult } from './exec/exec';
 import { StartExec } from './exec/start';
 import { StopExec } from './exec/stop';
+import { GreetingExec } from './exec/greeting';
+import { FlowElementStatus } from 'flowbee';
 
 export interface Step extends Test {
     step: flowbee.Step;
@@ -67,7 +69,7 @@ export class PlyStep implements Step, PlyTest {
                 if (this.subflow && !runOptions?.submit && !runOptions?.createExpected) {
                     await this.padActualStart(this.subflow.id);
                 }
-                const startExec = new StartExec(this.requestSuite, this.step, this.instance, this.logger, this.subflow);
+                const startExec = new StartExec(this.step, this.instance, this.logger, this.subflow);
                 execResult = await startExec.run();
             } else if (this.step.path === 'stop') {
                 const stopExec = new StopExec(this.flowPath, this.step, this.instance, this.logger, this.subflow);
@@ -77,7 +79,10 @@ export class PlyStep implements Step, PlyTest {
                 execResult = await requestExec.run(runtime, values, runOptions);
             } else {
                 // general exec -- instance status driven by exec result
-                execResult = { status: 'Errored', message: 'You know why' };
+                const helloExec = new GreetingExec(this.step, this.instance, this.logger, this.subflow);
+                execResult = await helloExec.run(runtime, values);
+                this.instance.status = this.mapToInstanceStatus(execResult);
+                if (execResult.message) this.instance.message = execResult.message;
             }
 
             if (!execResult.message && this.instance.message) execResult.message = this.instance.message;
@@ -111,6 +116,14 @@ export class PlyStep implements Step, PlyTest {
         }
 
         return result;
+    }
+
+    private mapToInstanceStatus(execResult: ExecResult): FlowElementStatus {
+        if (execResult.status === 'Passed' || execResult.status === 'Submitted') {
+            return 'Completed';
+        } else {
+            return execResult.status;
+        }
     }
 
     private async padActualStart(name: string) {
