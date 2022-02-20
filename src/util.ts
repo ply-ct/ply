@@ -96,30 +96,37 @@ export function header(headers: { [key: string]: string }, name: string): [strin
     if (match) return [match, headers[match]];
 }
 
+let cachedPlyVersion = '';
 export function plyVersion(): Promise<string> {
     return new Promise((resolve, reject) => {
-        try {
-            const plyDir = `${process.cwd()}/node_modules/@ply-ct/ply`;
-            if (fs.existsSync(`${plyDir}/package.json`)) {
-                fs.promises.readFile(`${plyDir}/package.json`, { encoding: 'utf-8' })
-                .then(contents => {
-                    resolve(JSON.parse(contents).version);
-                });
-            } else if (fs.existsSync(`${process.cwd()}/package.json`)) {
-                fs.promises.readFile(`${process.cwd()}/package.json`, { encoding: 'utf-8' })
-                .then(contents => {
-                    const pkgJson = JSON.parse(contents);
-                    if (pkgJson.name === '@ply-ct/ply') {
-                        resolve(pkgJson.version);
-                    } else {
-                        resolve('unknown');
-                    }
-                });
-            } else {
-                resolve('unknown');
+        if (cachedPlyVersion) {
+            resolve(cachedPlyVersion);
+        } else {
+            try {
+                const plyDir = `${process.cwd()}/node_modules/@ply-ct/ply`;
+                if (fs.existsSync(`${plyDir}/package.json`)) {
+                    fs.promises.readFile(`${plyDir}/package.json`, { encoding: 'utf-8' })
+                    .then(contents => {
+                        cachedPlyVersion = JSON.parse(contents).version;
+                        resolve(cachedPlyVersion);
+                    });
+                } else if (fs.existsSync(`${process.cwd()}/package.json`)) {
+                    fs.promises.readFile(`${process.cwd()}/package.json`, { encoding: 'utf-8' })
+                    .then(contents => {
+                        const pkgJson = JSON.parse(contents);
+                        if (pkgJson.name === '@ply-ct/ply') {
+                            cachedPlyVersion = pkgJson.version;
+                            resolve(cachedPlyVersion);
+                        } else {
+                            resolve('unknown');
+                        }
+                    });
+                } else {
+                    resolve('unknown');
+                }
+            } catch (err) {
+                reject(err);
             }
-        } catch (err) {
-            reject(err);
         }
     });
 }

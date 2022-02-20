@@ -100,6 +100,10 @@ export class PlyRequest implements Request, PlyTest {
         }
 
         const { url: _url, ...fetchRequest } = requestObj;
+        fetchRequest.headers = { ...(fetchRequest.headers || {}) };
+        if (!Object.keys(fetchRequest.headers).find(k => k.toLowerCase() === 'user-agent')) {
+            fetchRequest.headers['User-Agent'] = `Ply-CT/${await util.plyVersion()}`;
+        }
         const response = await fetch(requestObj.url, fetchRequest);
         const status = { code: response.status, message: response.statusText };
         const headers = this.responseHeaders(response.headers);
