@@ -38,15 +38,15 @@ export class FlowResults {
     }
 
     get overall(): Result {
-        let otherThanSubmitted = false;
+        let anySubmitted = false;
         for (const result of this.results) {
             if (result.status === 'Failed' || result.status === 'Errored') {
                 return result;
-            } else if (result.status !== 'Submitted') {
-                otherThanSubmitted = true;
+            } else if (result.status === 'Submitted') {
+                anySubmitted = true;
             }
         }
-        return { name: this.name, status: otherThanSubmitted ? 'Passed' : 'Submitted', message: '' };
+        return { name: this.name, status: anySubmitted ? 'Submitted' : 'Passed', message: '' };
     }
 }
 

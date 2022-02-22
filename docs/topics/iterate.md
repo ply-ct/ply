@@ -120,6 +120,11 @@ useful in load testing so that Ply doesn't spend time comparing results and can 
 throughput. On the command line, use `--submit`. In VS Code, click the 'Submit' code lens or the Submit icon:
 <img src="../img/submit.svg" alt="Submit Icon" class="icon-img">
 
+Example command-line for exercising ply-demo's movies-api.ply.flow with 264 rows of data from forties-movies.xlsx:
+```
+ply flows/movies-api.ply.flow --valuesFiles="test/values/localhost.json,test/values/forties-movies.xlsx" --submit
+```
+
 ## Parallel execution
 Suites by default are executed sequentially, with Ply waiting for one suite to complete before running 
 the next. As with non-iterating tests, the `parallel` config option can be used to execute suites in parallel.
@@ -128,5 +133,10 @@ When iterating in parallel there are couple of things to keep in mind:
   - Test suites that interfere with each other's data will cause inconsistencies when run in parallel.
   - The `submit` option described above should be used to suppress results verification. Ply writes actual
     suite results to the same file for each row processed. This will cause interference during parallel execution.
+
+Example command-line for exercising ply-demo's movies-api.ply.flow IN PARALLEL with 264 rows of data from forties-movies.csv:
+```
+ply flows/movies-api.ply.flow --valuesFiles="test/values/localhost.json,test/values/forties-movies.csv" --submit --parallel
+```
 
 Next Topic: [Cases](cases)

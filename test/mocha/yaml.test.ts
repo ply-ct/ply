@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as assert from 'assert';
 import * as yaml from '../../src/yaml';
 import { Retrieval } from '../../src/retrieval';
+import * as util from '../../src/util';
 
 describe('yaml', () => {
 
@@ -73,6 +74,29 @@ describe('yaml', () => {
         assert.strictEqual(rawRequestBlockBody.myGreeting, 'Hello');
         assert.strictEqual(rawRequestBlockBody.myNumber, 1234);
         assert.strictEqual(rawRequestBlockBody.myMissive, missive);
+    });
+
+    it('dumps yaml xml multiline string literal from win eols', async () => {
+        const xml = await fs.promises.readFile('test/mocha/results/res.xml', { encoding: 'utf-8' });
+        const xmlWithWindowsNewlines = xml.replace(/\n/g, '\r\n');
+        const yamlObj = {
+            myTest: {
+                response: {
+                    status: {
+                        code: 200,
+                        message: 'OK'
+                    },
+                    headers: {
+                        'content-type': 'application/xml'
+                    },
+                    body: util.fixEol(xmlWithWindowsNewlines)
+                }
+            }
+        };
+
+        const yml = yaml.dump(yamlObj, 2);
+        const lines = util.lines(yml);
+        assert.strictEqual(lines[8], '      <?xml version="1.0" encoding="UTF-8" standalone="yes"?>');
     });
 
 });

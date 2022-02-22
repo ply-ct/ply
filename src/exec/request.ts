@@ -85,6 +85,6 @@ export class RequestExec extends PlyExecBase {
             this.instance.status = 'Completed';
         }
 
-        return this.mapToExecResult(this.instance);
+        return this.mapToExecResult(this.instance, runOptions);
     }
 }

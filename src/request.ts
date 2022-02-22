@@ -192,7 +192,7 @@ export class PlyRequest implements Request, PlyTest {
         const result = new PlyResult(
             this.name,
             requestObject,
-            response.getResponse(runId, runtime.options, runtime.responseHeaders, true)
+            response.getResponse(runId, runtime.options, runOptions?.submit? undefined : runtime.responseHeaders, true)
         );
         if (this.graphQl) {
             result.graphQl = this.graphQl;

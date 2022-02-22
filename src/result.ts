@@ -263,10 +263,10 @@ export class ResultPaths {
      */
     static async create(options: PlyOptions, retrieval: Retrieval, suiteName = retrieval.location.base): Promise<ResultPaths> {
         const basePaths = this.bases(options, retrieval, suiteName);
-        let ext = '.yml';
-        if (!await new Retrieval(basePaths.expected + '.yml').exists) {
-            if ((await new Retrieval(basePaths.expected + '.yaml').exists) || retrieval.location.ext === 'yaml') {
-                ext = '.yaml';
+        let ext = '.yaml';
+        if (!await new Retrieval(basePaths.expected + ext).exists) {
+            if ((await new Retrieval(basePaths.expected + '.yml').exists) || retrieval.location.ext === 'yml') {
+                ext = '.yml';
             }
         }
         return new ResultPaths(

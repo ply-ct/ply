@@ -90,6 +90,10 @@ export function fwdSlashes(path: string): string {
     return path.replace(/\\/g, '/');
 }
 
+export function fixEol(path: string): string {
+    return path.replace(/\r/g, '');
+}
+
 export function header(headers: { [key: string]: string }, name: string): [string, string] | undefined {
     const key = name.toLowerCase();
     const match = Object.keys(headers).find(h => h.toLowerCase() === key);

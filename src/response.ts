@@ -1,5 +1,6 @@
 import { Options } from './options';
 import * as stringify from 'json-stable-stringify';
+import { fixEol } from './util';
 
 export interface Status {
     code: number;
@@ -29,7 +30,7 @@ export class PlyResponse implements Response {
      * Response header keys are always lowercase
      * @param runtime runtime context
      * @param wantedHeaders optional name of headers subset to keep
-     * @param stringBody body object is stringified
+     * @param stringBody body object is stringified (windows eols are replaced if prettyIndent)
      */
     getResponse(runId: string, options: Options, wantedHeaders?: string[], stringBody = false): PlyResponse {
 
@@ -40,11 +41,14 @@ export class PlyResponse implements Response {
         });
 
         let body = this.body;
+        let isJsonString = false;
         if (typeof body === 'string' && (body.startsWith('{') || body.startsWith('['))) {
             try {
                 body = JSON.parse(body);
+                isJsonString = true;
             } catch (err) {
                 // cannot parse -- body remains string
+                if (options.verbose) console.debug(err);
             }
         }
         if (stringBody && typeof body === 'object') {
@@ -54,6 +58,18 @@ export class PlyResponse implements Response {
             else {
                 body = JSON.stringify(body, null, options.prettyIndent);
             }
+        } else if (!isJsonString && typeof body === 'string' && body.trim().startsWith('<') && options.prettyIndent) {
+            // format XML
+            try {
+                const xmlOpts = { indentation: ''.padStart(options.prettyIndent, ' '), collapseContent: true };
+                body = require('xml-formatter')(body, xmlOpts);
+            } catch (err) {
+                // cannot format
+                if (options.verbose) console.debug(err);
+            }
+        }
+        if (body && stringBody && options.prettyIndent) {
+            body = fixEol(body);
         }
 
         return new PlyResponse(

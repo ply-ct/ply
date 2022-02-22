@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<exampleResponse>
+  <ExampleResponseElement>
+    <Action>updateTitle</Action>
+    <Message>New title applied by donaldoakes</Message>
+    <Success>TRUE</Success>
+  </ExampleResponseElement>
+  <resultCount>1</resultCount>
+</exampleResponse>

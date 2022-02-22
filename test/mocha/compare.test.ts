@@ -85,4 +85,25 @@ describe('Compare', () => {
         assert.strictEqual(diffs[1].value, "  content-type: application/json${~.*}\n  location: '${baseUrl}/movies/${id}'\n");
         assert.strictEqual(diffs[1].ignored, undefined);
     });
+
+    it('handles regex for any number of digits', () => {
+        const expected = '<Ticket>\n' +
+          '  <CreationTime>2022-02-21T21:34:41Z</CreationTime>\n' +
+          '  <IdNumber>${~\\d+}</IdNumber>\n' +
+          '</Ticket>\n';
+
+        const actual = '<Ticket>\n' +
+          '  <CreationTime>2022-02-21T21:34:41Z</CreationTime>\n' +
+          '  <IdNumber>22712854</IdNumber>\n' +
+          '</Ticket>\n';
+
+        const compare = new Compare(logger);
+        const diffs = compare.diffLines(expected, actual, {});
+
+        assert.strictEqual(diffs.length, 4);
+        assert.strictEqual(diffs[1].removed, true);
+        assert.strictEqual(diffs[1].ignored, true);
+        assert.strictEqual(diffs[2].added, true);
+        assert.strictEqual(diffs[2].ignored, true);
+    });
 });
