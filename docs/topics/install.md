@@ -12,26 +12,9 @@ Use Ply interactively through [VS Code](https://code.visualstudio.com/).
    - In the Activity Bar on the left, click the Extensions icon: 
      <img src="../img/extensions.png" alt="Extensions Icon" class="icon-img">
    - Search for "Ply", and click its `Install` button.
-   - Restart VS Code after installing Ply.
 
 ## Command Line Interface
-Install Ply through [npm](https://www.npmjs.com/package/ply-ct) to use the CLI.
-1. Global
-   ```
-   npm install -g @ply-ct/ply
-   ```
-   This way you can run `ply` directly from the command line:
-   ```
-   ply --version
-   ```
-1. Dev Dependency
-   ```
-   npm install --save-dev @ply-ct/ply
-   ```
-   Then you can run ply in your project directory through `npx` or an npm script:
-   ```
-   npx ply --version
-   ```
-Command-line exercises in this guide assume you have Ply installed globally.
+Ply can also be run from the command line. See topic [CLI](cli) for installation
+and usage information.
 
 Next Topic: [Getting Started](intro)

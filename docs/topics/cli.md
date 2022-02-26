@@ -6,6 +6,28 @@ The CLI is how you can run Ply directly from the command line and also automatic
 continuous integration cycle. Running ply without any arguments will execute all requests/cases (except
 those that are ignored or skipped).
 
+
+## Installation
+Install Ply through [npm](https://www.npmjs.com/package/ply-ct) to use the CLI.
+1. Global
+   ```
+   npm install -g @ply-ct/ply
+   ```
+   This way you can run `ply` directly from the command line:
+   ```
+   ply --version
+   ```
+1. Dev Dependency
+   ```
+   npm install --save-dev @ply-ct/ply
+   ```
+   Then you can run ply in your project directory through `npx` or an npm script:
+   ```
+   npx ply --version
+   ```
+Command-line exercises in this guide assume you have Ply installed globally.
+
+
 ## Command-Line Only Arguments
 
 | Option | Default |
