@@ -1,6 +1,7 @@
 import * as assert from 'assert';
 import { Logger, LogOptions } from '../../src/logger';
 import { Storage } from '../../src/storage';
+import * as util from '../../src/util';
 
 describe('Logger', () => {
 
@@ -13,7 +14,7 @@ describe('Logger', () => {
         const err = new Error('something bad happened');
         logger2.error('error message', err);
         logger2.debug('should not appear');
-        const log = storage.read() || '';
+        const log = util.newlines(storage.read() || '');
         assert.strictEqual(log, `info message\nerror message\n${err.stack}\n`);
         storage.remove();
     });

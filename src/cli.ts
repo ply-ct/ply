@@ -35,7 +35,7 @@ if (runOptions?.import) {
             testsLocation: options.testsLocation,
             valuesLocation: valuesLoc,
             indent: options.prettyIndent,
-            individualRequests: runOptions.individualRequests
+            importToSuite: runOptions.importToSuite
         };
         for (const path of options.args) {
             plier.logger.info('Importing', path);

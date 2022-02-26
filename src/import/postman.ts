@@ -14,7 +14,7 @@ export class Postman implements Importer {
     ) { }
 
     async import(from: Retrieval, options: ImportOptions) {
-        const opts: ImportOptions = { indent: 2, individualRequests: false, ...options };
+        const opts: ImportOptions = { indent: 2, importToSuite: false, ...options };
         const contents = await from.read();
         if (!contents) {
             throw new Error(`Import source not found: ${from.location}`);
@@ -34,16 +34,16 @@ export class Postman implements Importer {
         } else if (obj.item) {
             // requests
             const name = this.baseName(from.location);
-            this.processItem(`${opts.testsLocation}/${name}`, obj.item, options.individualRequests || false);
+            this.processItem(`${opts.testsLocation}/${name}`, obj.item, options.importToSuite || false);
             for (const [path, requestsObj] of this.storagePathToRequestsObj) {
-                if (opts.individualRequests) {
+                if (opts.importToSuite) {
+                    this.writeStorage(path, yaml.dump(requestsObj, opts.indent || 2));
+                } else {
                     for (const name of Object.keys(requestsObj)) {
                         const reqObj = { [name]: requestsObj[name] };
                         const reqPath = path + '/' + name.replace(/ \/ /g, '/').replace(/:/g, '-') + '.ply';
                         this.writeStorage(reqPath, yaml.dump(reqObj, opts.indent || 2));
                     }
-                } else {
-                    this.writeStorage(path, yaml.dump(requestsObj, opts.indent || 2));
                 }
             }
         }
@@ -68,7 +68,7 @@ export class Postman implements Importer {
         storage.write(content);
     }
 
-    private processItem(path: string, item: any[], individualRequests: boolean) {
+    private processItem(path: string, item: any[], importToSuite: boolean) {
         for (const it of item) {
             if (it.request) {
                 // write the request
@@ -76,7 +76,7 @@ export class Postman implements Importer {
                 try {
                     const request = this.translateRequest(it.request);
                     let storagePath = path;
-                    if (!individualRequests) storagePath += '.ply.yaml';
+                    if (importToSuite) storagePath += '.ply.yaml';
                     const reqsObj = this.storagePathToRequestsObj.get(storagePath);
                     if (reqsObj) {
                         reqsObj[name] = request;
@@ -90,7 +90,7 @@ export class Postman implements Importer {
             }
             if (it.item) {
                 // windows doesn't support : in file names
-                this.processItem(`${path}/${it.name.replace(/ \/ /g, '/').replace(/:/g, '-')}`, it.item, individualRequests);
+                this.processItem(`${path}/${it.name.replace(/ \/ /g, '/').replace(/:/g, '-')}`, it.item, importToSuite);
             }
         }
     }

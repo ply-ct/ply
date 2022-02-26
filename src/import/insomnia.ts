@@ -32,7 +32,7 @@ export class Insomnia implements Importer {
     ) { }
 
     async import(from: Retrieval, options: ImportOptions) {
-        const opts: ImportOptions = { indent: 2, individualRequests: false, ...options };
+        const opts: ImportOptions = { indent: 2, importToSuite: false, ...options };
 
         const contents = await from.read();
         if (!contents) {
@@ -132,15 +132,15 @@ export class Insomnia implements Importer {
 
     private writeRequests(container: Workspace | RequestGroup, options: ImportOptions) {
         if (container.requests) {
-            if (options.individualRequests) {
+            if (options.importToSuite) {
+                const reqsYaml = yaml.dump(container.requests, options.indent || 2);
+                this.writeStorage(`${container.path}.ply.yaml`, reqsYaml);
+            } else {
                 for (const requestName of Object.keys(container.requests)) {
                     const reqObj = { [requestName]: container.requests[requestName] };
                     const reqYaml = yaml.dump(reqObj, options.indent || 2);
                     this.writeStorage(container.path + '/' + this.writeableName(requestName) + '.ply', reqYaml);
                 }
-            } else {
-                const reqsYaml = yaml.dump(container.requests, options.indent || 2);
-                this.writeStorage(`${container.path}.ply.yaml`, reqsYaml);
             }
         }
         if (container.requestGroups) {

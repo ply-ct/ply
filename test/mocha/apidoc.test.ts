@@ -4,6 +4,8 @@ import { Logger } from '../../src/logger';
 import { Plyex } from '../../src/plyex/plyex';
 import * as yaml from '../../src/yaml';
 import { OpenApi } from '../../src/plyex/openapi';
+import * as util from '../../src/util';
+
 describe('API Docs', () => {
 
     it('should find nestjs endpoints', () => {
@@ -40,8 +42,21 @@ describe('API Docs', () => {
         const openApi: OpenApi = yaml.load(base, openApiYaml);
         const plyex = new Plyex('nestjs', new Logger(), { tsConfig: 'test/tsconfig.json', sourcePatterns: [file] });
         const augmented = plyex.augment(openApi);
-        const newYaml = yaml.dump(augmented, 2);
-        const expectedYaml = fs.readFileSync('test/mocha/plyex/openapi.yaml', { encoding: 'utf8' });
-        assert.strictEqual(newYaml, expectedYaml);
+        Object.keys(augmented.paths!).forEach(p => {
+            const path = augmented.paths![p];
+            Object.keys(path).forEach(m => {
+                const codeSamples = (path as any)[m]['x-codeSamples'];
+                if (codeSamples) {
+                    codeSamples.forEach((cs: any) => {
+                        if (cs.source) {
+                            cs.source = util.newlines(cs.source);
+                        }
+                    });
+                }
+            });
+        });
+        const newYaml = yaml.dump(augmented, 2).replace(/\\r/g, '');
+        const expectedYaml = util.newlines(fs.readFileSync('test/mocha/plyex/openapi.yaml', { encoding: 'utf8' }));
+        assert.strictEqual(newYaml, util.newlines(expectedYaml));
     });
 });

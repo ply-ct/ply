@@ -33,10 +33,10 @@ ply "test/Insomnia Collection/**/*"
 Overall Results: {"Passed":9,"Failed":0,"Errored":0,"Pending":0,"Submitted":0}
 ```
 
-## Standalone Requests
-To import each request as a separate .ply file, include the --individualRequests option:
+## Import to Request Suites
+To import collections into request suites (.yaml files), instead of individual (.ply) requests, include the --importToSuite option:
 ```
-ply --import=insomnia "test/insomnia/insomnia-movies.yaml" --individualRequests
+ply --import=insomnia "test/insomnia/insomnia-movies.yaml" --importToSuite
 ```
 
 ## VS Code

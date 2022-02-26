@@ -156,9 +156,9 @@ export interface RunOptions {
     import?: 'postman' | 'insomnia';
 
     /**
-     * Import into individual request (.ply) files instead of into suites (.yml/.yaml).
+     * Import collections into request suites (.yaml files), instead of individual (.ply) requests.
      */
-    individualRequests?: boolean;
+    importToSuite?: boolean;
 
     /**
      * Augment OpenAPI v3 doc at specified path with operation summaries, request/response samples,
@@ -313,8 +313,8 @@ export class Config {
             describe: 'Import requests/values from external',
             type: 'string'
         },
-        individualRequests: {
-            describe: 'Import into .ply requests files',
+        importToSuite: {
+            describe: 'Import into .yaml suite files',
             type: 'boolean'
         },
         openapi: {
@@ -436,9 +436,9 @@ export class Config {
             options.runOptions.import =  options.import;
             delete options.import;
         }
-        if (options.individualRequests) {
-            options.runOptions.individualRequests = options.individualRequests;
-            delete options.individualRequests;
+        if (options.importToSuite) {
+            options.runOptions.importToSuite = options.importToSuite;
+            delete options.importToSuite;
         }
         if (options.openapi) {
             options.runOptions.openapi =  options.openapi;

@@ -16,7 +16,7 @@ describe('Postman', () => {
         assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
         const importer = new Import('postman', new Logger());
-        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2 });
+        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, importToSuite: true });
 
         const ply = new Ply();
         const topRequests = ply.loadSuiteSync(`${reqRoot}/movies.ply.yaml`);
@@ -63,7 +63,7 @@ describe('Postman', () => {
         assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
         const importer = new Import('postman', new Logger());
-        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, individualRequests: true });
+        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, importToSuite: false });
 
         const ply = new Ply();
 
@@ -103,7 +103,7 @@ describe('Postman', () => {
         const retrieval = new Retrieval('test/mocha/postman/github.postman_collection.json');
         assert.ok(await retrieval.exists);
         const importer = new Import('postman', new Logger());
-        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2 });
+        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, importToSuite: true });
 
         const ply = new Ply();
         const githubRequests = ply.loadSuiteSync(`${reqRoot}/github.ply.yaml`);

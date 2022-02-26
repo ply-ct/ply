@@ -17,7 +17,7 @@ describe('Insomnia', () => {
         assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
         const importer = new Import('insomnia', new Logger());
-        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2 });
+        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, importToSuite: true });
 
         const ply = new Ply();
         const topRequests = await ply.loadSuite(`${reqRoot}/testing.ply.yaml`);
@@ -88,7 +88,7 @@ describe('Insomnia', () => {
         assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
         const importer = new Import('insomnia', new Logger());
-        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, individualRequests: true });
+        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, importToSuite: false });
 
         const ply = new Ply();
 
@@ -128,7 +128,7 @@ describe('Insomnia', () => {
         const retrieval = new Retrieval('test/mocha/insomnia/insomnia-github-graphql.json');
         assert.ok(await retrieval.exists);
         const importer = new Import('insomnia', new Logger());
-        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, individualRequests: true });
+        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, importToSuite: false });
 
         const ply = new Ply();
         const repositoryTopicsQuery = await ply.loadRequest(`${reqRoot}/github-graphql/GitHub/repositoryTopicsQuery.ply`);

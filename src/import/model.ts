@@ -6,7 +6,7 @@ export interface ImportOptions {
     testsLocation: string;
     valuesLocation: string;
     indent?: number;
-    individualRequests?: boolean;
+    importToSuite?: boolean;
 }
 
 export interface Importer {
