@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import { EventEmitter } from 'events';
 import { Options, Config, PlyOptions, RunOptions, Defaults } from './options';
@@ -14,6 +15,8 @@ import * as util from './util';
 import { FlowLoader, FlowSuite } from './flows';
 import { Values } from './values';
 import { PlyRunner } from './runner';
+import { Reporter } from './report/model';
+import { Report } from './report/report';
 
 export class Ply {
 
@@ -285,6 +288,7 @@ export class Plier extends EventEmitter {
      * general purpose logger not associated with suite (goes to console)
      */
     readonly logger: Logger;
+    readonly reporter?: Reporter;
 
     get options() { return this.ply.options; }
 
@@ -296,6 +300,10 @@ export class Plier extends EventEmitter {
             level: this.ply.options.verbose ? LogLevel.debug : (this.ply.options.quiet ? LogLevel.error : LogLevel.info),
             prettyIndent: this.ply.options.prettyIndent
         });
+
+        if (this.options.reporter) {
+            this.reporter = new Report(this.options.reporter, this.logger).createReporter();
+        }
     }
 
     /**
@@ -308,6 +316,11 @@ export class Plier extends EventEmitter {
 
         const plyValues = new Values(this.ply.options.valuesFiles, this.logger);
         const values = await plyValues.read();
+
+        if (this.reporter) {
+            // remove all previous runs
+            await fs.promises.rm(`${this.options.logLocation}/runs`, { force: true, recursive: true, });
+        }
 
         let promises: Promise<Result[]>[] = [];
         let combined: Result[] = [];
@@ -382,6 +395,14 @@ export class Plier extends EventEmitter {
             for (const results of await Promise.all(promises)) {
                 combined = [...combined, ...results];
             }
+        }
+
+        if (this.reporter) {
+            await this.reporter.report({
+                runsLocation: `${this.options.logLocation}/runs`,
+                outputLocation: this.options.logLocation,
+                indent: this.options.prettyIndent
+            });
         }
 
         return combined;

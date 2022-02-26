@@ -12,6 +12,7 @@ import { TestSuite, TestCase, Before, After } from './decorators';
  */
 export class Runtime {
 
+    runNumber = 0;
     testsLocation: Location;
 
     decoratedSuite?: DecoratedSuite;

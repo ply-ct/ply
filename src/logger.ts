@@ -25,7 +25,7 @@ export class Logger implements Log {
     private options: LogOptions = {
         level: LogLevel.info,
         prettyIndent: 0
-    }
+    };
 
     constructor(options?: LogOptions, public storage?: Storage, append = false) {
         if (options) {

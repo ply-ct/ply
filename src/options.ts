@@ -82,6 +82,10 @@ export interface Options {
      */
     batchDelay?: number;
     /**
+     * Reporter output format.
+     */
+    reporter?: 'json' | 'html';
+    /**
      * Predictable ordering of response body JSON property keys -- needed for verification (true).
      */
     responseBodySortedKeys?: boolean;
@@ -117,6 +121,7 @@ export interface PlyOptions extends Options {
     parallel: boolean;
     batchRows: number;
     batchDelay: number;
+    reporter?: 'json' | 'html';
     responseBodySortedKeys: boolean;
     genExcludeResponseHeaders?: string[];
     prettyIndent: number;
@@ -145,10 +150,10 @@ export interface RunOptions {
      */
     createExpectedIfMissing?: boolean
     /**
-     * Import requests or values from external format (currently 'postman' is supported).
+     * Import requests or values from external format (currently 'postman' or 'insomnia' is supported).
      * Overwrites existing same-named files.
      */
-    import?: string;
+    import?: 'postman' | 'insomnia';
 
     /**
      * Import into individual request (.ply) files instead of into suites (.yml/.yaml).
@@ -300,6 +305,9 @@ export class Config {
         },
         batchDelay: {
             describe: '(Rowwise values) ms batch delay'
+        },
+        reporter: {
+            describe: 'Reporter output format'
         },
         import: {
             describe: 'Import requests/values from external',

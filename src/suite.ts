@@ -14,6 +14,7 @@ import { Plyee } from './ply';
 import { PlyEvent, SuiteEvent, OutcomeEvent } from './event';
 import { PlyResponse } from './response';
 import { TsCompileOptions } from './compile';
+import { TestRun } from './report/model';
 
 export interface Tests<T extends Test> {
     [key: string]: T
@@ -245,7 +246,7 @@ export class Suite<T extends Test> {
                             this.log.debug(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
                             const outcome = { ...verifier.verify(actualYaml, runValues), start };
                             result = { ...result as Result, ...outcome };
-                            this.logOutcome(test, outcome);
+                            this.logOutcome(test, result);
                         }
                     }
                     this.addResult(results, result, runValues);
@@ -268,7 +269,7 @@ export class Suite<T extends Test> {
                         // TODO: Revisit when implementing a comprehensive values specification mechanism.
                         const outcome = { ...verifier.verify(actualYaml, runValues), start };
                         result = { ...result as Result, ...outcome };
-                        this.logOutcome(test, outcome);
+                        this.logOutcome(test, result);
                     }
                     this.addResult(results, result, runValues);
                 }
@@ -424,25 +425,57 @@ export class Suite<T extends Test> {
         const ms = outcome.start ? ` in ${outcome.end - outcome.start} ms` : '';
         const testLabel = label || test.type.charAt(0).toLocaleUpperCase() + test.type.substring(1);
         const id = this.logger.level === LogLevel.debug && (test as any).id ? ` (${(test as any).id})` : '';
+        let message: string = '';
         if (outcome.status === 'Passed') {
-            this.logger.info(`${testLabel} '${test.name}'${id} PASSED${ms}`);
+            message = `${testLabel} '${test.name}'${id} PASSED${ms}`;
+            this.logger.info(message);
         }
         else if (outcome.status === 'Failed') {
             const diff = outcome.diff ? '\n' + outcome.diff : '';
-            this.logger.error(`${testLabel} '${test.name}'${id} FAILED${ms}: ${outcome.message}${diff}`);
+            message = `${testLabel} '${test.name}'${id} FAILED${ms}: ${outcome.message}${diff}`;
+            this.logger.error(message);
         }
         else if (outcome.status === 'Errored') {
-            this.logger.error(`${testLabel} '${test.name}'${id} ERRORED${ms}: ${outcome.message}`);
+            message = `${testLabel} '${test.name}'${id} ERRORED${ms}: ${outcome.message}`;
+            this.logger.error(message);
         }
         else if (outcome.status === 'Submitted') {
-            this.logger.info(`${testLabel} '${test.name}'${id} SUBMITTED${ms}`);
+            message = `${testLabel} '${test.name}'${id} SUBMITTED${ms}`;
+            this.logger.info(message);
         }
+
+        if (this.runtime.options.reporter && this.type !== 'flow') {
+            // flows are logged through their requestSuites
+            this.writeRunLog(test, outcome, message);
+        }
+
         if (this.emitter) {
             this.emitter.emit('outcome', {
                 plyee: new Plyee(this.runtime.options.testsLocation + '/' + this.path, test).path,
                 outcome
             } as OutcomeEvent);
         }
+    }
+
+    private writeRunLog(test: Test, outcome: Outcome & { request?: Request, response?: Response }, message?: string) {
+        const testRun: TestRun = {
+          test: test.name,
+          type: test.type,
+          ...(outcome.start && { start: new Date(outcome.start).toISOString() as any }), // serialized as string
+          ...(outcome.end && { end: new Date(outcome.end).toISOString() as any }), // serialized as string
+          result: {
+            status: outcome.status,
+            ...(message && { message }),
+          },
+        };
+        if (outcome.request) testRun.request = outcome.request;
+        if (outcome.response) testRun.response = outcome.response;
+
+        const storage = new Storage(`${this.runtime.results.runs}/${this.name}.${this.runtime.runNumber}.json`);
+        const content = storage.read();
+        const testRuns: TestRun[] = content ? JSON.parse(content) : [];
+        testRuns.push(testRun);
+        storage.write(JSON.stringify(testRuns, null, 2));
     }
 
     /**

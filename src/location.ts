@@ -31,7 +31,7 @@ export class Location {
      */
     get parent(): string | undefined {
         if (this.lastSlash) {
-            return this.path.substr(0, this.lastSlash);
+            return this.path.substring(0, this.lastSlash);
         }
     }
 

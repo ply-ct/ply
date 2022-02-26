@@ -223,14 +223,15 @@ export class ResultPaths {
         readonly expected: Retrieval,
         readonly actual: Storage,
         readonly options: Options,
-        readonly log: Storage
+        readonly log: Storage,
+        readonly runs: string // directory
     ) { }
 
     /**
      * excluding file extension
      */
     private static bases(options: PlyOptions, retrieval: Retrieval, suiteName: string):
-            { expected: string, actual: string, log: string } {
+            { expected: string, actual: string, log: string, runs: string } {
 
         if (suiteName.endsWith('.ply')) {
             suiteName = suiteName.substring(0, suiteName.length - 4);
@@ -243,7 +244,8 @@ export class ResultPaths {
             return {
                 expected: options.expectedLocation + '/' + resultFilePath,
                 actual: options.actualLocation + '/' + resultFilePath,
-                log: options.logLocation + '/' + resultFilePath
+                log: options.logLocation + '/' + resultFilePath,
+                runs: options.logLocation + '/runs/' + resultFilePath
             };
         }
         else {
@@ -251,7 +253,8 @@ export class ResultPaths {
             return {
                 expected: options.expectedLocation + '/' + suiteName,
                 actual: options.actualLocation + '/' + suiteName,
-                log: options.logLocation + '/' + suiteName
+                log: options.logLocation + '/' + suiteName,
+                runs: options.logLocation + '/runs',
             };
         }
     }
@@ -273,7 +276,8 @@ export class ResultPaths {
             new Retrieval(basePaths.expected + ext),
             new Storage(basePaths.actual + ext),
             options,
-            new Storage(basePaths.log + '.log')
+            new Storage(basePaths.log + '.log'),
+            basePaths.runs
         );
     }
 
@@ -284,17 +288,18 @@ export class ResultPaths {
      */
     static createSync(options: PlyOptions, retrieval: Retrieval, suiteName = retrieval.location.base): ResultPaths {
         const basePaths = this.bases(options, retrieval, suiteName);
-        let ext = '.yml';
-        if (!new Storage(basePaths.expected + '.yml').exists) {
-            if (new Storage(basePaths.expected + '.yaml').exists || retrieval.location.ext === 'yaml') {
-                ext = '.yaml';
+        let ext = '.yaml';
+        if (!new Storage(basePaths.expected + '.yaml').exists) {
+            if (new Storage(basePaths.expected + '.yml').exists || retrieval.location.ext === 'yml') {
+                ext = '.yml';
             }
         }
         return new ResultPaths(
             new Retrieval(basePaths.expected + ext),
             new Storage(basePaths.actual + ext),
             options,
-            new Storage(basePaths.log + '.log')
+            new Storage(basePaths.log + '.log'),
+            basePaths.runs
         );
     }
 

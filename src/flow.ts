@@ -177,7 +177,11 @@ export class PlyFlow implements Flow {
         this.logger.info('Executing step', plyStep.name);
         this.emit('exec', 'step', plyStep.instance);
 
-        this.results.results.push(await plyStep.run(runtime, values, runOptions));
+        const result = await plyStep.run(runtime, values, runOptions);
+        result.start = plyStep.instance.start?.getTime();
+        result.end = plyStep.instance.end?.getTime();
+        this.results.results.push(result);
+        this.requestSuite.logOutcome(plyStep, result, plyStep.stepName);
 
         if (this.results.latestBad()) {
             this.instance.status = plyStep.instance.status;

@@ -119,9 +119,6 @@ else {
             if (plier.options.outputFile) {
                 new Storage(plier.options.outputFile).write(JSON.stringify(res, null, plier.options.prettyIndent));
             }
-            if (res.Failed || res.Errored) {
-                process.exit(1);
-            }
         }).catch(err => {
             plier.logger.error(err);
             process.exit(1);
