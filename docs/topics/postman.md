@@ -7,7 +7,7 @@ Ply can import [Postman](https://www.postman.com/) collections into request YAML
 In fact, the [ply-demo](https://github.com/ply-ct/ply-demo) repository already contains 
 the Postman Echo collection, which you can import like this:
 ```
-ply --import=postman "test/postman/Postman Echo.postman_collection.json"
+ply --import=postman --importToSuite "test/postman/Postman Echo.postman_collection.json"
 ```
 Here's the output from this import:
 ```
@@ -32,10 +32,11 @@ ply "test/Postman Echo/**/*"
 Overall Results: {"Passed":36,"Failed":0,"Errored":0,"Pending":0,"Submitted":0}
 ```
 
-## Standalone Requests
-To import collections into request suites (.yaml files), instead of individual (.ply) requests, include the --importToSuite option:
+## Import Individual Requests
+Above we included the `importToSuite` option to import collections into request suites (.yaml files). By default, without
+this option, collections are instead imported to individual (.ply) requests.
 ```
-ply --import=postman "test/postman/Postman Echo.postman_collection.json" --importToSuite
+ply --import=postman --importToSuite "test/postman/Postman Echo.postman_collection.json" 
 ```
 
 ## Values Files

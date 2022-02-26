@@ -7,7 +7,7 @@ Ply can import [Insomnia](https://docs.insomnia.rest/) collections into request 
 The [ply-demo](https://github.com/ply-ct/ply-demo) repository contains an example Insomnia
 collection, which you can import like this:
 ```
-ply --import=insomnia "test/insomnia/insomnia-movies.yaml"
+ply --import=insomnia --importToSuite test/insomnia/insomnia-movies.yaml
 ```
 Here's the output from this import:
 ```
@@ -33,10 +33,11 @@ ply "test/Insomnia Collection/**/*"
 Overall Results: {"Passed":9,"Failed":0,"Errored":0,"Pending":0,"Submitted":0}
 ```
 
-## Import to Request Suites
-To import collections into request suites (.yaml files), instead of individual (.ply) requests, include the --importToSuite option:
+## Import Individual Requests
+Above we included the `importToSuite` option to import collections into request suites (.yaml files). By default, without
+this option, collections are instead imported to individual (.ply) requests.
 ```
-ply --import=insomnia "test/insomnia/insomnia-movies.yaml" --importToSuite
+ply --import=insomnia "test/insomnia/insomnia-movies.yaml"
 ```
 
 ## VS Code

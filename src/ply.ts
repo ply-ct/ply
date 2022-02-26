@@ -180,15 +180,18 @@ export class Plyee {
     constructor(path: string);
     constructor(pathOrSuite: string, test?: Test) {
         if (test) {
-            this.path = util.fwdSlashes(path.normalize(path.resolve(`${pathOrSuite}#${test.name}`)));
+            this.path = util.fwdSlashes(path.normalize(path.resolve(`${pathOrSuite}`))) + `#${test.name}`;
         }
         else {
-            this.path = util.fwdSlashes(path.normalize(path.resolve(pathOrSuite)));
+            const hash = pathOrSuite.indexOf("#");
+            if (hash === 0 || hash > pathOrSuite.length - 2) {
+                throw new Error(`Invalid path: ${pathOrSuite}`);
+            }
+            const base = pathOrSuite.substring(0, hash);
+            const frag = pathOrSuite.substring(hash + 1);
+            this.path = util.fwdSlashes(path.normalize(path.resolve(base))) + `#${frag}`;
         }
-        this.hash = this.path.indexOf('#');
-        if (this.hash === 0 || this.hash > this.path.length - 2) {
-            throw new Error(`Invalid path: ${this.path}`);
-        }
+        this.hash = this.path.indexOf("#");
         this.hat = this.path.lastIndexOf('^');
         if (this.hat < this.hash || this.hat < this.path.length - 1) {
             this.hat = -1;

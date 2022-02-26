@@ -12,14 +12,19 @@ export function dump(obj: object, indent: number): string {
 
 export function load(file: string, contents: string, assignLines = false): any {
     const lines: any = {};
-    const obj = jsYaml.load(contents, {
-        filename: file,
-        listener: function (op, state) {
-            if (assignLines && op === 'open' && state.kind === 'scalar') {
+    const loadOptions: jsYaml.LoadOptions = { filename: file };
+    if (assignLines) {
+        loadOptions.listener = function (op, state) {
+            if (
+                assignLines &&
+                op === "open" &&
+                state.kind === "scalar" && state.lineIndent === 0 /* && lines[state.result] === undefined */
+            ) {
                 lines[state.result] = state.line;
             }
-        }
-    }) as any;
+        };
+    }
+    const obj = jsYaml.load(contents, loadOptions) as any;
     if (obj && assignLines) {
         const contentLines = util.lines(contents);
         let lastObjProp: any;
