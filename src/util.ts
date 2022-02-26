@@ -94,6 +94,25 @@ export function fixEol(path: string): string {
     return path.replace(/\r/g, '');
 }
 
+export function writeableName(name: string): string {
+    return name
+      .replace(/</g, '-')
+      .replace(/>/g, '-')
+      .replace(/:/g, '-')
+      .replace(/"/g, '-')
+      .replace(/\|/g, '-')
+      .replace(/\?/g, '-')
+      .replace(/\*/g, '-');
+}
+
+export function writeableFileName(file: string): string {
+    return writeableName(file).replace(/\//g, '-').replace(/\\/g, '-');
+}
+
+export function writeablePath(path: string): string {
+    return writeableName(path).replace(/ \/ /g, '/');
+}
+
 export function header(headers: { [key: string]: string }, name: string): [string, string] | undefined {
     const key = name.toLowerCase();
     const match = Object.keys(headers).find(h => h.toLowerCase() === key);

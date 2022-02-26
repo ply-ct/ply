@@ -3,6 +3,7 @@ import { Retrieval } from '../retrieval';
 import { Storage } from '../storage';
 import { Log } from '../logger';
 import * as yaml from '../yaml';
+import * as util from '../util';
 
 interface RequestGroup {
     id: string;
@@ -64,7 +65,7 @@ export class Insomnia implements Importer {
             const workspace: Workspace = {
                 id: ws._id,
                 name: ws.name,
-                path: options.testsLocation + '/' + this.writeableName(ws.name),
+                path: options.testsLocation + '/' + util.writeablePath(ws.name),
                 environments: []
             };
             this.loadRequests(workspace, resources);
@@ -83,7 +84,7 @@ export class Insomnia implements Importer {
             const requestGroup: RequestGroup = {
                 id: reqGroup._id,
                 name: reqGroup.name,
-                path: container.path + '/' + this.writeableName(reqGroup.name)
+                path: container.path + '/' + util.writeablePath(reqGroup.name)
             };
             container.requestGroups.push(requestGroup);
             this.loadRequests(requestGroup, resources);
@@ -139,7 +140,7 @@ export class Insomnia implements Importer {
                 for (const requestName of Object.keys(container.requests)) {
                     const reqObj = { [requestName]: container.requests[requestName] };
                     const reqYaml = yaml.dump(reqObj, options.indent || 2);
-                    this.writeStorage(container.path + '/' + this.writeableName(requestName) + '.ply', reqYaml);
+                    this.writeStorage(container.path + '/' + util.writeableFileName(requestName) + '.ply', reqYaml);
                 }
             }
         }
@@ -169,15 +170,10 @@ export class Insomnia implements Importer {
     private writeValues(workspace: Workspace, options: ImportOptions) {
         if (workspace.environments) {
             for (const environment of workspace.environments) {
-                const file = `${options.valuesLocation}/${this.writeableName(environment.name)}.json`;
+                const file = `${options.valuesLocation}/${util.writeableFileName(environment.name)}.json`;
                 this.writeStorage(file, JSON.stringify(environment.data, null, options.indent));
             }
         }
-    }
-
-    private writeableName(name: string): string {
-        // windows doesn't allow : in filenames
-        return name.replace(/ \/ /g, '/').replace(/:/g, '-');
     }
 
     private replaceExpressions(input: string): string {

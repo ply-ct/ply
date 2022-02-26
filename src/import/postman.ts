@@ -4,6 +4,7 @@ import { Location } from '../location';
 import { Storage } from '../storage';
 import { Log } from '../logger';
 import * as yaml from '../yaml';
+import * as util from '../util';
 
 export class Postman implements Importer {
 
@@ -41,7 +42,7 @@ export class Postman implements Importer {
                 } else {
                     for (const name of Object.keys(requestsObj)) {
                         const reqObj = { [name]: requestsObj[name] };
-                        const reqPath = path + '/' + name.replace(/ \/ /g, '/').replace(/:/g, '-') + '.ply';
+                        const reqPath = path + '/' + util.writeableFileName(name) + '.ply';
                         this.writeStorage(reqPath, yaml.dump(reqObj, opts.indent || 2));
                     }
                 }
@@ -90,7 +91,7 @@ export class Postman implements Importer {
             }
             if (it.item) {
                 // windows doesn't support : in file names
-                this.processItem(`${path}/${it.name.replace(/ \/ /g, '/').replace(/:/g, '-')}`, it.item, importToSuite);
+                this.processItem(`${path}/${util.writeablePath(it.name)}`, it.item, importToSuite);
             }
         }
     }
