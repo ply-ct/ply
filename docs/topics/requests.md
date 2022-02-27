@@ -122,7 +122,8 @@ to obtain your personal access token. This is a good candidate for your [PLY_VAL
 environment variable, since you don't want to share your access token in version control.
 
 ## URLEncoded Form Data
-Form data 
+For POST requests with Accept header set to `application/x-www-form-urlencoded`, form data is displayed as a table in 
+VS Code if you have the Ply extension installed. Expressions can be applied in both keys and values.
 
 
 ## Multipart Form Data
