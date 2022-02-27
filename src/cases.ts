@@ -25,7 +25,6 @@ interface CaseDecoration {
 }
 
 export class CaseLoader {
-
     private program: ts.Program;
     private checker: ts.TypeChecker;
     private skip: Skip | undefined;
@@ -33,8 +32,8 @@ export class CaseLoader {
     constructor(
         sourceFiles: string[],
         private options: PlyOptions,
-        private compileOptions: TsCompileOptions) {
-
+        private compileOptions: TsCompileOptions
+    ) {
         this.program = ts.createProgram(sourceFiles, compileOptions.compilerOptions);
         this.checker = this.program.getTypeChecker();
 
@@ -44,11 +43,9 @@ export class CaseLoader {
     }
 
     async load(): Promise<Suite<Case>[]> {
-
         const suites: Suite<Case>[] = [];
 
         for (const sourceFile of this.program.getSourceFiles()) {
-
             const suiteDecorations = this.findSuites(sourceFile);
             if (suiteDecorations.length > 0) {
                 const retrieval = new Retrieval(sourceFile.fileName);
@@ -57,17 +54,24 @@ export class CaseLoader {
                 for (const suiteDecoration of suiteDecorations) {
                     // every suite instance gets its own runtime
 
-                    const results = await ResultPaths.create(this.options, retrieval, suiteDecoration.name);
-                    const runtime = new Runtime(
+                    const results = await ResultPaths.create(
                         this.options,
                         retrieval,
-                        results
+                        suiteDecoration.name
                     );
+                    const runtime = new Runtime(this.options, retrieval, results);
 
-                    const logger = new Logger({
-                        level: this.options.verbose ? LogLevel.debug : (this.options.quiet ? LogLevel.error : LogLevel.info),
-                        prettyIndent: this.options.prettyIndent
-                    }, runtime.results.log);
+                    const logger = new Logger(
+                        {
+                            level: this.options.verbose
+                                ? LogLevel.debug
+                                : this.options.quiet
+                                ? LogLevel.error
+                                : LogLevel.info,
+                            prettyIndent: this.options.prettyIndent
+                        },
+                        runtime.results.log
+                    );
 
                     let outFile = this.compileOptions.outFile;
                     if (!outFile) {
@@ -75,7 +79,14 @@ export class CaseLoader {
                         if (suiteLoc.isAbsolute) {
                             suiteLoc = new Location(suiteLoc.relativeTo('.'));
                         }
-                        outFile = new Location(new Location(this.compileOptions.outDir).absolute + '/' + suiteLoc.parent + '/' + suiteLoc.base + '.js').path;
+                        outFile = new Location(
+                            new Location(this.compileOptions.outDir).absolute +
+                                '/' +
+                                suiteLoc.parent +
+                                '/' +
+                                suiteLoc.base +
+                                '.js'
+                        ).path;
                     }
 
                     const suite = new Suite<Case>(
@@ -84,8 +95,12 @@ export class CaseLoader {
                         suitePath,
                         runtime,
                         logger,
-                        sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getStart()).line,
-                        sourceFile.getLineAndCharacterOfPosition(suiteDecoration.classDeclaration.getEnd()).line,
+                        sourceFile.getLineAndCharacterOfPosition(
+                            suiteDecoration.classDeclaration.getStart()
+                        ).line,
+                        sourceFile.getLineAndCharacterOfPosition(
+                            suiteDecoration.classDeclaration.getEnd()
+                        ).line,
                         suiteDecoration.className,
                         outFile
                     );
@@ -94,8 +109,12 @@ export class CaseLoader {
                         const c = new PlyCase(
                             caseDecoration.name,
                             caseDecoration.methodName,
-                            sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getStart()).line,
-                            sourceFile.getLineAndCharacterOfPosition(caseDecoration.methodDeclaration.getEnd()).line,
+                            sourceFile.getLineAndCharacterOfPosition(
+                                caseDecoration.methodDeclaration.getStart()
+                            ).line,
+                            sourceFile.getLineAndCharacterOfPosition(
+                                caseDecoration.methodDeclaration.getEnd()
+                            ).line,
                             logger
                         );
                         suite.add(c);
@@ -124,7 +143,7 @@ export class CaseLoader {
     private findSuites(sourceFile: ts.SourceFile): SuiteDecoration[] {
         const suites: SuiteDecoration[] = [];
         if (!sourceFile.isDeclarationFile) {
-            ts.forEachChild(sourceFile, node => {
+            ts.forEachChild(sourceFile, (node) => {
                 if (ts.isClassDeclaration(node) && node.name && this.isExported(node)) {
                     const suiteDecoration = this.findSuiteDecoration(node as ts.ClassDeclaration);
                     if (suiteDecoration) {
@@ -136,7 +155,9 @@ export class CaseLoader {
         return suites;
     }
 
-    private findSuiteDecoration(classDeclaration: ts.ClassDeclaration): SuiteDecoration | undefined {
+    private findSuiteDecoration(
+        classDeclaration: ts.ClassDeclaration
+    ): SuiteDecoration | undefined {
         const classSymbol = this.checker.getSymbolAtLocation(<ts.Node>classDeclaration.name);
         if (classSymbol && classDeclaration.decorators) {
             for (const decorator of classDeclaration.decorators) {
@@ -145,11 +166,14 @@ export class CaseLoader {
                     const firstToken = decorator.expression.getFirstToken();
                     if (firstToken) {
                         decoratorSymbol = this.checker.getSymbolAtLocation(firstToken);
-                    }
-                    else {
+                    } else {
                         decoratorSymbol = this.checker.getSymbolAtLocation(decorator.expression);
                     }
-                    if (decoratorSymbol && (decoratorSymbol.name === 'suite' || this.checker.getAliasedSymbol(decoratorSymbol).name === 'suite')) {
+                    if (
+                        decoratorSymbol &&
+                        (decoratorSymbol.name === 'suite' ||
+                            this.checker.getAliasedSymbol(decoratorSymbol).name === 'suite')
+                    ) {
                         let suiteName = classSymbol.name;
                         if (decorator.expression.getChildCount() >= 3) {
                             // suite name arg
@@ -169,7 +193,7 @@ export class CaseLoader {
 
     private findCases(suiteDecoration: SuiteDecoration): CaseDecoration[] {
         const cases: CaseDecoration[] = [];
-        suiteDecoration.classDeclaration.forEachChild(node => {
+        suiteDecoration.classDeclaration.forEachChild((node) => {
             if (ts.isMethodDeclaration(node) && node.name && !ts.isPrivateIdentifier(node)) {
                 const caseDecoration = this.findCaseDecoration(node as ts.MethodDeclaration);
                 if (caseDecoration) {
@@ -180,7 +204,9 @@ export class CaseLoader {
         return cases;
     }
 
-    private findCaseDecoration(methodDeclaration: ts.MethodDeclaration): CaseDecoration | undefined {
+    private findCaseDecoration(
+        methodDeclaration: ts.MethodDeclaration
+    ): CaseDecoration | undefined {
         const methodSymbol = this.checker.getSymbolAtLocation(<ts.Node>methodDeclaration.name);
         if (methodSymbol && methodDeclaration.decorators) {
             for (const decorator of methodDeclaration.decorators) {
@@ -189,11 +215,14 @@ export class CaseLoader {
                     const firstToken = decorator.expression.getFirstToken();
                     if (firstToken) {
                         decoratorSymbol = this.checker.getSymbolAtLocation(firstToken);
-                    }
-                    else {
+                    } else {
                         decoratorSymbol = this.checker.getSymbolAtLocation(decorator.expression);
                     }
-                    if (decoratorSymbol && (decoratorSymbol.name === 'test' || this.checker.getAliasedSymbol(decoratorSymbol).name === 'test')) {
+                    if (
+                        decoratorSymbol &&
+                        (decoratorSymbol.name === 'test' ||
+                            this.checker.getAliasedSymbol(decoratorSymbol).name === 'test')
+                    ) {
                         let testName = methodSymbol.name;
                         if (decorator.expression.getChildCount() >= 3) {
                             const text = decorator.expression.getChildAt(2).getText();

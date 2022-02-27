@@ -9,7 +9,6 @@ import { Values } from './values';
  * Runs ply tests per suite
  */
 export class PlyRunner<T extends Test> {
-
     /**
      * Results are for sequential execution
      */
@@ -20,15 +19,12 @@ export class PlyRunner<T extends Test> {
      */
     promises: Promise<Result[]>[] = [];
 
-
     constructor(
         readonly options: PlyOptions,
         readonly suiteTests: Map<Suite<T>, string[]>,
         readonly plyValues: Values,
         private logger: Logger
-    ) {
-
-    }
+    ) {}
 
     async runSuiteTests(values: object, runOptions?: RunOptions) {
         if (this.suiteTests.size === 0) return;
@@ -64,7 +60,7 @@ export class PlyRunner<T extends Test> {
     }
 
     private async delay(ms: number) {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             setTimeout(resolve, ms);
         });
     }

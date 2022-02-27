@@ -4,13 +4,15 @@ import { Storage } from '../../src/storage';
 import { RESULTS } from '../../src/names';
 import * as subst from '../../src/subst';
 
-const logger = new Logger({
-    ...new LogOptions(),
-    level: LogLevel.info
-}, new Storage('temp/output.log'));
+const logger = new Logger(
+    {
+        ...new LogOptions(),
+        level: LogLevel.info
+    },
+    new Storage('temp/output.log')
+);
 
 describe('subst', () => {
-
     it('ignores unmatched expression lines', () => {
         const values = {
             x: 'foo',
@@ -29,10 +31,7 @@ describe('subst', () => {
                 moviesByYearAndRating: {
                     response: {
                         body: {
-                            movies: [
-                                { id: '8f180e68' },
-                                { id: 'eec22a97' }
-                            ]
+                            movies: [{ id: '8f180e68' }, { id: 'eec22a97' }]
                         }
                     }
                 }
@@ -85,7 +84,6 @@ describe('subst', () => {
     });
 
     it('tokenizes complex expressions', () => {
-
         let tokens = subst.tokenize("greeting.response.body['friendly.greetings'][0].salutation");
         assert.strictEqual(tokens[0], 'greeting');
         assert.strictEqual(tokens[1], 'response');
@@ -107,5 +105,4 @@ describe('subst', () => {
         assert.strictEqual(tokens[3], 'baz');
         assert.strictEqual(tokens[4], 3);
     });
-
 });

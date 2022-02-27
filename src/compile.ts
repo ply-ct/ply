@@ -4,19 +4,25 @@ import { PlyOptions } from './options';
 import { Location } from './location';
 
 export class TsCompileOptions {
-
     compilerOptions: ts.CompilerOptions;
     outDir: string;
     outFile?: string;
 
     constructor(options: PlyOptions) {
-        const configPath = ts.findConfigFile(options.testsLocation, ts.sys.fileExists, "tsconfig.json");
+        const configPath = ts.findConfigFile(
+            options.testsLocation,
+            ts.sys.fileExists,
+            'tsconfig.json'
+        );
         if (!configPath) {
             throw new Error("Could not find a valid 'tsconfig.json' from " + options.testsLocation);
         }
 
         const configContents = fs.readFileSync(configPath).toString();
-        this.compilerOptions = ts.parseConfigFileTextToJson(configPath, configContents) as ts.CompilerOptions;
+        this.compilerOptions = ts.parseConfigFileTextToJson(
+            configPath,
+            configContents
+        ) as ts.CompilerOptions;
         const config = this.compilerOptions.config as any;
         let outDir;
         let outFile;

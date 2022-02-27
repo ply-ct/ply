@@ -10,22 +10,18 @@ import * as yaml from './yaml';
 import * as util from './util';
 
 export class RequestLoader {
-
     private skip: Skip | undefined;
 
-    constructor(
-        readonly locations: string[],
-        private options: PlyOptions
-    ) {
+    constructor(readonly locations: string[], private options: PlyOptions) {
         if (options.skip) {
             this.skip = new Skip(options.testsLocation, options.skip);
         }
     }
 
     async load(): Promise<Suite<Request>[]> {
-        const retrievals = this.locations.map(loc => new Retrieval(loc));
+        const retrievals = this.locations.map((loc) => new Retrieval(loc));
         // load request files in parallel
-        const promises = retrievals.map(retr => this.loadSuite(retr));
+        const promises = retrievals.map((retr) => this.loadSuite(retr));
         const suites = await Promise.all(promises);
         suites.sort((s1, s2) => s1.name.localeCompare(s2.name));
         return suites;
@@ -59,16 +55,19 @@ export class RequestLoader {
     }
 
     buildSuite(retrieval: Retrieval, contents: string, resultPaths: ResultPaths): Suite<Request> {
-        const runtime = new Runtime(
-            this.options,
-            retrieval,
-            resultPaths
-        );
+        const runtime = new Runtime(this.options, retrieval, resultPaths);
 
-        const logger = new Logger({
-            level: this.options.verbose ? LogLevel.debug : (this.options.quiet ? LogLevel.error : LogLevel.info),
-            prettyIndent: this.options.prettyIndent
-        }, runtime.results.log);
+        const logger = new Logger(
+            {
+                level: this.options.verbose
+                    ? LogLevel.debug
+                    : this.options.quiet
+                    ? LogLevel.error
+                    : LogLevel.info,
+                prettyIndent: this.options.prettyIndent
+            },
+            runtime.results.log
+        );
 
         const suite = new Suite<Request>(
             retrieval.location.base,
@@ -86,8 +85,13 @@ export class RequestLoader {
                 const val = obj[key];
                 if (typeof val === 'object') {
                     const startEnd = { start: val.__start, end: val.__end };
-                    const { __start, __end, ...cleanObj} = val;
-                    const request = new PlyRequest(key, { ...startEnd, ...cleanObj } as Request, logger, retrieval);
+                    const { __start, __end, ...cleanObj } = val;
+                    const request = new PlyRequest(
+                        key,
+                        { ...startEnd, ...cleanObj } as Request,
+                        logger,
+                        retrieval
+                    );
                     suite.add(request);
                 }
             }

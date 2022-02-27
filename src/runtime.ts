@@ -11,7 +11,6 @@ import { TestSuite, TestCase, Before, After } from './decorators';
  * Runtime information for a test suite.
  */
 export class Runtime {
-
     runNumber = 0;
     testsLocation: Location;
 
@@ -24,13 +23,14 @@ export class Runtime {
     constructor(
         readonly options: PlyOptions,
         readonly retrieval: Retrieval,
-        public results: ResultPaths) {
-
+        public results: ResultPaths
+    ) {
         if (path.isAbsolute(this.options.testsLocation)) {
             this.testsLocation = new Location(this.options.testsLocation);
-        }
-        else {
-            this.testsLocation = new Location(path.resolve(process.cwd() + '/' + this.options.testsLocation));
+        } else {
+            this.testsLocation = new Location(
+                path.resolve(process.cwd() + '/' + this.options.testsLocation)
+            );
         }
     }
 
@@ -48,16 +48,15 @@ export class Runtime {
 }
 
 export type CallingCaseInfo = {
-    results: ResultPaths,
-    suiteName: string,
-    caseName: string
+    results: ResultPaths;
+    suiteName: string;
+    caseName: string;
 };
 
 /**
  * Applicable for Cases
  */
 export class DecoratedSuite {
-
     readonly testSuite: TestSuite;
     readonly testCases: TestCase[] = [];
     readonly befores: Before[] = [];
@@ -71,31 +70,30 @@ export class DecoratedSuite {
         if (this.testSuite) {
             this.testSuite = { ...this.testSuite, className: this.testSuite.name };
         }
-        Object.getOwnPropertyNames(instance.constructor.prototype).forEach(propName => {
+        Object.getOwnPropertyNames(instance.constructor.prototype).forEach((propName) => {
             try {
                 if (typeof instance.constructor.prototype[propName] === 'function') {
                     const method = instance.constructor.prototype[propName];
                     if (method[TEST]) {
                         const testCase = method[TEST];
-                        if (!this.testCases.find(tc => tc.name === testCase.name)) {
+                        if (!this.testCases.find((tc) => tc.name === testCase.name)) {
                             this.testCases.push({ ...testCase, method });
                         }
                     }
                     if (method[BEFORE]) {
                         const before = method[BEFORE];
-                        if (!this.befores.find(b => b.name === before.name)) {
+                        if (!this.befores.find((b) => b.name === before.name)) {
                             this.befores.push({ ...before, method });
                         }
                     }
                     if (method[AFTER]) {
                         const after = method[AFTER];
-                        if (!this.afters.find(a => a.name === after.name)) {
+                        if (!this.afters.find((a) => a.name === after.name)) {
                             this.afters.push({ ...after, method });
                         }
                     }
                 }
-            }
-            catch (_ignored) {
+            } catch (_ignored) {
                 // getter or setter before constructor?
             }
         });

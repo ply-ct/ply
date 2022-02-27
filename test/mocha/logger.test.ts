@@ -4,7 +4,6 @@ import { Storage } from '../../src/storage';
 import * as util from '../../src/util';
 
 describe('Logger', () => {
-
     it('should append output', () => {
         const options = new LogOptions();
         const storage = new Storage('temp/output.log');

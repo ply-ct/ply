@@ -18,39 +18,38 @@ export interface Outcome {
     /**
      * Status of test execution
      */
-    status: ResultStatus
-    message: string
+    status: ResultStatus;
+    message: string;
     /**
      * One-based line number of first diff, relative to starting line of test
      */
-    line?: number
+    line?: number;
     /**
      * Diff message
      */
-    diff?: string
-    diffs?: Diff[]
+    diff?: string;
+    diffs?: Diff[];
 
-    start?: number
-    end?: number
+    start?: number;
+    end?: number;
 }
 
 export interface Result extends Outcome {
     /**
      * Request name
      */
-    readonly name: string,
+    readonly name: string;
     /**
      * Request with runtime substitutions, minus Authorization header
      */
-    readonly request?: Request,
+    readonly request?: Request;
     /**
      * Response maybe with ignore headers removed, and formatted/sorted body content (per options)
      */
-    readonly response?: Response
+    readonly response?: Response;
 }
 
 export class PlyResult implements Result {
-
     status: 'Pending' | 'Passed' | 'Failed' | 'Errored' | 'Submitted' = 'Pending';
     message = '';
     line = 0;
@@ -61,8 +60,8 @@ export class PlyResult implements Result {
 
     constructor(readonly name: string, request: Request, response: PlyResponse) {
         this.request = { ...request };
-        this.request.headers = { };
-        Object.keys(request.headers).forEach( key => {
+        this.request.headers = {};
+        Object.keys(request.headers).forEach((key) => {
             if (key !== 'Authorization') {
                 this.request.headers[key] = request.headers[key];
             }
@@ -107,7 +106,11 @@ export class Verifier {
         // this.logger.debug(`Expected:\n${this.expectedYaml}\n` + `Actual:\n${actualYaml}\n`);
         const expected = new Code(this.expectedYaml.text, '#');
         const actual = new Code(actualYaml.text, '#');
-        const diffs = new Compare(this.logger).diffLines(expected.extractCode(), actual.extractCode(), values);
+        const diffs = new Compare(this.logger).diffLines(
+            expected.extractCode(),
+            actual.extractCode(),
+            values
+        );
         let firstDiffLine = 0;
         let diffMsg = '';
         if (diffs) {
@@ -116,7 +119,8 @@ export class Verifier {
             for (let i = 0; i < diffs.length; i++) {
                 const diff = diffs[i];
                 if (diff.removed) {
-                    const correspondingAdd = (i < diffs.length - 1 && diffs[i + 1].added) ? diffs[i + 1] : null;
+                    const correspondingAdd =
+                        i < diffs.length - 1 && diffs[i + 1].added ? diffs[i + 1] : null;
                     if (!diff.ignored) {
                         if (!firstDiffLine) {
                             firstDiffLine = line;
@@ -125,7 +129,12 @@ export class Verifier {
                         diffMsg += '\n';
                         diffMsg += this.prefix(diff.value, '- ', expected.lines, line);
                         if (correspondingAdd) {
-                            diffMsg += this.prefix(correspondingAdd.value, '+ ', actual.lines, actLine);
+                            diffMsg += this.prefix(
+                                correspondingAdd.value,
+                                '+ ',
+                                actual.lines,
+                                actLine
+                            );
                         }
                         diffMsg += '===\n';
                     }
@@ -134,8 +143,7 @@ export class Verifier {
                         i++; // corresponding add already covered
                         actLine += correspondingAdd.count;
                     }
-                }
-                else if (diff.added) {
+                } else if (diff.added) {
                     if (!diff.ignored) {
                         // added with no corresponding remove
                         if (!firstDiffLine) {
@@ -147,8 +155,7 @@ export class Verifier {
                         diffMsg += '===\n';
                     }
                     actLine += diff.count;
-                }
-                else {
+                } else {
                     line += diff.count;
                     actLine += diff.count;
                 }
@@ -162,8 +169,7 @@ export class Verifier {
                 diff: diffMsg,
                 diffs
             };
-        }
-        else {
+        } else {
             return {
                 status: 'Passed',
                 message: 'Test succeeded',
@@ -216,7 +222,6 @@ export class Verifier {
 }
 
 export class ResultPaths {
-
     isFlowResult = false;
 
     private constructor(
@@ -225,19 +230,24 @@ export class ResultPaths {
         readonly options: Options,
         readonly log: Storage,
         readonly runs: string // directory
-    ) { }
+    ) {}
 
     /**
      * excluding file extension
      */
-    private static bases(options: PlyOptions, retrieval: Retrieval, suiteName: string):
-            { expected: string, actual: string, log: string, runs: string } {
-
+    private static bases(
+        options: PlyOptions,
+        retrieval: Retrieval,
+        suiteName: string
+    ): { expected: string; actual: string; log: string; runs: string } {
         if (suiteName.endsWith('.ply')) {
             suiteName = suiteName.substring(0, suiteName.length - 4);
         }
 
-        if (options.resultFollowsRelativePath && retrieval.location.isChildOf(options.testsLocation)) {
+        if (
+            options.resultFollowsRelativePath &&
+            retrieval.location.isChildOf(options.testsLocation)
+        ) {
             const relPath = retrieval.location.relativeTo(options.testsLocation);
             const parent = new Location(relPath).parent; // undefined if relPath is just filename
             const resultFilePath = parent ? parent + '/' + suiteName : suiteName;
@@ -247,14 +257,13 @@ export class ResultPaths {
                 log: options.logLocation + '/' + resultFilePath,
                 runs: options.logLocation + '/runs/' + resultFilePath
             };
-        }
-        else {
+        } else {
             // flatly use the specified paths
             return {
                 expected: options.expectedLocation + '/' + suiteName,
                 actual: options.actualLocation + '/' + suiteName,
                 log: options.logLocation + '/' + suiteName,
-                runs: options.logLocation + '/runs',
+                runs: options.logLocation + '/runs'
             };
         }
     }
@@ -264,11 +273,18 @@ export class ResultPaths {
      * Result file path relative to configured result location is the same as retrieval relative
      * to configured tests location.
      */
-    static async create(options: PlyOptions, retrieval: Retrieval, suiteName = retrieval.location.base): Promise<ResultPaths> {
+    static async create(
+        options: PlyOptions,
+        retrieval: Retrieval,
+        suiteName = retrieval.location.base
+    ): Promise<ResultPaths> {
         const basePaths = this.bases(options, retrieval, suiteName);
         let ext = '.yaml';
-        if (!await new Retrieval(basePaths.expected + ext).exists) {
-            if ((await new Retrieval(basePaths.expected + '.yml').exists) || retrieval.location.ext === 'yml') {
+        if (!(await new Retrieval(basePaths.expected + ext).exists)) {
+            if (
+                (await new Retrieval(basePaths.expected + '.yml').exists) ||
+                retrieval.location.ext === 'yml'
+            ) {
                 ext = '.yml';
             }
         }
@@ -286,11 +302,18 @@ export class ResultPaths {
      * Result file path relative to configured result location is the same as retrieval relative
      * to configured tests location.
      */
-    static createSync(options: PlyOptions, retrieval: Retrieval, suiteName = retrieval.location.base): ResultPaths {
+    static createSync(
+        options: PlyOptions,
+        retrieval: Retrieval,
+        suiteName = retrieval.location.base
+    ): ResultPaths {
         const basePaths = this.bases(options, retrieval, suiteName);
         let ext = '.yaml';
         if (!new Storage(basePaths.expected + '.yaml').exists) {
-            if (new Storage(basePaths.expected + '.yml').exists || retrieval.location.ext === 'yml') {
+            if (
+                new Storage(basePaths.expected + '.yml').exists ||
+                retrieval.location.ext === 'yml'
+            ) {
                 ext = '.yml';
             }
         }
@@ -313,7 +336,10 @@ export class ResultPaths {
                     const subflowStart = (yamlObj[key].__start || 0) + 1;
                     yamlObj = yaml.load(key, yaml.dump(yamlObj[key], indent), true);
                     for (const value of Object.values(yamlObj)) {
-                        if (typeof value === 'object' && typeof (value as any).__start === 'number') {
+                        if (
+                            typeof value === 'object' &&
+                            typeof (value as any).__start === 'number'
+                        ) {
                             (value as any).__start += subflowStart;
                         }
                     }
@@ -340,7 +366,11 @@ export class ResultPaths {
             let expectedObj;
             if (this.isFlowResult) {
                 // name is (subflowId.)stepId
-                expectedObj = ResultPaths.extractById(yaml.load(this.expected.toString(), expected, true), name, this.options.prettyIndent);
+                expectedObj = ResultPaths.extractById(
+                    yaml.load(this.expected.toString(), expected, true),
+                    name,
+                    this.options.prettyIndent
+                );
             } else {
                 expectedObj = yaml.load(this.expected.toString(), expected, true)[name];
             }
@@ -362,9 +392,11 @@ export class ResultPaths {
                 let indent = this.options.prettyIndent || 2;
                 expected = yaml.dump(rawObj, indent);
                 if (name.startsWith('f')) {
-                    indent += (this.options.prettyIndent || 2); // extra indent for subflow
+                    indent += this.options.prettyIndent || 2; // extra indent for subflow
                 }
-                expectedLines = util.lines(expected).map(l => l.trim().length > 0 ? l.padStart(l.length + indent) : l);
+                expectedLines = util
+                    .lines(expected)
+                    .map((l) => (l.trim().length > 0 ? l.padStart(l.length + indent) : l));
                 expectedLines.unshift(startLine);
                 return { start, text: expectedLines.join('\n') };
             } else {
@@ -374,7 +406,6 @@ export class ResultPaths {
                     text: expectedLines.slice(expectedObj.__start, expectedObj.__end + 1).join('\n')
                 };
             }
-
         } else {
             return { start: 0, text: expected };
         }
@@ -406,8 +437,11 @@ export class ResultPaths {
         if (name) {
             let actualObj;
             if (this.isFlowResult) {
-                actualObj = ResultPaths.extractById(yaml.load(this.actual.toString(), actual, true), name, this.options.prettyIndent);
-
+                actualObj = ResultPaths.extractById(
+                    yaml.load(this.actual.toString(), actual, true),
+                    name,
+                    this.options.prettyIndent
+                );
             } else {
                 actualObj = yaml.load(this.actual.toString(), actual, true)[name];
             }
@@ -424,7 +458,7 @@ export class ResultPaths {
         }
     }
 
-    responsesFromActual(): { [key: string]: Response & { source: string }} {
+    responsesFromActual(): { [key: string]: Response & { source: string } } {
         if (this.actual.exists) {
             return new ResponseParser(this.actual, this.options).parse();
         } else {
@@ -443,7 +477,6 @@ export class ResultPaths {
  * Parses a request's response from actual results.
  */
 export class ResponseParser {
-
     private actualYaml: string;
     private yamlLines: string[];
     private actualObj: any;
@@ -470,15 +503,25 @@ export class ResponseParser {
                 }
                 if (resultObj.response) {
                     // reparse result to get response line nums
-                    resultObj = yaml.load(requestName, yaml.dump(resultObj, this.options.prettyIndent || 2), true);
+                    resultObj = yaml.load(
+                        requestName,
+                        yaml.dump(resultObj, this.options.prettyIndent || 2),
+                        true
+                    );
                     const responseObj = resultObj.response;
                     let elapsedMs: Number | undefined;
-                    const elapsedMsComment = util.lineComment(this.yamlLines[responseObj.__start + resultObj.__start + 1]);
+                    const elapsedMsComment = util.lineComment(
+                        this.yamlLines[responseObj.__start + resultObj.__start + 1]
+                    );
                     if (elapsedMsComment) {
-                        elapsedMs = parseInt(elapsedMsComment.substring(0, elapsedMsComment.length - 2));
+                        elapsedMs = parseInt(
+                            elapsedMsComment.substring(0, elapsedMsComment.length - 2)
+                        );
                     }
                     const { __start, __end, ...response } = responseObj;
-                    response.source = this.yamlLines.slice(responseObj.__start + 1, responseObj.__end).join('\n');
+                    response.source = this.yamlLines
+                        .slice(responseObj.__start + 1, responseObj.__end)
+                        .join('\n');
                     if (submitted) {
                         response.submitted = submitted;
                     }
@@ -497,7 +540,6 @@ export class ResponseParser {
  * Parses a flow instance from actual results.
  */
 export class ResultFlowParser {
-
     private actualYaml: string;
     private yamlLines: string[];
     private actualObj: any;
@@ -513,7 +555,6 @@ export class ResultFlowParser {
     }
 
     parse(flowPath: string): flowbee.FlowInstance | undefined {
-
         const flowInstance: flowbee.FlowInstance = {
             id: '',
             flowPath,
@@ -538,7 +579,7 @@ export class ResultFlowParser {
             }
         }
         flowInstance.stepInstances = this.getStepInstances(this.actualObj);
-        flowInstance.stepInstances.forEach(stepInst => {
+        flowInstance.stepInstances.forEach((stepInst) => {
             if (flowInstance.status === 'Pending') flowInstance.status = 'In Progress';
             if (flowInstance.status === 'In Progress' && stepInst.status !== 'Completed') {
                 flowInstance.status = stepInst.status;
@@ -561,9 +602,14 @@ export class ResultFlowParser {
                 };
                 this.parseStartEnd(stepInstance, stepObj, offset);
                 if (stepObj.request) {
-                    stepInstance.data = { request: yaml.dump(stepObj.request, this.options.prettyIndent || 2) };
+                    stepInstance.data = {
+                        request: yaml.dump(stepObj.request, this.options.prettyIndent || 2)
+                    };
                     if (stepObj.response) {
-                        stepInstance.data.response = yaml.dump(stepObj.response, this.options.prettyIndent || 2);
+                        stepInstance.data.response = yaml.dump(
+                            stepObj.response,
+                            this.options.prettyIndent || 2
+                        );
                     }
                 }
                 stepInstances.push(stepInstance);
@@ -572,15 +618,23 @@ export class ResultFlowParser {
         return stepInstances;
     }
 
-    parseStartEnd(flowElementInstance: flowbee.StepInstance | flowbee.SubflowInstance, obj: any, offset = 0) {
+    parseStartEnd(
+        flowElementInstance: flowbee.StepInstance | flowbee.SubflowInstance,
+        obj: any,
+        offset = 0
+    ) {
         const startTimeComment = util.lineComment(this.yamlLines[obj.__start + offset]);
         if (startTimeComment) {
             flowElementInstance.start = util.timeparse(startTimeComment);
             if (flowElementInstance.start && this.yamlLines.length > obj.__end) {
                 const elapsedMsComment = util.lineComment(this.yamlLines[obj.__end + offset]);
                 if (elapsedMsComment) {
-                    const elapsedMs = parseInt(elapsedMsComment.substring(0, elapsedMsComment.length - 2));
-                    flowElementInstance.end = new Date(flowElementInstance.start.getTime() + elapsedMs);
+                    const elapsedMs = parseInt(
+                        elapsedMsComment.substring(0, elapsedMsComment.length - 2)
+                    );
+                    flowElementInstance.end = new Date(
+                        flowElementInstance.start.getTime() + elapsedMs
+                    );
                 }
             }
         }

@@ -1,7 +1,7 @@
 /**
  * Basic elements are supported now.
  */
- export interface OpenApi {
+export interface OpenApi {
     openapi: string;
     info: Info;
     servers?: Server[];
@@ -74,7 +74,7 @@ export type MediaType =
 
 export type BodyContent = {
     [key in MediaType]?: Media;
-}
+};
 
 export interface Media {
     schema: Schema;

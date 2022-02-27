@@ -20,12 +20,12 @@ export interface RunResult {
 
 export interface PlyResults {
     overall: {
-        Passed: number,
-        Failed: number,
-        Errored: number,
-        Pending: number,
-        Submitted: number
-    }
+        Passed: number;
+        Failed: number;
+        Errored: number;
+        Pending: number;
+        Submitted: number;
+    };
     runs: SuiteRun[];
 }
 

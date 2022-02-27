@@ -5,10 +5,8 @@ import { Config } from '../../src/options';
 import { Values, fromXlsx, fromCsv } from '../../src/values';
 
 describe('Values', () => {
-
     const logger = new Logger({ level: LogLevel.debug, prettyIndent: 2 });
     const options = new Config().options;
-
 
     it('should merge files', async () => {
         const locations = [
@@ -31,7 +29,6 @@ describe('Values', () => {
     });
 
     it('should use config', async () => {
-
         const values = await new Values(options.valuesFiles, logger).read();
 
         assert.strictEqual(values.baseUrl, 'http://localhost:3000');
@@ -41,7 +38,6 @@ describe('Values', () => {
     });
 
     it('should honor PLY_VALUES', async () => {
-
         const prevValues = process.env.PLY_VALUES;
         process.env.PLY_VALUES = '{ "rating": 1, "baseUrl": "http://localhost/movies" }';
         const values = await new Values(options.valuesFiles, logger).read();
@@ -53,7 +49,6 @@ describe('Values', () => {
         assert.strictEqual(values.year, 1931);
         assert.strictEqual(values.rating, 1);
         assert.strictEqual(values.query, 'year=1935&rating=>4&sort=rating&descending=true');
-
     });
 
     it('should parse csv', async () => {
@@ -95,7 +90,10 @@ describe('Values', () => {
     });
 
     it('should stream xlsx', async () => {
-        const values = new Values([...options.valuesFiles, 'test/mocha/values/movies.xlsx'], logger);
+        const values = new Values(
+            [...options.valuesFiles, 'test/mocha/values/movies.xlsx'],
+            logger
+        );
 
         const rowValues = [];
         for await (const rowVals of await values.getRowStream()) {

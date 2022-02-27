@@ -9,7 +9,6 @@ import * as subst from '../subst';
 import * as yaml from '../yaml';
 
 export class RequestExec extends PlyExecBase {
-
     constructor(
         private readonly name: string, // unique
         private readonly requestSuite: Suite<Request>, // unique
@@ -28,7 +27,7 @@ export class RequestExec extends PlyExecBase {
         let method = this.step.attributes?.method;
         if (!method) throw new Error('Missing attribute: method');
         method = subst.replace(method, values, this.logger);
-        const headers: {[key: string]: string} = {};
+        const headers: { [key: string]: string } = {};
         if (this.step.attributes?.headers) {
             const rows = JSON.parse(this.step.attributes.headers);
             for (const row of rows) {
@@ -48,7 +47,9 @@ export class RequestExec extends PlyExecBase {
             headers,
             body,
             submitted: new Date(),
-            submit: (_values: object) => { throw new Error('Not implemented'); }
+            submit: (_values: object) => {
+                throw new Error('Not implemented');
+            }
         };
 
         const request = new PlyRequest(this.name, requestObj, this.logger, runtime.retrieval);
@@ -58,11 +59,17 @@ export class RequestExec extends PlyExecBase {
         }
 
         this.instance.data = {
-            request: yaml.dump(request.getRequest(values, runtime.options), runtime.options.prettyIndent)
+            request: yaml.dump(
+                request.getRequest(values, runtime.options),
+                runtime.options.prettyIndent
+            )
         };
 
         if (this.step.attributes?.submit === 'true') {
-            const response = await request.submit(values, runtime.options, { ...runOptions, submit: true });
+            const response = await request.submit(values, runtime.options, {
+                ...runOptions,
+                submit: true
+            });
             this.instance.data.response = yaml.dump(response, runtime.options.prettyIndent);
         } else {
             this.requestSuite.tests[this.name] = request;
@@ -75,13 +82,21 @@ export class RequestExec extends PlyExecBase {
                 let response = result.response;
                 if (result.response.body) {
                     // convert from object
-                    response = { ...result.response, body: JSON.stringify(result.response.body, null, runtime.options.prettyIndent) };
+                    response = {
+                        ...result.response,
+                        body: JSON.stringify(
+                            result.response.body,
+                            null,
+                            runtime.options.prettyIndent
+                        )
+                    };
                 }
                 this.instance.data.response = yaml.dump(response, runtime.options.prettyIndent);
             }
         }
 
-        if (this.instance.status === 'In Progress') { // not overwritten by step execution
+        if (this.instance.status === 'In Progress') {
+            // not overwritten by step execution
             this.instance.status = 'Completed';
         }
 

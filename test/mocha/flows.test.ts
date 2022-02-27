@@ -9,14 +9,13 @@ const values = {
     year: 1931,
     rating: 5,
     queries: {
-        highlyRated1935: "year=1935&rating=>4&sort=rating&descending=true",
-        tipTop1935: "year=1935&sort=rating&descending=true&max=1",
-        poorlyRated1932: "year=1932&rating=<=2"
-  }
+        highlyRated1935: 'year=1935&rating=>4&sort=rating&descending=true',
+        tipTop1935: 'year=1935&sort=rating&descending=true&max=1',
+        poorlyRated1932: 'year=1932&rating=<=2'
+    }
 };
 
 describe('Flows', async () => {
-
     it('can run suite', async () => {
         const ply = new Ply();
         const suites = await ply.loadFlows('test/ply/flows/movie-queries.ply.flow');
@@ -46,7 +45,9 @@ describe('Flows', async () => {
         const results = await suite.run(values);
         assert.strictEqual(results[0].status, 'Passed');
 
-        const instance = suite.runtime.results.flowInstanceFromActual('test/ply/results/actual/flows/movies-api');
+        const instance = suite.runtime.results.flowInstanceFromActual(
+            'test/ply/results/actual/flows/movies-api'
+        );
         assert.ok(instance);
 
         const checkDate = (date?: Date) => {

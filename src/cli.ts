@@ -5,7 +5,7 @@ import * as glob from 'glob';
 import * as tsNode from 'ts-node';
 import { Plier } from './ply';
 import { Config, Defaults } from './options';
-import { Location } from  './location';
+import { Location } from './location';
 import { Storage } from './storage';
 import { Retrieval } from './retrieval';
 import { Import } from './import/import';
@@ -16,7 +16,7 @@ import { ImportOptions } from './import/model';
 
 const start = Date.now();
 
-tsNode.register( { transpileOnly: true } );
+tsNode.register({ transpileOnly: true });
 
 const opts = new Config(new Defaults(), true).options;
 const { runOptions, ...options } = opts;
@@ -59,8 +59,7 @@ if (runOptions?.import) {
         else updated = JSON.stringify(augmented, null, options.prettyIndent);
         fs.writeFileSync(path, updated, { encoding: 'utf8' });
     }
-}
-else {
+} else {
     let paths: string[] = [];
     let args: string[] = options.args;
 
@@ -71,12 +70,14 @@ else {
     if (args && args.length > 0) {
         // make arg paths relative to tests loc
         if (options.testsLocation !== '.') {
-            args = args.map(arg => {
+            args = args.map((arg) => {
                 const argLoc = new Location(arg);
                 if (argLoc.isChildOf(options.testsLocation)) {
                     return argLoc.relativeTo(options.testsLocation);
                 } else {
-                    plier.logger.error(`WARNING: ${arg} is not under testsLocation ${options.testsLocation}`);
+                    plier.logger.error(
+                        `WARNING: ${arg} is not under testsLocation ${options.testsLocation}`
+                    );
                 }
                 return arg;
             });
@@ -86,8 +87,7 @@ else {
             const hash = arg.indexOf('#');
             if (hash > 0) {
                 paths.push(arg);
-            }
-            else {
+            } else {
                 // treat as glob pattern
                 for (const file of glob.sync(arg, globOptions)) {
                     paths.push(file);
@@ -105,27 +105,34 @@ else {
         ];
     }
 
-    paths = paths.map(p => {
+    paths = paths.map((p) => {
         return path.isAbsolute(p) ? p : options.testsLocation + path.sep + p;
     });
 
-    plier.find(paths).then(plyees => {
-        plier.logger.debug('Plyees', plyees);
-        plier.run(plyees, runOptions).then(results => {
-            const res = { Passed: 0, Failed: 0, Errored: 0, Pending: 0, Submitted: 0 };
-            results.forEach(result => res[result.status]++);
-            plier.logger.error('\nOverall Results: ' + JSON.stringify(res));
-            plier.logger.info(`Overall Time: ${Date.now() - start} ms`);
-            if (plier.options.outputFile) {
-                new Storage(plier.options.outputFile).write(JSON.stringify(res, null, plier.options.prettyIndent));
-            }
-        }).catch(err => {
+    plier
+        .find(paths)
+        .then((plyees) => {
+            plier.logger.debug('Plyees', plyees);
+            plier
+                .run(plyees, runOptions)
+                .then((results) => {
+                    const res = { Passed: 0, Failed: 0, Errored: 0, Pending: 0, Submitted: 0 };
+                    results.forEach((result) => res[result.status]++);
+                    plier.logger.error('\nOverall Results: ' + JSON.stringify(res));
+                    plier.logger.info(`Overall Time: ${Date.now() - start} ms`);
+                    if (plier.options.outputFile) {
+                        new Storage(plier.options.outputFile).write(
+                            JSON.stringify(res, null, plier.options.prettyIndent)
+                        );
+                    }
+                })
+                .catch((err) => {
+                    plier.logger.error(err);
+                    process.exit(1);
+                });
+        })
+        .catch((err) => {
             plier.logger.error(err);
             process.exit(1);
         });
-    }).catch(err => {
-        plier.logger.error(err);
-        process.exit(1);
-    });
 }
-

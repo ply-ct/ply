@@ -14,14 +14,12 @@ export interface PlyExec {
 }
 
 export abstract class PlyExecBase implements PlyExec {
-
     constructor(
         readonly step: flowbee.Step,
         readonly instance: flowbee.StepInstance,
         readonly logger: Logger,
-        readonly subflow?: flowbee.Subflow,
-    ) {
-    }
+        readonly subflow?: flowbee.Subflow
+    ) {}
 
     abstract run(runtime: Runtime, values: any, runOptions?: RunOptions): Promise<ExecResult>;
 
@@ -41,4 +39,3 @@ export abstract class PlyExecBase implements PlyExec {
         return execResult;
     }
 }
-

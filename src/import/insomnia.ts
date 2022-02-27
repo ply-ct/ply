@@ -9,7 +9,7 @@ interface RequestGroup {
     id: string;
     name: string;
     path: string;
-    requests?: {[name: string]: Request};
+    requests?: { [name: string]: Request };
     requestGroups?: RequestGroup[];
 }
 
@@ -22,15 +22,11 @@ interface Workspace extends RequestGroup {
     environments: Environment[];
 }
 
-
 /**
  * TODO: values
  */
 export class Insomnia implements Importer {
-
-    constructor(
-        readonly logger: Log
-    ) { }
+    constructor(readonly logger: Log) {}
 
     async import(from: Retrieval, options: ImportOptions) {
         const opts: ImportOptions = { indent: 2, importToSuite: false, ...options };
@@ -57,7 +53,7 @@ export class Insomnia implements Importer {
         const resources = obj.resources;
         if (!Array.isArray(resources)) throw new Error(`Bad format: 'resources' array not found`);
 
-        const wss = resources.filter(res => res._type === 'workspace');
+        const wss = resources.filter((res) => res._type === 'workspace');
         if (wss.length === 0) throw new Error('Workspace not found');
 
         const workspaces: Workspace[] = [];
@@ -76,9 +72,9 @@ export class Insomnia implements Importer {
     }
 
     private loadRequests(container: Workspace | RequestGroup, resources: any[]) {
-        const children = resources.filter(res => res.parentId === container.id);
+        const children = resources.filter((res) => res.parentId === container.id);
 
-        const reqGroups = children.filter(c => c._type === 'request_group');
+        const reqGroups = children.filter((c) => c._type === 'request_group');
         for (const reqGroup of reqGroups) {
             if (!container.requestGroups) container.requestGroups = [];
             const requestGroup: RequestGroup = {
@@ -90,7 +86,7 @@ export class Insomnia implements Importer {
             this.loadRequests(requestGroup, resources);
         }
 
-        const reqs = children.filter(c => c._type === 'request');
+        const reqs = children.filter((c) => c._type === 'request');
         for (const req of reqs) {
             if (!container.requests) container.requests = {};
             if (req.url) {
@@ -101,7 +97,8 @@ export class Insomnia implements Importer {
                 if (Array.isArray(req.headers) && req.headers.length > 0) {
                     request.headers = {};
                     for (const hdr of req.headers) {
-                        if (hdr.value) request.headers[hdr.name] = this.replaceExpressions(hdr.value);
+                        if (hdr.value)
+                            request.headers[hdr.name] = this.replaceExpressions(hdr.value);
                     }
                 }
                 if (req.body?.text) {
@@ -112,7 +109,6 @@ export class Insomnia implements Importer {
                         } else {
                             request.body = this.replaceExpressions(req.body.text);
                         }
-
                     } else {
                         request.body = this.replaceExpressions(req.body.text);
                     }
@@ -140,7 +136,10 @@ export class Insomnia implements Importer {
                 for (const requestName of Object.keys(container.requests)) {
                     const reqObj = { [requestName]: container.requests[requestName] };
                     const reqYaml = yaml.dump(reqObj, options.indent || 2);
-                    this.writeStorage(container.path + '/' + util.writeableFileName(requestName) + '.ply', reqYaml);
+                    this.writeStorage(
+                        container.path + '/' + util.writeableFileName(requestName) + '.ply',
+                        reqYaml
+                    );
                 }
             }
         }
@@ -152,13 +151,13 @@ export class Insomnia implements Importer {
     }
 
     private loadEnvironments(workspace: Workspace, resources: any[]) {
-        const baseEnvs = resources.filter(res => {
+        const baseEnvs = resources.filter((res) => {
             return res._type === 'environment' && res.parentId === workspace.id;
         });
 
         for (const baseEnv of baseEnvs) {
             workspace.environments.push({ name: baseEnv.name, data: baseEnv.data || {} });
-            const subEnvs = resources.filter(res => {
+            const subEnvs = resources.filter((res) => {
                 return res._type === 'environment' && res.parentId === baseEnv._id;
             });
             for (const subEnv of subEnvs) {
@@ -170,14 +169,16 @@ export class Insomnia implements Importer {
     private writeValues(workspace: Workspace, options: ImportOptions) {
         if (workspace.environments) {
             for (const environment of workspace.environments) {
-                const file = `${options.valuesLocation}/${util.writeableFileName(environment.name)}.json`;
+                const file = `${options.valuesLocation}/${util.writeableFileName(
+                    environment.name
+                )}.json`;
                 this.writeStorage(file, JSON.stringify(environment.data, null, options.indent));
             }
         }
     }
 
     private replaceExpressions(input: string): string {
-        return input.replace(/\{\{(.*?)}}/g, function(_a, b) {
+        return input.replace(/\{\{(.*?)}}/g, function (_a, b) {
             return '${' + b + '}';
         });
     }
@@ -191,5 +192,4 @@ export class Insomnia implements Importer {
         }
         storage.write(content);
     }
-
 }

@@ -7,7 +7,6 @@ import { Request } from '../../src/request';
 import { Values } from '../../src/values';
 
 describe('Postman', () => {
-
     const reqRoot = 'test/mocha/postman/requests';
     const valRoot = 'test/mocha/postman/values';
 
@@ -16,7 +15,12 @@ describe('Postman', () => {
         assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
         const importer = new Import('postman', new Logger());
-        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, importToSuite: true });
+        await importer.doImport(retrieval, {
+            testsLocation: reqRoot,
+            valuesLocation: valRoot,
+            indent: 2,
+            importToSuite: true
+        });
 
         const ply = new Ply();
         const topRequests = ply.loadSuiteSync(`${reqRoot}/movies.ply.yaml`);
@@ -63,7 +67,12 @@ describe('Postman', () => {
         assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
         const importer = new Import('postman', new Logger());
-        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, importToSuite: false });
+        await importer.doImport(retrieval, {
+            testsLocation: reqRoot,
+            valuesLocation: valRoot,
+            indent: 2,
+            importToSuite: false
+        });
 
         const ply = new Ply();
 
@@ -90,11 +99,15 @@ describe('Postman', () => {
         assert.strictEqual(karloff.url, '${baseUrl}/movies?search=Boris%20Karloff');
         assert.strictEqual(karloff.method, 'GET');
 
-        const greatsOf1931 = await ply.loadRequest(`${reqRoot}/movies/by rating/great/great movies of 1931.ply`);
+        const greatsOf1931 = await ply.loadRequest(
+            `${reqRoot}/movies/by rating/great/great movies of 1931.ply`
+        );
         assert.strictEqual(greatsOf1931.url, '${baseUrl}/movies?rating=5&year=1931');
         assert.strictEqual(greatsOf1931.method, 'GET');
 
-        const greatsAfter1935 = await ply.loadRequest(`${reqRoot}/movies/by rating/great/great movies after 1935.ply`);
+        const greatsAfter1935 = await ply.loadRequest(
+            `${reqRoot}/movies/by rating/great/great movies after 1935.ply`
+        );
         assert.strictEqual(greatsAfter1935.url, '${baseUrl}/movies?rating=5&year=>1935');
         assert.strictEqual(greatsAfter1935.method, 'GET');
     });
@@ -103,7 +116,12 @@ describe('Postman', () => {
         const retrieval = new Retrieval('test/mocha/postman/github.postman_collection.json');
         assert.ok(await retrieval.exists);
         const importer = new Import('postman', new Logger());
-        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, importToSuite: true });
+        await importer.doImport(retrieval, {
+            testsLocation: reqRoot,
+            valuesLocation: valRoot,
+            indent: 2,
+            importToSuite: true
+        });
 
         const ply = new Ply();
         const githubRequests = ply.loadSuiteSync(`${reqRoot}/github.ply.yaml`);
@@ -131,11 +149,14 @@ describe('Postman', () => {
         const retrieval = new Retrieval('test/mocha/postman/localhost.postman_environment.json');
         assert.ok(await retrieval.exists);
         const importer = new Import('postman', new Logger());
-        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2 });
+        await importer.doImport(retrieval, {
+            testsLocation: reqRoot,
+            valuesLocation: valRoot,
+            indent: 2
+        });
         const values = new Values([`${valRoot}/localhost.json`], new Logger());
         const obj = await values.read();
         assert.ok(obj);
         assert.strictEqual(obj.baseUrl, 'http://localhost:8080');
     });
-
 });

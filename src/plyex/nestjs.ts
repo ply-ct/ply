@@ -10,14 +10,18 @@ export declare const Patch: (path?: string | string[]) => MethodDecorator;
 export declare const Delete: (path?: string | string[]) => MethodDecorator;
 
 export class NestJsPlugin implements PlyexPlugin {
-
-    constructor(private ts: Ts) {
-    }
+    constructor(private ts: Ts) {}
 
     getEndpointMethods(): EndpointMethod[] {
         const endpointMethods: EndpointMethod[] = [];
         for (const classDec of this.ts.scanClassDecorators(['Controller'])) {
-            for (const methodDec of this.ts.findMethodDecorators(classDec, ['Get', 'Post', 'Put', 'Patch', 'Delete'])) {
+            for (const methodDec of this.ts.findMethodDecorators(classDec, [
+                'Get',
+                'Post',
+                'Put',
+                'Patch',
+                'Delete'
+            ])) {
                 let path = '' + classDec.arg;
                 if (!path.startsWith('/')) path = `/${path}`;
                 let lastSegmentOptional = false;

@@ -19,7 +19,6 @@ export interface Log {
 }
 
 export class Logger implements Log {
-
     enabled = true;
 
     private options: LogOptions = {
@@ -43,26 +42,25 @@ export class Logger implements Log {
                     if (obj.stack) {
                         console.error(message);
                         console.error(obj.stack);
+                    } else {
+                        console.error(
+                            message + ': ' + JSON.stringify(obj, null, this.options.prettyIndent)
+                        );
                     }
-                    else {
-                        console.error(message + ': ' + JSON.stringify(obj, null, this.options.prettyIndent));
-                    }
-                }
-                else {
+                } else {
                     console.error(message);
                 }
-            }
-            else {
+            } else {
                 if (obj) {
                     if (obj.stack) {
                         console.log(message);
                         console.log(obj);
+                    } else {
+                        console.log(
+                            message + ': ' + JSON.stringify(obj, null, this.options.prettyIndent)
+                        );
                     }
-                    else {
-                        console.log(message + ': ' + JSON.stringify(obj, null, this.options.prettyIndent));
-                    }
-                }
-                else {
+                } else {
                     console.log(message);
                 }
             }
@@ -72,7 +70,9 @@ export class Logger implements Log {
                     if (obj.stack) {
                         this.storage.append('\n' + obj.stack);
                     } else {
-                        this.storage.append(': ' + JSON.stringify(obj, null, this.options.prettyIndent));
+                        this.storage.append(
+                            ': ' + JSON.stringify(obj, null, this.options.prettyIndent)
+                        );
                     }
                 }
                 this.storage.append('\n');
@@ -88,8 +88,7 @@ export class Logger implements Log {
         if (!obj && (message as any).message && (message as any).stack) {
             const err = message as any;
             this.log(LogLevel.error, err.message, err);
-        }
-        else {
+        } else {
             this.log(LogLevel.error, message, obj);
         }
     }

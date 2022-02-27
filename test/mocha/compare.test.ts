@@ -4,25 +4,25 @@ import { Storage } from '../../src/storage';
 import { Compare } from '../../src/compare';
 
 describe('Compare', () => {
-
-    const logger = new Logger({
-        ...new LogOptions(),
-        level: LogLevel.info
-    }, new Storage('temp/output.log'));
+    const logger = new Logger(
+        {
+            ...new LogOptions(),
+            level: LogLevel.info
+        },
+        new Storage('temp/output.log')
+    );
 
     it('handles regex', () => {
-
         const compare = new Compare(logger);
 
-        const expected = 'before\n' +
-          'headers:\n' +
-          '  content-type: application/json${~.*}\n' +
-          'after\n';
+        const expected =
+            'before\n' + 'headers:\n' + '  content-type: application/json${~.*}\n' + 'after\n';
 
-        const actual = 'before\n' +
-        'headers:\n' +
-        '  content-type: application/json; charset=utf-8\n' +
-        'after\n';
+        const actual =
+            'before\n' +
+            'headers:\n' +
+            '  content-type: application/json; charset=utf-8\n' +
+            'after\n';
 
         const diffs = compare.diffLines(expected, actual, {});
 
@@ -31,20 +31,21 @@ describe('Compare', () => {
     });
 
     it('handles multiline regex', () => {
-
         const compare = new Compare(logger);
 
-        const expected = 'before\n' +
-          'headers:\n' +
-          '  content-type: application/json${~.*}\n' +
-          '  location: \'${baseUrl}/movies/${~[0-9a-f]+}\'\n';
-          'after\n';
+        const expected =
+            'before\n' +
+            'headers:\n' +
+            '  content-type: application/json${~.*}\n' +
+            "  location: '${baseUrl}/movies/${~[0-9a-f]+}'\n";
+        ('after\n');
 
-        const actual = 'before\n' +
-        'headers:\n' +
-        '  content-type: application/json; charset=utf-8\n' +
-        '  location: \'http://localhost:3000/movies/435b30ad\'\n';
-        'after\n';
+        const actual =
+            'before\n' +
+            'headers:\n' +
+            '  content-type: application/json; charset=utf-8\n' +
+            "  location: 'http://localhost:3000/movies/435b30ad'\n";
+        ('after\n');
 
         const values = {
             baseUrl: 'http://localhost:3000'
@@ -61,20 +62,21 @@ describe('Compare', () => {
     });
 
     it('handles regex with unmatched value', () => {
-
         const compare = new Compare(logger);
 
-        const expected = 'before\n' +
-          'headers:\n' +
-          '  content-type: application/json${~.*}\r\n' +  // windows newline
-          '  location: \'${baseUrl}/movies/${id}\'\n';
-          'after\n';
+        const expected =
+            'before\n' +
+            'headers:\n' +
+            '  content-type: application/json${~.*}\r\n' + // windows newline
+            "  location: '${baseUrl}/movies/${id}'\n";
+        ('after\n');
 
-        const actual = 'before\n' +
-        'headers:\n' +
-        '  content-type: application/json; charset=utf-8\r\n' +  // windows newline
-        '  location: \'http://localhost:3000/movies/435b30ad\'\n';
-        'after\n';
+        const actual =
+            'before\n' +
+            'headers:\n' +
+            '  content-type: application/json; charset=utf-8\r\n' + // windows newline
+            "  location: 'http://localhost:3000/movies/435b30ad'\n";
+        ('after\n');
 
         const values = {
             baseUrl: 'http://localhost:3000/movies'
@@ -82,20 +84,25 @@ describe('Compare', () => {
 
         const diffs = compare.diffLines(expected, actual, values);
         assert.strictEqual(diffs.length, 3);
-        assert.strictEqual(diffs[1].value, "  content-type: application/json${~.*}\n  location: '${baseUrl}/movies/${id}'\n");
+        assert.strictEqual(
+            diffs[1].value,
+            "  content-type: application/json${~.*}\n  location: '${baseUrl}/movies/${id}'\n"
+        );
         assert.strictEqual(diffs[1].ignored, undefined);
     });
 
     it('handles regex for any number of digits', () => {
-        const expected = '<Ticket>\n' +
-          '  <CreationTime>2022-02-21T21:34:41Z</CreationTime>\n' +
-          '  <IdNumber>${~\\d+}</IdNumber>\n' +
-          '</Ticket>\n';
+        const expected =
+            '<Ticket>\n' +
+            '  <CreationTime>2022-02-21T21:34:41Z</CreationTime>\n' +
+            '  <IdNumber>${~\\d+}</IdNumber>\n' +
+            '</Ticket>\n';
 
-        const actual = '<Ticket>\n' +
-          '  <CreationTime>2022-02-21T21:34:41Z</CreationTime>\n' +
-          '  <IdNumber>22712854</IdNumber>\n' +
-          '</Ticket>\n';
+        const actual =
+            '<Ticket>\n' +
+            '  <CreationTime>2022-02-21T21:34:41Z</CreationTime>\n' +
+            '  <IdNumber>22712854</IdNumber>\n' +
+            '</Ticket>\n';
 
         const compare = new Compare(logger);
         const diffs = compare.diffLines(expected, actual, {});

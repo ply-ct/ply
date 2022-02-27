@@ -28,7 +28,7 @@ export interface PlyEndpointMeta {
     examples?: {
         request?: string;
         responses?: { [key: string]: string[] };
-    }
+    };
 }
 
 export class PlyExampleRequest {
@@ -78,21 +78,28 @@ export class PlyExampleRequest {
 }
 
 export class JsDocReader {
+    constructor(private ts: Ts, readonly sourceFile: ts.SourceFile) {}
 
-    constructor(private ts: Ts, readonly sourceFile: ts.SourceFile) {
-    }
-
-    getPlyEndpointMeta(endpointMethod: EndpointMethod, tag = 'ply', untaggedMethods = false): PlyEndpointMeta | undefined {
-        const classDecl = this.ts.getClassDeclaration(this.sourceFile.fileName, endpointMethod.class);
+    getPlyEndpointMeta(
+        endpointMethod: EndpointMethod,
+        tag = 'ply',
+        untaggedMethods = false
+    ): PlyEndpointMeta | undefined {
+        const classDecl = this.ts.getClassDeclaration(
+            this.sourceFile.fileName,
+            endpointMethod.class
+        );
         if (classDecl) {
-            const methodDecl = Ts.methodDeclarations(classDecl).find(md => md.name.getText() === endpointMethod.name);
+            const methodDecl = Ts.methodDeclarations(classDecl).find(
+                (md) => md.name.getText() === endpointMethod.name
+            );
             if (methodDecl) {
                 const methodMeta = this.findMethodMeta(methodDecl);
                 if (methodMeta) {
                     const plyMeta = this.readPlyMeta(endpointMethod.class, methodDecl, tag);
                     if (plyMeta || untaggedMethods) {
                         const plyEndpointMeta: PlyEndpointMeta = {
-                            summaries: [ methodMeta.summary ]
+                            summaries: [methodMeta.summary]
                         };
 
                         // @operationId tag
@@ -120,7 +127,8 @@ export class JsDocReader {
                             for (const key of Object.keys(plyMeta.responses)) {
                                 const responses = plyMeta.responses[key];
                                 for (const response of responses) {
-                                    const exampleResponse = new PlyExampleRequest(response).exampleResponse;
+                                    const exampleResponse = new PlyExampleRequest(response)
+                                        .exampleResponse;
                                     if (exampleResponse) {
                                         if (!exampleResponses) {
                                             exampleResponses = {};
@@ -140,11 +148,20 @@ export class JsDocReader {
                             };
                         }
 
-                        if ((endpointMethod.method === 'post' || endpointMethod.method === 'put' || endpointMethod.method === 'patch') && !plyEndpointMeta.examples?.request) {
-                            console.error(`** Warning: No @${tag} sample request for: ${endpointMethod.class}.${endpointMethod.name}()`);
+                        if (
+                            (endpointMethod.method === 'post' ||
+                                endpointMethod.method === 'put' ||
+                                endpointMethod.method === 'patch') &&
+                            !plyEndpointMeta.examples?.request
+                        ) {
+                            console.error(
+                                `** Warning: No @${tag} sample request for: ${endpointMethod.class}.${endpointMethod.name}()`
+                            );
                         }
                         if (Object.keys(plyEndpointMeta.examples?.responses || {}).length === 0) {
-                            console.error(`** Warning: No @${tag} sample responses for: ${endpointMethod.class}.${endpointMethod.name}()`);
+                            console.error(
+                                `** Warning: No @${tag} sample responses for: ${endpointMethod.class}.${endpointMethod.name}()`
+                            );
                         }
                         return plyEndpointMeta;
                     }
@@ -167,7 +184,8 @@ export class JsDocReader {
                 name: methodDeclaration.name.getText(),
                 summary: (dot > 0 ? lines[0].substring(0, dot) : lines[0]).trim()
             };
-            let descrip = dot > 0 && dot < lines[0].length + 1 ? lines[0].substring(dot + 1).trim() : '';
+            let descrip =
+                dot > 0 && dot < lines[0].length + 1 ? lines[0].substring(dot + 1).trim() : '';
             for (let i = 1; i < lines.length; i++) {
                 descrip += `\n${lines[i].trim()}`;
             }
@@ -178,7 +196,7 @@ export class JsDocReader {
 
     readStringMeta(methodDeclaration: ts.MethodDeclaration, tag: string): string | undefined {
         const symbol = Ts.symbolAtNode(methodDeclaration);
-        const jsDocTag = symbol?.getJsDocTags()?.find(t => t.name === tag);
+        const jsDocTag = symbol?.getJsDocTags()?.find((t) => t.name === tag);
         if (jsDocTag?.text) {
             let tagText: any = jsDocTag.text;
             if (Array.isArray(tagText)) {
@@ -189,9 +207,13 @@ export class JsDocReader {
         }
     }
 
-    readPlyMeta(className: string, methodDeclaration: ts.MethodDeclaration, tag: string): PlyMeta | undefined {
+    readPlyMeta(
+        className: string,
+        methodDeclaration: ts.MethodDeclaration,
+        tag: string
+    ): PlyMeta | undefined {
         const symbol = Ts.symbolAtNode(methodDeclaration);
-        const plyJsDocTag = symbol?.getJsDocTags()?.find(t => t.name === tag);
+        const plyJsDocTag = symbol?.getJsDocTags()?.find((t) => t.name === tag);
         if (plyJsDocTag?.text) {
             let tagText: any = plyJsDocTag.text;
             if (Array.isArray(tagText)) {
@@ -199,7 +221,10 @@ export class JsDocReader {
                 tagText = tagText[0].text;
             }
             try {
-                const plyMeta: PlyMeta = yaml.load(`${methodDeclaration.name.getText()}: @${tag}`, `${tagText}\n`);
+                const plyMeta: PlyMeta = yaml.load(
+                    `${methodDeclaration.name.getText()}: @${tag}`,
+                    `${tagText}\n`
+                );
                 if (plyMeta.responses) {
                     for (const code of Object.keys(plyMeta.responses)) {
                         if (typeof plyMeta.responses[code] === 'string') {
@@ -210,7 +235,9 @@ export class JsDocReader {
                 return plyMeta;
             } catch (err: unknown) {
                 console.debug(`${err}`, err);
-                throw new Error(`Failed to parse @${tag} tag for ${className}.${symbol?.name}():\n${err}`);
+                throw new Error(
+                    `Failed to parse @${tag} tag for ${className}.${symbol?.name}():\n${err}`
+                );
             }
         }
     }

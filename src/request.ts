@@ -14,7 +14,7 @@ import { RUN_ID } from './names';
 export interface Request extends Test {
     url: string;
     method: string;
-    headers: {[key: string]: string};
+    headers: { [key: string]: string };
     body?: string;
     submitted?: Date;
     submit(values: object): Promise<Response>;
@@ -24,7 +24,7 @@ export class PlyRequest implements Request, PlyTest {
     readonly type = 'request' as TestType;
     readonly url: string;
     readonly method: string;
-    readonly headers: {[key: string]: string};
+    readonly headers: { [key: string]: string };
     readonly body?: string;
     readonly start?: number;
     readonly end?: number;
@@ -35,7 +35,12 @@ export class PlyRequest implements Request, PlyTest {
      * @param name test name
      * @param obj object to parse for contents
      */
-    constructor(readonly name: string, obj: Request, readonly logger: Logger, retrieval: Retrieval) {
+    constructor(
+        readonly name: string,
+        obj: Request,
+        readonly logger: Logger,
+        retrieval: Retrieval
+    ) {
         if (!obj.url) {
             throw new Error(`Request '${name}' in ${retrieval} is missing 'url'`);
         }
@@ -52,23 +57,24 @@ export class PlyRequest implements Request, PlyTest {
 
     getSupportedMethod(method: string): string | undefined {
         const upperCase = method.toUpperCase().trim();
-        if (upperCase === 'GET'
-              || upperCase === 'HEAD'
-              || upperCase === 'POST'
-              || upperCase === 'PUT'
-              || upperCase === 'DELETE'
-              || upperCase === 'CONNECT'
-              || upperCase === 'OPTIONS'
-              || upperCase === 'TRACE'
-              || upperCase === 'PATCH') {
+        if (
+            upperCase === 'GET' ||
+            upperCase === 'HEAD' ||
+            upperCase === 'POST' ||
+            upperCase === 'PUT' ||
+            upperCase === 'DELETE' ||
+            upperCase === 'CONNECT' ||
+            upperCase === 'OPTIONS' ||
+            upperCase === 'TRACE' ||
+            upperCase === 'PATCH'
+        ) {
             return upperCase;
         }
     }
 
     get isGraphQl(): boolean {
         if (this.body) {
-            return this.body.startsWith('query')
-              || this.body.startsWith('mutation');
+            return this.body.startsWith('query') || this.body.startsWith('mutation');
         }
         return false;
     }
@@ -83,10 +89,18 @@ export class PlyRequest implements Request, PlyTest {
      * REST resources before/after testing (see Case.before()/after()).
      */
     async submit(values: object, options?: Options, runOptions?: RunOptions): Promise<Response> {
-        return await this.doSubmit(this.getRunId(values), this.getRequest(values, options, true), runOptions);
+        return await this.doSubmit(
+            this.getRunId(values),
+            this.getRequest(values, options, true),
+            runOptions
+        );
     }
 
-    private async doSubmit(runId: string, requestObj: Request, runOptions?: RunOptions): Promise<PlyResponse> {
+    private async doSubmit(
+        runId: string,
+        requestObj: Request,
+        runOptions?: RunOptions
+    ): Promise<PlyResponse> {
         const logLevel = runOptions?.submit ? LogLevel.info : LogLevel.debug;
 
         const before = new Date().getTime();
@@ -101,7 +115,7 @@ export class PlyRequest implements Request, PlyTest {
 
         const { url: _url, ...fetchRequest } = requestObj;
         fetchRequest.headers = { ...(fetchRequest.headers || {}) };
-        if (!Object.keys(fetchRequest.headers).find(k => k.toLowerCase() === 'user-agent')) {
+        if (!Object.keys(fetchRequest.headers).find((k) => k.toLowerCase() === 'user-agent')) {
             fetchRequest.headers['User-Agent'] = `Ply-CT/${await util.plyVersion()}`;
         }
         const response = await fetch(requestObj.url, fetchRequest);
@@ -126,7 +140,7 @@ export class PlyRequest implements Request, PlyTest {
         if (!this.getSupportedMethod(method)) {
             throw new Error('Unsupported method: ' + method);
         }
-        const headers: {[key: string]: string} = {};
+        const headers: { [key: string]: string } = {};
         for (const key of Object.keys(this.headers)) {
             headers[key] = subst.replace(this.headers[key], values, this.logger);
         }
@@ -152,11 +166,13 @@ export class PlyRequest implements Request, PlyTest {
             headers,
             body,
             submitted: this.submitted,
-            submit: () => { throw new Error('Not implemented'); }
-         };
+            submit: () => {
+                throw new Error('Not implemented');
+            }
+        };
     }
 
-    private responseHeaders(headers: Headers): {[key: string]: string} {
+    private responseHeaders(headers: Headers): { [key: string]: string } {
         const obj: any = {};
         headers.forEach((value, name) => {
             obj[name] = value;
@@ -174,7 +190,12 @@ export class PlyRequest implements Request, PlyTest {
         this.submitted = new Date();
         const requestObject = this.getRequest(values, runtime.options, true);
         const id = this.logger.level === LogLevel.debug ? ` (${this.getRunId(values)})` : '';
-        this.logger.info(`Request '${this.name}'${id} submitted at ${util.timestamp(this.submitted, this.logger.level === LogLevel.debug)}`);
+        this.logger.info(
+            `Request '${this.name}'${id} submitted at ${util.timestamp(
+                this.submitted,
+                this.logger.level === LogLevel.debug
+            )}`
+        );
         const runOpts: RunOptions = { ...runOptions };
         const expectedExists = await runtime.results.expected.exists;
         if (runOptions?.submitIfExpectedMissing && !expectedExists) {
@@ -182,7 +203,12 @@ export class PlyRequest implements Request, PlyTest {
         }
         const runId = this.getRunId(values);
         const response = await this.doSubmit(runId, requestObject, runOpts);
-        if (response.headers && (runOptions?.createExpected || runOptions?.createExpectedIfMissing && !expectedExists) && runtime.options.genExcludeResponseHeaders?.length) {
+        if (
+            response.headers &&
+            (runOptions?.createExpected ||
+                (runOptions?.createExpectedIfMissing && !expectedExists)) &&
+            runtime.options.genExcludeResponseHeaders?.length
+        ) {
             for (const key of Object.keys(response.headers)) {
                 if (runtime.options.genExcludeResponseHeaders.includes(key)) {
                     delete response.headers[key];
@@ -192,7 +218,12 @@ export class PlyRequest implements Request, PlyTest {
         const result = new PlyResult(
             this.name,
             requestObject,
-            response.getResponse(runId, runtime.options, runOptions?.submit? undefined : runtime.responseHeaders, true)
+            response.getResponse(
+                runId,
+                runtime.options,
+                runOptions?.submit ? undefined : runtime.responseHeaders,
+                true
+            )
         );
         if (this.graphQl) {
             result.graphQl = this.graphQl;

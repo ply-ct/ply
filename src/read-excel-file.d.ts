@@ -3,14 +3,7 @@ declare module 'read-excel-file/node' {
     export function URL(): void;
     export function Email(): void;
 
-    type BasicType =
-        | string
-        | number
-        | boolean
-        | typeof Date
-        | typeof Integer
-        | URL
-        | typeof Email
+    type BasicType = string | number | boolean | typeof Date | typeof Integer | URL | typeof Email;
 
     export type Type = <T>(value: Cell) => T;
 
@@ -25,7 +18,8 @@ declare module 'read-excel-file/node' {
     interface SchemaEntryParsed {
         prop: string;
         parse<T>(): (value: Cell) => T;
-        oneOf?<T>(): T[];        required?: boolean;
+        oneOf?<T>(): T[];
+        required?: boolean;
         validate?<T>(value: T): void;
     }
 
@@ -37,9 +31,9 @@ declare module 'read-excel-file/node' {
         required?: boolean;
     }
 
-    type SchemaEntry = SchemaEntryBasic | SchemaEntryParsed | SchemaEntryRecursive
+    type SchemaEntry = SchemaEntryBasic | SchemaEntryParsed | SchemaEntryRecursive;
 
-    export type Schema = Record<string, SchemaEntry>
+    export type Schema = Record<string, SchemaEntry>;
 
     export interface Error {
         error: string;
@@ -49,8 +43,8 @@ declare module 'read-excel-file/node' {
         type?: SchemaEntry;
     }
 
-    type Cell = string | number | boolean | typeof Date
-    export type Row = Cell[]
+    type Cell = string | number | boolean | typeof Date;
+    export type Row = Cell[];
 
     export interface ParsedObjectsResult {
         rows: object[];
@@ -73,7 +67,10 @@ declare module 'read-excel-file/node' {
         sheet?: number | string;
     }
 
-    export function readXlsxFile(input: any, options: ParseWithSchemaOptions): Promise<ParsedObjectsResult>;
+    export function readXlsxFile(
+        input: any,
+        options: ParseWithSchemaOptions
+    ): Promise<ParsedObjectsResult>;
     export function readXlsxFile(input: any, options?: ParseWithoutSchemaOptions): Promise<Row[]>;
 
     export default readXlsxFile;

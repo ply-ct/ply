@@ -17,7 +17,7 @@ import { TsCompileOptions } from './compile';
 import { TestRun } from './report/model';
 
 export interface Tests<T extends Test> {
-    [key: string]: T
+    [key: string]: T;
 }
 
 /**
@@ -30,7 +30,6 @@ export interface Tests<T extends Test> {
  * instead of conditional logic in this class.
  */
 export class Suite<T extends Test> {
-
     readonly tests: Tests<T> = {};
     emitter?: EventEmitter;
     skip = false;
@@ -57,7 +56,7 @@ export class Suite<T extends Test> {
         readonly end: number,
         readonly className?: string,
         readonly outFile?: string
-    ) { }
+    ) {}
 
     add(test: T) {
         this.tests[test.name] = test;
@@ -102,7 +101,11 @@ export class Suite<T extends Test> {
      * TODO: support runOptions.values for requests and cases
      */
     async run(values: object, runOptions?: RunOptions): Promise<Result[]>;
-    async run(namesOrValues: object | string | string[], valuesOrRunOptions?: object | RunOptions, runOptions?: RunOptions): Promise<Result | Result[]> {
+    async run(
+        namesOrValues: object | string | string[],
+        valuesOrRunOptions?: object | RunOptions,
+        runOptions?: RunOptions
+    ): Promise<Result | Result[]> {
         if (typeof namesOrValues === 'string') {
             const name = namesOrValues;
             const test = this.get(name);
@@ -113,7 +116,7 @@ export class Suite<T extends Test> {
             return results[0];
         } else if (Array.isArray(namesOrValues)) {
             const names = typeof namesOrValues === 'string' ? [namesOrValues] : namesOrValues;
-            const tests = names.map(name => {
+            const tests = names.map((name) => {
                 const test = this.get(name);
                 if (!test) {
                     throw new Error(`Test not found: ${name}`);
@@ -132,7 +135,6 @@ export class Suite<T extends Test> {
      * @param tests
      */
     async runTests(tests: T[], values: object, runOptions?: RunOptions): Promise<Result[]> {
-
         if (runOptions && Object.keys(runOptions).length > 0) {
             this.log.debug('RunOptions', runOptions);
         }
@@ -163,7 +165,7 @@ export class Suite<T extends Test> {
                     testFile = this.runtime.testsLocation.toString() + '/' + this.path;
                 }
                 const mod = await import(testFile);
-                const clsName = Object.keys(mod).find(key => key === this.className);
+                const clsName = Object.keys(mod).find((key) => key === this.className);
                 if (!clsName) {
                     throw new Error(`Suite class ${this.className} not found in ${testFile}`);
                 }
@@ -188,7 +190,11 @@ export class Suite<T extends Test> {
             this.logger.error(err.message, err);
             const results: Result[] = [];
             for (const test of tests) {
-                const result = { name: test.name, status: 'Errored', message: '' + err.message } as Result;
+                const result = {
+                    name: test.name,
+                    status: 'Errored',
+                    message: '' + err.message
+                } as Result;
                 results.push(result);
                 this.logOutcome(test, result);
             }
@@ -212,9 +218,16 @@ export class Suite<T extends Test> {
                 this.emitTest(test);
                 // determine wanted headers (for requests)
                 if (test.type === 'request') {
-                    this.runtime.responseHeaders = await this.getExpectedResponseHeaders(test.name, callingCaseInfo?.caseName);
+                    this.runtime.responseHeaders = await this.getExpectedResponseHeaders(
+                        test.name,
+                        callingCaseInfo?.caseName
+                    );
                 }
-                result = await (test as unknown as PlyTest).run(this.runtime, runValues, runOptions);
+                result = await (test as unknown as PlyTest).run(
+                    this.runtime,
+                    runValues,
+                    runOptions
+                );
                 let actualYaml: yaml.Yaml;
                 if (test.type === 'request') {
                     const plyResult = result as PlyResult;
@@ -230,22 +243,38 @@ export class Suite<T extends Test> {
                             expectedExists = await this.runtime.results.expectedExists(test.name);
                         }
                         const isFirst = i === 0 && !this.callingFlowPath;
-                        result = this.handleResultRunOptions(test, result, actualYaml, isFirst, expectedExists, runOptions) || result;
+                        result =
+                            this.handleResultRunOptions(
+                                test,
+                                result,
+                                actualYaml,
+                                isFirst,
+                                expectedExists,
+                                runOptions
+                            ) || result;
 
                         // status could be 'Submitted' if runOptions so specify
                         if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/flow is complete)
-                            const expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
-                            if (expectedYaml.start > 0 || this.callingFlowPath) { // flows need to re-read actual even if not padding
+                            const expectedYaml = await this.runtime.results.getExpectedYaml(
+                                test.name
+                            );
+                            if (expectedYaml.start > 0 || this.callingFlowPath) {
+                                // flows need to re-read actual even if not padding
                                 actualYaml = this.runtime.results.getActualYaml(test.name);
                                 if (padActualStart && expectedYaml.start > actualYaml.start) {
-                                    this.runtime.results.actual.padLines(actualYaml.start, expectedYaml.start - actualYaml.start);
+                                    this.runtime.results.actual.padLines(
+                                        actualYaml.start,
+                                        expectedYaml.start - actualYaml.start
+                                    );
                                 }
                             }
                             const verifier = new Verifier(test.name, expectedYaml, this.logger);
-                            this.log.debug(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
+                            this.log.debug(
+                                `Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`
+                            );
                             const outcome = { ...verifier.verify(actualYaml, runValues), start };
-                            result = { ...result as Result, ...outcome };
+                            result = { ...(result as Result), ...outcome };
                             this.logOutcome(test, result);
                         }
                     }
@@ -253,22 +282,35 @@ export class Suite<T extends Test> {
                 } else {
                     // case or flow complete -- verify result
                     actualYaml = this.runtime.results.getActualYaml(test.name);
-                    result = this.handleResultRunOptions(test, result, actualYaml, i === 0, expectedExists, runOptions) || result;
+                    result =
+                        this.handleResultRunOptions(
+                            test,
+                            result,
+                            actualYaml,
+                            i === 0,
+                            expectedExists,
+                            runOptions
+                        ) || result;
                     // for cases status could be 'Submitted' if runOptions so specify (this check is handled at step level for flows)
                     if (result.status === 'Pending' || this.type === 'flow') {
                         const expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
                         if (padActualStart && expectedYaml.start > actualYaml.start) {
-                            this.runtime.results.actual.padLines(actualYaml.start, expectedYaml.start - actualYaml.start);
+                            this.runtime.results.actual.padLines(
+                                actualYaml.start,
+                                expectedYaml.start - actualYaml.start
+                            );
                         }
                         const verifier = new Verifier(test.name, expectedYaml, this.logger);
-                        this.log.debug(`Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`);
+                        this.log.debug(
+                            `Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`
+                        );
                         // NOTE: By using this.runtime.values we're unadvisedly taking advantage of the prototype's shared runtime object property
                         // (https://stackoverflow.com/questions/17088635/javascript-object-properties-shared-across-instances).
                         // This allows us to accumulate programmatic values changes like those in updateRating() in movieCrud.ply.ts
                         // so that they can be accessed when verifying here, even though the changes are not present the passed 'values' parameter.
                         // TODO: Revisit when implementing a comprehensive values specification mechanism.
                         const outcome = { ...verifier.verify(actualYaml, runValues), start };
-                        result = { ...result as Result, ...outcome };
+                        result = { ...(result as Result), ...outcome };
                         this.logOutcome(test, result);
                     }
                     this.addResult(results, result, runValues);
@@ -285,7 +327,11 @@ export class Suite<T extends Test> {
                 this.logOutcome(test, result);
             }
 
-            if (this.runtime.options.bail && result.status !== 'Passed' && result.status !== 'Submitted') {
+            if (
+                this.runtime.options.bail &&
+                result.status !== 'Passed' &&
+                result.status !== 'Submitted'
+            ) {
                 break;
             }
         }
@@ -309,8 +355,10 @@ export class Suite<T extends Test> {
 
     emitTest(test: T) {
         if (this.emitter) {
-            const plyEvent: PlyEvent = { plyee: new Plyee(this.runtime.options.testsLocation + '/' + this.path, test).path };
-            this.emitter.emit('test', plyEvent );
+            const plyEvent: PlyEvent = {
+                plyee: new Plyee(this.runtime.options.testsLocation + '/' + this.path, test).path
+            };
+            this.emitter.emit('test', plyEvent);
         }
     }
 
@@ -344,8 +392,7 @@ export class Suite<T extends Test> {
         let plyResult;
         if (result instanceof PlyResult) {
             plyResult = result as PlyResult;
-        }
-        else if (result.request && result.response instanceof PlyResponse) {
+        } else if (result.request && result.response instanceof PlyResponse) {
             plyResult = new PlyResult(result.name, result.request, result.response);
             plyResult.merge(result);
         }
@@ -361,9 +408,14 @@ export class Suite<T extends Test> {
         results.push(result);
     }
 
-    private async getExpectedResponseHeaders(requestName: string, caseName?: string): Promise<string[] | undefined> {
+    private async getExpectedResponseHeaders(
+        requestName: string,
+        caseName?: string
+    ): Promise<string[] | undefined> {
         if (await this.runtime.results.expectedExists(caseName ? caseName : requestName)) {
-            const yml = await this.runtime.results.getExpectedYaml(caseName ? caseName : requestName);
+            const yml = await this.runtime.results.getExpectedYaml(
+                caseName ? caseName : requestName
+            );
             let obj = yaml.load(this.runtime.results.expected.toString(), yml.text);
             if (obj) {
                 if (this.callingFlowPath) {
@@ -384,9 +436,14 @@ export class Suite<T extends Test> {
         }
     }
 
-    private handleResultRunOptions(test: Test, result: Result, actualYaml: yaml.Yaml,
-        isFirst: boolean, expectedExists: boolean, runOptions?: RunOptions): Result | undefined {
-
+    private handleResultRunOptions(
+        test: Test,
+        result: Result,
+        actualYaml: yaml.Yaml,
+        isFirst: boolean,
+        expectedExists: boolean,
+        runOptions?: RunOptions
+    ): Result | undefined {
         if (runOptions?.submit || (!expectedExists && runOptions?.submitIfExpectedMissing)) {
             const res = {
                 name: test.name,
@@ -397,24 +454,31 @@ export class Suite<T extends Test> {
             this.logOutcome(test, res);
             return res;
         }
-        if (runOptions?.createExpected || (!expectedExists && runOptions?.createExpectedIfMissing)) {
+        if (
+            runOptions?.createExpected ||
+            (!expectedExists && runOptions?.createExpectedIfMissing)
+        ) {
             if (this.runtime.results.expected.location.isUrl) {
                 throw new Error('Run option createExpected not supported for remote results');
             }
             runOptions.createExpected = true; // remember for downstream tests
             // remove comments
-            const actualYamlText = util.lines(actualYaml.text).reduce((yamlLines: string[], line) => {
-                const lastHash = line.lastIndexOf('#');
-                yamlLines.push(lastHash === -1 ? line : line.substring(0, lastHash - 1).trimEnd());
-                return yamlLines;
-            }, []).join('\n');
+            const actualYamlText = util
+                .lines(actualYaml.text)
+                .reduce((yamlLines: string[], line) => {
+                    const lastHash = line.lastIndexOf('#');
+                    yamlLines.push(
+                        lastHash === -1 ? line : line.substring(0, lastHash - 1).trimEnd()
+                    );
+                    return yamlLines;
+                }, [])
+                .join('\n');
 
             const expected = new Storage(this.runtime.results.expected.location.toString());
             if (isFirst) {
                 this.log.info(`Creating expected result: ${expected}`);
                 expected.write(actualYamlText);
-            }
-            else {
+            } else {
                 expected.append(actualYamlText);
             }
         }
@@ -424,22 +488,22 @@ export class Suite<T extends Test> {
         outcome.end = Date.now();
         const ms = outcome.start ? ` in ${outcome.end - outcome.start} ms` : '';
         const testLabel = label || test.type.charAt(0).toLocaleUpperCase() + test.type.substring(1);
-        const id = this.logger.level === LogLevel.debug && (test as any).id ? ` (${(test as any).id})` : '';
+        const id =
+            this.logger.level === LogLevel.debug && (test as any).id
+                ? ` (${(test as any).id})`
+                : '';
         let message: string = '';
         if (outcome.status === 'Passed') {
             message = `${testLabel} '${test.name}'${id} PASSED${ms}`;
             this.logger.info(message);
-        }
-        else if (outcome.status === 'Failed') {
+        } else if (outcome.status === 'Failed') {
             const diff = outcome.diff ? '\n' + outcome.diff : '';
             message = `${testLabel} '${test.name}'${id} FAILED${ms}: ${outcome.message}${diff}`;
             this.logger.error(message);
-        }
-        else if (outcome.status === 'Errored') {
+        } else if (outcome.status === 'Errored') {
             message = `${testLabel} '${test.name}'${id} ERRORED${ms}: ${outcome.message}`;
             this.logger.error(message);
-        }
-        else if (outcome.status === 'Submitted') {
+        } else if (outcome.status === 'Submitted') {
             message = `${testLabel} '${test.name}'${id} SUBMITTED${ms}`;
             this.logger.info(message);
         }
@@ -457,21 +521,27 @@ export class Suite<T extends Test> {
         }
     }
 
-    private writeRunLog(test: Test, outcome: Outcome & { request?: Request, response?: Response }, message?: string) {
+    private writeRunLog(
+        test: Test,
+        outcome: Outcome & { request?: Request; response?: Response },
+        message?: string
+    ) {
         const testRun: TestRun = {
-          test: test.name,
-          type: test.type,
-          ...(outcome.start && { start: new Date(outcome.start).toISOString() as any }), // serialized as string
-          ...(outcome.end && { end: new Date(outcome.end).toISOString() as any }), // serialized as string
-          result: {
-            status: outcome.status,
-            ...(message && { message }),
-          },
+            test: test.name,
+            type: test.type,
+            ...(outcome.start && { start: new Date(outcome.start).toISOString() as any }), // serialized as string
+            ...(outcome.end && { end: new Date(outcome.end).toISOString() as any }), // serialized as string
+            result: {
+                status: outcome.status,
+                ...(message && { message })
+            }
         };
         if (outcome.request) testRun.request = outcome.request;
         if (outcome.response) testRun.response = outcome.response;
 
-        const storage = new Storage(`${this.runtime.results.runs}/${this.name}.${this.runtime.runNumber}.json`);
+        const storage = new Storage(
+            `${this.runtime.results.runs}/${this.name}.${this.runtime.runNumber}.json`
+        );
         const content = storage.read();
         const testRuns: TestRun[] = content ? JSON.parse(content) : [];
         testRuns.push(testRun);
@@ -481,11 +551,13 @@ export class Suite<T extends Test> {
     /**
      * Use stack trace to find calling case info (if any) for request.
      */
-    private async getCallingCaseInfo(runOptions?: RunOptions): Promise<CallingCaseInfo | undefined> {
+    private async getCallingCaseInfo(
+        runOptions?: RunOptions
+    ): Promise<CallingCaseInfo | undefined> {
         const stacktracey = 'stacktracey';
         const StackTracey = await import(stacktracey);
         const stack = new StackTracey();
-        const plyCaseInvoke = stack.findIndex((elem: {callee: string;}) => {
+        const plyCaseInvoke = stack.findIndex((elem: { callee: string }) => {
             return elem.callee === 'PlyCase.run' || elem.callee === 'async PlyCase.run';
         });
         if (plyCaseInvoke > 0) {
@@ -512,7 +584,11 @@ export class Suite<T extends Test> {
                     source = relLoc.parent + '/' + relLoc.base + '.ts';
                 }
 
-                const results = await ResultPaths.create(this.runtime.options, new Retrieval(source), suiteName);
+                const results = await ResultPaths.create(
+                    this.runtime.options,
+                    new Retrieval(source),
+                    suiteName
+                );
 
                 return { results, suiteName, caseName };
             }
@@ -523,10 +599,9 @@ export class Suite<T extends Test> {
      * Always contains \n newlines.  Includes trailing newline.
      */
     private buildResultYaml(result: PlyResult, indent: number): string {
-
         const { name: _name, type: _type, submitted: _submitted, ...leanRequest } = result.request;
         if (result.graphQl) {
-            leanRequest.body = result.graphQl;  // restore graphQl for better comparisons
+            leanRequest.body = result.graphQl; // restore graphQl for better comparisons
         }
         const { runId: _requestId, time: _time, ...leanResponse } = result.response;
 
@@ -547,8 +622,7 @@ export class Suite<T extends Test> {
             ymlLines = ymlLines.map((line, i) => {
                 if (i < ymlLines.length - 1) {
                     return line.padStart(line.length + indent);
-                }
-                else {
+                } else {
                     return line;
                 }
             });
@@ -561,7 +635,10 @@ export class Suite<T extends Test> {
             }
             if (typeof result.response.time !== 'undefined') {
                 const responseMs = result.response.time + ' ms';
-                const requestYml = yaml.dump({ request: invocation.request }, this.runtime.options.prettyIndent);
+                const requestYml = yaml.dump(
+                    { request: invocation.request },
+                    this.runtime.options.prettyIndent
+                );
                 ymlLines[outcomeLine + requestYml.split('\n').length] += `  # ${responseMs}`;
             }
         }

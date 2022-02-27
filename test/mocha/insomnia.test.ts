@@ -7,7 +7,6 @@ import { Request } from '../../src/request';
 import { Values } from '../../src/values';
 
 describe('Insomnia', () => {
-
     const reqRoot = 'test/mocha/insomnia/requests';
     const valRoot = 'test/mocha/insomnia/values';
 
@@ -17,7 +16,12 @@ describe('Insomnia', () => {
         assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
         const importer = new Import('insomnia', new Logger());
-        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, importToSuite: true });
+        await importer.doImport(retrieval, {
+            testsLocation: reqRoot,
+            valuesLocation: valRoot,
+            indent: 2,
+            importToSuite: true
+        });
 
         const ply = new Ply();
         const topRequests = await ply.loadSuite(`${reqRoot}/testing.ply.yaml`);
@@ -59,7 +63,9 @@ describe('Insomnia', () => {
         assert.strictEqual(karloff.url, '${baseUrl}/movies?search=Boris%20Karloff');
         assert.strictEqual(karloff.method, 'GET');
 
-        const greatRequests = await ply.loadSuite(`${reqRoot}/testing/movies/by rating/great.ply.yaml`);
+        const greatRequests = await ply.loadSuite(
+            `${reqRoot}/testing/movies/by rating/great.ply.yaml`
+        );
         assert.ok(greatRequests);
 
         const greatsOf1931 = greatRequests.get('great movies of 1931') as Request;
@@ -69,7 +75,6 @@ describe('Insomnia', () => {
         const greatsAfter1935 = greatRequests.get('great movies after 1935') as Request;
         assert.strictEqual(greatsAfter1935.url, '${baseUrl}/movies?rating=5&year=>1935');
         assert.strictEqual(greatsAfter1935.method, 'GET');
-
 
         const baseValues = new Values([`${valRoot}/Base Environment.json`], new Logger());
         const baseObj = await baseValues.read();
@@ -88,7 +93,12 @@ describe('Insomnia', () => {
         assert.ok(retrieval.location.ext);
         assert.ok(await retrieval.exists);
         const importer = new Import('insomnia', new Logger());
-        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, importToSuite: false });
+        await importer.doImport(retrieval, {
+            testsLocation: reqRoot,
+            valuesLocation: valRoot,
+            indent: 2,
+            importToSuite: false
+        });
 
         const ply = new Ply();
 
@@ -115,11 +125,15 @@ describe('Insomnia', () => {
         assert.strictEqual(karloff.url, '${baseUrl}/movies?search=Boris%20Karloff');
         assert.strictEqual(karloff.method, 'GET');
 
-        const greatsOf1931 = await ply.loadRequest(`${reqRoot}/testing/movies/by rating/great/great movies of 1931.ply`);
+        const greatsOf1931 = await ply.loadRequest(
+            `${reqRoot}/testing/movies/by rating/great/great movies of 1931.ply`
+        );
         assert.strictEqual(greatsOf1931.url, '${baseUrl}/movies?rating=5&year=1931');
         assert.strictEqual(greatsOf1931.method, 'GET');
 
-        const greatsAfter1935 = await ply.loadRequest(`${reqRoot}/testing/movies/by rating/great/great movies after 1935.ply`);
+        const greatsAfter1935 = await ply.loadRequest(
+            `${reqRoot}/testing/movies/by rating/great/great movies after 1935.ply`
+        );
         assert.strictEqual(greatsAfter1935.url, '${baseUrl}/movies?rating=5&year=>1935');
         assert.strictEqual(greatsAfter1935.method, 'GET');
     });
@@ -128,17 +142,26 @@ describe('Insomnia', () => {
         const retrieval = new Retrieval('test/mocha/insomnia/insomnia-github-graphql.json');
         assert.ok(await retrieval.exists);
         const importer = new Import('insomnia', new Logger());
-        await importer.doImport(retrieval, { testsLocation: reqRoot, valuesLocation: valRoot, indent: 2, importToSuite: false });
+        await importer.doImport(retrieval, {
+            testsLocation: reqRoot,
+            valuesLocation: valRoot,
+            indent: 2,
+            importToSuite: false
+        });
 
         const ply = new Ply();
-        const repositoryTopicsQuery = await ply.loadRequest(`${reqRoot}/github-graphql/GitHub/repositoryTopicsQuery.ply`);
+        const repositoryTopicsQuery = await ply.loadRequest(
+            `${reqRoot}/github-graphql/GitHub/repositoryTopicsQuery.ply`
+        );
         assert.ok(repositoryTopicsQuery);
         assert.strictEqual(repositoryTopicsQuery.url, 'https://api.github.com/graphql');
         assert.strictEqual(repositoryTopicsQuery.method, 'POST');
         assert.strictEqual(repositoryTopicsQuery.headers.Authorization, 'Bearer ${token}');
         assert.ok(repositoryTopicsQuery.body);
 
-        const repositoryIdQuery = await ply.loadRequest(`${reqRoot}/github-graphql/GitHub/repositoryIdQuery.ply`);
+        const repositoryIdQuery = await ply.loadRequest(
+            `${reqRoot}/github-graphql/GitHub/repositoryIdQuery.ply`
+        );
         assert.strictEqual(repositoryIdQuery.url, 'https://api.github.com/graphql');
         assert.strictEqual(repositoryIdQuery.method, 'POST');
         assert.strictEqual(repositoryIdQuery.headers.Authorization, 'Bearer ${token}');

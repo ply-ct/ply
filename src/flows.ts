@@ -17,7 +17,6 @@ import { Plyee } from './ply';
  * Suite representing a ply flow.
  */
 export class FlowSuite extends Suite<Step> {
-
     /**
      * @param plyFlow PlyFlow
      * @param path relative path from tests location (forward slashes)
@@ -69,13 +68,13 @@ export class FlowSuite extends Suite<Step> {
     }
 
     private getStep(stepId: string): Step {
-        const step = this.all().find(step => step.step.id === stepId);
+        const step = this.all().find((step) => step.step.id === stepId);
         if (!step) throw new Error(`Step not found: ${stepId}`);
         return step;
     }
 
     async runFlow(values: object, runOptions?: RunOptions): Promise<Result> {
-        this.plyFlow.onFlow(flowEvent => {
+        this.plyFlow.onFlow((flowEvent) => {
             if (flowEvent.eventType === 'exec') {
                 // emit test event (not for request -- emitted in requestSuite)
                 const stepInstance = flowEvent.instance as flowbee.StepInstance;
@@ -86,19 +85,31 @@ export class FlowSuite extends Suite<Step> {
             } else {
                 // exec not applicable for ply subscribers
                 this.emitter?.emit('flow', flowEvent);
-                if (flowEvent.elementType === 'step' && (flowEvent.eventType === 'finish' || flowEvent.eventType === 'error')) {
+                if (
+                    flowEvent.elementType === 'step' &&
+                    (flowEvent.eventType === 'finish' || flowEvent.eventType === 'error')
+                ) {
                     const stepInstance = flowEvent.instance as flowbee.StepInstance;
                     const step = this.getStep(stepInstance.stepId);
                     if (step.step.path !== 'request') {
                         if (flowEvent.eventType === 'error') {
                             this.emitter?.emit('outcome', {
-                                plyee: new Plyee(this.runtime.options.testsLocation + '/' + this.path, step).path,
-                                outcome: { status: 'Errored', message: stepInstance.message || ''}
+                                plyee: new Plyee(
+                                    this.runtime.options.testsLocation + '/' + this.path,
+                                    step
+                                ).path,
+                                outcome: { status: 'Errored', message: stepInstance.message || '' }
                             });
                         } else if (flowEvent.eventType === 'finish') {
                             this.emitter?.emit('outcome', {
-                                plyee: new Plyee(this.runtime.options.testsLocation + '/' + this.path, step).path,
-                                outcome: { status: runOptions?.submit ? 'Submitted' : 'Passed', message: '' }
+                                plyee: new Plyee(
+                                    this.runtime.options.testsLocation + '/' + this.path,
+                                    step
+                                ).path,
+                                outcome: {
+                                    status: runOptions?.submit ? 'Submitted' : 'Passed',
+                                    message: ''
+                                }
                             });
                         }
                     }
@@ -110,7 +121,6 @@ export class FlowSuite extends Suite<Step> {
     }
 
     async runSteps(steps: Step[], values: object, runOptions?: RunOptions): Promise<Result[]> {
-
         // flow-configured values
         if (this.plyFlow.flow.attributes?.values) {
             const rows = JSON.parse(this.plyFlow.flow.attributes?.values);
@@ -130,7 +140,8 @@ export class FlowSuite extends Suite<Step> {
             this.path,
             this.runtime,
             this.logger,
-            0, 0
+            0,
+            0
         );
         requestSuite.callingFlowPath = this.plyFlow.flow.path;
         requestSuite.emitter = this.emitter;
@@ -139,7 +150,10 @@ export class FlowSuite extends Suite<Step> {
         if (!expectedExists && runOptions?.submitIfExpectedMissing) {
             runOptions.submit = true;
         }
-        if (runOptions?.createExpected || (!expectedExists && runOptions?.createExpectedIfMissing)) {
+        if (
+            runOptions?.createExpected ||
+            (!expectedExists && runOptions?.createExpectedIfMissing)
+        ) {
             this.logger.info(`Creating expected result: ${this.runtime.results.expected}`);
             this.runtime.results.expected.write('');
             runOptions.createExpected = true;
@@ -155,20 +169,37 @@ export class FlowSuite extends Suite<Step> {
             const dot = step.name.indexOf('.');
             if (dot > 0) {
                 const subflowId = step.name.substring(0, dot);
-                subflow = this.plyFlow.flow.subflows?.find(sub => sub.id === subflowId);
+                subflow = this.plyFlow.flow.subflows?.find((sub) => sub.id === subflowId);
             }
-            const plyStep = new PlyStep(step.step, requestSuite, this.logger, this.plyFlow.flow.path, '', subflow);
+            const plyStep = new PlyStep(
+                step.step,
+                requestSuite,
+                this.logger,
+                this.plyFlow.flow.path,
+                '',
+                subflow
+            );
             this.emitter?.emit('flow', this.plyFlow.flowEvent('start', 'step', plyStep.instance));
             const result = await plyStep.run(this.runtime, values, runOptions);
             if (result.status === 'Failed' || result.status === 'Errored') {
-                this.emitter?.emit('flow', this.plyFlow.flowEvent('error', 'step', plyStep.instance));
+                this.emitter?.emit(
+                    'flow',
+                    this.plyFlow.flowEvent('error', 'step', plyStep.instance)
+                );
             } else {
-                this.emitter?.emit('flow', this.plyFlow.flowEvent('finish', 'step', plyStep.instance));
+                this.emitter?.emit(
+                    'flow',
+                    this.plyFlow.flowEvent('finish', 'step', plyStep.instance)
+                );
             }
             if (step.step.path !== 'request') {
                 super.logOutcome(
                     step,
-                    { status: result.status, message: result.message, start: plyStep.instance.start?.getTime() },
+                    {
+                        status: result.status,
+                        message: result.message,
+                        start: plyStep.instance.start?.getTime()
+                    },
                     'Step'
                 );
             }
@@ -176,8 +207,15 @@ export class FlowSuite extends Suite<Step> {
             if (plyStep.instance) this.plyFlow.instance.stepInstances.push(plyStep.instance);
         }
         // stop event for synthetic flow
-        const evt = results.reduce((overall, res) => res.status === 'Failed' || res.status === 'Errored' ? 'error' : overall, 'finish');
-        this.emitter?.emit('flow', this.plyFlow.flowEvent(evt as flowbee.FlowEventType, 'flow', this.plyFlow.instance));
+        const evt = results.reduce(
+            (overall, res) =>
+                res.status === 'Failed' || res.status === 'Errored' ? 'error' : overall,
+            'finish'
+        );
+        this.emitter?.emit(
+            'flow',
+            this.plyFlow.flowEvent(evt as flowbee.FlowEventType, 'flow', this.plyFlow.instance)
+        );
         return results;
     }
 
@@ -202,19 +240,19 @@ export class FlowSuite extends Suite<Step> {
      * These are the tests in this FlowSuite.
      */
     getSteps(): Step[] {
-        const steps: { step: flowbee.Step, subflow?: flowbee.Subflow}[] = [];
+        const steps: { step: flowbee.Step; subflow?: flowbee.Subflow }[] = [];
 
         const addSteps = (startStep: flowbee.Step, subflow?: flowbee.Subflow) => {
-            const already = steps.find(step => step.step.id === startStep.id);
+            const already = steps.find((step) => step.step.id === startStep.id);
             if (!already) {
                 steps.push({ step: startStep, subflow });
                 if (startStep.links) {
                     for (const link of startStep.links) {
                         let outStep: flowbee.Step | undefined;
                         if (subflow) {
-                            outStep = subflow.steps?.find(s => s.id === link.to);
+                            outStep = subflow.steps?.find((s) => s.id === link.to);
                         } else {
-                            outStep = this.plyFlow.flow.steps?.find(s => s.id === link.to);
+                            outStep = this.plyFlow.flow.steps?.find((s) => s.id === link.to);
                         }
                         if (outStep) {
                             addSteps(outStep, subflow);
@@ -224,44 +262,44 @@ export class FlowSuite extends Suite<Step> {
             }
         };
 
-        this.plyFlow.flow.subflows?.filter(sub => sub.attributes?.when === 'Before')?.forEach(before => {
-            before.steps?.forEach(step => addSteps(step, before));
-        });
+        this.plyFlow.flow.subflows
+            ?.filter((sub) => sub.attributes?.when === 'Before')
+            ?.forEach((before) => {
+                before.steps?.forEach((step) => addSteps(step, before));
+            });
 
-        this.plyFlow.flow.steps?.forEach(step => addSteps(step));
+        this.plyFlow.flow.steps?.forEach((step) => addSteps(step));
 
-        this.plyFlow.flow.subflows?.filter(sub => sub.attributes?.when === 'After')?.forEach(after => {
-            after.steps?.forEach(step => addSteps(step, after));
-        });
+        this.plyFlow.flow.subflows
+            ?.filter((sub) => sub.attributes?.when === 'After')
+            ?.forEach((after) => {
+                after.steps?.forEach((step) => addSteps(step, after));
+            });
 
-        return steps.map(step => {
+        return steps.map((step) => {
             return {
                 name: step.subflow ? `${step.subflow.id}.${step.step.id}` : step.step.id,
                 type: 'flow',
                 step: step.step,
-                ...(step.subflow) && { subflow: step.subflow }
+                ...(step.subflow && { subflow: step.subflow })
             };
         });
     }
 }
 
 export class FlowLoader {
-
     private skip: Skip | undefined;
 
-    constructor(
-        readonly locations: string[],
-        private options: PlyOptions
-    ) {
+    constructor(readonly locations: string[], private options: PlyOptions) {
         if (options.skip) {
             this.skip = new Skip(options.testsLocation, options.skip);
         }
     }
 
     async load(): Promise<FlowSuite[]> {
-        const retrievals = this.locations.map(loc => new Retrieval(loc));
+        const retrievals = this.locations.map((loc) => new Retrieval(loc));
         // load request files in parallel
-        const promises = retrievals.map(retr => this.loadSuite(retr));
+        const promises = retrievals.map((retr) => this.loadSuite(retr));
         const suites = await Promise.all(promises);
         suites.sort((s1, s2) => s1.name.localeCompare(s2.name));
         return suites;
@@ -278,16 +316,19 @@ export class FlowLoader {
     }
 
     buildSuite(retrieval: Retrieval, contents: string, resultPaths: ResultPaths): FlowSuite {
-        const runtime = new Runtime(
-            this.options,
-            retrieval,
-            resultPaths
-        );
+        const runtime = new Runtime(this.options, retrieval, resultPaths);
 
-        const logger = new Logger({
-            level: this.options.verbose ? LogLevel.debug : (this.options.quiet ? LogLevel.error : LogLevel.info),
-            prettyIndent: this.options.prettyIndent
-        }, runtime.results.log);
+        const logger = new Logger(
+            {
+                level: this.options.verbose
+                    ? LogLevel.debug
+                    : this.options.quiet
+                    ? LogLevel.error
+                    : LogLevel.info,
+                prettyIndent: this.options.prettyIndent
+            },
+            runtime.results.log
+        );
 
         // request suite comprising all requests configured in steps
         const requestSuite = new Suite<Request>(
@@ -296,7 +337,8 @@ export class FlowLoader {
             retrieval.location.relativeTo(this.options.testsLocation),
             runtime,
             logger,
-            0, 0
+            0,
+            0
         );
 
         const flowbeeFlow = FlowLoader.parse(contents, retrieval.location.path);

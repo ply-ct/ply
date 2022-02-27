@@ -4,14 +4,12 @@ import * as mkdirp from 'mkdirp';
 import * as util from './util';
 import { Location } from './location';
 
-
 /**
  * Abstracts storage to file system or html localStorage.
  * TODO: rename Storage to SyncStorage, and this to Storage,
  * and phase out SyncStorage.
  */
- export class AsyncStorage {
-
+export class AsyncStorage {
     readonly location: Location;
     private readonly localStorage: any;
 
@@ -29,8 +27,7 @@ import { Location } from './location';
     get exists(): boolean {
         if (this.localStorage) {
             return this.localStorage.getItem(this.location.path) !== null;
-        }
-        else {
+        } else {
             return fs.existsSync(this.location.path);
         }
     }
@@ -38,8 +35,7 @@ import { Location } from './location';
     async read(): Promise<string | undefined> {
         if (this.localStorage) {
             return this.localStorage.getItem(this.location.path);
-        }
-        else {
+        } else {
             if (fs.existsSync(this.location.path)) {
                 return await fs.promises.readFile(this.location.path, 'utf-8');
             }
@@ -52,8 +48,7 @@ import { Location } from './location';
     async write(contents: string) {
         if (this.localStorage) {
             this.localStorage.setItem(this.location.path, contents);
-        }
-        else {
+        } else {
             if (this.location.parent) {
                 await mkdirp(this.location.parent);
             }
@@ -68,8 +63,7 @@ import { Location } from './location';
         if (this.localStorage) {
             const exist = this.localStorage.getItem(this.location.path);
             this.localStorage.setItem(this.location.path, exist ? exist + contents : contents);
-        }
-        else {
+        } else {
             if (this.location.parent) {
                 await mkdirp(this.location.parent);
             }
@@ -84,7 +78,7 @@ import { Location } from './location';
             const existLines = util.lines(exist);
             const preLines = start > 0 ? existLines.slice(0, start) : [];
             const postLines = existLines.slice(start);
-            newLines = [ ...preLines, ...newLines, ...postLines ];
+            newLines = [...preLines, ...newLines, ...postLines];
         }
         await this.write(newLines.join('\n'));
     }
@@ -100,8 +94,7 @@ import { Location } from './location';
     async remove() {
         if (this.localStorage) {
             this.localStorage.removeItem(this.location.path);
-        }
-        else {
+        } else {
             if (fs.existsSync(this.location.path)) {
                 await fs.promises.unlink(this.location.path);
             }
@@ -117,7 +110,6 @@ import { Location } from './location';
  * Abstracts storage to file system or html localStorage.
  */
 export class Storage {
-
     readonly location: Location;
     private readonly localStorage: any;
 
@@ -132,12 +124,10 @@ export class Storage {
         }
     }
 
-
     get exists(): boolean {
         if (this.localStorage) {
             return this.localStorage.getItem(this.location.path) !== null;
-        }
-        else {
+        } else {
             return fs.existsSync(this.location.path);
         }
     }
@@ -145,8 +135,7 @@ export class Storage {
     read(): string | undefined {
         if (this.localStorage) {
             return this.localStorage.getItem(this.location.path);
-        }
-        else {
+        } else {
             if (fs.existsSync(this.location.path)) {
                 return fs.readFileSync(this.location.path, 'utf-8');
             }
@@ -159,8 +148,7 @@ export class Storage {
     write(contents: string) {
         if (this.localStorage) {
             this.localStorage.setItem(this.location.path, contents);
-        }
-        else {
+        } else {
             if (this.location.parent) {
                 mkdirp.sync(this.location.parent);
             }
@@ -175,8 +163,7 @@ export class Storage {
         if (this.localStorage) {
             const exist = this.localStorage.getItem(this.location.path);
             this.localStorage.setItem(this.location.path, exist ? exist + contents : contents);
-        }
-        else {
+        } else {
             if (this.location.parent) {
                 mkdirp.sync(this.location.parent);
             }
@@ -191,7 +178,7 @@ export class Storage {
             const existLines = util.lines(exist);
             const preLines = start > 0 ? existLines.slice(0, start) : [];
             const postLines = existLines.slice(start);
-            newLines = [ ...preLines, ...newLines, ...postLines ];
+            newLines = [...preLines, ...newLines, ...postLines];
         }
         this.write(newLines.join('\n'));
     }
@@ -207,8 +194,7 @@ export class Storage {
     remove() {
         if (this.localStorage) {
             this.localStorage.removeItem(this.location.path);
-        }
-        else {
+        } else {
             if (fs.existsSync(this.location.path)) {
                 fs.unlinkSync(this.location.path);
             }

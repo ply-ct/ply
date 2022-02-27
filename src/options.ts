@@ -136,19 +136,19 @@ export interface RunOptions {
     /**
      * Run test requests but don't verify outcomes.
      */
-    submit?: boolean
+    submit?: boolean;
     /**
      * Skip verify only if expected result does not exist.
      */
-    submitIfExpectedMissing?: boolean
+    submitIfExpectedMissing?: boolean;
     /**
      * Create expected from actual and verify based on that.
      */
-    createExpected?: boolean
+    createExpected?: boolean;
     /**
      * Create expected from actual only if expected does not exist.
      */
-    createExpectedIfMissing?: boolean
+    createExpectedIfMissing?: boolean;
     /**
      * Import requests or values from external format (currently 'postman' or 'insomnia' is supported).
      * Overwrites existing same-named files.
@@ -166,7 +166,7 @@ export interface RunOptions {
      */
     openapi?: string;
 
-     /**
+    /**
      * Import case suite modules from generated .js instead of .ts source (default = false).
      * This runOption needs to be set in your case's calls to Suite.run (for requests),
      * and also in originating the call to Suite.run (for the case(s)).
@@ -178,7 +178,7 @@ export interface RunOptions {
     /**
      * Runtime override values
      */
-    values?: {[key: string]: string};
+    values?: { [key: string]: string };
 }
 
 /**
@@ -237,7 +237,6 @@ export class Defaults implements PlyOptions {
 export const PLY_CONFIGS = ['plyconfig.yaml', 'plyconfig.yml', 'plyconfig.json'];
 
 export class Config {
-
     public options: PlyOptions;
 
     private yargsOptions: any = {
@@ -261,7 +260,7 @@ export class Config {
             describe: 'File patterns to skip'
         },
         submit: {
-            describe: 'Send requests but don\'t verify',
+            describe: "Send requests but don't verify",
             alias: 's',
             type: 'boolean'
         },
@@ -289,10 +288,10 @@ export class Config {
             type: 'string'
         },
         verbose: {
-            describe: 'Much output (supersedes \'quiet\')'
+            describe: "Much output (supersedes 'quiet')"
         },
         quiet: {
-            describe: 'Opposite of \'verbose\''
+            describe: "Opposite of 'verbose'"
         },
         bail: {
             describe: 'Stop on first failure'
@@ -341,7 +340,11 @@ export class Config {
         }
     };
 
-    constructor(private readonly defaults: PlyOptions = new Defaults(), commandLine = false, configPath?: string) {
+    constructor(
+        private readonly defaults: PlyOptions = new Defaults(),
+        commandLine = false,
+        configPath?: string
+    ) {
         this.options = this.load(defaults, commandLine, configPath);
         this.defaults.testsLocation = this.options.testsLocation;
         // result locations may need priming
@@ -356,7 +359,7 @@ export class Config {
         }
     }
 
-    private load(defaults: PlyOptions, commandLine: boolean, configPath?: string) : PlyOptions {
+    private load(defaults: PlyOptions, commandLine: boolean, configPath?: string): PlyOptions {
         let opts: any;
         if (commandLine) {
             // help pre-check to avoid premature yargs parsing
@@ -371,10 +374,16 @@ export class Config {
             const config = configPath ? this.read(configPath) : {};
             let spec = yargs
                 .usage('Usage: $0 <tests> [options]')
-                .help('help').alias('help', 'h')
-                .version().alias('version', 'v')
+                .help('help')
+                .alias('help', 'h')
+                .version()
+                .alias('version', 'v')
                 .config(config)
-                .option('config', { description: 'Ply config location', type: 'string', alias: 'c' });
+                .option('config', {
+                    description: 'Ply config location',
+                    type: 'string',
+                    alias: 'c'
+                });
             for (const option of Object.keys(this.yargsOptions)) {
                 const yargsOption = this.yargsOptions[option];
                 let type = yargsOption.type;
@@ -397,9 +406,13 @@ export class Config {
             }
             if (opts.genExcludeResponseHeaders) {
                 if (typeof opts.genExcludeResponseHeaders === 'string') {
-                    opts.genExcludeResponseHeaders = opts.genExcludeResponseHeaders.split(',').map((v: string) => v.trim());
+                    opts.genExcludeResponseHeaders = opts.genExcludeResponseHeaders
+                        .split(',')
+                        .map((v: string) => v.trim());
                 }
-                opts.genExcludeResponseHeaders = opts.genExcludeResponseHeaders.map((v: string) => v.toLowerCase());
+                opts.genExcludeResponseHeaders = opts.genExcludeResponseHeaders.map((v: string) =>
+                    v.toLowerCase()
+                );
             }
 
             opts.args = opts._;
@@ -410,7 +423,7 @@ export class Config {
             }
             opts = configPath ? this.read(configPath) : {};
         }
-        let options = { ...defaults, ...opts};
+        let options = { ...defaults, ...opts };
         // clean up garbage keys added by yargs, and private defaults
         options = Object.keys(options).reduce((obj: any, key) => {
             if (key.length > 1 && key.indexOf('_') === -1 && key.indexOf('-') === -1) {
@@ -433,7 +446,7 @@ export class Config {
             delete options.useDist;
         }
         if (options.import) {
-            options.runOptions.import =  options.import;
+            options.runOptions.import = options.import;
             delete options.import;
         }
         if (options.importToSuite) {
@@ -441,7 +454,7 @@ export class Config {
             delete options.importToSuite;
         }
         if (options.openapi) {
-            options.runOptions.openapi =  options.openapi;
+            options.runOptions.openapi = options.openapi;
             delete options.openapi;
         }
 
@@ -454,13 +467,11 @@ export class Config {
         if (typeof contents === 'string') {
             if (retrieval.location.isYaml) {
                 return yaml.load(retrieval.location.path, contents);
-            }
-            else {
+            } else {
                 return JSON.parse(contents);
             }
-        }
-        else {
-            throw new Error("Cannot load config: " + configPath);
+        } else {
+            throw new Error('Cannot load config: ' + configPath);
         }
     }
 }

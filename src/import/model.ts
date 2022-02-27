@@ -16,7 +16,6 @@ export interface Importer {
 export interface Request {
     url: string;
     method: string;
-    headers?: {[key: string]: string};
+    headers?: { [key: string]: string };
     body?: string;
 }
-

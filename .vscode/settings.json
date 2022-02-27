@@ -1,5 +1,4 @@
 {
-  "files.trimTrailingWhitespace": true,
   "files.exclude": {
     "docs/api-docs/": false
   },
@@ -7,7 +6,16 @@
     "docs/_site/": true,
     "docs/api-docs/": true
   },
+  "files.trimTrailingWhitespace": true,
+  "editor.insertSpaces": true,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "typescript.preferences.quoteStyle": "single",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "files.insertFinalNewline": true,
+  "[ts]": {
+    "editor.tabSize": 4
+  },
   "[html]": {
     "editor.tabSize": 2
   },

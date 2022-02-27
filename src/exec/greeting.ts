@@ -4,7 +4,6 @@ import { Runtime } from '../runtime';
 import { Logger } from '../logger';
 
 export class GreetingExec extends PlyExecBase {
-
     constructor(
         readonly step: flowbee.Step,
         readonly instance: flowbee.StepInstance,

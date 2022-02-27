@@ -17,4 +17,3 @@ valuesFiles:
   - test/ply/values/localhost.json
 
 outputFile: ply-results.json
-

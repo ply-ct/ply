@@ -19,7 +19,6 @@ import { Reporter } from './report/model';
 import { Report } from './report/report';
 
 export class Ply {
-
     readonly options: PlyOptions;
 
     constructor(options?: Options) {
@@ -48,12 +47,15 @@ export class Ply {
     async loadRequests(location: string): Promise<Suite<Request>[]>;
     async loadRequests(...locations: string[]): Promise<Suite<Request>[]>;
     async loadRequests(locations: string[], ...moreLocations: string[]): Promise<Suite<Request>[]>;
-    async loadRequests(locations: string | string[], ...moreLocations: string[]): Promise<Suite<Request>[]> {
+    async loadRequests(
+        locations: string | string[],
+        ...moreLocations: string[]
+    ): Promise<Suite<Request>[]> {
         if (typeof locations === 'string') {
             locations = [locations];
         }
         if (moreLocations) {
-            locations = [ ...locations, ...moreLocations ];
+            locations = [...locations, ...moreLocations];
         }
         const requestLoader = new RequestLoader(locations, this.options);
         return await requestLoader.load();
@@ -82,7 +84,7 @@ export class Ply {
             locations = [locations];
         }
         if (moreLocations) {
-            locations = [ ...locations, ...moreLocations ];
+            locations = [...locations, ...moreLocations];
         }
         const requestLoader = new RequestLoader(locations, this.options);
         return requestLoader.sync();
@@ -126,7 +128,7 @@ export class Ply {
             files = [files];
         }
         if (moreFiles) {
-            files = [ ...files, ...moreFiles ];
+            files = [...files, ...moreFiles];
         }
         const compileOptions = new TsCompileOptions(this.options);
         const caseLoader = new CaseLoader(files, this.options, compileOptions);
@@ -154,7 +156,7 @@ export class Ply {
             files = [files];
         }
         if (moreFiles) {
-            files = [ ...files, ...moreFiles ];
+            files = [...files, ...moreFiles];
         }
         const flowLoader = new FlowLoader(files, this.options);
         const suites = await flowLoader.load();
@@ -180,10 +182,10 @@ export class Plyee {
     constructor(path: string);
     constructor(pathOrSuite: string, test?: Test) {
         if (test) {
-            this.path = util.fwdSlashes(path.normalize(path.resolve(`${pathOrSuite}`))) + `#${test.name}`;
-        }
-        else {
-            const hash = pathOrSuite.indexOf("#");
+            this.path =
+                util.fwdSlashes(path.normalize(path.resolve(`${pathOrSuite}`))) + `#${test.name}`;
+        } else {
+            const hash = pathOrSuite.indexOf('#');
             if (hash === 0 || hash > pathOrSuite.length - 2) {
                 throw new Error(`Invalid path: ${pathOrSuite}`);
             }
@@ -191,7 +193,7 @@ export class Plyee {
             const frag = pathOrSuite.substring(hash + 1);
             this.path = util.fwdSlashes(path.normalize(path.resolve(base))) + `#${frag}`;
         }
-        this.hash = this.path.indexOf("#");
+        this.hash = this.path.indexOf('#');
         this.hat = this.path.lastIndexOf('^');
         if (this.hat < this.hash || this.hat < this.path.length - 1) {
             this.hat = -1;
@@ -201,8 +203,7 @@ export class Plyee {
     get location(): string {
         if (this.hash > 0) {
             return this.path.substring(0, this.hash);
-        }
-        else {
+        } else {
             return this.path;
         }
     }
@@ -210,8 +211,7 @@ export class Plyee {
     get suite(): string {
         if (this.hat > 0) {
             return this.path.substring(this.hash + 1, this.hat);
-        }
-        else {
+        } else {
             return this.location;
         }
     }
@@ -220,8 +220,7 @@ export class Plyee {
         if (this.hash > 0) {
             if (this.hat > 0) {
                 return this.path.substring(this.hat + 1);
-            }
-            else {
+            } else {
                 return this.path.substring(this.hash + 1);
             }
         }
@@ -246,16 +245,16 @@ export class Plyee {
     /**
      * Maps plyee paths to Plyee by Suite.
      */
-    static requests(paths: string[]): Map<string,Plyee[]> {
-        return this.collect(paths, plyee => Plyee.isRequest(plyee.location));
+    static requests(paths: string[]): Map<string, Plyee[]> {
+        return this.collect(paths, (plyee) => Plyee.isRequest(plyee.location));
     }
 
-    static cases(paths: string[]): Map<string,Plyee[]> {
-        return this.collect(paths, plyee => Plyee.isCase(plyee.location));
+    static cases(paths: string[]): Map<string, Plyee[]> {
+        return this.collect(paths, (plyee) => Plyee.isCase(plyee.location));
     }
 
-    static flows(paths: string[]): Map<string,Plyee[]> {
-        return this.collect(paths, plyee => Plyee.isFlow(plyee.location));
+    static flows(paths: string[]): Map<string, Plyee[]> {
+        return this.collect(paths, (plyee) => Plyee.isFlow(plyee.location));
     }
 
     /**
@@ -280,7 +279,6 @@ export class Plyee {
     }
 }
 
-
 /**
  * Utility for executing multiple tests, organized into their respective suites.
  * Used by both CLI and vscode-ply.
@@ -293,14 +291,20 @@ export class Plier extends EventEmitter {
     readonly logger: Logger;
     readonly reporter?: Reporter;
 
-    get options() { return this.ply.options; }
+    get options() {
+        return this.ply.options;
+    }
 
     constructor(options?: Options) {
         super({ captureRejections: true });
 
         this.ply = new Ply(options);
         this.logger = new Logger({
-            level: this.ply.options.verbose ? LogLevel.debug : (this.ply.options.quiet ? LogLevel.error : LogLevel.info),
+            level: this.ply.options.verbose
+                ? LogLevel.debug
+                : this.ply.options.quiet
+                ? LogLevel.error
+                : LogLevel.info,
             prettyIndent: this.ply.options.prettyIndent
         });
 
@@ -322,7 +326,10 @@ export class Plier extends EventEmitter {
 
         if (this.reporter) {
             // remove all previous runs
-            await fs.promises.rm(`${this.options.logLocation}/runs`, { force: true, recursive: true, });
+            await fs.promises.rm(`${this.options.logLocation}/runs`, {
+                force: true,
+                recursive: true
+            });
         }
 
         let promises: Promise<Result[]>[] = [];
@@ -331,7 +338,7 @@ export class Plier extends EventEmitter {
         // requests
         const requestTests = new Map<Suite<Request>, string[]>();
         for (const [loc, requestPlyee] of Plyee.requests(plyees)) {
-            const tests = requestPlyee.map(plyee => {
+            const tests = requestPlyee.map((plyee) => {
                 if (!plyee.test) {
                     throw new Error(`Plyee is not a test: ${plyee}`);
                 }
@@ -344,14 +351,13 @@ export class Plier extends EventEmitter {
 
         const requestRunner = new PlyRunner(this.ply.options, requestTests, plyValues, this.logger);
         await requestRunner.runSuiteTests(values, runOptions);
-        if (this.ply.options.parallel) promises = [ ...promises, ...requestRunner.promises ];
-        else combined = [ ...combined, ...requestRunner.results ];
-
+        if (this.ply.options.parallel) promises = [...promises, ...requestRunner.promises];
+        else combined = [...combined, ...requestRunner.results];
 
         // flows
         const flowTests = new Map<FlowSuite, string[]>();
         for (const [loc, flowPlyee] of Plyee.flows(plyees)) {
-            const tests = flowPlyee.map(plyee => {
+            const tests = flowPlyee.map((plyee) => {
                 if (!plyee.test) {
                     throw new Error(`Plyee is not a test: ${plyee}`);
                 }
@@ -370,11 +376,10 @@ export class Plier extends EventEmitter {
         if (this.ply.options.parallel) promises = [...promises, ...flowRunner.promises];
         else combined = [...combined, ...flowRunner.results];
 
-
         // cases
         const caseTests = new Map<Suite<Case>, string[]>();
         for (const [loc, casePlyee] of Plyee.cases(plyees)) {
-            const tests = casePlyee.map(plyee => {
+            const tests = casePlyee.map((plyee) => {
                 if (!plyee.test) {
                     throw new Error(`Plyee is not a test: ${plyee}`);
                 }
@@ -392,7 +397,6 @@ export class Plier extends EventEmitter {
         await caseRunner.runSuiteTests(values, runOptions);
         if (this.ply.options.parallel) promises = [...promises, ...caseRunner.promises];
         else combined = [...combined, ...caseRunner.results];
-
 
         if (this.ply.options.parallel) {
             for (const results of await Promise.all(promises)) {
@@ -426,7 +430,13 @@ export class Plier extends EventEmitter {
                     const requestSuite = await this.ply.loadRequestSuite(path);
                     if (!requestSuite.skip) {
                         for (const request of requestSuite) {
-                            plyees.push(this.ply.options.testsLocation + '/' + requestSuite.path + '#' + request.name);
+                            plyees.push(
+                                this.ply.options.testsLocation +
+                                    '/' +
+                                    requestSuite.path +
+                                    '#' +
+                                    request.name
+                            );
                         }
                     }
                 } else if (Plyee.isCase(path)) {
@@ -434,7 +444,13 @@ export class Plier extends EventEmitter {
                     for (const caseSuite of caseSuites) {
                         if (!caseSuite.skip) {
                             for (const testCase of caseSuite) {
-                                plyees.push(this.ply.options.testsLocation + '/' + caseSuite.path + '#' + testCase.name);
+                                plyees.push(
+                                    this.ply.options.testsLocation +
+                                        '/' +
+                                        caseSuite.path +
+                                        '#' +
+                                        testCase.name
+                                );
                             }
                         }
                     }
@@ -443,7 +459,13 @@ export class Plier extends EventEmitter {
                     for (const flowSuite of flowSuites) {
                         if (!flowSuite.skip) {
                             for (const step of flowSuite) {
-                                plyees.push(this.ply.options.testsLocation + '/' + flowSuite.path + '#' + step.name);
+                                plyees.push(
+                                    this.ply.options.testsLocation +
+                                        '/' +
+                                        flowSuite.path +
+                                        '#' +
+                                        step.name
+                                );
                             }
                         }
                     }

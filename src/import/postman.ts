@@ -7,12 +7,9 @@ import * as yaml from '../yaml';
 import * as util from '../util';
 
 export class Postman implements Importer {
+    private storagePathToRequestsObj = new Map<string, { [key: string]: Request }>();
 
-    private storagePathToRequestsObj = new Map<string,{[key: string]:Request}>();
-
-    constructor(
-        readonly logger: Log
-    ) { }
+    constructor(readonly logger: Log) {}
 
     async import(from: Retrieval, options: ImportOptions) {
         const opts: ImportOptions = { indent: 2, importToSuite: false, ...options };
@@ -31,11 +28,18 @@ export class Postman implements Importer {
                     values[value.key] = value.value;
                 }
             }
-            this.writeStorage(`${opts.valuesLocation}/${name}.json`, JSON.stringify(values, null, opts.indent));
+            this.writeStorage(
+                `${opts.valuesLocation}/${name}.json`,
+                JSON.stringify(values, null, opts.indent)
+            );
         } else if (obj.item) {
             // requests
             const name = this.baseName(from.location);
-            this.processItem(`${opts.testsLocation}/${name}`, obj.item, options.importToSuite || false);
+            this.processItem(
+                `${opts.testsLocation}/${name}`,
+                obj.item,
+                options.importToSuite || false
+            );
             for (const [path, requestsObj] of this.storagePathToRequestsObj) {
                 if (opts.importToSuite) {
                     this.writeStorage(path, yaml.dump(requestsObj, opts.indent || 2));
@@ -125,7 +129,7 @@ export class Postman implements Importer {
     }
 
     private replaceExpressions(input: string): string {
-        return input.replace(/\{\{(.*?)}}/g, function(_a, b) {
+        return input.replace(/\{\{(.*?)}}/g, function (_a, b) {
             return '${' + b + '}';
         });
     }

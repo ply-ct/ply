@@ -8,7 +8,6 @@ export interface Greeting {
 
 @Controller('greeting')
 export class PlyexClass {
-
     private logger = new Logger();
 
     /**
@@ -19,10 +18,10 @@ export class PlyexClass {
      *       - 'test/mocha/requests/retrieve-greeting.ply.yaml#getGreetingDefault'
      *       - 'test/mocha/requests/retrieve-greeting.ply.yaml#getGreetingLinus'
      */
-     @Get(':name?')
-     getGreeting(name: string = 'World'): Greeting {
-         return { salutation: 'Hello', name };
-     }
+    @Get(':name?')
+    getGreeting(name: string = 'World'): Greeting {
+        return { salutation: 'Hello', name };
+    }
 
     /**
      * Create a greeting

@@ -3,7 +3,6 @@ import { Ply } from '../../src/ply';
 import { Config } from '../../src/options';
 
 describe('Skip', () => {
-
     it('should identify skipped requests', async () => {
         const ply = new Ply();
         const suites = await ply.loadRequests(
@@ -16,7 +15,6 @@ describe('Skip', () => {
     });
 
     it('should identify skipped cases', async () => {
-
         const ply = new Ply({
             ...new Config().options,
             testsLocation: 'test/mocha',
@@ -30,5 +28,4 @@ describe('Skip', () => {
         assert.ok(!suites[1].skip);
         assert.ok(suites[2].skip);
     });
-
 });

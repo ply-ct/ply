@@ -6,7 +6,6 @@ import * as util from './util';
  * duplicated in vscode-ply/media/values.ts
  */
 function get(input: string, context: object): string {
-
     if (input.startsWith('${~')) return input; // ignore regex
 
     // escape all \
@@ -38,9 +37,11 @@ export function tokenize(path: string): (string | number)[] {
             let remains = seg.substring(start);
             while (remains.length > 0) {
                 const indexer = remains.substring(1, remains.indexOf(']'));
-                if ((indexer.startsWith("'") && indexer.startsWith("'")) ||
-                        (indexer.endsWith('"') && indexer.endsWith('"'))) {
-                    segs.push(indexer.substring(1, indexer.length - 1));  // object property
+                if (
+                    (indexer.startsWith("'") && indexer.startsWith("'")) ||
+                    (indexer.endsWith('"') && indexer.endsWith('"'))
+                ) {
+                    segs.push(indexer.substring(1, indexer.length - 1)); // object property
                 } else {
                     segs.push(parseInt(indexer)); // array index
                 }
@@ -65,7 +66,7 @@ export function replace(template: string, context: object, logger: Logger): stri
         try {
             let l = line.replace(/\${@\[/g, '${' + RESULTS + '[');
             l = l.replace(/\${@/g, '${' + RESULTS + '.');
-            lines.push(l.replace(/\$\{.+?}/g, expr => get(expr, context)));
+            lines.push(l.replace(/\$\{.+?}/g, (expr) => get(expr, context)));
         } catch (err: any) {
             if (err.message === `${RESULTS} is not defined`) {
                 err.message = 'No previous results found';
@@ -77,4 +78,3 @@ export function replace(template: string, context: object, logger: Logger): stri
     }
     return lines.join('\n');
 }
-

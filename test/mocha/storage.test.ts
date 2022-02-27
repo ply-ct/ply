@@ -2,7 +2,6 @@ import * as assert from 'assert';
 import { Storage } from '../../src/storage';
 
 describe('Storage', () => {
-
     it('should build path', () => {
         const storage = new Storage('temp/greeting.txt');
         assert.strictEqual(storage.toString(), 'temp/greeting.txt');

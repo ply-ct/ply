@@ -16,8 +16,8 @@ export class PlyCase implements Case, PlyTest {
         readonly method: string,
         readonly start: number,
         readonly end: number,
-        readonly logger: Logger) {
-    }
+        readonly logger: Logger
+    ) {}
 
     /**
      * Only to be called in the context of a Suite (hence 'runtime').
@@ -38,7 +38,9 @@ export class PlyCase implements Case, PlyTest {
 
         const method = decoratedSuite.instance[this.method];
         if (!method) {
-            throw new Error(`Case method ${this.method} not found in suite class ${runtime.retrieval.location}`);
+            throw new Error(
+                `Case method ${this.method} not found in suite class ${runtime.retrieval.location}`
+            );
         }
         await method.call(decoratedSuite.instance, values);
 

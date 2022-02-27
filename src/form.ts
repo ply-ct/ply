@@ -10,7 +10,6 @@ interface Part {
 }
 
 export class MultipartForm {
-
     private options = { fileNameToBase: true };
     private contentTypeHeader: [string, string];
     private parts: Part[];
@@ -28,7 +27,7 @@ export class MultipartForm {
 
         if (!request.body) throw new Error('Body is required for multipart/form-data');
         this.parts = this.getParts(request.body, boundary);
-     }
+    }
 
     getRequest(): Request {
         const formData = new FormData();
@@ -58,7 +57,7 @@ export class MultipartForm {
     }
 
     getBoundary(contentType: string): string {
-        const segs = contentType.split(';').map(s => s.trim());
+        const segs = contentType.split(';').map((s) => s.trim());
         if (segs.length < 2 || !segs[1].startsWith('boundary=') || segs[1].length < 11) {
             throw new Error('boundary is required');
         }
@@ -66,7 +65,7 @@ export class MultipartForm {
     }
 
     getParts(body: string, boundary: string): Part[] {
-        const lines = util.lines(body).map(l => l.trim());
+        const lines = util.lines(body).map((l) => l.trim());
         return lines.reduce((parts: Part[], line) => {
             if (line === boundary) {
                 parts.push({ name: '' });
@@ -74,12 +73,12 @@ export class MultipartForm {
                 const part = parts[parts.length - 1];
                 if (!part) throw new Error('Missing boundary start');
                 if (line.toLowerCase().startsWith('content-disposition')) {
-                    const segs = line.split(';').map(s => s.trim());
+                    const segs = line.split(';').map((s) => s.trim());
                     if (segs.length < 2 || !segs[1].startsWith('name=') || segs[1].length < 7) {
                         throw new Error('name is required');
                     }
                     part.name = segs[1].substring(6, segs[1].length - 1);
-                    const filenameSeg = segs.find(s => s.startsWith('filename='));
+                    const filenameSeg = segs.find((s) => s.startsWith('filename='));
                     if (filenameSeg && filenameSeg.length >= 11) {
                         part.filename = filenameSeg.substring(10, filenameSeg.length - 1);
                     }

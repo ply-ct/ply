@@ -23,7 +23,7 @@ export interface Subflow {
 export class FlowResults {
     results: Result[] = [];
 
-    constructor(readonly name: string) { }
+    constructor(readonly name: string) {}
 
     get latest(): Result {
         if (this.results.length > 0) {
@@ -83,7 +83,6 @@ export class PlyFlow implements Flow {
      * Run a ply flow.
      */
     async run(runtime: Runtime, values: object, runOptions?: RunOptions): Promise<Result> {
-
         (values as any)[RUN_ID] = this.instance.runId || util.genId();
 
         if (this.flow.attributes?.values) {
@@ -106,7 +105,10 @@ export class PlyFlow implements Flow {
         if (!expectedExists && runOptions?.submitIfExpectedMissing) {
             runOptions.submit = true;
         }
-        if (runOptions?.createExpected || (!expectedExists && runOptions?.createExpectedIfMissing)) {
+        if (
+            runOptions?.createExpected ||
+            (!expectedExists && runOptions?.createExpectedIfMissing)
+        ) {
             this.logger.info(`Creating expected result: ${runtime.results.expected}`);
             runtime.results.expected.write('');
             runOptions.createExpected = true;
@@ -124,7 +126,7 @@ export class PlyFlow implements Flow {
             return this.endFlow();
         }
 
-        const startStep = this.flow.steps?.find(s => s.path === 'start');
+        const startStep = this.flow.steps?.find((s) => s.path === 'start');
         if (!startStep) {
             throw new Error(`Cannot find start step in flow: ${this.flow.path}`);
         }
@@ -153,14 +155,26 @@ export class PlyFlow implements Flow {
     /**
      * Executes a step within a flow and recursively executes the following step(s).
      */
-    async exec(step: flowbee.Step, runtime: Runtime, values: object, runOptions?: RunOptions, subflow?: Subflow) {
-
+    async exec(
+        step: flowbee.Step,
+        runtime: Runtime,
+        values: object,
+        runOptions?: RunOptions,
+        subflow?: Subflow
+    ) {
         await this.runSubflows(this.getSubflows('Before', step), runtime, values, runOptions);
         if (this.results.latestBad() && runtime.options.bail) {
             return;
         }
 
-        const plyStep = new PlyStep(step, this.requestSuite, this.logger, this.flow.path, this.instance.id, subflow?.subflow);
+        const plyStep = new PlyStep(
+            step,
+            this.requestSuite,
+            this.logger,
+            this.flow.path,
+            this.instance.id,
+            subflow?.subflow
+        );
         if (subflow) {
             if (!subflow.instance.stepInstances) {
                 subflow.instance.stepInstances = [];
@@ -203,12 +217,12 @@ export class PlyFlow implements Flow {
         if (step.links) {
             for (const link of step.links) {
                 const result = plyStep.instance.result?.trim();
-                if ((!result && !link.result) || (result === link.result)) {
+                if ((!result && !link.result) || result === link.result) {
                     let outStep: Step | undefined;
                     if (subflow) {
-                        outStep = subflow.subflow.steps?.find(s => s.id === link.to);
+                        outStep = subflow.subflow.steps?.find((s) => s.id === link.to);
                     } else {
-                        outStep = this.flow.steps?.find(s => s.id === link.to);
+                        outStep = this.flow.steps?.find((s) => s.id === link.to);
                     }
                     if (!outStep) {
                         throw new Error(`No such step: ${link.to} (linked from ${link.id})`);
@@ -218,26 +232,31 @@ export class PlyFlow implements Flow {
             }
         }
         if (outSteps.length === 0 && step.path !== 'stop') {
-            throw new Error(`No outbound link from step ${step.id} matches result: ${plyStep.instance.result}`);
+            throw new Error(
+                `No outbound link from step ${step.id} matches result: ${plyStep.instance.result}`
+            );
         }
 
         // steps can execute in parallel
-        await Promise.all(outSteps.map(outStep => this.exec(outStep, runtime, values, runOptions, subflow)));
+        await Promise.all(
+            outSteps.map((outStep) => this.exec(outStep, runtime, values, runOptions, subflow))
+        );
     }
 
     getSubflows(type: 'Before' | 'After', step?: flowbee.Step): Subflow[] {
-        const subflows = this.flow.subflows?.filter(sub => {
-            if (sub.attributes?.when === type) {
-                const steps = sub.attributes?.steps;
-                if (step) {
-                    return steps ? minimatch(step.name, steps) : false;
-                } else {
-                    return !steps;
+        const subflows =
+            this.flow.subflows?.filter((sub) => {
+                if (sub.attributes?.when === type) {
+                    const steps = sub.attributes?.steps;
+                    if (step) {
+                        return steps ? minimatch(step.name, steps) : false;
+                    } else {
+                        return !steps;
+                    }
                 }
-            }
-        }) || [];
+            }) || [];
         const flowInstanceId = this.instance.id;
-        return subflows.map(subflow => {
+        return subflows.map((subflow) => {
             return {
                 subflow,
                 instance: {
@@ -252,9 +271,14 @@ export class PlyFlow implements Flow {
         });
     }
 
-    async runSubflows(subflows: Subflow[], runtime: Runtime, values: object, runOptions?: RunOptions) {
+    async runSubflows(
+        subflows: Subflow[],
+        runtime: Runtime,
+        values: object,
+        runOptions?: RunOptions
+    ) {
         for (const subflow of subflows) {
-            const startStep = subflow.subflow.steps?.find(s => s.path === 'start');
+            const startStep = subflow.subflow.steps?.find((s) => s.path === 'start');
             if (!startStep) {
                 throw new Error(`Cannot find start step in subflow: ${subflow.subflow.id}`);
             }
@@ -267,21 +291,37 @@ export class PlyFlow implements Flow {
 
             this.emit('start', 'subflow', subflow.instance);
             this.logger.info('Executing subflow', subflow.subflow.name);
-            runtime.appendResult(`${subflow.subflow.name}:`, 0, runOptions?.createExpected, util.timestamp(subflow.instance.start));
+            runtime.appendResult(
+                `${subflow.subflow.name}:`,
+                0,
+                runOptions?.createExpected,
+                util.timestamp(subflow.instance.start)
+            );
             runtime.appendResult(`id: ${subflow.subflow.id}`, 1, runOptions?.createExpected);
             await this.exec(startStep, runtime, values, runOptions, subflow);
             subflow.instance.end = new Date();
             const elapsed = subflow.instance.end.getTime() - subflow.instance.start.getTime();
             if (this.results.latestBad()) {
-                subflow.instance.status = this.results.latest.status === 'Errored' ? 'Errored' : 'Failed';
-                runtime.appendResult(`status: ${subflow.instance.status}`, 1, runOptions?.createExpected, `${elapsed} ms`);
+                subflow.instance.status =
+                    this.results.latest.status === 'Errored' ? 'Errored' : 'Failed';
+                runtime.appendResult(
+                    `status: ${subflow.instance.status}`,
+                    1,
+                    runOptions?.createExpected,
+                    `${elapsed} ms`
+                );
                 this.emit('error', 'subflow', subflow.instance);
                 if (runtime.options.bail) {
                     return;
                 }
             } else {
                 subflow.instance.status = 'Completed';
-                runtime.appendResult(`status: ${subflow.instance.status}`, 1, runOptions?.createExpected, `${elapsed} ms`);
+                runtime.appendResult(
+                    `status: ${subflow.instance.status}`,
+                    1,
+                    runOptions?.createExpected,
+                    `${elapsed} ms`
+                );
                 this.emit('finish', 'subflow', subflow.instance);
             }
         }

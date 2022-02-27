@@ -4,9 +4,7 @@ import { UnnamedSuite, NamedSuite } from './suites';
 import { DecoratedSuite } from '../../src/runtime';
 
 describe('Decorators', async () => {
-
     it('reads unnamed @suite', async () => {
-
         const unnamed = new UnnamedSuite();
         const decorated = new DecoratedSuite(unnamed);
         assert.strictEqual(decorated.testSuite.name, 'UnnamedSuite');
@@ -25,7 +23,6 @@ describe('Decorators', async () => {
     });
 
     it('reads named @suite', async () => {
-
         const named = new NamedSuite();
         const decorated = new DecoratedSuite(named);
         assert.strictEqual(decorated.testSuite.name, 'my suite name');
@@ -56,30 +53,29 @@ describe('Decorators', async () => {
         assert.strictEqual(suites[0].name, 'UnnamedSuite');
         assert.strictEqual(suites[0].className, 'UnnamedSuite');
         assert.strictEqual(suites[0].start, 6);
-        assert.strictEqual(suites[0].end, 35);
+        assert.strictEqual(suites[0].end, 34);
         const unnamedTests = suites[0].tests;
         assert.strictEqual(Object.keys(unnamedTests).length, 2);
         const unnamedCaseNoValues = suites[0].tests['unnamedCaseNoValues'];
         assert.strictEqual(unnamedCaseNoValues.name, 'unnamedCaseNoValues');
         assert.strictEqual(unnamedCaseNoValues.method, 'unnamedCaseNoValues');
-        assert.strictEqual(unnamedCaseNoValues.start, 19);
-        assert.strictEqual(unnamedCaseNoValues.end, 22);
+        assert.strictEqual(unnamedCaseNoValues.start, 18);
+        assert.strictEqual(unnamedCaseNoValues.end, 21);
         const unnamedCaseWithValues = suites[0].tests['unnamedCaseWithValues'];
         assert.strictEqual(unnamedCaseWithValues.name, 'unnamedCaseWithValues');
         assert.strictEqual(unnamedCaseWithValues.method, 'unnamedCaseWithValues');
 
         assert.strictEqual(suites[1].name, 'my suite name');
         assert.strictEqual(suites[1].className, 'NamedSuite');
-        assert.strictEqual(suites[1].start, 37);
-        assert.strictEqual(suites[1].end, 76);
+        assert.strictEqual(suites[1].start, 36);
+        assert.strictEqual(suites[1].end, 74);
         const namedCaseNoValues = suites[1].tests['first case'];
         assert.strictEqual(namedCaseNoValues.name, 'first case');
         assert.strictEqual(namedCaseNoValues.method, 'namedCaseNoValues');
-        assert.strictEqual(namedCaseNoValues.start, 55);
-        assert.strictEqual(namedCaseNoValues.end, 58);
+        assert.strictEqual(namedCaseNoValues.start, 53);
+        assert.strictEqual(namedCaseNoValues.end, 56);
         const namedCaseWithValues = suites[1].tests['second case'];
         assert.strictEqual(namedCaseWithValues.name, 'second case');
         assert.strictEqual(namedCaseWithValues.method, 'namedCaseWithValues');
     });
-
 });

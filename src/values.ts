@@ -14,13 +14,9 @@ import { Logger } from './logger';
 const PLY_VALUES = 'PLY_VALUES';
 
 export class Values {
-
     private rowsLoc: string | undefined;
 
-    constructor(
-        private readonly locations: string[],
-        private readonly logger: Logger
-    ) {
+    constructor(private readonly locations: string[], private readonly logger: Logger) {
         for (const loc of locations) {
             if (loc.endsWith('.csv') || loc.endsWith('.xlsx')) {
                 if (this.rowsLoc) {
@@ -50,7 +46,9 @@ export class Values {
                         throw new Error(`Cannot parse values file: ${location} (${err.message})`);
                     }
                 } else {
-                    this.logger.debug(`Values file not found: ${path.normalize(path.resolve(location))}`);
+                    this.logger.debug(
+                        `Values file not found: ${path.normalize(path.resolve(location))}`
+                    );
                 }
             }
         }
@@ -72,7 +70,7 @@ export class Values {
             throw new Error('Rowwise values required for row converter');
         }
 
-        const baseVals = await this.read() || {};
+        const baseVals = (await this.read()) || {};
 
         if (this.rowsLoc.endsWith('.xlsx')) {
             const readable = new stream.Readable({ objectMode: true });
@@ -84,8 +82,7 @@ export class Values {
             return readable;
         } else {
             // stream csv records
-            const parser = fs.createReadStream(this.rowsLoc)
-                .pipe(csv({ to_line: 1 }));
+            const parser = fs.createReadStream(this.rowsLoc).pipe(csv({ to_line: 1 }));
             // header row
             let converter: RowConverter;
             for await (const row of parser) {
@@ -108,13 +105,12 @@ export class Values {
  * Reads entire csv file into rows in memory
  */
 export const fromCsv = async (file: string): Promise<any[]> => {
-
     const valueObjs: any[] = [];
-    const parser = fs
-        .createReadStream(file)
-        .pipe(csv({
+    const parser = fs.createReadStream(file).pipe(
+        csv({
             // CSV options if any
-        }));
+        })
+    );
 
     let converter: RowConverter | undefined;
     for await (const row of parser) {
@@ -170,16 +166,12 @@ const defaultOptions: ConverterOptions = {
 };
 
 export class DefaultRowConverter implements RowConverter {
-
     readonly names: string[];
     readonly options: ConverterOptions;
 
-    constructor(
-        names: any[],
-        options?: ConverterOptions
-    ) {
+    constructor(names: any[], options?: ConverterOptions) {
         this.options = deepmerge(defaultOptions, options || {});
-        this.names = names.map(name => {
+        this.names = names.map((name) => {
             if (this.options.trimLabels) {
                 return ('' + name).trim();
             } else {

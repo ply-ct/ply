@@ -14,7 +14,6 @@ const values = {
 };
 
 describe('Cases', async () => {
-
     beforeEach(() => {
         const missingExpected = new Storage('test/mocha/results/expected/cases/movie-crud.yaml');
         if (missingExpected.exists) {
@@ -33,7 +32,10 @@ describe('Cases', async () => {
         assert.strictEqual(suites[0].className, 'MovieCrud');
         assert.strictEqual(suites[0].type, 'case');
         assert.strictEqual(suites[0].path, 'cases/movieCrud.ply.ts');
-        assert.strictEqual(suites[0].outFile, new Location('out/test/ply/cases/movieCrud.ply.js').absolute);
+        assert.strictEqual(
+            suites[0].outFile,
+            new Location('out/test/ply/cases/movieCrud.ply.js').absolute
+        );
     });
 
     it('is loaded from ts', async () => {
@@ -52,7 +54,7 @@ describe('Cases', async () => {
         assert.deepStrictEqual(create, c2);
         assert.strictEqual(create.method, 'createMovie');
         assert.strictEqual(create.type, 'case');
-        assert.strictEqual(create.start, 30);
+        assert.strictEqual(create.start, 29);
     });
 
     it('can run unnamed suite', async () => {
@@ -65,7 +67,8 @@ describe('Cases', async () => {
         const unnamedSuite = suites[0];
         const results = await unnamedSuite.run({ myValue: 'foo', otherValue: 'bar' });
 
-        const instance = ((unnamedSuite as any).runtime as Runtime).decoratedSuite!.instance as UnnamedSuite;
+        const instance = ((unnamedSuite as any).runtime as Runtime).decoratedSuite!
+            .instance as UnnamedSuite;
         assert.strictEqual(instance.beforeCount, 1);
         assert.deepStrictEqual(instance.testsRun, ['unnamedCaseNoValues', 'unnamedCaseWithValues']);
         assert.strictEqual(instance.aValue, 'foo');
@@ -87,7 +90,8 @@ describe('Cases', async () => {
         const unnamedSuite = suites[1];
         const results = await unnamedSuite.run({ myValue: 'zero', otherValue: 'bar' });
 
-        const instance = ((unnamedSuite as any).runtime as Runtime).decoratedSuite!.instance as UnnamedSuite;
+        const instance = ((unnamedSuite as any).runtime as Runtime).decoratedSuite!
+            .instance as UnnamedSuite;
         assert.strictEqual(instance.beforeCount, 3);
         assert.deepStrictEqual(instance.testsRun, ['namedCaseNoValues', 'namedCaseWithValues']);
         assert.strictEqual(instance.aValue, 'zero');
@@ -119,18 +123,23 @@ describe('Cases', async () => {
 
     it('can run plyee', async () => {
         const plier = new Plier();
-        const results = await plier.run(['test/ply/cases/movieCrud.ply.ts#add new movie'], { values });
+        const results = await plier.run(['test/ply/cases/movieCrud.ply.ts#add new movie'], {
+            values
+        });
         assert.strictEqual(results[0].status, 'Passed');
         assert.strictEqual(results[0].message, 'Test succeeded');
     });
 
     it('can run plyees', async () => {
         const plier = new Plier();
-        const results = await plier.run([
-            'test/ply/cases/movieCrud.ply.ts#add new movie',
-            'test/ply/cases/movieCrud.ply.ts#update rating',
-            'test/ply/cases/movieCrud.ply.ts#remove movie'
-          ], { values });
+        const results = await plier.run(
+            [
+                'test/ply/cases/movieCrud.ply.ts#add new movie',
+                'test/ply/cases/movieCrud.ply.ts#update rating',
+                'test/ply/cases/movieCrud.ply.ts#remove movie'
+            ],
+            { values }
+        );
         assert.strictEqual(results[0].status, 'Passed');
         assert.strictEqual(results[0].message, 'Test succeeded');
         assert.strictEqual(results[1].status, 'Passed');
@@ -173,5 +182,4 @@ describe('Cases', async () => {
         assert.strictEqual(results[1].status, 'Submitted');
         assert.strictEqual(results[2].status, 'Submitted');
     });
-
 });

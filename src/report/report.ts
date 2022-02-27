@@ -7,18 +7,18 @@ import { JsonReporter } from './json';
 import { HtmlReporter } from './html';
 
 export class Report {
-  constructor(readonly format: ReportFormat, readonly logger: Log) {}
+    constructor(readonly format: ReportFormat, readonly logger: Log) {}
 
-  createReporter(): Reporter {
-    switch (this.format) {
-      case "json": {
-        return new JsonReporter(this.logger);
-      }
-      case "html": {
-        return new HtmlReporter(this.logger);
-      }
+    createReporter(): Reporter {
+        switch (this.format) {
+            case 'json': {
+                return new JsonReporter(this.logger);
+            }
+            case 'html': {
+                return new HtmlReporter(this.logger);
+            }
+        }
     }
-  }
 }
 
 export const findRunFiles = async (runsLocation: string): Promise<string[]> => {
@@ -27,7 +27,7 @@ export const findRunFiles = async (runsLocation: string): Promise<string[]> => {
             if (err) {
                 reject(err);
             } else {
-                resolve(matches.map(m => `${runsLocation}/${m}`));
+                resolve(matches.map((m) => `${runsLocation}/${m}`));
             }
         });
     });
@@ -44,12 +44,12 @@ export const loadSuiteRuns = async (runsLocation: string): Promise<PlyResults> =
         const lastDot = base.lastIndexOf('.');
         const suiteName = base.substring(0, lastDot);
         const runNumber = parseInt(base.substring(lastDot + 1));
-        const contents = await fs.promises.readFile(runFile, { encoding: "utf-8" });
+        const contents = await fs.promises.readFile(runFile, { encoding: 'utf-8' });
         const testRuns: TestRun[] = JSON.parse(contents);
 
-        testRuns.forEach(tr => {
-          if (tr.start) tr.start = new Date(tr.start);
-          if (tr.end) tr.end = new Date(tr.end);
+        testRuns.forEach((tr) => {
+            if (tr.start) tr.start = new Date(tr.start);
+            if (tr.end) tr.end = new Date(tr.end);
         });
 
         const consolidateResults = (testRuns: TestRun[]): RunResult => {
@@ -65,12 +65,13 @@ export const loadSuiteRuns = async (runsLocation: string): Promise<PlyResults> =
         };
 
         suiteRuns.push({
-          suite: suiteName,
-          run: runNumber,
-          result: consolidateResults(testRuns),
-          ...(testRuns.length > 0 && testRuns[0].start && { start: testRuns[0].start }),
-          ...(testRuns.length > 0 && testRuns[testRuns.length - 1].end && { end: testRuns[testRuns.length - 1].end }),
-          testRuns
+            suite: suiteName,
+            run: runNumber,
+            result: consolidateResults(testRuns),
+            ...(testRuns.length > 0 && testRuns[0].start && { start: testRuns[0].start }),
+            ...(testRuns.length > 0 &&
+                testRuns[testRuns.length - 1].end && { end: testRuns[testRuns.length - 1].end }),
+            testRuns
         });
     }
     suiteRuns.sort((r1, r2) => {
@@ -81,10 +82,9 @@ export const loadSuiteRuns = async (runsLocation: string): Promise<PlyResults> =
         }
     });
     const overall = { Passed: 0, Failed: 0, Errored: 0, Pending: 0, Submitted: 0 };
-    suiteRuns.forEach(sr => {
+    suiteRuns.forEach((sr) => {
         overall[sr.result.status]++;
     });
 
     return { overall, runs: suiteRuns };
 };
-

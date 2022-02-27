@@ -38,7 +38,6 @@ export function genId(): string {
  *     DD/MM/YYYY, HH:mm:ss (not tested actually)
  */
 export function timeparse(time: string): Date | undefined {
-
     const parser = /(\d+?)\/(\d+?)\/(\d+?), (\d+?):(\d+?):(\d+?):(\d+?)$/;
     const match = time.match(parser);
     if (match) {
@@ -47,13 +46,13 @@ export function timeparse(time: string): Date | undefined {
         const month = first === 'month' ? 1 : 2;
         const day = month === 1 ? 2 : 1;
         return new Date(
-            parseInt(match[3]),         // year
+            parseInt(match[3]), // year
             parseInt(match[month]) - 1, // monthIndex
-            parseInt(match[day]),       // day
-            parseInt(match[4]),         // hours
-            parseInt(match[5]),         // minutes
-            parseInt(match[6]),         // seconds
-            parseInt(match[7])          // millis
+            parseInt(match[day]), // day
+            parseInt(match[4]), // hours
+            parseInt(match[5]), // minutes
+            parseInt(match[6]), // seconds
+            parseInt(match[7]) // millis
         );
     }
 }
@@ -96,13 +95,13 @@ export function fixEol(path: string): string {
 
 export function writeableName(name: string): string {
     return name
-      .replace(/</g, '-')
-      .replace(/>/g, '-')
-      .replace(/:/g, '-')
-      .replace(/"/g, '-')
-      .replace(/\|/g, '-')
-      .replace(/\?/g, '-')
-      .replace(/\*/g, '-');
+        .replace(/</g, '-')
+        .replace(/>/g, '-')
+        .replace(/:/g, '-')
+        .replace(/"/g, '-')
+        .replace(/\|/g, '-')
+        .replace(/\?/g, '-')
+        .replace(/\*/g, '-');
 }
 
 export function writeableFileName(file: string): string {
@@ -113,9 +112,12 @@ export function writeablePath(path: string): string {
     return writeableName(path).replace(/ \/ /g, '/');
 }
 
-export function header(headers: { [key: string]: string }, name: string): [string, string] | undefined {
+export function header(
+    headers: { [key: string]: string },
+    name: string
+): [string, string] | undefined {
     const key = name.toLowerCase();
-    const match = Object.keys(headers).find(h => h.toLowerCase() === key);
+    const match = Object.keys(headers).find((h) => h.toLowerCase() === key);
     if (match) return [match, headers[match]];
 }
 
@@ -128,22 +130,24 @@ export function plyVersion(): Promise<string> {
             try {
                 const plyDir = `${process.cwd()}/node_modules/@ply-ct/ply`;
                 if (fs.existsSync(`${plyDir}/package.json`)) {
-                    fs.promises.readFile(`${plyDir}/package.json`, { encoding: 'utf-8' })
-                    .then(contents => {
-                        cachedPlyVersion = JSON.parse(contents).version;
-                        resolve(cachedPlyVersion);
-                    });
-                } else if (fs.existsSync(`${process.cwd()}/package.json`)) {
-                    fs.promises.readFile(`${process.cwd()}/package.json`, { encoding: 'utf-8' })
-                    .then(contents => {
-                        const pkgJson = JSON.parse(contents);
-                        if (pkgJson.name === '@ply-ct/ply') {
-                            cachedPlyVersion = pkgJson.version;
+                    fs.promises
+                        .readFile(`${plyDir}/package.json`, { encoding: 'utf-8' })
+                        .then((contents) => {
+                            cachedPlyVersion = JSON.parse(contents).version;
                             resolve(cachedPlyVersion);
-                        } else {
-                            resolve('unknown');
-                        }
-                    });
+                        });
+                } else if (fs.existsSync(`${process.cwd()}/package.json`)) {
+                    fs.promises
+                        .readFile(`${process.cwd()}/package.json`, { encoding: 'utf-8' })
+                        .then((contents) => {
+                            const pkgJson = JSON.parse(contents);
+                            if (pkgJson.name === '@ply-ct/ply') {
+                                cachedPlyVersion = pkgJson.version;
+                                resolve(cachedPlyVersion);
+                            } else {
+                                resolve('unknown');
+                            }
+                        });
                 } else {
                     resolve('unknown');
                 }

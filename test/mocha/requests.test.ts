@@ -14,9 +14,10 @@ const values = {
 };
 
 describe('Requests', async () => {
-
     beforeEach(() => {
-        const missingExpected = new Storage('test/mocha/results/expected/requests/movie-queries.yaml');
+        const missingExpected = new Storage(
+            'test/mocha/results/expected/requests/movie-queries.yaml'
+        );
         if (missingExpected.exists) {
             missingExpected.remove();
         }
@@ -47,28 +48,39 @@ describe('Requests', async () => {
         const ply = new Ply();
 
         let suite = await ply.loadRequestSuite('test/ply/requests/movie-queries.ply.yaml');
-        assert.strictEqual(suite.runtime.results.expected.location.toString(),
-            'test/ply/results/expected/requests/movie-queries.yaml');
-        assert.strictEqual(suite.runtime.results.actual.location.toString(),
-            'test/ply/results/actual/requests/movie-queries.yaml');
+        assert.strictEqual(
+            suite.runtime.results.expected.location.toString(),
+            'test/ply/results/expected/requests/movie-queries.yaml'
+        );
+        assert.strictEqual(
+            suite.runtime.results.actual.location.toString(),
+            'test/ply/results/actual/requests/movie-queries.yaml'
+        );
 
         ply.options.resultFollowsRelativePath = false;
         suite = await ply.loadRequestSuite('test/ply/requests/movie-queries.ply.yaml');
-        assert.strictEqual(suite.runtime.results.expected.location.toString(),
-            'test/ply/results/expected/movie-queries.yaml');
-        assert.strictEqual(suite.runtime.results.actual.location.toString(),
-            'test/ply/results/actual/movie-queries.yaml');
+        assert.strictEqual(
+            suite.runtime.results.expected.location.toString(),
+            'test/ply/results/expected/movie-queries.yaml'
+        );
+        assert.strictEqual(
+            suite.runtime.results.actual.location.toString(),
+            'test/ply/results/actual/movie-queries.yaml'
+        );
     });
 
     it('rejects missing url', async () => {
         const ply = new Ply();
-        await assert.rejects(async () => {
-            return ply.loadRequests(['test/mocha/requests/bad-requests.ply.yaml']);
-        },
-        {
-            name: 'Error',
-            message: "Request 'missingUrl' in test/mocha/requests/bad-requests.ply.yaml is missing 'url'"
-        });
+        await assert.rejects(
+            async () => {
+                return ply.loadRequests(['test/mocha/requests/bad-requests.ply.yaml']);
+            },
+            {
+                name: 'Error',
+                message:
+                    "Request 'missingUrl' in test/mocha/requests/bad-requests.ply.yaml is missing 'url'"
+            }
+        );
     });
 
     it('can load raw requests', async () => {
@@ -98,7 +110,7 @@ describe('Requests', async () => {
         const suite = suites[0];
 
         const values = {
-            baseUrl: "http://localhost:3000",
+            baseUrl: 'http://localhost:3000',
             year: 1931,
             rating: 5
         };
@@ -114,14 +126,17 @@ describe('Requests', async () => {
         const suite = suites[0];
 
         const values = {
-            baseUrl: "http://localhost:3000",
-            year: 1932,  // instead of 1931
+            baseUrl: 'http://localhost:3000',
+            year: 1932, // instead of 1931
             rating: 5
         };
 
         const result = await suite.run('moviesByYearAndRating', values);
         assert.strictEqual(result.status, 'Failed');
-        assert.strictEqual(result.message, 'Results differ from line 21 (moviesByYearAndRating:19)');
+        assert.strictEqual(
+            result.message,
+            'Results differ from line 21 (moviesByYearAndRating:19)'
+        );
     });
 
     it('can handle error', async () => {
@@ -160,18 +175,24 @@ describe('Requests', async () => {
 
     it('can run plyee', async () => {
         const plier = new Plier();
-        const results = await plier.run(['test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating'], { values });
+        const results = await plier.run(
+            ['test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating'],
+            { values }
+        );
         assert.strictEqual(results[0].status, 'Passed');
         assert.strictEqual(results[0].message, 'Test succeeded');
     });
 
     it('can run plyees', async () => {
         const plier = new Plier();
-        const results = await plier.run([
-            'test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating',
-            'test/ply/requests/movie-queries.ply.yaml#movieById',
-            'test/ply/requests/movie-queries.ply.yaml#moviesQuery'
-          ], { values });
+        const results = await plier.run(
+            [
+                'test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating',
+                'test/ply/requests/movie-queries.ply.yaml#movieById',
+                'test/ply/requests/movie-queries.ply.yaml#moviesQuery'
+            ],
+            { values }
+        );
         assert.strictEqual(results[0].status, 'Passed');
         assert.strictEqual(results[0].message, 'Test succeeded');
         assert.strictEqual(results[1].status, 'Passed');
@@ -249,7 +270,9 @@ Content-Disposition: form-data; name="field2"; filename="example.txt"
 value2
 --boundary--
 `,
-        submit: () => { throw new Error('Not implemented'); }
+        submit: () => {
+            throw new Error('Not implemented');
+        }
     };
 
     it('parses form data', () => {
@@ -265,7 +288,6 @@ value2
         assert.strictEqual(part2.name, 'field2');
         assert.strictEqual(part2.data?.toString(), 'value2');
         assert.strictEqual(part2.filename, 'example.txt');
-
     });
 
     it('runs tests from csv', async () => {
@@ -273,10 +295,7 @@ value2
             ...new Config().options,
             expectedLocation: 'test/mocha/results/expected',
             actualLocation: 'test/mocha/results/actual',
-            valuesFiles: [
-                'test/mocha/values/movies.csv',
-                'test/ply/values/localhost.json'
-            ]
+            valuesFiles: ['test/mocha/values/movies.csv', 'test/ply/values/localhost.json']
         });
         const results = await plier.run([
             'test/mocha/requests/row-requests.ply.yaml#createMovie',
@@ -316,5 +335,4 @@ value2
         assert.ok(response?.submitted);
         assert.strictEqual(typeof response?.time, 'number');
     });
-
 });

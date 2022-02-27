@@ -21,7 +21,7 @@ export interface OutcomeEvent extends PlyEvent {
 }
 
 export interface SuiteEvent extends PlyEvent {
-    type: TestType,
+    type: TestType;
     status: 'Started' | 'Finished';
 }
 

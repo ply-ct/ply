@@ -1,12 +1,11 @@
 import { suite, test, before, after } from '../../src/decorators';
 
 const sleep = (millis: number) => {
-    return new Promise(resolve => setTimeout(resolve, millis));
+    return new Promise((resolve) => setTimeout(resolve, millis));
 };
 
 @suite
 export class UnnamedSuite {
-
     beforeCount = 0;
     afterCount = 0;
     aValue: any;
@@ -37,7 +36,6 @@ export class UnnamedSuite {
 
 @suite('my suite name')
 export class NamedSuite {
-
     beforeCount = 0;
     afterCount = 0;
     aValue: any;

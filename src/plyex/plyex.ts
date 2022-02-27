@@ -38,16 +38,11 @@ export const defaultOptions: PlyexOptions = {
 };
 
 export class Plyex {
-
     readonly options: PlyexOptions;
     private ts: Ts;
-    private jsDocReaders = new Map<string,JsDocReader>();
+    private jsDocReaders = new Map<string, JsDocReader>();
 
-    constructor(
-        readonly plugin: string,
-        readonly logger: Log,
-        options?: PlyexOptions
-    ) {
+    constructor(readonly plugin: string, readonly logger: Log, options?: PlyexOptions) {
         this.options = { ...defaultOptions, ...(options || {}) };
         this.ts = new Ts(this.options.tsConfig, this.options.sourcePatterns);
     }
@@ -61,7 +56,6 @@ export class Plyex {
     }
 
     augment(openApi: OpenApi, endpointMethods?: EndpointMethod[]): OpenApi {
-
         if (!endpointMethods) {
             endpointMethods = this.getPluginEndpointMethods();
         }
@@ -70,7 +64,9 @@ export class Plyex {
                 const openApiPath = (openApi.paths || {})[endpointMethod.path];
                 if (!openApiPath) {
                     if (!openApi.paths) openApi.paths = {};
-                    openApi.paths[endpointMethod.path] = { [endpointMethod.method]: this.operation(endpointMethod) };
+                    openApi.paths[endpointMethod.path] = {
+                        [endpointMethod.method]: this.operation(endpointMethod)
+                    };
                 } else if (!openApiPath[endpointMethod.method]) {
                     openApiPath[endpointMethod.method] = this.operation(endpointMethod);
                 }
@@ -90,7 +86,7 @@ export class Plyex {
             for (const method of Object.keys(openApiPath)) {
                 const openApiMethod = method as Method;
                 const operation = openApiPath[openApiMethod]!;
-                const endpointMethod = endpointMethods.find(epm => {
+                const endpointMethod = endpointMethods.find((epm) => {
                     return epm.path === path && epm.method === openApiMethod;
                 });
 
@@ -99,25 +95,42 @@ export class Plyex {
                     if (!jsDocReader) {
                         const sourceFile = this.ts.program.getSourceFile(endpointMethod.file);
                         if (!sourceFile) {
-                            throw new Error(`Source file (${endpointMethod.file}) not found for ${this.epm(endpointMethod)}`);
+                            throw new Error(
+                                `Source file (${endpointMethod.file}) not found for ${this.epm(
+                                    endpointMethod
+                                )}`
+                            );
                         }
                         jsDocReader = new JsDocReader(this.ts, sourceFile);
                         this.jsDocReaders.set(endpointMethod.file, jsDocReader);
                     }
 
-                    const plyEndpointMeta = jsDocReader.getPlyEndpointMeta(endpointMethod, 'ply', this.options.includeUntagged);
+                    const plyEndpointMeta = jsDocReader.getPlyEndpointMeta(
+                        endpointMethod,
+                        'ply',
+                        this.options.includeUntagged
+                    );
                     if (plyEndpointMeta) {
                         if (!operation.summary || this.options.overwrite) {
-                            if (plyEndpointMeta.summaries.length > 1 && endpointMethod.lastSegmentOptional) {
+                            if (
+                                plyEndpointMeta.summaries.length > 1 &&
+                                endpointMethod.lastSegmentOptional
+                            ) {
                                 operation.summary = plyEndpointMeta.summaries[1];
                             } else {
                                 operation.summary = plyEndpointMeta.summaries[0];
                             }
                         }
-                        if (plyEndpointMeta.operationId && (!operation.operationId || this.options.overwrite)) {
+                        if (
+                            plyEndpointMeta.operationId &&
+                            (!operation.operationId || this.options.overwrite)
+                        ) {
                             operation.operationId = plyEndpointMeta.operationId;
                         }
-                        if (plyEndpointMeta.description && (!operation.description || this.options.overwrite)) {
+                        if (
+                            plyEndpointMeta.description &&
+                            (!operation.description || this.options.overwrite)
+                        ) {
                             operation.description = plyEndpointMeta.description;
                         }
                         this.examples(endpointMethod, operation, plyEndpointMeta);
@@ -129,13 +142,20 @@ export class Plyex {
     }
 
     operation(endpointMethod: EndpointMethod): Operation {
-        this.logger.info(`Adding OpenAPI operation: ${endpointMethod.path}.${endpointMethod.method}`);
+        this.logger.info(
+            `Adding OpenAPI operation: ${endpointMethod.path}.${endpointMethod.method}`
+        );
         return { summary: '' };
     }
 
-    examples(endpointMethod: EndpointMethod, operation: Operation, plyEndpointMeta: PlyEndpointMeta) {
+    examples(
+        endpointMethod: EndpointMethod,
+        operation: Operation,
+        plyEndpointMeta: PlyEndpointMeta
+    ) {
         if (plyEndpointMeta.examples?.request) {
-            if (!operation.requestBody) operation.requestBody = { description: '', content: {}, required: true };
+            if (!operation.requestBody)
+                operation.requestBody = { description: '', content: {}, required: true };
             const reqContent = operation.requestBody.content;
             let jsonPayload = reqContent['application/json'];
             if (!jsonPayload) {
@@ -147,7 +167,10 @@ export class Plyex {
                     if (schemaType) operation.requestBody.description = this.typeName(schemaType);
                 }
                 if (!jsonPayload.example || this.options.overwrite) {
-                    jsonPayload.example = this.example(endpointMethod, plyEndpointMeta.examples.request);
+                    jsonPayload.example = this.example(
+                        endpointMethod,
+                        plyEndpointMeta.examples.request
+                    );
                 }
             }
         }
@@ -158,12 +181,17 @@ export class Plyex {
                 if (respExamples.length > 0) {
                     const example = this.example(
                         endpointMethod,
-                        endpointMethod.lastSegmentOptional && respExamples.length > 1 ? respExamples[1] : respExamples[0],
-                        true);
+                        endpointMethod.lastSegmentOptional && respExamples.length > 1
+                            ? respExamples[1]
+                            : respExamples[0],
+                        true
+                    );
                     if (!operation.responses[code]) operation.responses[code] = { description: '' };
                     let respContent = operation.responses[code].content;
                     if (!respContent && typeof example === 'object') {
-                        respContent = operation.responses[code].content = { 'application/json': { schema: {} } };
+                        respContent = operation.responses[code].content = {
+                            'application/json': { schema: {} }
+                        };
                     }
                     if (respContent) {
                         let jsonPayload = respContent['application/json'];
@@ -174,7 +202,8 @@ export class Plyex {
                             if (!operation.responses[code].description) {
                                 const intCode = parseInt(code);
                                 if (!isNaN(intCode)) {
-                                    operation.responses[code].description = getReasonPhrase(intCode);
+                                    operation.responses[code].description =
+                                        getReasonPhrase(intCode);
                                 }
                                 if (!operation.responses[code].description) {
                                     operation.responses[code].description = '' + code;
@@ -186,7 +215,12 @@ export class Plyex {
                             if (jsonPayload.example) {
                                 if (code === '200' || code === '201') {
                                     const schemaType = this.schemaType(jsonPayload) || 'Unknown';
-                                    this.codeSamples(operation, endpointMethod, schemaType, jsonPayload.example);
+                                    this.codeSamples(
+                                        operation,
+                                        endpointMethod,
+                                        schemaType,
+                                        jsonPayload.example
+                                    );
                                 }
                             }
                         }
@@ -210,7 +244,12 @@ export class Plyex {
         return '';
     }
 
-    codeSamples(operation: Operation, endpointMethod: EndpointMethod, schemaType: string, example: any) {
+    codeSamples(
+        operation: Operation,
+        endpointMethod: EndpointMethod,
+        schemaType: string,
+        example: any
+    ) {
         if (operation['x-codeSamples']) {
             return; // already added
         }
@@ -267,7 +306,7 @@ export class Plyex {
     /**
      * Crude pluralization -- override with jsdoc
      */
-     private pluralize(sing: string): string {
+    private pluralize(sing: string): string {
         if (
             sing.endsWith('s') ||
             sing.endsWith('sh') ||
@@ -295,12 +334,21 @@ export class Plyex {
         return `${endpointMethod.path}.${endpointMethod.name} ${endpointMethod.method}`;
     }
 
-    private example(endpointMethod: EndpointMethod, example: string, isResponse = false): object | string {
+    private example(
+        endpointMethod: EndpointMethod,
+        example: string,
+        isResponse = false
+    ): object | string {
         if (example.startsWith('{') || example.startsWith('[')) {
             try {
                 return JSON.parse(this.cleanupJson(example));
             } catch (err: unknown) {
-                this.logger.error(`Error parsing JSON example ${isResponse ? 'response' : 'request'}: ${this.epm(endpointMethod)}`, err);
+                this.logger.error(
+                    `Error parsing JSON example ${isResponse ? 'response' : 'request'}: ${this.epm(
+                        endpointMethod
+                    )}`,
+                    err
+                );
             }
         }
         return example;
@@ -313,7 +361,6 @@ export class Plyex {
         }
         return lines.join('\n');
     }
-
 }
 
 export interface PlyexPlugin {

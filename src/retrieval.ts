@@ -6,7 +6,6 @@ import { Storage } from './storage';
  * Abstracts retrieval from either URL or {@link Storage}.
  */
 export class Retrieval {
-
     readonly location: Location;
 
     /**
@@ -19,8 +18,7 @@ export class Retrieval {
     async read(): Promise<string | undefined> {
         if (this.storage) {
             return Promise.resolve(this.storage.read());
-        }
-        else {
+        } else {
             const response = await fetch(this.location.path);
             return await response.text();
         }
@@ -29,8 +27,7 @@ export class Retrieval {
     sync(): string | undefined {
         if (this.storage) {
             return this.storage.read();
-        }
-        else {
+        } else {
             throw new Error('Retrieval.sync() not supported for remote path: ' + this);
         }
     }
@@ -40,8 +37,7 @@ export class Retrieval {
             return Promise.resolve(this.storage.exists);
         } else {
             try {
-                return fetch(this.location.path, { method: 'HEAD' })
-                .then((response: Response) => {
+                return fetch(this.location.path, { method: 'HEAD' }).then((response: Response) => {
                     return Promise.resolve(response.ok);
                 });
             } catch {

@@ -8,7 +8,6 @@ import { RunOptions } from './options';
 export type TestType = 'request' | 'case' | 'flow';
 
 export interface Test {
-
     name: string;
     type: TestType;
 

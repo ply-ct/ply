@@ -5,14 +5,10 @@ import { Postman } from './postman';
 import { Insomnia } from './insomnia';
 
 export class Import {
-
-    constructor(
-        readonly format: ImportFormat,
-        readonly logger: Log
-    ) { }
+    constructor(readonly format: ImportFormat, readonly logger: Log) {}
 
     async doImport(retrieval: Retrieval, options: ImportOptions): Promise<void> {
-        switch(this.format) {
+        switch (this.format) {
             case 'postman': {
                 await new Postman(this.logger).import(retrieval, options);
                 break;
@@ -24,4 +20,3 @@ export class Import {
         }
     }
 }
-

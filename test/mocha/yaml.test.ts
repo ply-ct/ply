@@ -5,9 +5,7 @@ import { Retrieval } from '../../src/retrieval';
 import * as util from '../../src/util';
 
 describe('yaml', () => {
-
     it('assigns line numbers', async () => {
-
         const retrieval = new Retrieval('test/ply/requests/movie-queries.ply.yaml');
         const yml = await retrieval.read();
         const obj = yaml.load(retrieval.toString(), yml!, true);
@@ -96,7 +94,9 @@ describe('yaml', () => {
 
         const yml = yaml.dump(yamlObj, 2);
         const lines = util.lines(yml);
-        assert.strictEqual(lines[8], '      <?xml version="1.0" encoding="UTF-8" standalone="yes"?>');
+        assert.strictEqual(
+            lines[8],
+            '      <?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        );
     });
-
 });

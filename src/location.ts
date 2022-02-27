@@ -6,7 +6,6 @@ import { fwdSlashes } from './util';
  * Abstraction for a URL or file location.
  */
 export class Location {
-
     readonly path: string;
 
     /**
@@ -47,8 +46,7 @@ export class Location {
         const lastDot = name.lastIndexOf('.');
         if (lastDot > 0 && lastDot < name.length - 1) {
             return name.substring(0, lastDot);
-        }
-        else {
+        } else {
             return name;
         }
     }
@@ -67,8 +65,7 @@ export class Location {
     get timestamp(): number | undefined {
         if (this.isUrl) {
             return 0;
-        }
-        else if (fs.existsSync(this.path)) {
+        } else if (fs.existsSync(this.path)) {
             return fs.statSync(this.path).mtimeMs;
         }
     }
@@ -80,8 +77,7 @@ export class Location {
     get scheme(): string | undefined {
         if (this.path.startsWith('https://')) {
             return 'https';
-        }
-        else if (this.path.startsWith('http://')) {
+        } else if (this.path.startsWith('http://')) {
             return 'http';
         }
     }
@@ -97,8 +93,7 @@ export class Location {
     get absolute(): string {
         if (this.isUrl) {
             return this.path;
-        }
-        else {
+        } else {
             return fwdSlashes(path.normalize(path.resolve(this.path)));
         }
     }

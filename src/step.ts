@@ -25,7 +25,6 @@ export function getStepId(step: Step) {
 }
 
 export class PlyStep implements Step, PlyTest {
-
     /**
      * This is the step id.
      */
@@ -42,7 +41,7 @@ export class PlyStep implements Step, PlyTest {
         private readonly logger: Logger,
         readonly flowPath: string,
         flowInstanceId: string,
-        readonly subflow?: flowbee.Subflow,
+        readonly subflow?: flowbee.Subflow
     ) {
         this.name = getStepId(this);
         this.stepName = step.name.replace(/\r?\n/g, ' ');
@@ -60,7 +59,12 @@ export class PlyStep implements Step, PlyTest {
         let stepRes: any;
         const level = this.subflow ? 1 : 0;
         try {
-            runtime.appendResult(`${this.stepName}:`, level, runOptions?.createExpected, util.timestamp(this.instance.start));
+            runtime.appendResult(
+                `${this.stepName}:`,
+                level,
+                runOptions?.createExpected,
+                util.timestamp(this.instance.start)
+            );
             runtime.appendResult(`id: ${this.step.id}`, level + 1, runOptions?.createExpected);
 
             let execResult: ExecResult;
@@ -69,23 +73,48 @@ export class PlyStep implements Step, PlyTest {
                 if (this.subflow && !runOptions?.submit && !runOptions?.createExpected) {
                     await this.padActualStart(this.subflow.id);
                 }
-                const startExec = new StartExec(this.step, this.instance, this.logger, this.subflow);
+                const startExec = new StartExec(
+                    this.step,
+                    this.instance,
+                    this.logger,
+                    this.subflow
+                );
                 execResult = await startExec.run();
             } else if (this.step.path === 'stop') {
-                const stopExec = new StopExec(this.flowPath, this.step, this.instance, this.logger, this.subflow);
+                const stopExec = new StopExec(
+                    this.flowPath,
+                    this.step,
+                    this.instance,
+                    this.logger,
+                    this.subflow
+                );
                 execResult = await stopExec.run();
             } else if (this.step.path === 'request') {
-                const requestExec = new RequestExec(this.name, this.requestSuite, this.step, this.instance, this.logger, this.subflow);
+                const requestExec = new RequestExec(
+                    this.name,
+                    this.requestSuite,
+                    this.step,
+                    this.instance,
+                    this.logger,
+                    this.subflow
+                );
                 execResult = await requestExec.run(runtime, values, runOptions);
             } else {
                 // general exec -- instance status driven by exec result
-                const helloExec = new GreetingExec(this.step, this.instance, this.logger, this.subflow);
+                const helloExec = new GreetingExec(
+                    this.step,
+                    this.instance,
+                    this.logger,
+                    this.subflow
+                );
                 execResult = await helloExec.run(runtime, values);
                 this.instance.status = this.mapToInstanceStatus(execResult);
                 if (execResult.message) this.instance.message = execResult.message;
             }
 
-            if (!execResult.message && this.instance.message) execResult.message = this.instance.message;
+            if (!execResult.message && this.instance.message) {
+                execResult.message = this.instance.message;
+            }
 
             this.instance.end = new Date();
 
@@ -93,25 +122,46 @@ export class PlyStep implements Step, PlyTest {
                 await this.padActualStart(this.name);
             }
 
-            result = { name: this.stepName, status: execResult.status, message: execResult.message || '' };
+            result = {
+                name: this.stepName,
+                status: execResult.status,
+                message: execResult.message || ''
+            };
         } catch (err: any) {
             this.logger.error(err.message, err);
             this.instance.status = 'Errored';
             this.instance.message = err.message;
-            result = { name: this.stepName, status: 'Errored', message: this.instance.message || '' };
+            result = {
+                name: this.stepName,
+                status: 'Errored',
+                message: this.instance.message || ''
+            };
         }
 
         // append status, result and message to actual result
         if (this.instance.end) {
             const elapsed = this.instance.end.getTime() - this.instance.start.getTime();
-            runtime.appendResult(`status: ${this.instance.status}`, level + 1, runOptions?.createExpected, `${elapsed} ms`);
+            runtime.appendResult(
+                `status: ${this.instance.status}`,
+                level + 1,
+                runOptions?.createExpected,
+                `${elapsed} ms`
+            );
 
             if (typeof stepRes === 'boolean' || typeof stepRes === 'number' || stepRes) {
                 this.instance.result = '' + stepRes;
-                runtime.appendResult(`result: ${this.instance.result}`, level + 1, runOptions?.createExpected);
+                runtime.appendResult(
+                    `result: ${this.instance.result}`,
+                    level + 1,
+                    runOptions?.createExpected
+                );
             }
             if (this.instance.message) {
-                runtime.appendResult(`message: '${this.instance.message}'`, level + 1, runOptions?.createExpected);
+                runtime.appendResult(
+                    `message: '${this.instance.message}'`,
+                    level + 1,
+                    runOptions?.createExpected
+                );
             }
         }
 
@@ -131,7 +181,10 @@ export class PlyStep implements Step, PlyTest {
         if (expectedYaml.start > 0) {
             const actualYaml = this.requestSuite.runtime.results.getActualYaml(name);
             if (expectedYaml.start > actualYaml.start) {
-                this.requestSuite.runtime.results.actual.padLines(actualYaml.start, expectedYaml.start - actualYaml.start);
+                this.requestSuite.runtime.results.actual.padLines(
+                    actualYaml.start,
+                    expectedYaml.start - actualYaml.start
+                );
             }
         }
     }
