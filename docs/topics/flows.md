@@ -182,4 +182,4 @@ to test it without running the whole flow. Let's run the "Movie by ID" step that
 1. Double-click "Movie by ID" to review its request and response to make sure they're as expected.  
    <img src="../img/movie-by-id-response.png" alt="Movie by ID response" width="760px">  
 
-Next Topic: [Requests](requests)
+Next Topic: [Results](results)

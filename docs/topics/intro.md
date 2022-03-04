@@ -26,4 +26,4 @@ file, which is in YAML format and may contain [expressions](results#expected-res
 ## Jump right in
 Want to get straight to building a Ply flow? Proceed to the [walkthrough](flows) topic in this guide.
 
-Next Topic: [Flows](flows)
+Next Topic: [Requests](requests)
