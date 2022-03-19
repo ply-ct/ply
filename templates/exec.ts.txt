@@ -1,14 +1,13 @@
 import * as ply from '@ply-ct/ply';
 
-export class GreetingExec extends ply.PlyExecBase {
+export default class Greeting extends ply.PlyExecBase {
 
     constructor(
         readonly step: ply.FlowStep,
         readonly instance: ply.StepInstance,
-        readonly logger: ply.Logger,
-        readonly subflow?: ply.Subflow
+        readonly logger: ply.Logger
     ) {
-        super(step, instance, logger, subflow);
+        super(step, instance, logger);
     }
 
     async run(runtime: ply.Runtime, values: any): Promise<ply.ExecResult> {

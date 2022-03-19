@@ -1,3 +1,6 @@
+import * as process from 'process';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as flowbee from 'flowbee';
 import { Logger } from './logger';
 import { RunOptions } from './options';
@@ -11,8 +14,8 @@ import { RequestExec } from './exec/request';
 import { ExecResult } from './exec/exec';
 import { StartExec } from './exec/start';
 import { StopExec } from './exec/stop';
-import { GreetingExec } from './exec/greeting';
 import { FlowElementStatus } from 'flowbee';
+import { DeciderExec } from './exec/decide';
 
 export interface Step extends Test {
     step: flowbee.Step;
@@ -73,12 +76,7 @@ export class PlyStep implements Step, PlyTest {
                 if (this.subflow && !runOptions?.submit && !runOptions?.createExpected) {
                     await this.padActualStart(this.subflow.id);
                 }
-                const startExec = new StartExec(
-                    this.step,
-                    this.instance,
-                    this.logger,
-                    this.subflow
-                );
+                const startExec = new StartExec(this.step, this.instance, this.logger);
                 execResult = await startExec.run();
             } else if (this.step.path === 'stop') {
                 const stopExec = new StopExec(
@@ -95,21 +93,43 @@ export class PlyStep implements Step, PlyTest {
                     this.requestSuite,
                     this.step,
                     this.instance,
-                    this.logger,
-                    this.subflow
+                    this.logger
                 );
                 execResult = await requestExec.run(runtime, values, runOptions);
-            } else {
-                // general exec -- instance status driven by exec result
-                const helloExec = new GreetingExec(
-                    this.step,
-                    this.instance,
-                    this.logger,
-                    this.subflow
-                );
-                execResult = await helloExec.run(runtime, values);
+            } else if (this.step.path === 'decide') {
+                const deciderExec = new DeciderExec(this.step, this.instance, this.logger);
+                execResult = await deciderExec.run(runtime, values);
+                this.instance.status = this.mapToInstanceStatus(execResult);
+            } else if (this.step.path === 'typescript' || this.step.path.endsWith('.ts')) {
+                const type = this.step.path === 'typescript' ? 'TypeScript' : 'Custom';
+                let tsFile: string;
+                if (type === 'TypeScript') {
+                    if (!this.step.attributes?.tsFile) {
+                        throw new Error(`Step ${this.step.id} missing attribute: tsFile`);
+                    }
+                    tsFile = this.step.attributes.tsFile;
+                } else {
+                    tsFile = this.step.path;
+                }
+
+                if (!path.isAbsolute(tsFile)) tsFile = path.join(process.cwd(), tsFile);
+                const mod = await import(tsFile);
+                if (typeof mod.default !== 'function') {
+                    throw new Error(
+                        `${type} step module must export PlyExec implementor class as default: ${tsFile}`
+                    );
+                }
+                const execInst = new mod.default(this.step, this.instance, this.logger);
+                if (typeof execInst.run !== 'function') {
+                    throw new Error(
+                        `${type} step module must implement PlyExec.run() method: ${tsFile}`
+                    );
+                }
+                execResult = await execInst.run(runtime, values);
                 this.instance.status = this.mapToInstanceStatus(execResult);
                 if (execResult.message) this.instance.message = execResult.message;
+            } else {
+                throw new Error(`Unsupported step: ${this.step.path}`);
             }
 
             if (!execResult.message && this.instance.message) {
@@ -188,4 +208,21 @@ export class PlyStep implements Step, PlyTest {
             }
         }
     }
+
+    private static descriptors = new Map<string, flowbee.Descriptor>();
+
+    // private async getDescriptor(path: string): Promise<flowbee.Descriptor | undefined> {
+    //     let descriptor = PlyStep.descriptors.get(path);
+    //     if (!descriptor) {
+    //         if (fs.existsSync(path)) {
+    //             const obj = JSON.parse(await fs.promises.readFile(path, 'utf-8'));
+    //             if (!obj.path || !obj.name || obj.type !== 'step') {
+    //                 throw new Error(`Invalid descriptor: ${path}`);
+    //             }
+    //             descriptor = obj as flowbee.Descriptor;
+    //             PlyStep.descriptors.set(path, descriptor);
+    //         }
+    //     }
+    //     return descriptor;
+    // }
 }

@@ -194,6 +194,7 @@ export class Defaults implements PlyOptions {
     flowFiles = '**/*.flow';
     ignore = '**/{node_modules,bin,dist,out}/**';
     skip = '**/*.ply';
+    reporter = '' as any;
     get expectedLocation() {
         if (!this._expectedLocation) {
             this._expectedLocation = this.testsLocation + '/results/expected';

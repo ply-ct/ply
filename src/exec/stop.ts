@@ -8,9 +8,9 @@ export class StopExec extends PlyExecBase {
         readonly step: flowbee.Step,
         readonly instance: flowbee.StepInstance,
         readonly logger: Logger,
-        readonly subflow?: flowbee.Subflow
+        readonly subflow?: flowbee.Subflow // unique
     ) {
-        super(step, instance, logger, subflow);
+        super(step, instance, logger);
     }
 
     async run(): Promise<ExecResult> {

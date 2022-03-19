@@ -14,10 +14,9 @@ export class RequestExec extends PlyExecBase {
         private readonly requestSuite: Suite<Request>, // unique
         readonly step: flowbee.Step,
         readonly instance: flowbee.StepInstance,
-        readonly logger: Logger,
-        readonly subflow?: flowbee.Subflow
+        readonly logger: Logger
     ) {
-        super(step, instance, logger, subflow);
+        super(step, instance, logger);
     }
 
     async run(runtime: Runtime, values: any, runOptions?: RunOptions): Promise<ExecResult> {
