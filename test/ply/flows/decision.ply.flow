@@ -1,0 +1,47 @@
+attributes:
+  NodeStyle: BoxIcon
+  display: x=23,y=18,w=156,h=27
+  values: '[["i","2"]]'
+steps:
+  - attributes:
+      display: x=50,y=70,w=60,h=40
+    id: s1
+    links:
+      - attributes:
+          display: type=Elbow,x=180,y=90,xs=114&236,ys=90&90
+        id: l1
+        to: s3
+    name: Start
+    path: start
+  - attributes:
+      display: x=430,y=70,w=60,h=40
+    id: s2
+    name: Stop
+    path: stop
+  - attributes:
+      display: x=240,y=60,w=60,h=60
+      expression: i * i
+    id: s3
+    links:
+      - attributes:
+          display: type=Elbow,x=351,y=93,xs=304&426,ys=90&90
+        id: l2
+        result: '4'
+        to: s2
+        type: link
+      - attributes:
+          display: type=Elbow,x=276,y=135,xs=270&270,ys=124&186
+        id: l3
+        result: '6'
+        to: s4
+        type: link
+    name: Square
+    path: decide
+    type: step
+  - attributes:
+      display: x=240,y=190,w=60,h=40
+    id: s4
+    links: []
+    name: Stop
+    path: stop
+    type: step

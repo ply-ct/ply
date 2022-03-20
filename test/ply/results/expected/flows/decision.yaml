@@ -1,0 +1,9 @@
+Start:
+  id: s1
+  status: Completed
+Square:
+  id: s3
+  status: Completed
+Stop:
+  id: s2
+  status: Completed
