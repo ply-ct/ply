@@ -1,0 +1,11 @@
+{
+  "type": "step",
+  "name": "${stepName}",
+  "path": "${tsPath}",
+  "icon": "${svgPath}",
+  "template": {
+    "My Tab": {
+      "widgets": []
+    }
+  }
+}

@@ -27,7 +27,8 @@ export class PlyResponse implements Response {
     /**
      * Orders body object keys unless suppressed by options.  Does not substitute values.
      * Response header keys are always lowercase
-     * @param runtime runtime context
+     * @param runId
+     * @param options
      * @param wantedHeaders optional name of headers subset to keep
      * @param stringBody body object is stringified (windows eols are replaced if prettyIndent)
      */
