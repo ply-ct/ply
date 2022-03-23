@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import * as os from 'os';
-import * as mkdirp from 'mkdirp';
 import * as util from './util';
 import { Location } from './location';
 
@@ -49,9 +48,7 @@ export class AsyncStorage {
         if (this.localStorage) {
             this.localStorage.setItem(this.location.path, contents);
         } else {
-            if (this.location.parent) {
-                await mkdirp(this.location.parent);
-            }
+            await this.mkdir();
             await fs.promises.writeFile(this.location.path, contents.replace(/\r?\n/, os.EOL));
         }
     }
@@ -64,9 +61,7 @@ export class AsyncStorage {
             const exist = this.localStorage.getItem(this.location.path);
             this.localStorage.setItem(this.location.path, exist ? exist + contents : contents);
         } else {
-            if (this.location.parent) {
-                await mkdirp(this.location.parent);
-            }
+            await this.mkdir();
             await fs.promises.appendFile(this.location.path, contents.replace(/\r?\n/, os.EOL));
         }
     }
@@ -98,6 +93,15 @@ export class AsyncStorage {
             if (fs.existsSync(this.location.path)) {
                 await fs.promises.unlink(this.location.path);
             }
+        }
+    }
+
+    /**
+     * TODO local storage
+     */
+    async mkdir() {
+        if (this.location.parent) {
+            await fs.promises.mkdir(this.location.parent, { recursive: true });
         }
     }
 
@@ -149,9 +153,7 @@ export class Storage {
         if (this.localStorage) {
             this.localStorage.setItem(this.location.path, contents);
         } else {
-            if (this.location.parent) {
-                mkdirp.sync(this.location.parent);
-            }
+            this.mkdir();
             fs.writeFileSync(this.location.path, contents.replace(/\r?\n/, os.EOL));
         }
     }
@@ -164,9 +166,7 @@ export class Storage {
             const exist = this.localStorage.getItem(this.location.path);
             this.localStorage.setItem(this.location.path, exist ? exist + contents : contents);
         } else {
-            if (this.location.parent) {
-                mkdirp.sync(this.location.parent);
-            }
+            this.mkdir();
             fs.appendFileSync(this.location.path, contents.replace(/\r?\n/, os.EOL));
         }
     }
@@ -198,6 +198,12 @@ export class Storage {
             if (fs.existsSync(this.location.path)) {
                 fs.unlinkSync(this.location.path);
             }
+        }
+    }
+
+    mkdir() {
+        if (this.location.parent) {
+            fs.mkdirSync(this.location.parent, { recursive: true });
         }
     }
 

@@ -1,6 +1,6 @@
 {
   "name": "@ply-ct/ply",
-  "version": "3.0.34",
+  "version": "3.0.35",
   "description": "REST API Automated Testing",
   "main": "dist",
   "bin": {
@@ -62,7 +62,6 @@
     "js-yaml": "^4.1.0",
     "json-stable-stringify": "^1.0.1",
     "minimatch": "^3.0.4",
-    "mkdirp": "^1.0.4",
     "os-locale": "^5.0.0",
     "read-excel-file": "^5.2.13",
     "stacktracey": "^1.2.127",
@@ -79,7 +78,6 @@
     "@types/js-yaml": "^4.0.5",
     "@types/json-stable-stringify": "^1.0.33",
     "@types/minimatch": "^3.0.5",
-    "@types/mkdirp": "^1.0.2",
     "@types/mocha": "^9.1.0",
     "@types/node": "^17.0.8",
     "@types/yargs": "^16.0.4",
