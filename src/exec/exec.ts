@@ -22,6 +22,16 @@ export abstract class PlyExecBase implements PlyExec {
 
     abstract run(runtime: Runtime, values: any, runOptions?: RunOptions): Promise<ExecResult>;
 
+    protected evaluateToString(input: string, values: any): string {
+        this.logger.debug(`Evaluating expression '${input}' against values`, values);
+        let expr = input;
+        if (!(expr.startsWith('${') && expr.endsWith('}'))) {
+            expr = '${' + expr + '}';
+        }
+        const fun = new Function(...Object.keys(values), 'return `' + expr + '`');
+        return fun(...Object.values(values));
+    }
+
     /**
      * Maps instance status to ply result
      */

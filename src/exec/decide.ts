@@ -3,6 +3,9 @@ import { ExecResult, PlyExecBase } from './exec';
 import { Runtime } from '../runtime';
 import { Logger } from '../logger';
 
+/**
+ * Cannot have side-effects (no updating values);
+ */
 export class DeciderExec extends PlyExecBase {
     constructor(
         readonly step: flowbee.Step,
@@ -21,11 +24,5 @@ export class DeciderExec extends PlyExecBase {
         } else {
             return { status: 'Errored', message: 'Missing attribute: expression' };
         }
-    }
-
-    private evaluateToString(input: string, values: any): string {
-        this.logger.debug(`Evaluating expression '${input}' against values`, values);
-        const fun = new Function(...Object.keys(values), 'return `${' + input + '}`');
-        return fun(...Object.values(values));
     }
 }

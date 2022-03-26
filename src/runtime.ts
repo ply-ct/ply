@@ -11,7 +11,11 @@ import { TestSuite, TestCase, Before, After } from './decorators';
  * Runtime information for a test suite.
  */
 export class Runtime {
+    /**
+     * Iterative
+     */
     runNumber = 0;
+
     testsLocation: Location;
 
     decoratedSuite?: DecoratedSuite;

@@ -16,6 +16,7 @@ import { StartExec } from './exec/start';
 import { StopExec } from './exec/stop';
 import { FlowElementStatus } from 'flowbee';
 import { DeciderExec } from './exec/decide';
+import { DelayExec } from './exec/delay';
 
 export interface Step extends Test {
     step: flowbee.Step;
@@ -44,6 +45,7 @@ export class PlyStep implements Step, PlyTest {
         private readonly logger: Logger,
         readonly flowPath: string,
         flowInstanceId: string,
+        readonly instanceNumber = 0,
         readonly subflow?: flowbee.Subflow
     ) {
         this.name = getStepId(this);
@@ -61,9 +63,12 @@ export class PlyStep implements Step, PlyTest {
         let result: Result;
         let stepRes: any;
         const level = this.subflow ? 1 : 0;
+
         try {
+            let key = this.stepName;
+            if (this.instanceNumber) key += `_${this.instanceNumber}`;
             runtime.appendResult(
-                `${this.stepName}:`,
+                `${key}:`,
                 level,
                 runOptions?.createExpected,
                 util.timestamp(this.instance.start)
@@ -99,6 +104,10 @@ export class PlyStep implements Step, PlyTest {
             } else if (this.step.path === 'decide') {
                 const deciderExec = new DeciderExec(this.step, this.instance, this.logger);
                 execResult = await deciderExec.run(runtime, values);
+                this.instance.status = this.mapToInstanceStatus(execResult);
+            } else if (this.step.path === 'delay') {
+                const delayExec = new DelayExec(this.step, this.instance, this.logger);
+                execResult = await delayExec.run(runtime, values);
                 this.instance.status = this.mapToInstanceStatus(execResult);
             } else if (this.step.path === 'typescript' || this.step.path.endsWith('.ts')) {
                 const type = this.step.path === 'typescript' ? 'TypeScript' : 'Custom';

@@ -86,6 +86,10 @@ export interface Options {
      */
     reporter?: 'json' | 'html';
     /**
+     * (When flows have loopback links). Max instance count per step (10). Overridable in flow design.
+     */
+    maxLoops?: number;
+    /**
      * Predictable ordering of response body JSON property keys -- needed for verification (true).
      */
     responseBodySortedKeys?: boolean;
@@ -122,6 +126,7 @@ export interface PlyOptions extends Options {
     batchRows: number;
     batchDelay: number;
     reporter?: 'json' | 'html';
+    maxLoops: number;
     responseBodySortedKeys: boolean;
     genExcludeResponseHeaders?: string[];
     prettyIndent: number;
@@ -221,6 +226,7 @@ export class Defaults implements PlyOptions {
     parallel = false;
     batchRows = 1;
     batchDelay = 0;
+    maxLoops = 10;
     responseBodySortedKeys = true;
     genExcludeResponseHeaders = [
         'cache-control',
@@ -308,6 +314,9 @@ export class Config {
         },
         reporter: {
             describe: 'Reporter output format'
+        },
+        maxLoops: {
+            describe: 'Flow step instance limit'
         },
         import: {
             describe: 'Import requests/values from external',

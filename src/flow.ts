@@ -57,6 +57,7 @@ export class PlyFlow implements Flow {
     end?: number | undefined;
     readonly instance: flowbee.FlowInstance;
     readonly results: FlowResults;
+    maxLoops = 0;
 
     private _onFlow = new flowbee.TypedEvent<flowbee.FlowEvent>();
     onFlow(listener: flowbee.Listener<flowbee.FlowEvent>) {
@@ -82,18 +83,27 @@ export class PlyFlow implements Flow {
     /**
      * Run a ply flow.
      */
-    async run(runtime: Runtime, values: object, runOptions?: RunOptions): Promise<Result> {
+    async run(runtime: Runtime, values: any, runOptions?: RunOptions): Promise<Result> {
         (values as any)[RUN_ID] = this.instance.runId || util.genId();
 
         if (this.flow.attributes?.values) {
             const rows = JSON.parse(this.flow.attributes?.values);
             for (const row of rows) {
-                (values as any)[row[0]] = row[1];
+                let rowVal: string | number | boolean = row[1];
+                const numVal = parseInt(row[1]);
+                if (!isNaN(numVal)) rowVal = numVal;
+                else if (row[1] === 'true' || row[1] === 'false') rowVal = row[1] === 'true';
+                values[row[0]] = rowVal;
             }
         }
         // run values override even flow-configured vals
         if (runOptions?.values) {
             values = { ...values, ...runOptions.values };
+        }
+
+        this.maxLoops = runtime.options.maxLoops || 10;
+        if (this.flow.attributes?.maxLoops) {
+            this.maxLoops = parseInt(this.flow.attributes.maxLoops);
         }
 
         if (this.flow.attributes?.bail === 'true') {
@@ -167,14 +177,29 @@ export class PlyFlow implements Flow {
             return;
         }
 
+        const insts = this.instance.stepInstances?.filter((si) => si.stepId === step.id)?.length;
         const plyStep = new PlyStep(
             step,
             this.requestSuite,
             this.logger,
             this.flow.path,
             this.instance.id,
+            insts,
             subflow?.subflow
         );
+
+        if (insts) {
+            let maxLoops = this.maxLoops;
+            if (step.path === 'start') maxLoops = 1;
+            if (step.attributes?.maxLoops) {
+                maxLoops = parseInt(step.attributes.maxLoops);
+            }
+            if (isNaN(maxLoops)) this.stepError(plyStep, `Invalid maxLoops: ${maxLoops}`);
+            else if (insts + 1 > maxLoops) {
+                this.stepError(plyStep, `Max loops (${maxLoops} reached for step: ${step.id}`);
+            }
+        }
+
         if (subflow) {
             if (!subflow.instance.stepInstances) {
                 subflow.instance.stepInstances = [];
@@ -224,15 +249,20 @@ export class PlyFlow implements Flow {
                     } else {
                         outStep = this.flow.steps?.find((s) => s.id === link.to);
                     }
-                    if (!outStep) {
-                        throw new Error(`No such step: ${link.to} (linked from ${link.id})`);
+                    if (outStep) {
+                        outSteps.push(outStep);
+                    } else {
+                        this.stepError(
+                            plyStep,
+                            `No such step: ${link.to} (linked from ${link.id})`
+                        );
                     }
-                    outSteps.push(outStep);
                 }
             }
         }
         if (outSteps.length === 0 && step.path !== 'stop') {
-            throw new Error(
+            this.stepError(
+                plyStep,
                 `No outbound link from step ${step.id} matches result: ${plyStep.instance.result}`
             );
         }
@@ -325,6 +355,14 @@ export class PlyFlow implements Flow {
                 this.emit('finish', 'subflow', subflow.instance);
             }
         }
+    }
+
+    stepError(plyStep: PlyStep, message: string) {
+        plyStep.instance.status = 'Errored';
+        plyStep.instance.message = message;
+        this.emit('error', 'step', plyStep.instance);
+        this.emit('error', 'flow', this.instance);
+        throw new Error(message);
     }
 
     flowEvent(

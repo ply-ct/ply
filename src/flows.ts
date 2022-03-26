@@ -171,15 +171,41 @@ export class FlowSuite extends Suite<Step> {
                 const subflowId = step.name.substring(0, dot);
                 subflow = this.plyFlow.flow.subflows?.find((sub) => sub.id === subflowId);
             }
+
+            const insts = this.plyFlow.instance.stepInstances?.filter((stepInst) => {
+                return stepInst.stepId === step.step.id;
+            }).length;
+
             const plyStep = new PlyStep(
                 step.step,
                 requestSuite,
                 this.logger,
                 this.plyFlow.flow.path,
                 '',
+                insts,
                 subflow
             );
+
+            if (insts) {
+                let maxLoops = this.runtime.options.maxLoops || 10;
+                if (this.plyFlow.flow.attributes?.maxLoops) {
+                    maxLoops = parseInt(this.plyFlow.flow.attributes.maxLoops);
+                }
+                if (step.step.attributes?.maxLoops) {
+                    maxLoops = parseInt(step.step.attributes.maxLoops);
+                }
+                if (isNaN(maxLoops)) {
+                    this.plyFlow.stepError(plyStep, `Invalid maxLoops: ${maxLoops}`);
+                } else if (insts + 1 > maxLoops) {
+                    this.plyFlow.stepError(
+                        plyStep,
+                        `Max loops (${maxLoops} reached for step: ${step.step.id}`
+                    );
+                }
+            }
+
             this.emitter?.emit('flow', this.plyFlow.flowEvent('start', 'step', plyStep.instance));
+
             const result = await plyStep.run(this.runtime, values, runOptions);
             if (result.status === 'Failed' || result.status === 'Errored') {
                 this.emitter?.emit(
