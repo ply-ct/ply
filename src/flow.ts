@@ -90,7 +90,7 @@ export class PlyFlow implements Flow {
             const rows = JSON.parse(this.flow.attributes?.values);
             for (const row of rows) {
                 let rowVal: string | number | boolean = row[1];
-                const numVal = parseInt(row[1]);
+                const numVal = Number(row[1]);
                 if (!isNaN(numVal)) rowVal = numVal;
                 else if (row[1] === 'true' || row[1] === 'false') rowVal = row[1] === 'true';
                 values[row[0]] = rowVal;

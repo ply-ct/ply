@@ -19,7 +19,12 @@ export class RequestExec extends PlyExecBase {
         super(step, instance, logger);
     }
 
-    async run(runtime: Runtime, values: any, runOptions?: RunOptions): Promise<ExecResult> {
+    async run(
+        runtime: Runtime,
+        values: any,
+        runOptions?: RunOptions,
+        instNum = 0
+    ): Promise<ExecResult> {
         let url = this.step.attributes?.url;
         if (!url) throw new Error('Missing attribute: url');
         url = subst.replace(url, values, this.logger);
@@ -72,7 +77,7 @@ export class RequestExec extends PlyExecBase {
             this.instance.data.response = yaml.dump(response, runtime.options.prettyIndent);
         } else {
             this.requestSuite.tests[this.name] = request;
-            const result = await this.requestSuite.run(this.name, values, runOptions);
+            const result = await this.requestSuite.run(this.name, values, runOptions, instNum);
             if (result.status !== 'Passed' && result.status !== 'Submitted') {
                 this.instance.status = result.status === 'Failed' ? 'Failed' : 'Errored';
                 this.instance.message = result.message;

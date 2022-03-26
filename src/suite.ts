@@ -84,19 +84,21 @@ export class Suite<T extends Test> {
 
     /**
      * Run one test, write actual result, and verify vs expected.
-     * @param values runtime values for substitution
      * @returns result indicating outcome
      */
-    async run(name: string, values: object, runOptions?: RunOptions): Promise<Result>;
+    async run(
+        name: string,
+        values: object,
+        runOptions?: RunOptions,
+        instNum?: number
+    ): Promise<Result>;
     /**
      * Run specified tests, write actual results, and verify vs expected.
-     * @param values runtime values for substitution
      * @returns result array indicating outcomes
      */
     async run(names: string[], values: object, runOptions?: RunOptions): Promise<Result[]>;
     /**
      * Run all tests, write actual results, and verify vs expected.
-     * @param values runtime values for substitution
      * @returns result array indicating outcomes
      * TODO: support runOptions.values for requests and cases
      */
@@ -104,7 +106,8 @@ export class Suite<T extends Test> {
     async run(
         namesOrValues: object | string | string[],
         valuesOrRunOptions?: object | RunOptions,
-        runOptions?: RunOptions
+        runOptions?: RunOptions,
+        instNum?: number
     ): Promise<Result | Result[]> {
         if (typeof namesOrValues === 'string') {
             const name = namesOrValues;
@@ -112,7 +115,12 @@ export class Suite<T extends Test> {
             if (!test) {
                 throw new Error(`Test not found: ${name}`);
             }
-            const results = await this.runTests([test], valuesOrRunOptions || {}, runOptions);
+            const results = await this.runTests(
+                [test],
+                valuesOrRunOptions || {},
+                runOptions,
+                instNum
+            );
             return results[0];
         } else if (Array.isArray(namesOrValues)) {
             const names = typeof namesOrValues === 'string' ? [namesOrValues] : namesOrValues;
@@ -134,7 +142,12 @@ export class Suite<T extends Test> {
      * Tests within a suite are always run sequentially.
      * @param tests
      */
-    async runTests(tests: T[], values: object, runOptions?: RunOptions): Promise<Result[]> {
+    async runTests(
+        tests: T[],
+        values: object,
+        runOptions?: RunOptions,
+        instNum = 0
+    ): Promise<Result[]> {
         if (runOptions && Object.keys(runOptions).length > 0) {
             this.log.debug('RunOptions', runOptions);
         }
@@ -220,7 +233,8 @@ export class Suite<T extends Test> {
                 if (test.type === 'request') {
                     this.runtime.responseHeaders = await this.getExpectedResponseHeaders(
                         test.name,
-                        callingCaseInfo?.caseName
+                        callingCaseInfo?.caseName,
+                        instNum
                     );
                 }
                 result = await (test as unknown as PlyTest).run(
@@ -240,7 +254,10 @@ export class Suite<T extends Test> {
                     if (!callingCaseInfo) {
                         if (expectedExists && this.callingFlowPath) {
                             // expectedExists based on specific request step
-                            expectedExists = await this.runtime.results.expectedExists(test.name);
+                            expectedExists = await this.runtime.results.expectedExists(
+                                test.name,
+                                instNum
+                            );
                         }
                         const isFirst = i === 0 && !this.callingFlowPath;
                         result =
@@ -257,11 +274,12 @@ export class Suite<T extends Test> {
                         if (result.status === 'Pending') {
                             // verify request result (otherwise wait until case/flow is complete)
                             const expectedYaml = await this.runtime.results.getExpectedYaml(
-                                test.name
+                                test.name,
+                                instNum
                             );
                             if (expectedYaml.start > 0 || this.callingFlowPath) {
                                 // flows need to re-read actual even if not padding
-                                actualYaml = this.runtime.results.getActualYaml(test.name);
+                                actualYaml = this.runtime.results.getActualYaml(test.name, instNum);
                                 if (padActualStart && expectedYaml.start > actualYaml.start) {
                                     this.runtime.results.actual.padLines(
                                         actualYaml.start,
@@ -281,7 +299,7 @@ export class Suite<T extends Test> {
                     this.addResult(results, result, runValues);
                 } else {
                     // case or flow complete -- verify result
-                    actualYaml = this.runtime.results.getActualYaml(test.name);
+                    actualYaml = this.runtime.results.getActualYaml(test.name, instNum);
                     result =
                         this.handleResultRunOptions(
                             test,
@@ -293,7 +311,10 @@ export class Suite<T extends Test> {
                         ) || result;
                     // for cases status could be 'Submitted' if runOptions so specify (this check is handled at step level for flows)
                     if (result.status === 'Pending' || this.type === 'flow') {
-                        const expectedYaml = await this.runtime.results.getExpectedYaml(test.name);
+                        const expectedYaml = await this.runtime.results.getExpectedYaml(
+                            test.name,
+                            instNum
+                        );
                         if (padActualStart && expectedYaml.start > actualYaml.start) {
                             this.runtime.results.actual.padLines(
                                 actualYaml.start,
@@ -410,9 +431,10 @@ export class Suite<T extends Test> {
 
     private async getExpectedResponseHeaders(
         requestName: string,
-        caseName?: string
+        caseName?: string,
+        instNum = 0
     ): Promise<string[] | undefined> {
-        if (await this.runtime.results.expectedExists(caseName ? caseName : requestName)) {
+        if (await this.runtime.results.expectedExists(caseName ? caseName : requestName, instNum)) {
             const yml = await this.runtime.results.getExpectedYaml(
                 caseName ? caseName : requestName
             );

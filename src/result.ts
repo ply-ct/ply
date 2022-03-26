@@ -326,13 +326,16 @@ export class ResultPaths {
         );
     }
 
-    static extractById(yamlObj: any, id: string, indent = 2): any {
+    /**
+     * Flow step result by id
+     */
+    static extractById(yamlObj: any, id: string, instNum: number, indent = 2): any {
         const hyphen = id.indexOf('-');
         if (hyphen > 0) {
             const subflowId = id.substring(0, hyphen);
             id = id.substring(hyphen + 1);
             for (const key of Object.keys(yamlObj)) {
-                if (yamlObj[key].id === subflowId) {
+                if ((!instNum || key.endsWith(`_${instNum}`)) && yamlObj[key].id === subflowId) {
                     const subflowStart = (yamlObj[key].__start || 0) + 1;
                     yamlObj = yaml.load(key, yaml.dump(yamlObj[key], indent), true);
                     for (const value of Object.values(yamlObj)) {
@@ -348,7 +351,7 @@ export class ResultPaths {
             }
         }
         for (const key of Object.keys(yamlObj)) {
-            if (yamlObj[key].id === id) {
+            if ((!instNum || key.endsWith(`_${instNum}`)) && yamlObj[key].id === id) {
                 return yamlObj[key];
             }
         }
@@ -357,7 +360,7 @@ export class ResultPaths {
     /**
      * Newlines are always \n.
      */
-    async getExpectedYaml(name?: string): Promise<Yaml> {
+    async getExpectedYaml(name?: string, instNum = 0): Promise<Yaml> {
         let expected = await this.expected.read();
         if (typeof expected === 'undefined') {
             throw new Error(`Expected result file not found: ${this.expected}`);
@@ -369,6 +372,7 @@ export class ResultPaths {
                 expectedObj = ResultPaths.extractById(
                     yaml.load(this.expected.toString(), expected, true),
                     name,
+                    instNum,
                     this.options.prettyIndent
                 );
             } else {
@@ -411,13 +415,13 @@ export class ResultPaths {
         }
     }
 
-    async expectedExists(name?: string): Promise<boolean> {
+    async expectedExists(name?: string, instNum = 0): Promise<boolean> {
         const expected = await this.expected.read();
         if (typeof expected === 'undefined') return false;
         if (name) {
             const obj = yaml.load(this.expected.toString(), expected);
             if (this.isFlowResult) {
-                return !!ResultPaths.extractById(obj, name);
+                return !!ResultPaths.extractById(obj, name, instNum);
             } else {
                 return !!obj[name];
             }
@@ -429,7 +433,7 @@ export class ResultPaths {
     /**
      * Newlines are always \n.  Trailing \n is appended.
      */
-    getActualYaml(name?: string): Yaml {
+    getActualYaml(name?: string, instNum = 0): Yaml {
         const actual = this.actual.read();
         if (typeof actual === 'undefined') {
             throw new Error(`Actual result file not found: ${this.actual}`);
@@ -440,6 +444,7 @@ export class ResultPaths {
                 actualObj = ResultPaths.extractById(
                     yaml.load(this.actual.toString(), actual, true),
                     name,
+                    instNum,
                     this.options.prettyIndent
                 );
             } else {

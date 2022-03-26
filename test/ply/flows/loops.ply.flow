@@ -1,0 +1,78 @@
+attributes:
+  NodeStyle: BoxIcon
+  display: x=23,y=18,w=156,h=27
+  values: '[["loopCount","0"],["numLoops","3"]]'
+steps:
+  - attributes:
+      display: x=60,y=70,w=60,h=40
+    id: s1
+    links:
+      - attributes:
+          display: type=Elbow,x=155,y=90,xs=124&186,ys=90&90
+        id: l1
+        to: s3
+    name: Start
+    path: start
+  - attributes:
+      display: x=360,y=330,w=60,h=40
+    id: s2
+    name: Stop
+    path: stop
+  - attributes:
+      display: x=190,y=50,w=100,h=80
+      headers: '[["Accept","application/json"]]'
+      method: GET
+      url: ${baseUrl}/movies?title=Frankenstein
+    id: s3
+    links:
+      - attributes:
+          display: type=Elbow,x=240,y=171,xs=240&240,ys=134&206
+        id: l2
+        to: s6
+    name: |-
+      Get
+      Frankie
+    path: request
+  - attributes:
+      display: x=440,y=60,w=100,h=80
+      interval: ${500 + loopCount * 50}
+    id: s4
+    links:
+      - attributes:
+          display: type=Elbow,x=365,y=85,xs=436&294,ys=95&95
+        id: l5
+        to: s3
+    name: |-
+      Wait a
+      Little
+    path: delay
+  - attributes:
+      display: x=360,y=240,w=60,h=40
+      expression: ${loopCount >= numLoops}
+    id: s5
+    links:
+      - attributes:
+          display: type=Elbow,x=398,y=290,xs=390&390,ys=284&326
+        id: l3
+        result: 'true'
+        to: s2
+      - attributes:
+          display: type=Elbow,x=421,y=194,xs=390&490,ys=236&144
+        id: l4
+        result: 'false'
+        to: s4
+    name: Done?
+    path: decide
+  - attributes:
+      display: x=190,y=210,w=100,h=80
+      tsFile: test/src/loopcount.ts
+    id: s6
+    links:
+      - attributes:
+          display: type=Elbow,x=332,y=259,xs=294&356,ys=260&260
+        id: l6
+        to: s5
+    name: |-
+      Increment
+      loopCount
+    path: typescript

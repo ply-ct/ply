@@ -5,15 +5,9 @@
       "type": "node",
       "request": "launch",
       "name": "cli",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/dist/cli.js",
-      "args": [
-        "--verbose",
-        "--reporter=html",
-        "test/ply/flows/movies-api.ply.flow"
-      ],
+      "args": ["test/ply/flows/loops.ply.flow"],
       "preLaunchTask": "tsc: build - tsconfig.json"
     }
   ]

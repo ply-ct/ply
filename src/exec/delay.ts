@@ -18,7 +18,7 @@ export class DelayExec extends PlyExecBase {
             if (interval.startsWith('${') && interval.endsWith('}')) {
                 interval = this.evaluateToString(interval, values);
             }
-            const ms = parseInt(interval);
+            const ms = Number(interval);
             if (isNaN(ms)) {
                 return { status: 'Errored', message: `Bad value for 'interval': ${interval}` };
             }

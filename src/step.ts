@@ -79,7 +79,7 @@ export class PlyStep implements Step, PlyTest {
 
             if (this.step.path === 'start') {
                 if (this.subflow && !runOptions?.submit && !runOptions?.createExpected) {
-                    await this.padActualStart(this.subflow.id);
+                    await this.padActualStart(this.subflow.id, this.instanceNumber);
                 }
                 const startExec = new StartExec(this.step, this.instance, this.logger);
                 execResult = await startExec.run();
@@ -100,7 +100,12 @@ export class PlyStep implements Step, PlyTest {
                     this.instance,
                     this.logger
                 );
-                execResult = await requestExec.run(runtime, values, runOptions);
+                execResult = await requestExec.run(
+                    runtime,
+                    values,
+                    runOptions,
+                    this.instanceNumber
+                );
             } else if (this.step.path === 'decide') {
                 const deciderExec = new DeciderExec(this.step, this.instance, this.logger);
                 execResult = await deciderExec.run(runtime, values);
@@ -148,7 +153,7 @@ export class PlyStep implements Step, PlyTest {
             this.instance.end = new Date();
 
             if (!runOptions?.submit && !runOptions?.createExpected) {
-                await this.padActualStart(this.name);
+                await this.padActualStart(this.name, this.instanceNumber);
             }
 
             result = {
@@ -205,10 +210,10 @@ export class PlyStep implements Step, PlyTest {
         }
     }
 
-    private async padActualStart(name: string) {
-        const expectedYaml = await this.requestSuite.runtime.results.getExpectedYaml(name);
+    private async padActualStart(name: string, instNum: number) {
+        const expectedYaml = await this.requestSuite.runtime.results.getExpectedYaml(name, instNum);
         if (expectedYaml.start > 0) {
-            const actualYaml = this.requestSuite.runtime.results.getActualYaml(name);
+            const actualYaml = this.requestSuite.runtime.results.getActualYaml(name, instNum);
             if (expectedYaml.start > actualYaml.start) {
                 this.requestSuite.runtime.results.actual.padLines(
                     actualYaml.start,
@@ -217,21 +222,4 @@ export class PlyStep implements Step, PlyTest {
             }
         }
     }
-
-    private static descriptors = new Map<string, flowbee.Descriptor>();
-
-    // private async getDescriptor(path: string): Promise<flowbee.Descriptor | undefined> {
-    //     let descriptor = PlyStep.descriptors.get(path);
-    //     if (!descriptor) {
-    //         if (fs.existsSync(path)) {
-    //             const obj = JSON.parse(await fs.promises.readFile(path, 'utf-8'));
-    //             if (!obj.path || !obj.name || obj.type !== 'step') {
-    //                 throw new Error(`Invalid descriptor: ${path}`);
-    //             }
-    //             descriptor = obj as flowbee.Descriptor;
-    //             PlyStep.descriptors.set(path, descriptor);
-    //         }
-    //     }
-    //     return descriptor;
-    // }
 }
