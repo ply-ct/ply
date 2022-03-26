@@ -40,7 +40,7 @@
     "pretest": "npm run start-movies",
     "prepublish": "npm run build",
     "mocha": "mocha --require ts-node/register",
-    "ply": "dist/cli.js",
+    "ply": "dist/cli.js --trusted",
     "stop-movies": "ply-movies stop",
     "test": "npm-run-all mocha ply stop-movies --continue-on-error",
     "typedoc": "typedoc --name 'ply' --out docs/api-docs --excludePrivate true src",

@@ -5,7 +5,7 @@ import { Response, PlyResponse } from './response';
 import { Location } from './location';
 import { Storage } from './storage';
 import { Retrieval } from './retrieval';
-import { Options, PlyOptions } from './options';
+import { Options, PlyOptions, RunOptions } from './options';
 import { Logger } from './logger';
 import { CodeLine, Code } from './code';
 import { Compare, Diff } from './compare';
@@ -102,14 +102,15 @@ export class Verifier {
      * Verify expected vs actual results yaml after substituting values.
      * Diffs/messages always contain \n newlines.
      */
-    verify(actualYaml: Yaml, values: object): Outcome {
+    verify(actualYaml: Yaml, values: any, runOptions?: RunOptions): Outcome {
         // this.logger.debug(`Expected:\n${this.expectedYaml}\n` + `Actual:\n${actualYaml}\n`);
         const expected = new Code(this.expectedYaml.text, '#');
         const actual = new Code(actualYaml.text, '#');
         const diffs = new Compare(this.logger).diffLines(
             expected.extractCode(),
             actual.extractCode(),
-            values
+            values,
+            runOptions?.trusted
         );
         let firstDiffLine = 0;
         let diffMsg = '';

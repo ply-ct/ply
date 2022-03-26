@@ -291,7 +291,10 @@ export class Suite<T extends Test> {
                             this.log.debug(
                                 `Comparing ${this.runtime.results.expected.location} vs ${this.runtime.results.actual.location}`
                             );
-                            const outcome = { ...verifier.verify(actualYaml, runValues), start };
+                            const outcome = {
+                                ...verifier.verify(actualYaml, runValues, runOptions),
+                                start
+                            };
                             result = { ...(result as Result), ...outcome };
                             this.logOutcome(test, result);
                         }
@@ -330,7 +333,10 @@ export class Suite<T extends Test> {
                         // This allows us to accumulate programmatic values changes like those in updateRating() in movieCrud.ply.ts
                         // so that they can be accessed when verifying here, even though the changes are not present the passed 'values' parameter.
                         // TODO: Revisit when implementing a comprehensive values specification mechanism.
-                        const outcome = { ...verifier.verify(actualYaml, runValues), start };
+                        const outcome = {
+                            ...verifier.verify(actualYaml, runValues, runOptions),
+                            start
+                        };
                         result = { ...(result as Result), ...outcome };
                         this.logOutcome(test, result);
                     }

@@ -36,6 +36,7 @@ Command-line exercises in this guide assume you have Ply installed globally.
 | **<code>--version, -v</code>** | Show version number
 | **<code>--config, -c</code>** | Specify path to [plyconfig file](config) (overrides default search mechanism)
 | **<code>--submit, -s</code>** | Submit requests but don't verify actual results against expected (ad hoc run)
+| **<code>--trusted</code>** | Expressions are from trusted sources (otherwise safe evalation is performed with limited subset of template literal syntax)
 | **<code>--import</code>** | Import requests or values from specified format. Currently 'postman' and 'insomnia' are supported formats. *Overwrites* existing same-named files.
 | **<code>--importToSuite</code>** | Import collections into request suites (.yaml files), instead of individual (.ply) requests.
 | **<code>--openapi</code>** | Augment OpenAPI spec with Ply example requests/responses and code samples. *Overwrites* existing OpenAPI spec file.

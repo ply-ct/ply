@@ -1,7 +1,7 @@
 attributes:
   NodeStyle: BoxIcon
   display: x=23,y=18,w=156,h=27
-  values: '[["loopCount","0"],["numLoops","3"]]'
+  values: '[["loopCount","0"],["numLoops","3"],["titles","[\"Frankenstein\", \"Island of Lost Souls\", \"The Invisible Man\"]"]]'
 steps:
   - attributes:
       display: x=60,y=70,w=60,h=40
@@ -22,7 +22,7 @@ steps:
       display: x=190,y=50,w=100,h=80
       headers: '[["Accept","application/json"]]'
       method: GET
-      url: ${baseUrl}/movies?title=Frankenstein
+      url: ${baseUrl}/movies?title=${titles[loopCount]}
     id: s3
     links:
       - attributes:
@@ -31,7 +31,7 @@ steps:
         to: s6
     name: |-
       Get
-      Frankie
+      Movie
     path: request
   - attributes:
       display: x=440,y=60,w=100,h=80

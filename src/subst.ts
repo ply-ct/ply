@@ -5,7 +5,7 @@ import * as util from './util';
 /**
  * duplicated in vscode-ply/media/values.ts
  */
-function get(input: string, context: object): string {
+function get(input: string, context: any): string {
     if (input.startsWith('${~')) return input; // ignore regex
 
     // escape all \
@@ -14,9 +14,9 @@ function get(input: string, context: object): string {
     path = path.substring(2, path.length - 1);
 
     // directly contains expression (flat obj or user-entered values in vscode)
-    const type = typeof (context as any)[path];
+    const type = typeof context[path];
     if (type === 'string' || type === 'number' || type === 'boolean') {
-        return (context as any)[path];
+        return context[path];
     }
 
     let res: any = context;
@@ -26,6 +26,17 @@ function get(input: string, context: object): string {
     }
 
     return '' + res;
+}
+
+function trustedGet(input: string, context: any): string {
+    if (input.startsWith('${~')) return input; // ignore regex
+
+    let expr = input;
+    if (!(expr.startsWith('${') && expr.endsWith('}'))) {
+        expr = '${' + expr + '}';
+    }
+    const fun = new Function(...Object.keys(context), 'return `' + expr + '`');
+    return fun(...Object.values(context));
 }
 
 export function tokenize(path: string): (string | number)[] {
@@ -60,13 +71,22 @@ export function tokenize(path: string): (string | number)[] {
  * Ignores regular expressions starting with ${~.
  * Resulting newlines are always \n
  */
-export function replace(template: string, context: object, logger: Logger): string {
+export function replace(
+    template: string,
+    context: object,
+    logger: Logger,
+    trusted = false
+): string {
     const lines: string[] = [];
     for (const line of util.lines(template)) {
         try {
             let l = line.replace(/\${@\[/g, '${' + RESULTS + '[');
             l = l.replace(/\${@/g, '${' + RESULTS + '.');
-            lines.push(l.replace(/\$\{.+?}/g, (expr) => get(expr, context)));
+            lines.push(
+                l.replace(/\$\{.+?}/g, (expr) => {
+                    return trusted ? trustedGet(expr, context) : get(expr, context);
+                })
+            );
         } catch (err: any) {
             if (err.message === `${RESULTS} is not defined`) {
                 err.message = 'No previous results found';

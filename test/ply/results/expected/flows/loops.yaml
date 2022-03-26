@@ -1,7 +1,7 @@
 Start:
   id: s1
   status: Completed
-Get Frankie:
+Get Movie:
   id: s3
   request:
     url: ${baseUrl}/movies?title=Frankenstein
@@ -67,10 +67,10 @@ Done?:
 Wait a Little:
   id: s4
   status: Completed
-Get Frankie_1:
+Get Movie_1:
   id: s3
   request:
-    url: ${baseUrl}/movies?title=Frankenstein
+    url: ${baseUrl}/movies?title=Island of Lost Souls
     method: GET
     headers:
       Accept: application/json
@@ -86,40 +86,40 @@ Get Frankie_1:
           {
             "credits": [
               {
-                "name": "James Whale",
+                "name": "Erle C. Kenton",
                 "role": "director"
               },
               {
-                "name": "Boris Karloff",
+                "name": "Charles Laughton",
                 "role": "actor"
               },
               {
-                "name": "Colin Clive",
+                "name": "Bela Lugosi",
                 "role": "actor"
               },
               {
-                "name": "Mae Clarke",
+                "name": "Richard Arlen",
                 "role": "actor"
               },
               {
-                "name": "John Boles",
+                "name": "Leila Hyams",
                 "role": "actor"
               },
               {
-                "name": "Dwight Frye",
+                "name": "Kathleen Burke",
                 "role": "actor"
               }
             ],
-            "description": "Frankenstein solidified Universal's place as the premier horror studio of the era, and stands as the definitive American take on the school of German Expressionism.",
-            "id": "e2bca0d",
-            "poster": "frank.jpg",
+            "description": "Despite the misleading promotional copy in the poster, it's Charles Laughton's deliciously evil Dr. Moreau that dominates this film and lifts it beyond the typical horror adventure piece; although Kathleen Burke certainly does deliver quite a fetching turn as Lota the panther woman.",
+            "id": "76f99918",
+            "poster": "iols.jpg",
             "rating": 5,
-            "title": "Frankenstein",
+            "title": "Island of Lost Souls",
             "webRef": {
-              "ref": "tt0021884",
+              "ref": "tt0024188",
               "site": "imdb.com"
             },
-            "year": 1931
+            "year": 1932
           }
         ]
       }
@@ -133,10 +133,10 @@ Done?_1:
 Wait a Little_1:
   id: s4
   status: Completed
-Get Frankie_2:
+Get Movie_2:
   id: s3
   request:
-    url: ${baseUrl}/movies?title=Frankenstein
+    url: ${baseUrl}/movies?title=The Invisible Man
     method: GET
     headers:
       Accept: application/json
@@ -156,36 +156,32 @@ Get Frankie_2:
                 "role": "director"
               },
               {
-                "name": "Boris Karloff",
+                "name": "Claude Rains",
                 "role": "actor"
               },
               {
-                "name": "Colin Clive",
+                "name": "Gloria Stuart",
                 "role": "actor"
               },
               {
-                "name": "Mae Clarke",
+                "name": "William Harrigan",
                 "role": "actor"
               },
               {
-                "name": "John Boles",
-                "role": "actor"
-              },
-              {
-                "name": "Dwight Frye",
+                "name": "Henry Travers",
                 "role": "actor"
               }
             ],
-            "description": "Frankenstein solidified Universal's place as the premier horror studio of the era, and stands as the definitive American take on the school of German Expressionism.",
-            "id": "e2bca0d",
-            "poster": "frank.jpg",
+            "description": "From the opening scene with Claude Rains stumbling around in a blizzard, the desolation of H.G. Wells' story is depicted with chilling atmospherics and astonishing special effects.",
+            "id": "b1cd7001",
+            "poster": "tim.jpg",
             "rating": 5,
-            "title": "Frankenstein",
+            "title": "The Invisible Man",
             "webRef": {
-              "ref": "tt0021884",
+              "ref": "tt0024184",
               "site": "imdb.com"
             },
-            "year": 1931
+            "year": 1933
           }
         ]
       }

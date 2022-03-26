@@ -27,20 +27,20 @@ export class RequestExec extends PlyExecBase {
     ): Promise<ExecResult> {
         let url = this.step.attributes?.url;
         if (!url) throw new Error('Missing attribute: url');
-        url = subst.replace(url, values, this.logger);
+        url = subst.replace(url, values, this.logger, runOptions?.trusted);
         let method = this.step.attributes?.method;
         if (!method) throw new Error('Missing attribute: method');
-        method = subst.replace(method, values, this.logger);
+        method = subst.replace(method, values, this.logger, runOptions?.trusted);
         const headers: { [key: string]: string } = {};
         if (this.step.attributes?.headers) {
             const rows = JSON.parse(this.step.attributes.headers);
             for (const row of rows) {
-                headers[row[0]] = subst.replace(row[1], values, this.logger);
+                headers[row[0]] = subst.replace(row[1], values, this.logger, runOptions?.trusted);
             }
         }
         let body = this.step.attributes?.body;
         if (body) {
-            body = subst.replace(body, values, this.logger);
+            body = subst.replace(body, values, this.logger, runOptions?.trusted);
         }
 
         const requestObj: Request = {

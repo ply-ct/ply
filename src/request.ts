@@ -91,7 +91,7 @@ export class PlyRequest implements Request, PlyTest {
     async submit(values: object, options?: Options, runOptions?: RunOptions): Promise<Response> {
         return await this.doSubmit(
             this.getRunId(values),
-            this.getRequest(values, options, true),
+            this.getRequest(values, options, runOptions, true),
             runOptions
         );
     }
@@ -131,18 +131,30 @@ export class PlyRequest implements Request, PlyTest {
     /**
      * Request object with substituted values
      */
-    getRequest(values: object, options?: Options, includeAuthHeader = false): Request {
-        const url = subst.replace(this.url, values, this.logger);
+    getRequest(
+        values: object,
+        options?: Options,
+        runOptions?: RunOptions,
+        includeAuthHeader = false
+    ): Request {
+        const url = subst.replace(this.url, values, this.logger, runOptions?.trusted);
         if (!url.startsWith('http://') && !url.startsWith('https://')) {
             throw new Error('Invalid url: ' + url);
         }
-        const method = subst.replace(this.method, values, this.logger).toUpperCase();
+        const method = subst
+            .replace(this.method, values, this.logger, runOptions?.trusted)
+            .toUpperCase();
         if (!this.getSupportedMethod(method)) {
             throw new Error('Unsupported method: ' + method);
         }
         const headers: { [key: string]: string } = {};
         for (const key of Object.keys(this.headers)) {
-            headers[key] = subst.replace(this.headers[key], values, this.logger);
+            headers[key] = subst.replace(
+                this.headers[key],
+                values,
+                this.logger,
+                runOptions?.trusted
+            );
         }
         if (!includeAuthHeader) {
             delete headers.Authorization;
@@ -150,7 +162,7 @@ export class PlyRequest implements Request, PlyTest {
 
         let body = this.body;
         if (body) {
-            body = subst.replace(body, values, this.logger);
+            body = subst.replace(body, values, this.logger, runOptions?.trusted);
             if (this.isGraphQl) {
                 // graphql
                 this.graphQl = body;
@@ -188,7 +200,7 @@ export class PlyRequest implements Request, PlyTest {
      */
     async run(runtime: Runtime, values: object, runOptions?: RunOptions): Promise<PlyResult> {
         this.submitted = new Date();
-        const requestObject = this.getRequest(values, runtime.options, true);
+        const requestObject = this.getRequest(values, runtime.options, runOptions, true);
         const id = this.logger.level === LogLevel.debug ? ` (${this.getRunId(values)})` : '';
         this.logger.info(
             `Request '${this.name}'${id} submitted at ${util.timestamp(

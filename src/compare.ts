@@ -27,7 +27,7 @@ export class Compare {
     /**
      * Diff results always contain \n newlines
      */
-    diffLines(expected: string, actual: string, values: object): Diff[] {
+    diffLines(expected: string, actual: string, values: object, trusted = false): Diff[] {
         const dmp = new DiffMatchPatch();
         const a = dmp.diff_linesToChars_(expected, actual);
         const lineText1 = a.chars1;
@@ -37,7 +37,7 @@ export class Compare {
         dmp.diff_charsToLines_(dmpDiffs, lineArray);
         const jsDiffs = this.convertToJsDiff(dmpDiffs);
         if (values) {
-            return this.markIgnored(jsDiffs, values);
+            return this.markIgnored(jsDiffs, values, trusted);
         } else {
             return jsDiffs;
         }
@@ -69,10 +69,10 @@ export class Compare {
     /**
      * Handles regex and @request/@response.
      */
-    private markIgnored(diffs: Diff[], values: object) {
+    private markIgnored(diffs: Diff[], values: object, trusted: boolean) {
         for (let i = 0; i < diffs.length; i++) {
             if (diffs[i].removed && diffs.length > i + 1 && diffs[i + 1].added) {
-                const exp = subst.replace(diffs[i].value, values, this.logger);
+                const exp = subst.replace(diffs[i].value, values, this.logger, trusted);
                 const act = diffs[i + 1].value;
                 if (exp === act) {
                     diffs[i].ignored = diffs[i + 1].ignored = true;

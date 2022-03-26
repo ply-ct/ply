@@ -154,12 +154,19 @@ export interface RunOptions {
      * Create expected from actual only if expected does not exist.
      */
     createExpectedIfMissing?: boolean;
+
+    /**
+     * If untrusted, enforce safe expression evaluation without side-effects.
+     * Supports a limited subset of template literal expressions.
+     * Default is false assuming expressions from untrusted sources are evaluated.
+     */
+    trusted?: boolean;
+
     /**
      * Import requests or values from external format (currently 'postman' or 'insomnia' is supported).
      * Overwrites existing same-named files.
      */
     import?: 'postman' | 'insomnia';
-
     /**
      * Import collections into request suites (.yaml files), instead of individual (.ply) requests.
      */
@@ -271,6 +278,14 @@ export class Config {
             alias: 's',
             type: 'boolean'
         },
+        create: {
+            describe: 'Create expected result from actual',
+            type: 'boolean'
+        },
+        trusted: {
+            describe: 'Expressions are from trusted source',
+            type: 'boolean'
+        },
         expectedLocation: {
             describe: 'Expected results base dir',
             type: 'string' // avoid premature reading of default
@@ -329,10 +344,6 @@ export class Config {
         openapi: {
             describe: 'Augment OpenAPI 3 docs with examples',
             type: 'string'
-        },
-        create: {
-            describe: 'Create expected result from actual',
-            type: 'boolean'
         },
         useDist: {
             describe: 'Load cases from compiled js',
@@ -450,6 +461,10 @@ export class Config {
         if (options.create) {
             options.runOptions.createExpected = options.create;
             delete options.create;
+        }
+        if (options.trusted) {
+            options.runOptions.trusted = options.trusted;
+            delete options.trusted;
         }
         if (options.useDist) {
             options.runOptions.useDist = options.useDist;

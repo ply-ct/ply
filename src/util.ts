@@ -93,6 +93,10 @@ export function fixEol(path: string): string {
     return path.replace(/\r/g, '');
 }
 
+export function isJson(str: string): boolean {
+    return (str.startsWith('{') && str.endsWith('}')) || (str.startsWith('[') && str.endsWith(']'));
+}
+
 export function writeableName(name: string): string {
     return name
         .replace(/</g, '-')

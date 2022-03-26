@@ -80,21 +80,32 @@ export class PlyFlow implements Flow {
         this.results = new FlowResults(this.name);
     }
 
+    valuesFromFlowAttribute(): any {
+        const values: any = {};
+        if (this.flow.attributes?.values) {
+            const rows = JSON.parse(this.flow.attributes?.values);
+            for (const row of rows) {
+                let rowVal: any = row[1];
+                const numVal = Number(row[1]);
+                if (!isNaN(numVal)) rowVal = numVal;
+                else if (row[1] === 'true' || row[1] === 'false') rowVal = row[1] === 'true';
+                else if (util.isJson(row[1])) rowVal = JSON.parse(row[1]);
+                values[row[0]] = rowVal;
+            }
+        }
+        return values;
+    }
+
     /**
      * Run a ply flow.
      */
     async run(runtime: Runtime, values: any, runOptions?: RunOptions): Promise<Result> {
-        (values as any)[RUN_ID] = this.instance.runId || util.genId();
+        values[RUN_ID] = this.instance.runId || util.genId();
 
-        if (this.flow.attributes?.values) {
-            const rows = JSON.parse(this.flow.attributes?.values);
-            for (const row of rows) {
-                let rowVal: string | number | boolean = row[1];
-                const numVal = Number(row[1]);
-                if (!isNaN(numVal)) rowVal = numVal;
-                else if (row[1] === 'true' || row[1] === 'false') rowVal = row[1] === 'true';
-                values[row[0]] = rowVal;
-            }
+        // flow values supersede file-based
+        const flowValues = this.valuesFromFlowAttribute();
+        for (const flowValKey of Object.keys(flowValues)) {
+            values[flowValKey] = flowValues[flowValKey];
         }
         // run values override even flow-configured vals
         if (runOptions?.values) {

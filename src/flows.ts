@@ -120,15 +120,12 @@ export class FlowSuite extends Suite<Step> {
         return await this.plyFlow.run(this.runtime, values, runOptions);
     }
 
-    async runSteps(steps: Step[], values: object, runOptions?: RunOptions): Promise<Result[]> {
-        // flow-configured values
-        if (this.plyFlow.flow.attributes?.values) {
-            const rows = JSON.parse(this.plyFlow.flow.attributes?.values);
-            for (const row of rows) {
-                (values as any)[row[0]] = row[1];
-            }
+    async runSteps(steps: Step[], values: any, runOptions?: RunOptions): Promise<Result[]> {
+        // flow values supersede file-based
+        const flowValues = this.plyFlow.valuesFromFlowAttribute();
+        for (const flowValKey of Object.keys(flowValues)) {
+            values[flowValKey] = flowValues[flowValKey];
         }
-
         // run values override even flow-configured vals
         if (runOptions?.values) {
             values = { ...values, ...runOptions.values };
