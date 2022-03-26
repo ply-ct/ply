@@ -433,9 +433,14 @@ h6:hover .header-link {
   font-family: monospace;
   font-size: 14px;
   margin-right: 0;
-	padding: 2px 4px;
+	padding: 2px 4px 2.5px 4px;
 	border: 1px solid gray;
   border-radius: 3px 0 0 3px;
+}
+@-moz-document url-prefix() {
+  .copy-txt {
+    padding: 2px 4px 3.5px 4px;
+  }
 }
 .copy-btn {
   font-family: monospace;
@@ -446,7 +451,8 @@ h6:hover .header-link {
   cursor: pointer;
   overflow: hidden;
   padding: 1px 0 1px 10px;
-  -webkit-padding-after: 1px;
+  position: relative;
+  top: 1px;
 }
 @-moz-document url-prefix() {
   .copy-btn {

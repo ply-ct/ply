@@ -1,0 +1,13 @@
+SSQA monthly meeting Apr 12, 2022
+
+Abstract:
+Automated API Testing with Ply.
+
+Ply was invented to make automated testing of REST and GraphQL APIs easier. Ply's concept of reusable Request artifacts provides an intuitive mechanism for building graphical flows to orchestrate complex sequences of interdependent API invocations. The Ply VS Code extension enables designers to drag and drop reusable assets to create highly repeatable automated test suites which are well-suited for continuous testing in the context of a CI/CD pipeline.
+
+
+Bios:
+
+Rich Whitehead
+
+Donald Oakes is a Principal Software Development Engineer at Lumen Technologies, with a twenty year track record of full-stack software development expertise. Donald has an extensive GitHub commit history on open-source projects, including a REST API orchestration framework powering 40+ successfully deployed applications. Recently he's been especially focused on automated API testing, being the primary developer of the Ply automation toolset.

@@ -14,7 +14,7 @@ layout: topic
 1. Expand the Flows group in Test Explorer, and you should see get-movies.ply.flow.
 
 ## Run your flow
-1. In Ply's flow diagram toolbar (or in the Test Explorer item hover menu), click the run icon:  
+1. In Ply's flow diagram toolbar (or in the Test Explorer item hover menu), click the run icon:
    <img src="../img/run.svg" alt="Run Icon" class="icon-img">  
    When prompted, select "Submit without verifying" (*Submit* is Ply-speak for "don't check run results").
 1. To show flow/step statuses, the diagram automatically switches to Inspect mode, indicated by this icon in the toolbar mode dropdown:
@@ -32,7 +32,7 @@ layout: topic
 
 ## Add a Request step to your flow
 The idea of Ply is to test an API by submitting HTTP requests and validating results. That's where Request steps come in.
-1. Switch back to Select mode using the flow toolbar dropdown:  
+1. Switch back to Select mode using the flow toolbar dropdown:
    <img src="../img/select.png" alt="Select Mode Icon" class="icon-img" style="width:22px;">
 1. Remove the link joining Start to Stop by selecting it and hitting the Delete key.
 1. From Ply's toolbox view to the right of our diagram, drag in the step that's labeled *Request*. Position it somewhere
@@ -40,13 +40,13 @@ The idea of Ply is to test an API by submitting HTTP requests and validating res
 1. Double-click on the "New Request" label to rename it "Movie by Title".
 1. If you double-click on the Request step somewhere other than its label, Ply Configurator pops up. After renaming, double-click "Movie by Title"
    (or right-click and select Configure). Then enter this for its URL: {% include copy_to_clipboard.html text="https://ply-ct.org/movies?title=Dracula" %}  
-   <img src="../img/get-dracula.png" alt="Movie by Title" width="888px">  
+   <img src="../img/get-dracula.png" alt="Movie by Title" width="832px">  
    This points to [ply-movies](https://github.com/ply-ct/ply-movies#readme), our playground REST API containing horror movies
    from the 1930s.
 
 ## Draw links between flow steps
-1. To draw new links, switch to Connect mode:  
-   <img src="../img/connect.png" alt="Connect Mode Icon" class="icon-img" style="width:22px;">  
+1. To draw new links, switch to Connect mode:
+   <img src="../img/connect.png" alt="Connect Mode Icon" class="icon-img" style="width:22px;">
 1. Then click/drag your mouse to draw a link between Start and "Movie by Title".
 1. Do the same between "Movie by Title" and Stop.
 1. Switch back to Select mode, and save your flow (File > Save File, or Ctrl/Cmd-S).
@@ -76,12 +76,12 @@ The idea of Ply is to test an API by submitting HTTP requests and validating res
 1. Configure the "Movie by Title" step by double-clicking, or by right-clicking and selecting "Configure".
 1. On the Request tab, change the URL to this: {% include copy_to_clipboard.html text="${baseUrl}/movies?title=${title}" %}
 1. Now save and run the flow again. You'll be prompted to enter `${baseUrl}` and `${title}`. Enter values as shown here and click Run.  
-   <img src="../img/values-prompt.png" alt="Values prompt" width="774px">  
+   <img src="../img/values-prompt.png" alt="Values prompt" width="768px">  
 
 The value for "title" is available to reference in any of your requests. If you run the flow again, Ply will remember to use "Dracula" for `${title}`
 and you won't be bothered with a prompt. Try running with a different value:
 1. In the flow diagram toolbar, click the Values button:
-   <img src="../img/values.svg" alt="Values Icon" class="icon-img">  
+   <img src="../img/values.svg" alt="Values Icon" class="icon-img">
 1. Instead of "Dracula", enter "Frankenstein" for `${title}`; then click Run.
 1. Right-click on the failed step and select Compare Results to see how the response compares for a different title.
 1. Click the Values toolbar button again to switch back to "Dracula" and confirm that Run succeeds.
@@ -178,7 +178,7 @@ to test it without running the whole flow. Let's run the "Movie by ID" step that
 1. Right-click on "Movie by ID", and select Run.
 1. This time when you're prompted for values, you'll observe that `${@s3.response.body.movies[0].id}` is required,
    and that Ply knows this value from our previous flow run.  
-   <img src="../img/movie-by-id-values.png" alt="Values prompt" width="695px">  
+   <img src="../img/movie-by-id-values.png" alt="Values prompt" width="807px">  
 1. Double-click "Movie by ID" to review its request and response to make sure they're as expected.  
    <img src="../img/movie-by-id-response.png" alt="Movie by ID response" width="760px">  
 
