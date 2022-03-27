@@ -508,6 +508,7 @@ export class ResponseParser {
                     submitted = util.timeparse(submittedComment);
                 }
                 if (resultObj.response) {
+                    delete resultObj.status; // test status (for flows)
                     // reparse result to get response line nums
                     resultObj = yaml.load(
                         requestName,
@@ -517,7 +518,7 @@ export class ResponseParser {
                     const responseObj = resultObj.response;
                     let elapsedMs: Number | undefined;
                     const elapsedMsComment = util.lineComment(
-                        this.yamlLines[responseObj.__start + resultObj.__start + 1]
+                        this.yamlLines[resultObj.__start + responseObj.__start + 1]
                     );
                     if (elapsedMsComment) {
                         elapsedMs = parseInt(
@@ -525,9 +526,14 @@ export class ResponseParser {
                         );
                     }
                     const { __start, __end, ...response } = responseObj;
-                    response.source = this.yamlLines
-                        .slice(responseObj.__start + 1, responseObj.__end)
-                        .join('\n');
+                    response.source =
+                        `${requestName}:\n` +
+                        this.yamlLines
+                            .slice(
+                                resultObj.__start + responseObj.__start + 1,
+                                resultObj.__start + responseObj.__end
+                            )
+                            .join('\n');
                     if (submitted) {
                         response.submitted = submitted;
                     }

@@ -148,6 +148,12 @@ export class Ply {
         return flowSuites;
     }
 
+    async loadFlow(file: string): Promise<FlowSuite> {
+        const flows = await this.loadFlows(file);
+        if (flows.length === 0) throw new Error(`No flow found in: ${file}`);
+        return flows[0];
+    }
+
     async loadFlows(file: string): Promise<FlowSuite[]>;
     async loadFlows(...files: string[]): Promise<FlowSuite[]>;
     async loadFlows(files: string[], ...moreFiles: string[]): Promise<FlowSuite[]>;
