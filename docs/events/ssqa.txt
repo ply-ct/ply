@@ -3,11 +3,12 @@ SSQA monthly meeting Apr 12, 2022
 Abstract:
 Automated API Testing with Ply.
 
-Ply's aim is easy automation of REST and GraphQL API testing. Its building blocks are reusable Requests strung together in graphical flows to orchestrate complex sequences of interdependent API invocations. The Ply VS Code extension enables designers to drag and drop Requests and other assets to create highly repeatable automated test suites which are well-suited for continuous testing in the context of a CI/CD pipeline.
+Ply's aim is easy automation of REST and GraphQL API testing. Its building blocks are reusable Requests strung together in graphical flows to orchestrate complex sequences of interdependent API invocations. The Ply VS Code extension enables designers to drag and drop Requests and other assets to create highly repeatable automated test suites well-suited for continuous testing in the context of a CI/CD pipeline.
 
 
 Bios:
 
-Rich Whitehead
+Rich Whitehead has over 20 years of experience working in software development. Rich's career has spanned a variety of industry groups, from telecommunications and online education to, most recently, healthcare consulting. Though the bulk of his experience has been spent in quality engineering, Rich has taken on a number of other roles as well, and he's currently serving
+as a Business Analyst on an Agile Development Team. Rich is really excited to be contributing to the development of Ply, and can't wait to see where it can go in expanding the possibilities of automated API testing!
 
-Donald Oakes is a Principal Software Development Engineer at Lumen Technologies, with a twenty year track record of full-stack software development expertise. Donald has an extensive GitHub commit history on open-source projects, including a REST API orchestration framework powering 40+ successfully deployed applications. Recently he's been especially focused on automated API testing, being the primary developer of the Ply automation toolset.
+Don Oakes is a Principal Software Development Engineer at Lumen Technologies, with a twenty year track record of full-stack software development expertise. He has an extensive GitHub commit history on open-source projects, including the MDW REST API orchestration framework powering 40+ successfully deployed applications. Recently, he has been especially focused on automated API testing. Don is the primary developer of the Ply automation toolset.
