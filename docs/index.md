@@ -9,7 +9,7 @@ Ply is simply a more intuitive way to automate REST and GraphQL API testing.
 </div>
 
 <h2>Graphical, flow-driven test suites</h2>
-<img src="./img/flow-driven.png" alt="flow-driven" width="1029px" class="intro-shot">
+<img src="./img/flow-driven.png" alt="flow-driven" width="1223px" class="intro-shot">
 
 <h2 style="margin-top:-15px">Visual, side-by-side results</h2>
 <img src="./img/side-by-side.png" alt="side-by-side" width="1182px" class="intro-shot">
