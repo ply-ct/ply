@@ -7,7 +7,7 @@
       "name": "cli",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/dist/cli.js",
-      "args": ["--trusted", "test/ply/cases/movieCrud.ply.ts"],
+      "args": ["--trusted", "test/ply/flows/loops.ply.flow"],
       "preLaunchTask": "tsc: build - tsconfig.json"
     }
   ]
