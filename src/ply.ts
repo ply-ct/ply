@@ -323,9 +323,9 @@ export class Plier extends EventEmitter {
      * Plyees should be test paths (not suites).
      * TODO: DRY this out
      */
-    async run(plyees: string[], runOptions?: RunOptions): Promise<Result[]> {
-        const plyVersion = await util.plyVersion();
-        if (plyVersion) this.logger.info('Ply version', plyVersion);
+    async run(plyees: string[], runOptions?: RunOptions, plyVersion?: string): Promise<Result[]> {
+        const version = plyVersion || (await util.plyVersion());
+        if (version) this.logger.info('Ply version', version);
         this.logger.debug('Options', this.ply.options);
 
         const plyValues = new Values(this.ply.options.valuesFiles, this.logger);
