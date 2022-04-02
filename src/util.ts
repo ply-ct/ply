@@ -149,11 +149,11 @@ export function plyVersion(): Promise<string> {
                                 cachedPlyVersion = pkgJson.version;
                                 resolve(cachedPlyVersion);
                             } else {
-                                resolve('unknown');
+                                resolve('');
                             }
                         });
                 } else {
-                    resolve('unknown');
+                    resolve('');
                 }
             } catch (err) {
                 reject(err);
