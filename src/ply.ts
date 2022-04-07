@@ -331,13 +331,11 @@ export class Plier extends EventEmitter {
         const plyValues = new Values(this.ply.options.valuesFiles, this.logger);
         const values = await plyValues.read();
 
-        if (this.reporter) {
-            // remove all previous runs
-            await fs.promises.rm(`${this.options.logLocation}/runs`, {
-                force: true,
-                recursive: true
-            });
-        }
+        // remove all previous runs
+        await fs.promises.rm(`${this.options.logLocation}/runs`, {
+            force: true,
+            recursive: true
+        });
 
         let promises: Promise<Result[]>[] = [];
         let combined: Result[] = [];

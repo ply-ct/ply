@@ -56,7 +56,7 @@ The first data row here translates into the following values object structure:
   "description": "Karloff's nuanced performance as the well-meaning but demented scientist is the one redeeming feature in this cheaply made horror melodrama which provides very little in the way of horror or drama."
 }
 ```
-So then in [row-requests.ply.yaml](https://github.com/ply-ct/ply-demo/blob/master/test/requests/row-requests.ply.yaml) request suite, we can reference these values in our `createMovie` request:
+So then in [rowwise-requests.ply.yaml](https://github.com/ply-ct/ply-demo/blob/main/test/requests/rowwise-requests.ply.yaml) request suite, we can reference these values in our `createMovie` request:
 ```yaml
 createMovie: # POST
   url: ${baseUrl}/movies

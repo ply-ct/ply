@@ -61,6 +61,7 @@ export class RequestExec extends PlyExecBase {
             request.graphQl = body;
             body = JSON.stringify({ query: body }, null, runtime.options?.prettyIndent);
         }
+        (request as any).stepName = this.step.name.replace(/\r?\n/g, ' ');
 
         this.instance.data = {
             request: yaml.dump(

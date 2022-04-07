@@ -536,7 +536,7 @@ export class Suite<T extends Test> {
             this.logger.info(message);
         }
 
-        if (this.runtime.options.reporter && this.type !== 'flow') {
+        if (this.type !== 'flow') {
             // flows are logged through their requestSuites
             this.writeRunLog(test, outcome, message);
         }
@@ -555,6 +555,7 @@ export class Suite<T extends Test> {
         message?: string
     ) {
         const testRun: TestRun = {
+            name: (test as any).stepName || test.name,
             test: test.name,
             type: test.type,
             ...(outcome.start && { start: new Date(outcome.start).toISOString() as any }), // serialized as string

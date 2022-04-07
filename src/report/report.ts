@@ -21,9 +21,9 @@ export class Report {
     }
 }
 
-export const findRunFiles = async (runsLocation: string): Promise<string[]> => {
+export const findRunFiles = async (runsLocation: string, pattern: string): Promise<string[]> => {
     return new Promise((resolve, reject) => {
-        glob('**/*.json', { cwd: runsLocation }, (err, matches) => {
+        glob(pattern, { cwd: runsLocation }, (err, matches) => {
             if (err) {
                 reject(err);
             } else {
@@ -36,8 +36,12 @@ export const findRunFiles = async (runsLocation: string): Promise<string[]> => {
 /**
  * TODO stream
  */
-export const loadSuiteRuns = async (runsLocation: string): Promise<PlyResults> => {
-    const runFiles = await findRunFiles(runsLocation);
+export const loadSuiteRuns = async (
+    runsLocation: string,
+    pattern = '**/*.json',
+    filter?: (testRun: TestRun) => boolean
+): Promise<PlyResults> => {
+    const runFiles = await findRunFiles(runsLocation, pattern);
     const suiteRuns: SuiteRun[] = [];
     for (const runFile of runFiles) {
         const base = path.basename(runFile, '.json');
@@ -45,7 +49,9 @@ export const loadSuiteRuns = async (runsLocation: string): Promise<PlyResults> =
         const suiteName = base.substring(0, lastDot);
         const runNumber = parseInt(base.substring(lastDot + 1));
         const contents = await fs.promises.readFile(runFile, { encoding: 'utf-8' });
-        const testRuns: TestRun[] = JSON.parse(contents);
+        let testRuns: TestRun[] = JSON.parse(contents);
+
+        if (filter) testRuns = testRuns.filter(filter);
 
         testRuns.forEach((tr) => {
             if (tr.start) tr.start = new Date(tr.start);

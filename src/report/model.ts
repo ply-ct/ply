@@ -1,5 +1,7 @@
 import { ResultStatus } from '../result';
 import { TestType } from '../test';
+import { Request } from '../request';
+import { Response } from '../response';
 
 export type ReportFormat = 'json' | 'html';
 
@@ -39,6 +41,7 @@ export interface SuiteRun {
 }
 
 export interface TestRun {
+    name: string;
     test: string;
     type: TestType;
     start?: Date;

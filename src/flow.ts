@@ -55,7 +55,7 @@ export class PlyFlow implements Flow {
     readonly type = 'flow';
     start = 0;
     end?: number | undefined;
-    readonly instance: flowbee.FlowInstance;
+    instance: flowbee.FlowInstance;
     readonly results: FlowResults;
     maxLoops = 0;
 
@@ -70,6 +70,11 @@ export class PlyFlow implements Flow {
         private readonly logger: Logger
     ) {
         this.name = flowbee.getFlowName(flow);
+        this.instance = this.newInstance();
+        this.results = new FlowResults(this.name);
+    }
+
+    newInstance() {
         const id = util.genId();
         this.instance = {
             id,
@@ -77,7 +82,7 @@ export class PlyFlow implements Flow {
             flowPath: this.flow.path,
             status: 'Pending'
         };
-        this.results = new FlowResults(this.name);
+        return this.instance;
     }
 
     valuesFromFlowAttribute(): any {
@@ -100,6 +105,7 @@ export class PlyFlow implements Flow {
      * Run a ply flow.
      */
     async run(runtime: Runtime, values: any, runOptions?: RunOptions): Promise<Result> {
+        this.newInstance();
         values[RUN_ID] = this.instance.runId || util.genId();
 
         // flow values supersede file-based
