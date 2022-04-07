@@ -1,6 +1,8 @@
 import * as yaml from './yaml';
 import * as util from './util';
 import { TestType, Test, PlyTest } from './test';
+import { Request } from './request';
+import { Response } from './response';
 import { Result, Outcome, Verifier, PlyResult, ResultPaths } from './result';
 import { Location } from './location';
 import { Storage } from './storage';
