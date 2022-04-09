@@ -54,7 +54,7 @@
     "deepmerge": "^4.2.2",
     "diff-match-patch": "^1.0.5",
     "find-up": "^5.0.0",
-    "flowbee": "^0.4.3",
+    "flowbee": "^0.4.4",
     "form-data": "^4.0.0",
     "glob": "^7.2.0",
     "handlebars": "^4.7.7",
