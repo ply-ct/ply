@@ -25,9 +25,9 @@ When a case suite is executed here's what happens:
   - Any `@after` decorated methods are invoked
   - To verify, overall actual result YAML is compared against expected
 
-Let's walk through ply-demo's [movieCrud.ply.ts](https://github.com/ply-ct/ply-demo/blob/master/test/cases/movieCrud.ply.ts)
+Let's walk through ply-demo's [movieCrud.ply.ts](https://github.com/ply-ct/ply-demo/blob/main/test/cases/movieCrud.ply.ts)
 suite to further understand how Ply cases relate to requests. MovieCrud's constructor loads a request suite by calling
-[loadSuiteSync](https://ply-ct.github.io/ply/api-docs/classes/ply.html#loadsuitesync):
+[loadSuiteSync](https://ply-ct.github.io/ply/api-docs/classes/Ply.html#loadSuiteSync):
 ```typescript
   constructor() {
     this.requestSuite = ply.loadSuiteSync('test/ply/requests/movies-api.ply.yaml');
@@ -123,12 +123,12 @@ the [Ply Extension](https://marketplace.visualstudio.com/items?itemName=ply-ct.v
 Unlike previous exercises in this guide, our movie-crud case suite performs updates and changes
 data. This is not permitted on the movies API hosted at ply-ct.org. Luckily it's easy to run
 [ply-movies](https://github.com/ply-ct/ply-movies#readme) locally. First, change the valuesFiles
-section in plyconfig.json to use localhost:
-```json
-  "valuesFiles": [
-    "test/values/global.json",
-    "test/values/localhost.json"
-  ]
+section in plyconfig.yaml to use localhost:
+```yaml
+valuesFiles:
+  - test/values/global.json
+  # - test/values/ply-ct.json
+  - test/values/localhost.json
 ```
 Here's how to start/stop ply-movies server as a background process through npm scripts:
 ```
@@ -176,10 +176,9 @@ to see how it includes all requests/responses for the entire suite.
 The requests in movies-api.ply.yaml are meant to be used by our movie-crud case.
 We don't want these to be run as standalone requests when we run all tests by executing
 simply `ply` from the command line (or running all in VS Code). To avoid running
-these requests directly, we mark them as skipped in plyconfig.json:
-```json
-  "skip": "requests/movies-api.ply.yaml"
+these requests directly, we mark them as skipped in plyconfig.yaml:
+```yaml
+  skip: requests/movies-api.ply.yaml
 ```
-
 
 Next Topic: [Postman](postman)

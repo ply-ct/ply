@@ -137,6 +137,19 @@ export class PlyStep implements Step, PlyTest {
                 throw new Error(`Unsupported step: ${this.step.path}`);
             }
 
+            if (!runOptions?.trusted) {
+                let trustRequired = true;
+                const trustFun = (exec as any).isTrustRequired;
+                if (typeof trustFun === 'function') {
+                    trustRequired = trustFun();
+                }
+                if (trustRequired) {
+                    throw new Error(
+                        `Trusted context required for ${this.step.id}: ${this.stepName}`
+                    );
+                }
+            }
+
             const execResult = await exec.run(runtime, values, runOptions);
             if (
                 this.step.path !== 'start' &&

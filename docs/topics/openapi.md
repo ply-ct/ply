@@ -7,7 +7,7 @@ layout: topic
 If your API is implemented in TypeScript, you can use the Ply [CLI](cli) to enhance the 
 quality of OpenAPI samples by leveraging your Ply requests and responses. Ply will also add code
 snippets in TypeScript, Python and Java under the 
-[Redoc x-codeSamples](https://github.com/Redocly/redoc/blob/master/docs/redoc-vendor-extensions.md#x-codesamples)
+[Redoc x-codeSamples](https://github.com/Redocly/redoc/blob/main/docs/redoc-vendor-extensions.md#x-codesamples)
 Swagger extension.
 ```
 ply --openapi=nestjs openapi/movies.yaml

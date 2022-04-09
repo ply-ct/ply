@@ -172,7 +172,7 @@ that references our previous "Movie by Title" response.
    ``` 
 
 ## Run a step by itself
-As you're building out a Ply flow by adding new requests, sometimes you may want to run a single step in isolation
+As you're building out a Ply flow by adding new steps, sometimes you may want to run a single step in isolation
 to test it without running the whole flow. Let's run the "Movie by ID" step that we just inserted.
 1. Open get-movies.ply.flow in Select mode.
 1. Right-click on "Movie by ID", and select Run.

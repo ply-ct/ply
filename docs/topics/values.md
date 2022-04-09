@@ -3,13 +3,13 @@ layout: topic
 ---
 # Values
 Values provide a way to parameterize request content and response matching per environment or other varying condition. Values files are JSON format.
-For example, here's ply-demo's [ply-ct.json](https://github.com/ply-ct/ply-demo/blob/master/test/values/ply-ct.json) values file:
+For example, here's ply-demo's [ply-ct.json](https://github.com/ply-ct/ply-demo/blob/main/test/values/ply-ct.json) values file:
 ```json
 {
   "baseUrl": "https://ply-ct.org/movies"
 }
 ```
-Properties such as `baseUrl` are referenced in requests ([movie-queries.ply.yaml](https://github.com/ply-ct/ply-demo/blob/master/test/requests/movie-queries.ply.yaml))
+Properties such as `baseUrl` are referenced in requests ([movie-queries.ply.yaml](https://github.com/ply-ct/ply-demo/blob/main/test/requests/movie-queries.ply.yaml))
 like so:
 ```yaml
 moviesByYearAndRating:
@@ -28,7 +28,7 @@ JSON objects containing values can also be nested. You could just as well declar
 Then your expression would be:
 ```yaml
 moviesByYearAndRating:
-  url: '${moviesApi.baseUrl}...'
+  url: ${moviesApi.baseUrl}/ #...
 ```
 
 As described in [Results](results), expressions like these can also be embedded in your expected results files.
@@ -36,14 +36,12 @@ As described in [Results](results), expressions like these can also be embedded 
 ## Specifying Values Files
 Values files for test execution can be designated in [plyconfig](config) or on the [command line](cli).
 Multiple values files may be specified, in which case their JSON objects are deep-merged, with later entries taking precedences over earlier.
-So in `valuesFiles` from ply-demo's [plyconfig.json](https://github.com/ply-ct/ply-demo/blob/master/plyconfig.json):
-```json
-{
-  "valuesFiles": [
-    "test/values/global.json",
-    "test/values/localhost.json"
-  ]
-}
+So in `valuesFiles` from ply-demo's [plyconfig.yaml](https://github.com/ply-ct/ply-demo/blob/main/plyconfig.yaml):
+```yaml
+valuesFiles:
+  - test/values/global.json
+  - test/values/ply-ct.json
+  # - test/values/localhost.json
 ```
 same-named properties from localhost.json supersede those from global.json.
 
@@ -63,13 +61,10 @@ This enables you to keep secrets for containerized/cloud deployments in PLY_VALU
 
 ## Rowwise Values
 Ply supports [iterative test execution](iterate), which is indicated simply by including a .csv or .xlsx file among `valuesFiles`:
-```json
-{
-  "valuesFiles": [
-    "test/values/localhost.json",
-    "test/values/forties-movies.csv"
-  ]
-}
+```yaml
+valuesFiles:
+  - test/values/localhost.json
+  - test/values/forties-movies.csv
 ```
 Only one .csv/.xlsx file may be included. Ply will repeatedly run each test for every row in the dataset. Same-named values from .csv/xlsx rows
 always take precedence over those from .json files.
@@ -82,7 +77,7 @@ in the running suite. Thus in a results file you can reference the "id" value fr
 When populating runtime values, Ply will convert their body contents to objects if they're parseable as JSON. Otherwise, any body content is treated as a raw string.
 
 Furthermore, in Ply [Cases](cases) you can programmatically add runtime values yourself. For example, take a look at the 'update rating' test in ply-demo's 
-[movieCrud.ply.ts] (https://github.com/ply-ct/ply-demo/blob/master/test/cases/movieCrud.ply.ts):
+[movieCrud.ply.ts] (https://github.com/ply-ct/ply-demo/blob/main/test/cases/movieCrud.ply.ts):
 ```typescript
     @test('update rating')
     async updateRating(values: any) {
@@ -103,6 +98,6 @@ User-specified values take precedence in the following order (highest to lowest)
   1. Values specified in the popup when running a [flow](flows)
   1. Fixed values defined in flow via the Values configurator tab
   1. Runtime values set programmatically or autopopulated from previous requests
-  1. Values loaded from the list of files in plyconfig.json/yaml or on the command line
+  1. Values loaded from the list of files in plyconfig.yaml/yml/json or on the command line
 
 Next Topic: [Iterating](iterate)
