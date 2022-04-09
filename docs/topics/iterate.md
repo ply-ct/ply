@@ -131,10 +131,11 @@ ply flows/movies-api.ply.flow --valuesFiles="test/values/localhost.json,test/val
 Suites by default are executed sequentially, with Ply waiting for one suite to complete before running 
 the next. As with non-iterating tests, the `parallel` config option can be used to execute suites in parallel.
 With rowwise values, `parallel` applies to how rows are handled as well (multiple rows are submitted simultaneously).
-When iterating in parallel there are couple of things to keep in mind:
+When iterating in parallel there are few of things to keep in mind:
   - Test suites that interfere with each other's data will cause inconsistencies when run in parallel.
-  - The `submit` option described above should be used to suppress results verification. Ply writes actual
+  - The `submit` option described above must be used to suppress results verification. Ply writes actual
     suite results to the same file for each row processed. This will cause interference during parallel execution.
+  - Flow looping is not supported when iterating in parallel.
 
 Example command-line for exercising ply-demo's movies-api.ply.flow IN PARALLEL with 264 rows of data from forties-movies.csv:
 ```

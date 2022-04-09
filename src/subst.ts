@@ -5,7 +5,7 @@ import * as util from './util';
 /**
  * duplicated in vscode-ply/media/values.ts
  */
-function get(input: string, context: any): string {
+export function get(input: string, context: any): string {
     if (input.startsWith('${~')) return input; // ignore regex
 
     // escape all \
@@ -20,7 +20,7 @@ function get(input: string, context: any): string {
     }
 
     let res: any = context;
-    for (const seg of tokenize(path)) {
+    for (const seg of tokenize(path, context)) {
         if (!res[seg]) return input;
         res = res[seg];
     }
@@ -28,7 +28,7 @@ function get(input: string, context: any): string {
     return '' + res;
 }
 
-function trustedGet(input: string, context: any): string {
+export function trustedGet(input: string, context: any): string {
     if (input.startsWith('${~')) return input; // ignore regex
 
     let expr = input;
@@ -39,7 +39,7 @@ function trustedGet(input: string, context: any): string {
     return fun(...Object.values(context));
 }
 
-export function tokenize(path: string): (string | number)[] {
+export function tokenize(path: string, context: any): (string | number)[] {
     return path.split(/\.(?![^[]*])/).reduce((segs: (string | number)[], seg) => {
         if (seg.search(/\[.+?]$/) > 0) {
             // indexer(s)
@@ -54,7 +54,19 @@ export function tokenize(path: string): (string | number)[] {
                 ) {
                     segs.push(indexer.substring(1, indexer.length - 1)); // object property
                 } else {
-                    segs.push(parseInt(indexer)); // array index
+                    let idx = parseInt(indexer);
+                    if (isNaN(idx)) {
+                        // indexer is expression
+                        const val = get('${' + indexer + '}', context);
+                        idx = parseInt(val);
+                        if (isNaN(idx)) {
+                            segs.push(val);
+                        } else {
+                            segs.push(idx); // array index
+                        }
+                    } else {
+                        segs.push(idx); // array index
+                    }
                 }
                 remains = remains.substring(indexer.length + 2);
             }

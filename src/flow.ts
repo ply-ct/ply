@@ -257,7 +257,7 @@ export class PlyFlow implements Flow {
             this.instance.status = plyStep.instance.status;
             if (subflow) subflow.instance.status = plyStep.instance.status;
             this.emit('error', 'step', plyStep.instance);
-            if (runtime.options.bail) {
+            if (result.status === 'Errored' || runtime.options.bail) {
                 return;
             }
         } else {

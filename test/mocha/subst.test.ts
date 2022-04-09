@@ -84,7 +84,10 @@ describe('subst', () => {
     });
 
     it('tokenizes complex expressions', () => {
-        let tokens = subst.tokenize("greeting.response.body['friendly.greetings'][0].salutation");
+        let tokens = subst.tokenize(
+            "greeting.response.body['friendly.greetings'][0].salutation",
+            {}
+        );
         assert.strictEqual(tokens[0], 'greeting');
         assert.strictEqual(tokens[1], 'response');
         assert.strictEqual(tokens[2], 'body');
@@ -92,17 +95,41 @@ describe('subst', () => {
         assert.strictEqual(tokens[4], 0);
         assert.strictEqual(tokens[5], 'salutation');
 
-        tokens = subst.tokenize('multidim[0][3][1001]');
+        tokens = subst.tokenize('multidim[0][3][1001]', {});
         assert.strictEqual(tokens[0], 'multidim');
         assert.strictEqual(tokens[1], 0);
         assert.strictEqual(tokens[2], 3);
         assert.strictEqual(tokens[3], 1001);
 
-        tokens = subst.tokenize('foos[12].bar.baz[3]');
+        tokens = subst.tokenize('foos[12].bar.baz[3]', {});
         assert.strictEqual(tokens[0], 'foos');
         assert.strictEqual(tokens[1], 12);
         assert.strictEqual(tokens[2], 'bar');
         assert.strictEqual(tokens[3], 'baz');
         assert.strictEqual(tokens[4], 3);
+    });
+
+    it('evaluates untrusted array index', () => {
+        const input = '${titles[loopCount]}';
+        const values = {
+            loopCount: 0,
+            titles: ['Frankenstein', 'Island of Lost Souls', 'The Invisible Man']
+        };
+        const output = subst.get(input, values);
+        assert.strictEqual(output, 'Frankenstein');
+    });
+
+    it('evaluates untrusted object index', () => {
+        const input = '${titles[item]}';
+        const values = {
+            item: 'two',
+            titles: {
+                one: 'Frankenstein',
+                two: 'Island of Lost Souls',
+                three: 'The Invisible Man'
+            }
+        };
+        const output = subst.get(input, values);
+        assert.strictEqual(output, 'Island of Lost Souls');
     });
 });

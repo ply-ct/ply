@@ -84,4 +84,28 @@ describe('Flows', async () => {
         checkDate(createMovie.start);
         checkDate(createMovie.end);
     });
+
+    it('executes decision', async () => {
+        const ply = new Ply();
+        const flow = await ply.loadFlow('test/ply/flows/decision.ply.flow');
+        const results = await flow.run({}, { trusted: true });
+        assert.strictEqual(results[0].status, 'Passed');
+    });
+
+    it('rejects untrusted decision', async () => {
+        const ply = new Ply();
+        const flow = await ply.loadFlow('test/ply/flows/decision.ply.flow');
+        const results = await flow.run({});
+        assert.strictEqual(results[0].status, 'Errored');
+        assert.ok(results[0].message.startsWith('Trusted context required'));
+    });
+
+    it('rejects untrusted ts', async () => {
+        const ply = new Ply();
+        const flow = await ply.loadFlow('test/ply/flows/loops.ply.flow');
+        const results = await flow.run({ baseUrl: 'http://localhost:3000' });
+        assert.strictEqual(results[0].status, 'Errored');
+        assert.ok(results[0].name === 'Increment loopCount');
+        assert.ok(results[0].message.startsWith('Trusted context required'));
+    });
 });
