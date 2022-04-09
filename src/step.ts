@@ -1,5 +1,4 @@
 import * as process from 'process';
-import * as fs from 'fs';
 import * as path from 'path';
 import * as flowbee from 'flowbee';
 import { Logger } from './logger';
@@ -11,7 +10,7 @@ import { PlyTest, Test } from './test';
 import { Result } from './result';
 import * as util from './util';
 import { RequestExec } from './exec/request';
-import { ExecResult } from './exec/exec';
+import { ExecResult, PlyExec } from './exec/exec';
 import { StartExec } from './exec/start';
 import { StopExec } from './exec/stop';
 import { FlowElementStatus } from 'flowbee';
@@ -45,7 +44,6 @@ export class PlyStep implements Step, PlyTest {
         private readonly logger: Logger,
         readonly flowPath: string,
         flowInstanceId: string,
-        readonly instanceNumber = 0,
         readonly subflow?: flowbee.Subflow
     ) {
         this.name = getStepId(this);
@@ -62,7 +60,8 @@ export class PlyStep implements Step, PlyTest {
         runtime: Runtime,
         values: object,
         runOptions?: RunOptions,
-        runNum?: number
+        runNum?: number,
+        instNum = 0
     ): Promise<Result> {
         this.instance.start = new Date();
         let result: Result;
@@ -71,7 +70,7 @@ export class PlyStep implements Step, PlyTest {
 
         try {
             let key = this.stepName;
-            if (this.instanceNumber) key += `_${this.instanceNumber}`;
+            if (instNum) key += `_${instNum}`;
             runtime.appendResult(
                 `${key}:`,
                 level,
@@ -80,46 +79,35 @@ export class PlyStep implements Step, PlyTest {
             );
             runtime.appendResult(`id: ${this.step.id}`, level + 1, runOptions?.createExpected);
 
-            let execResult: ExecResult;
+            let exec: PlyExec;
 
             if (this.step.path === 'start') {
                 if (this.subflow && !runOptions?.submit && !runOptions?.createExpected) {
-                    await this.padActualStart(this.subflow.id, this.instanceNumber);
+                    await this.padActualStart(this.subflow.id, instNum);
                 }
-                const startExec = new StartExec(this.step, this.instance, this.logger);
-                execResult = await startExec.run();
+                exec = new StartExec(this.step, this.instance, this.logger);
             } else if (this.step.path === 'stop') {
-                const stopExec = new StopExec(
+                exec = new StopExec(
                     this.flowPath,
                     this.step,
                     this.instance,
                     this.logger,
                     this.subflow
                 );
-                execResult = await stopExec.run();
             } else if (this.step.path === 'request') {
-                const requestExec = new RequestExec(
+                exec = new RequestExec(
                     this.name,
                     this.requestSuite,
                     this.step,
                     this.instance,
-                    this.logger
-                );
-                execResult = await requestExec.run(
-                    runtime,
-                    values,
-                    runOptions,
+                    this.logger,
                     runNum,
-                    this.instanceNumber
+                    instNum
                 );
             } else if (this.step.path === 'decide') {
-                const deciderExec = new DeciderExec(this.step, this.instance, this.logger);
-                execResult = await deciderExec.run(runtime, values);
-                this.instance.status = this.mapToInstanceStatus(execResult);
+                exec = new DeciderExec(this.step, this.instance, this.logger);
             } else if (this.step.path === 'delay') {
-                const delayExec = new DelayExec(this.step, this.instance, this.logger);
-                execResult = await delayExec.run(runtime, values);
-                this.instance.status = this.mapToInstanceStatus(execResult);
+                exec = new DelayExec(this.step, this.instance, this.logger);
             } else if (this.step.path === 'typescript' || this.step.path.endsWith('.ts')) {
                 const type = this.step.path === 'typescript' ? 'TypeScript' : 'Custom';
                 let tsFile: string;
@@ -139,17 +127,24 @@ export class PlyStep implements Step, PlyTest {
                         `${type} step module must export PlyExec implementor class as default: ${tsFile}`
                     );
                 }
-                const execInst = new mod.default(this.step, this.instance, this.logger);
-                if (typeof execInst.run !== 'function') {
+                exec = new mod.default(this.step, this.instance, this.logger);
+                if (typeof exec.run !== 'function') {
                     throw new Error(
                         `${type} step module must implement PlyExec.run() method: ${tsFile}`
                     );
                 }
-                execResult = await execInst.run(runtime, values);
-                this.instance.status = this.mapToInstanceStatus(execResult);
-                if (execResult.message) this.instance.message = execResult.message;
             } else {
                 throw new Error(`Unsupported step: ${this.step.path}`);
+            }
+
+            const execResult = await exec.run(runtime, values, runOptions);
+            if (
+                this.step.path !== 'start' &&
+                this.step.path !== 'stop' &&
+                this.step.path !== 'request'
+            ) {
+                this.instance.status = this.mapToInstanceStatus(execResult);
+                if (execResult.message) this.instance.message = execResult.message;
             }
 
             if (!execResult.message && this.instance.message) {
@@ -159,7 +154,7 @@ export class PlyStep implements Step, PlyTest {
             this.instance.end = new Date();
 
             if (!runOptions?.submit && !runOptions?.createExpected) {
-                await this.padActualStart(this.name, this.instanceNumber);
+                await this.padActualStart(this.name, instNum);
             }
 
             result = {

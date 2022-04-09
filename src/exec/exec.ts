@@ -22,14 +22,14 @@ export abstract class PlyExecBase implements PlyExec {
 
     abstract run(runtime: Runtime, values: any, runOptions?: RunOptions): Promise<ExecResult>;
 
-    protected evaluateToString(input: string, values: any): string {
-        this.logger.debug(`Evaluating expression '${input}' against values`, values);
-        let expr = input;
-        if (!(expr.startsWith('${') && expr.endsWith('}'))) {
-            expr = '${' + expr + '}';
+    protected evaluateToString(expr: string, values: any): string {
+        if (this.isExpression(expr)) {
+            this.logger.debug(`Evaluating expression '${expr}' against values`, values);
+            const fun = new Function(...Object.keys(values), 'return `' + expr + '`');
+            return fun(...Object.values(values));
+        } else {
+            return expr;
         }
-        const fun = new Function(...Object.keys(values), 'return `' + expr + '`');
-        return fun(...Object.values(values));
     }
 
     /**
@@ -46,5 +46,13 @@ export abstract class PlyExecBase implements PlyExec {
         }
         if (instance.message) execResult.message = instance.message;
         return execResult;
+    }
+
+    isTrustRequired(): boolean {
+        return true;
+    }
+
+    isExpression(input: string): boolean {
+        return input.startsWith('${') && input.endsWith('}');
     }
 }

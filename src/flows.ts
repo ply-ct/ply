@@ -184,7 +184,6 @@ export class FlowSuite extends Suite<Step> {
                 this.logger,
                 this.plyFlow.flow.path,
                 '',
-                insts,
                 subflow
             );
 
@@ -208,7 +207,7 @@ export class FlowSuite extends Suite<Step> {
 
             this.emitter?.emit('flow', this.plyFlow.flowEvent('start', 'step', plyStep.instance));
 
-            const result = await plyStep.run(this.runtime, values, runOptions);
+            const result = await plyStep.run(this.runtime, values, runOptions, 0, insts);
             if (result.status === 'Failed' || result.status === 'Errored') {
                 this.emitter?.emit(
                     'flow',

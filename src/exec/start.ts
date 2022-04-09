@@ -19,4 +19,8 @@ export class StartExec extends PlyExecBase {
         }
         return this.mapToExecResult(this.instance);
     }
+
+    isTrustRequired(): boolean {
+        return false;
+    }
 }

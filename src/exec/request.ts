@@ -14,18 +14,14 @@ export class RequestExec extends PlyExecBase {
         private readonly requestSuite: Suite<Request>, // unique
         readonly step: flowbee.Step,
         readonly instance: flowbee.StepInstance,
-        readonly logger: Logger
+        readonly logger: Logger,
+        private readonly runNum?: number,
+        private readonly instNum?: number
     ) {
         super(step, instance, logger);
     }
 
-    async run(
-        runtime: Runtime,
-        values: any,
-        runOptions?: RunOptions,
-        runNum = 0,
-        instNum = 0
-    ): Promise<ExecResult> {
+    async run(runtime: Runtime, values: any, runOptions?: RunOptions): Promise<ExecResult> {
         let url = this.step.attributes?.url;
         if (!url) throw new Error('Missing attribute: url');
         url = subst.replace(url, values, this.logger, runOptions?.trusted);
@@ -83,8 +79,8 @@ export class RequestExec extends PlyExecBase {
                 this.name,
                 values,
                 runOptions,
-                runNum,
-                instNum
+                this.runNum,
+                this.instNum
             );
             if (result.status !== 'Passed' && result.status !== 'Submitted') {
                 this.instance.status = result.status === 'Failed' ? 'Failed' : 'Errored';
@@ -113,5 +109,9 @@ export class RequestExec extends PlyExecBase {
         }
 
         return this.mapToExecResult(this.instance, runOptions);
+    }
+
+    isTrustRequired(): boolean {
+        return false; // expected results eval can work without trust
     }
 }

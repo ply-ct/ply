@@ -15,7 +15,7 @@ export class DelayExec extends PlyExecBase {
     async run(_runtime: Runtime, values: any): Promise<ExecResult> {
         let interval = this.step.attributes?.interval;
         if (interval) {
-            if (interval.startsWith('${') && interval.endsWith('}')) {
+            if (this.isExpression(interval)) {
                 interval = this.evaluateToString(interval, values);
             }
             const ms = Number(interval);
@@ -35,5 +35,9 @@ export class DelayExec extends PlyExecBase {
                 resolve();
             }, ms);
         });
+    }
+
+    isTrustRequired() {
+        return this.isExpression(this.step.attributes?.interval || '');
     }
 }

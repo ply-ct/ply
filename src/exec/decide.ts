@@ -18,11 +18,19 @@ export class DeciderExec extends PlyExecBase {
     async run(_runtime: Runtime, values: any): Promise<ExecResult> {
         const expression = this.step.attributes?.expression;
         if (expression) {
-            const result = this.evaluateToString(expression, values);
+            let expr = expression;
+            if (!this.isExpression(expr)) {
+                expr = '${' + expr + '}';
+            }
+            const result = this.evaluateToString(expr, values);
             this.instance.result = result;
             return { status: 'Passed' };
         } else {
             return { status: 'Errored', message: 'Missing attribute: expression' };
         }
+    }
+
+    isTrustRequired() {
+        return true;
     }
 }

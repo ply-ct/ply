@@ -29,4 +29,8 @@ export class StopExec extends PlyExecBase {
         }
         return this.mapToExecResult(this.instance);
     }
+
+    isTrustRequired(): boolean {
+        return false;
+    }
 }

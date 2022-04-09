@@ -216,7 +216,6 @@ export class PlyFlow implements Flow {
             this.logger,
             this.flow.path,
             this.instance.id,
-            insts,
             subflow?.subflow
         );
 
@@ -248,7 +247,7 @@ export class PlyFlow implements Flow {
         this.logger.info('Executing step', plyStep.name);
         this.emit('exec', 'step', plyStep.instance);
 
-        const result = await plyStep.run(runtime, values, runOptions, runNum);
+        const result = await plyStep.run(runtime, values, runOptions, runNum, insts);
         result.start = plyStep.instance.start?.getTime();
         result.end = plyStep.instance.end?.getTime();
         this.results.results.push(result);
