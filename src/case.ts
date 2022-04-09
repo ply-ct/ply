@@ -26,6 +26,9 @@ export class PlyCase implements Case, PlyTest {
      * @returns result with request outcomes and status of 'Pending'
      */
     async run(runtime: Runtime, values: object, runOptions?: RunOptions): Promise<Result> {
+        if (!runOptions?.trusted) {
+            throw new Error(`Trusted context required for case execution: '${runtime.suitePath}'`);
+        }
         const decoratedSuite = runtime.decoratedSuite;
         if (!decoratedSuite) {
             throw new Error(`Missing decorators for suite '${runtime.suitePath}'`);

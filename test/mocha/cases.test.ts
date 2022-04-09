@@ -65,7 +65,10 @@ describe('Cases', async () => {
         });
         const suites = await ply.loadCases('test/mocha/suites.ts');
         const unnamedSuite = suites[0];
-        const results = await unnamedSuite.run({ myValue: 'foo', otherValue: 'bar' });
+        const results = await unnamedSuite.run(
+            { myValue: 'foo', otherValue: 'bar' },
+            { trusted: true }
+        );
 
         const instance = ((unnamedSuite as any).runtime as Runtime).decoratedSuite!
             .instance as UnnamedSuite;
@@ -88,7 +91,10 @@ describe('Cases', async () => {
         });
         const suites = await ply.loadCases('test/mocha/suites.ts');
         const unnamedSuite = suites[1];
-        const results = await unnamedSuite.run({ myValue: 'zero', otherValue: 'bar' });
+        const results = await unnamedSuite.run(
+            { myValue: 'zero', otherValue: 'bar' },
+            { trusted: true }
+        );
 
         const instance = ((unnamedSuite as any).runtime as Runtime).decoratedSuite!
             .instance as UnnamedSuite;
@@ -111,7 +117,7 @@ describe('Cases', async () => {
         assert.strictEqual(suites.length, 1);
         const suite = suites[0];
 
-        const results = await suite.run(values, { createExpectedIfMissing: true });
+        const results = await suite.run(values, { createExpectedIfMissing: true, trusted: true });
 
         assert.strictEqual(results[0].name, 'add new movie');
         assert.strictEqual(results[0].status, 'Passed');
@@ -124,7 +130,8 @@ describe('Cases', async () => {
     it('can run plyee', async () => {
         const plier = new Plier();
         const results = await plier.run(['test/ply/cases/movieCrud.ply.ts#add new movie'], {
-            values
+            values,
+            trusted: true
         });
         assert.strictEqual(results[0].status, 'Passed');
         assert.strictEqual(results[0].message, 'Test succeeded');
@@ -138,7 +145,7 @@ describe('Cases', async () => {
                 'test/ply/cases/movieCrud.ply.ts#update rating',
                 'test/ply/cases/movieCrud.ply.ts#remove movie'
             ],
-            { values }
+            { values, trusted: true }
         );
         assert.strictEqual(results[0].status, 'Passed');
         assert.strictEqual(results[0].message, 'Test succeeded');
@@ -158,7 +165,7 @@ describe('Cases', async () => {
 
         const suites = await ply.loadCases(['test/ply/cases/movieCrud.ply.ts']);
         const suite = suites[0];
-        const results = await suite.run(values);
+        const results = await suite.run(values, { trusted: true });
 
         assert.strictEqual(results[0].status, 'Errored');
         assert.strictEqual(results[1].status, 'Errored');
@@ -175,11 +182,27 @@ describe('Cases', async () => {
 
         const suites = await ply.loadCases(['test/ply/cases/movieCrud.ply.ts']);
         const suite = suites[0];
-        const runOptions = { submit: true };
+        const runOptions = { submit: true, trusted: true };
         const results = await suite.run(values, runOptions);
 
         assert.strictEqual(results[0].status, 'Submitted');
         assert.strictEqual(results[1].status, 'Submitted');
         assert.strictEqual(results[2].status, 'Submitted');
+    });
+
+    it('rejects when untrusted', async () => {
+        const ply = new Ply({
+            ...new Config().options
+        });
+
+        const suites = await ply.loadCases(['test/ply/cases/movieCrud.ply.ts']);
+        const suite = suites[0];
+        const results = await suite.run(values);
+
+        assert.strictEqual(results.length, 3);
+        for (const result of results) {
+            assert.strictEqual(result.status, 'Errored');
+            assert.ok(result.message.startsWith('Trusted context required'));
+        }
     });
 });
