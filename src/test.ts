@@ -25,5 +25,10 @@ export interface PlyTest extends Test {
     /**
      * Invokes.
      */
-    run(runtime: Runtime, values: object, runOptions?: RunOptions): Promise<Result>;
+    run(
+        runtime: Runtime,
+        values: object,
+        runOptions?: RunOptions,
+        runNum?: number
+    ): Promise<Result>;
 }

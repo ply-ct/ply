@@ -86,19 +86,27 @@ export class Suite<T extends Test> {
 
     /**
      * Run one test, write actual result, and verify vs expected.
+     * @param runNum iterating
+     * @param instNum looping
      * @returns result indicating outcome
      */
     async run(
         name: string,
         values: object,
         runOptions?: RunOptions,
+        runNum?: number,
         instNum?: number
     ): Promise<Result>;
     /**
      * Run specified tests, write actual results, and verify vs expected.
      * @returns result array indicating outcomes
      */
-    async run(names: string[], values: object, runOptions?: RunOptions): Promise<Result[]>;
+    async run(
+        names: string[],
+        values: object,
+        runOptions?: RunOptions,
+        runNum?: number
+    ): Promise<Result[]>;
     /**
      * Run all tests, write actual results, and verify vs expected.
      * @returns result array indicating outcomes
@@ -109,6 +117,7 @@ export class Suite<T extends Test> {
         namesOrValues: object | string | string[],
         valuesOrRunOptions?: object | RunOptions,
         runOptions?: RunOptions,
+        runNum?: number,
         instNum?: number
     ): Promise<Result | Result[]> {
         if (typeof namesOrValues === 'string') {
@@ -121,6 +130,7 @@ export class Suite<T extends Test> {
                 [test],
                 valuesOrRunOptions || {},
                 runOptions,
+                runNum,
                 instNum
             );
             return results[0];
@@ -133,10 +143,10 @@ export class Suite<T extends Test> {
                 }
                 return test;
             }, this);
-            return await this.runTests(tests, valuesOrRunOptions || {}, runOptions);
+            return await this.runTests(tests, valuesOrRunOptions || {}, runOptions, runNum);
         } else {
             // run all tests
-            return await this.runTests(this.all(), namesOrValues, valuesOrRunOptions);
+            return await this.runTests(this.all(), namesOrValues, valuesOrRunOptions, runNum);
         }
     }
 
@@ -148,6 +158,7 @@ export class Suite<T extends Test> {
         tests: T[],
         values: object,
         runOptions?: RunOptions,
+        runNum = 0,
         instNum = 0
     ): Promise<Result[]> {
         if (runOptions && Object.keys(runOptions).length > 0) {
@@ -211,7 +222,7 @@ export class Suite<T extends Test> {
                     message: '' + err.message
                 } as Result;
                 results.push(result);
-                this.logOutcome(test, result);
+                this.logOutcome(test, result, runNum);
             }
             return results;
         }
@@ -242,7 +253,8 @@ export class Suite<T extends Test> {
                 result = await (test as unknown as PlyTest).run(
                     this.runtime,
                     runValues,
-                    runOptions
+                    runOptions,
+                    runNum
                 );
                 let actualYaml: yaml.Yaml;
                 if (test.type === 'request') {
@@ -269,7 +281,8 @@ export class Suite<T extends Test> {
                                 actualYaml,
                                 isFirst,
                                 expectedExists,
-                                runOptions
+                                runOptions,
+                                runNum
                             ) || result;
 
                         // status could be 'Submitted' if runOptions so specify
@@ -298,7 +311,7 @@ export class Suite<T extends Test> {
                                 start
                             };
                             result = { ...(result as Result), ...outcome };
-                            this.logOutcome(test, result);
+                            this.logOutcome(test, result, runNum);
                         }
                     }
                     this.addResult(results, result, runValues);
@@ -312,7 +325,8 @@ export class Suite<T extends Test> {
                             actualYaml,
                             i === 0,
                             expectedExists,
-                            runOptions
+                            runOptions,
+                            runNum
                         ) || result;
                     // for cases status could be 'Submitted' if runOptions so specify (this check is handled at step level for flows)
                     if (result.status === 'Pending' || this.type === 'flow') {
@@ -340,7 +354,7 @@ export class Suite<T extends Test> {
                             start
                         };
                         result = { ...(result as Result), ...outcome };
-                        this.logOutcome(test, result);
+                        this.logOutcome(test, result, runNum);
                     }
                     this.addResult(results, result, runValues);
                 }
@@ -353,7 +367,7 @@ export class Suite<T extends Test> {
                     start
                 };
                 this.addResult(results, result, runValues);
-                this.logOutcome(test, result);
+                this.logOutcome(test, result, runNum);
             }
 
             if (
@@ -472,7 +486,8 @@ export class Suite<T extends Test> {
         actualYaml: yaml.Yaml,
         isFirst: boolean,
         expectedExists: boolean,
-        runOptions?: RunOptions
+        runOptions?: RunOptions,
+        runNum?: number
     ): Result | undefined {
         if (runOptions?.submit || (!expectedExists && runOptions?.submitIfExpectedMissing)) {
             const res = {
@@ -481,7 +496,7 @@ export class Suite<T extends Test> {
                 request: result.request,
                 response: result.response
             } as Result;
-            this.logOutcome(test, res);
+            this.logOutcome(test, res, runNum);
             return res;
         }
         if (
@@ -514,7 +529,7 @@ export class Suite<T extends Test> {
         }
     }
 
-    logOutcome(test: Test, outcome: Outcome, label?: string) {
+    logOutcome(test: Test, outcome: Outcome, runNum?: number, label?: string) {
         outcome.end = Date.now();
         const ms = outcome.start ? ` in ${outcome.end - outcome.start} ms` : '';
         const testLabel = label || test.type.charAt(0).toLocaleUpperCase() + test.type.substring(1);
@@ -540,7 +555,7 @@ export class Suite<T extends Test> {
 
         if (this.type !== 'flow') {
             // flows are logged through their requestSuites
-            this.writeRunLog(test, outcome, message);
+            this.writeRunLog(test, outcome, message, runNum);
         }
 
         if (this.emitter) {
@@ -554,7 +569,8 @@ export class Suite<T extends Test> {
     private writeRunLog(
         test: Test,
         outcome: Outcome & { request?: Request; response?: Response },
-        message?: string
+        message?: string,
+        runNumber = 0
     ) {
         const testRun: TestRun = {
             name: (test as any).stepName || test.name,
@@ -571,7 +587,7 @@ export class Suite<T extends Test> {
         if (outcome.response) testRun.response = outcome.response;
 
         const storage = new Storage(
-            `${this.runtime.results.runs}/${this.name}.${this.runtime.runNumber}.json`
+            `${this.runtime.results.runs}/${this.name}.${runNumber + 1}.json`
         );
         const content = storage.read();
         const testRuns: TestRun[] = content ? JSON.parse(content) : [];

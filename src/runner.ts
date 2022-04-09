@@ -30,7 +30,7 @@ export class PlyRunner<T extends Test> {
         if (this.suiteTests.size === 0) return;
 
         if (this.plyValues.isRows) {
-            let runCount = 0;
+            let runNum = 0; // zero-based
             // iterate rows
             let rowCount = 0; // row count for this batch
             for await (const rowVals of await this.plyValues.getRowStream()) {
@@ -40,18 +40,16 @@ export class PlyRunner<T extends Test> {
                     await this.delay(this.options.batchDelay);
                 }
 
-                runCount++;
                 rowCount++;
                 for (const [suite, tests] of this.suiteTests) {
-                    suite.runtime.runNumber = runCount;
-                    const promise = suite.run(tests, rowVals, runOptions);
+                    const promise = suite.run(tests, rowVals, runOptions, runNum);
                     if (this.options.parallel) this.promises.push(promise);
                     else this.results = [...this.results, ...(await promise)];
                 }
+                runNum++;
             }
         } else {
             for (const [suite, tests] of this.suiteTests) {
-                suite.runtime.runNumber = 1;
                 const promise = suite.run(tests, values, runOptions);
                 if (this.options.parallel) this.promises.push(promise);
                 else this.results = [...this.results, ...(await promise)];

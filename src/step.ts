@@ -58,7 +58,12 @@ export class PlyStep implements Step, PlyTest {
         };
     }
 
-    async run(runtime: Runtime, values: object, runOptions?: RunOptions): Promise<Result> {
+    async run(
+        runtime: Runtime,
+        values: object,
+        runOptions?: RunOptions,
+        runNum?: number
+    ): Promise<Result> {
         this.instance.start = new Date();
         let result: Result;
         let stepRes: any;
@@ -104,6 +109,7 @@ export class PlyStep implements Step, PlyTest {
                     runtime,
                     values,
                     runOptions,
+                    runNum,
                     this.instanceNumber
                 );
             } else if (this.step.path === 'decide') {

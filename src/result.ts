@@ -380,7 +380,9 @@ export class ResultPaths {
                 expectedObj = yaml.load(this.expected.toString(), expected, true)[name];
             }
             if (!expectedObj) {
-                throw new Error(`Expected result not found: ${this.expected}#${name}`);
+                let label = `${this.expected}#${name}`;
+                if (instNum > 0) label += ` (${instNum})`;
+                throw new Error(`Expected result not found: ${label}`);
             }
             let expectedLines: string[];
             if (this.isFlowResult) {

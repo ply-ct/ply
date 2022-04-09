@@ -40,7 +40,12 @@ export class FlowSuite extends Suite<Step> {
      * Override to execute flow itself if all steps are specified
      * @param steps
      */
-    async runTests(steps: Step[], values: object, runOptions?: RunOptions): Promise<Result[]> {
+    async runTests(
+        steps: Step[],
+        values: object,
+        runOptions?: RunOptions,
+        runNum?: number
+    ): Promise<Result[]> {
         if (runOptions && Object.keys(runOptions).length > 0) {
             this.log.debug('RunOptions', runOptions);
         }
@@ -57,7 +62,7 @@ export class FlowSuite extends Suite<Step> {
 
         let results: Result[];
         if (this.isFlowSpec(steps)) {
-            results = [await this.runFlow(runValues, runOptions)];
+            results = [await this.runFlow(runValues, runOptions, runNum)];
         } else {
             results = await this.runSteps(steps, runValues, runOptions);
         }
@@ -73,7 +78,7 @@ export class FlowSuite extends Suite<Step> {
         return step;
     }
 
-    async runFlow(values: object, runOptions?: RunOptions): Promise<Result> {
+    async runFlow(values: object, runOptions?: RunOptions, runNum?: number): Promise<Result> {
         this.plyFlow.onFlow((flowEvent) => {
             if (flowEvent.eventType === 'exec') {
                 // emit test event (not for request -- emitted in requestSuite)
@@ -117,7 +122,7 @@ export class FlowSuite extends Suite<Step> {
             }
         });
         this.plyFlow.requestSuite.emitter = this.emitter;
-        return await this.plyFlow.run(this.runtime, values, runOptions);
+        return await this.plyFlow.run(this.runtime, values, runOptions, runNum);
     }
 
     async runSteps(steps: Step[], values: any, runOptions?: RunOptions): Promise<Result[]> {
@@ -223,6 +228,7 @@ export class FlowSuite extends Suite<Step> {
                         message: result.message,
                         start: plyStep.instance.start?.getTime()
                     },
+                    0,
                     'Step'
                 );
             }
@@ -321,7 +327,7 @@ export class FlowLoader {
 
     async load(): Promise<FlowSuite[]> {
         const retrievals = this.locations.map((loc) => new Retrieval(loc));
-        // load request files in parallel
+        // load flow files in parallel
         const promises = retrievals.map((retr) => this.loadSuite(retr));
         const suites = await Promise.all(promises);
         suites.sort((s1, s2) => s1.name.localeCompare(s2.name));
