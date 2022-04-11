@@ -3,7 +3,7 @@ import { TestType } from '../test';
 import { Request } from '../request';
 import { Response } from '../response';
 
-export type ReportFormat = 'json' | 'html';
+export type ReportFormat = 'json' | 'csv' | 'html';
 
 export interface ReportOptions {
     runsLocation: string;

@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Reporter, ReportOptions } from './model';
+import { Reporter, ReportOptions } from '../runs/model';
 import { Log } from '../logger';
-import { loadSuiteRuns } from './report';
+import { Runs } from '../runs/runs';
 
 export class HtmlReporter implements Reporter {
     constructor(readonly logger: Log) {}
@@ -12,7 +12,8 @@ export class HtmlReporter implements Reporter {
         const template = path.resolve(path.join(__dirname, '..', '..', 'templates', 'runs.html'));
         let html = await fs.promises.readFile(template, { encoding: 'utf-8' });
 
-        const plyResults = await loadSuiteRuns(options.runsLocation);
+        const runs = new Runs(options.runsLocation);
+        const plyResults = await runs.loadPlyResults();
         html = html.replace(
             '${overallResults}',
             `<pre>${JSON.stringify(plyResults.overall)}</pre>`

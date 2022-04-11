@@ -1,8 +1,6 @@
 import * as yaml from './yaml';
 import * as util from './util';
 import { TestType, Test, PlyTest } from './test';
-import { Request } from './request';
-import { Response } from './response';
 import { Result, Outcome, Verifier, PlyResult, ResultPaths } from './result';
 import { Location } from './location';
 import { Storage } from './storage';
@@ -16,7 +14,6 @@ import { Plyee } from './ply';
 import { PlyEvent, SuiteEvent, OutcomeEvent } from './event';
 import { PlyResponse } from './response';
 import { TsCompileOptions } from './compile';
-import { TestRun } from './report/model';
 
 export interface Tests<T extends Test> {
     [key: string]: T;
@@ -366,6 +363,7 @@ export class Suite<T extends Test> {
                     message: err.message,
                     start
                 };
+                if (err.request) (result as any).request = err.request;
                 this.addResult(results, result, runValues);
                 this.logOutcome(test, result, runNum);
             }
@@ -555,7 +553,7 @@ export class Suite<T extends Test> {
 
         if (this.type !== 'flow') {
             // flows are logged through their requestSuites
-            this.writeRunLog(test, outcome, message, runNum);
+            this.runtime.results.runs.writeRun(this.name, test, outcome, message, runNum);
         }
 
         if (this.emitter) {
@@ -564,35 +562,6 @@ export class Suite<T extends Test> {
                 outcome
             } as OutcomeEvent);
         }
-    }
-
-    private writeRunLog(
-        test: Test,
-        outcome: Outcome & { request?: Request; response?: Response },
-        message?: string,
-        runNumber = 0
-    ) {
-        const testRun: TestRun = {
-            name: (test as any).stepName || test.name,
-            test: test.name,
-            type: test.type,
-            ...(outcome.start && { start: new Date(outcome.start).toISOString() as any }), // serialized as string
-            ...(outcome.end && { end: new Date(outcome.end).toISOString() as any }), // serialized as string
-            result: {
-                status: outcome.status,
-                ...(message && { message })
-            }
-        };
-        if (outcome.request) testRun.request = outcome.request;
-        if (outcome.response) testRun.response = outcome.response;
-
-        const storage = new Storage(
-            `${this.runtime.results.runs}/${this.name}.${runNumber + 1}.json`
-        );
-        const content = storage.read();
-        const testRuns: TestRun[] = content ? JSON.parse(content) : [];
-        testRuns.push(testRun);
-        storage.write(JSON.stringify(testRuns, null, 2));
     }
 
     /**
@@ -650,6 +619,7 @@ export class Suite<T extends Test> {
         if (result.graphQl) {
             leanRequest.body = result.graphQl; // restore graphQl for better comparisons
         }
+
         const { runId: _requestId, time: _time, ...leanResponse } = result.response;
 
         let invocationObject = {

@@ -23,11 +23,16 @@ export class AsyncStorage {
         }
     }
 
-    get exists(): boolean {
+    async exists(): Promise<boolean> {
         if (this.localStorage) {
             return this.localStorage.getItem(this.location.path) !== null;
         } else {
-            return fs.existsSync(this.location.path);
+            try {
+                await fs.promises.access(this.location.path);
+                return true;
+            } catch (err) {
+                return false;
+            }
         }
     }
 
@@ -35,7 +40,7 @@ export class AsyncStorage {
         if (this.localStorage) {
             return this.localStorage.getItem(this.location.path);
         } else {
-            if (fs.existsSync(this.location.path)) {
+            if (await this.exists()) {
                 return await fs.promises.readFile(this.location.path, 'utf-8');
             }
         }

@@ -11,6 +11,7 @@ import { CodeLine, Code } from './code';
 import { Compare, Diff } from './compare';
 import { Yaml } from './yaml';
 import * as util from './util';
+import { Runs } from './runs/runs';
 
 export type ResultStatus = 'Pending' | 'Passed' | 'Failed' | 'Errored' | 'Submitted';
 
@@ -230,7 +231,7 @@ export class ResultPaths {
         readonly actual: Storage,
         readonly options: Options,
         readonly log: Storage,
-        readonly runs: string // directory
+        readonly runs: Runs
     ) {}
 
     /**
@@ -294,7 +295,7 @@ export class ResultPaths {
             new Storage(basePaths.actual + ext),
             options,
             new Storage(basePaths.log + '.log'),
-            basePaths.runs
+            new Runs(basePaths.runs)
         );
     }
 
@@ -323,7 +324,7 @@ export class ResultPaths {
             new Storage(basePaths.actual + ext),
             options,
             new Storage(basePaths.log + '.log'),
-            basePaths.runs
+            new Runs(basePaths.runs)
         );
     }
 

@@ -15,7 +15,7 @@ import * as util from './util';
 import { FlowLoader, FlowSuite } from './flows';
 import { Values } from './values';
 import { PlyRunner } from './runner';
-import { Reporter } from './report/model';
+import { Reporter } from './runs/model';
 import { Report } from './report/report';
 
 export class Ply {

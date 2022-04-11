@@ -56,7 +56,7 @@ export class PlyFlow implements Flow {
     start = 0;
     end?: number | undefined;
     instance: flowbee.FlowInstance;
-    readonly results: FlowResults;
+    results: FlowResults;
     maxLoops = 0;
 
     private _onFlow = new flowbee.TypedEvent<flowbee.FlowEvent>();
@@ -72,6 +72,10 @@ export class PlyFlow implements Flow {
         this.name = flowbee.getFlowName(flow);
         this.instance = this.newInstance();
         this.results = new FlowResults(this.name);
+    }
+
+    clone(): PlyFlow {
+        return new PlyFlow(this.flow, this.requestSuite, this.logger);
     }
 
     newInstance() {
@@ -111,6 +115,7 @@ export class PlyFlow implements Flow {
         runNum?: number
     ): Promise<Result> {
         this.newInstance();
+        this.results = new FlowResults(this.name);
         values[RUN_ID] = this.instance.runId || util.genId();
 
         // flow values supersede file-based

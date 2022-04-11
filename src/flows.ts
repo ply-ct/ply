@@ -26,7 +26,7 @@ export class FlowSuite extends Suite<Step> {
      * @param end zero-based end line
      */
     constructor(
-        readonly plyFlow: PlyFlow,
+        public plyFlow: PlyFlow,
         readonly path: string,
         readonly runtime: Runtime,
         readonly logger: Logger,
@@ -79,6 +79,9 @@ export class FlowSuite extends Suite<Step> {
     }
 
     async runFlow(values: object, runOptions?: RunOptions, runNum?: number): Promise<Result> {
+        if (this.runtime.options?.parallel) {
+            this.plyFlow = this.plyFlow.clone();
+        }
         this.plyFlow.onFlow((flowEvent) => {
             if (flowEvent.eventType === 'exec') {
                 // emit test event (not for request -- emitted in requestSuite)

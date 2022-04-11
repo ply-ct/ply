@@ -198,7 +198,12 @@ export class PlyRequest implements Request, PlyTest {
      * Or to send a request without testing, call submit().
      * @returns result with request invocation and status of 'Pending'
      */
-    async run(runtime: Runtime, values: object, runOptions?: RunOptions): Promise<PlyResult> {
+    async run(
+        runtime: Runtime,
+        values: object,
+        runOptions?: RunOptions,
+        runNum?: number
+    ): Promise<PlyResult> {
         this.submitted = new Date();
         const requestObject = this.getRequest(values, runtime.options, runOptions, true);
         const id = this.logger.level === LogLevel.debug ? ` (${this.getRunId(values)})` : '';
@@ -214,32 +219,47 @@ export class PlyRequest implements Request, PlyTest {
             runOpts.submit = true;
         }
         const runId = this.getRunId(values);
-        const response = await this.doSubmit(runId, requestObject, runOpts);
-        if (
-            response.headers &&
-            (runOptions?.createExpected ||
-                (runOptions?.createExpectedIfMissing && !expectedExists)) &&
-            runtime.options.genExcludeResponseHeaders?.length
-        ) {
-            for (const key of Object.keys(response.headers)) {
-                if (runtime.options.genExcludeResponseHeaders.includes(key)) {
-                    delete response.headers[key];
+        try {
+            const response = await this.doSubmit(runId, requestObject, runOpts);
+            if (
+                response.headers &&
+                (runOptions?.createExpected ||
+                    (runOptions?.createExpectedIfMissing && !expectedExists)) &&
+                runtime.options.genExcludeResponseHeaders?.length
+            ) {
+                for (const key of Object.keys(response.headers)) {
+                    if (runtime.options.genExcludeResponseHeaders.includes(key)) {
+                        delete response.headers[key];
+                    }
                 }
             }
+            const result = new PlyResult(
+                this.name,
+                requestObject,
+                response.getResponse(
+                    runId,
+                    runtime.options,
+                    runOptions?.submit ? undefined : runtime.responseHeaders,
+                    true
+                )
+            );
+            if (this.graphQl) {
+                result.graphQl = this.graphQl;
+            }
+            return result;
+        } catch (err: any) {
+            this.logger.error(err.message, err);
+            let errMsg = err.message;
+            if (runNum) errMsg += ` (run ${runNum})`;
+            const requestError = new Error(errMsg) as any;
+            requestError.request = { ...requestObject };
+            requestError.request.headers = {};
+            Object.keys(requestObject.headers).forEach((key) => {
+                if (key !== 'Authorization') {
+                    requestError.request.headers[key] = requestObject.headers[key];
+                }
+            });
+            throw requestError;
         }
-        const result = new PlyResult(
-            this.name,
-            requestObject,
-            response.getResponse(
-                runId,
-                runtime.options,
-                runOptions?.submit ? undefined : runtime.responseHeaders,
-                true
-            )
-        );
-        if (this.graphQl) {
-            result.graphQl = this.graphQl;
-        }
-        return result;
     }
 }

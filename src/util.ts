@@ -1,22 +1,16 @@
 import * as process from 'process';
 import * as fs from 'fs';
-import * as osLocale from 'os-locale';
-
-let _locale = osLocale.sync();
-if (!_locale || _locale.toLocaleLowerCase() === 'c') {
-    _locale = 'en-US';
-}
-export const locale = _locale;
 
 /**
  * Turn a date into a timestamp based on the OS locale
  * Note: Node/V8 bug causes hour = 24 (https://github.com/nodejs/node/issues/33089)
  * eg: 7/3/2021, 24:52:33:347
  */
-export function timestamp(date: Date, withTimeZone = false): string {
-    const millis = String(date.getMilliseconds()).padStart(3, '0');
-    const tz = withTimeZone ? date.toTimeString().substring(date.toTimeString().indexOf(' ')) : '';
-    return `${date.toLocaleString(locale, { hour12: false })}:${millis}${tz}`;
+export function timestamp(date: Date, withTimeZone = false, withMillis = true): string {
+    let stamp = `${date.toLocaleString(undefined, { hour12: false })}`;
+    if (withMillis) stamp += ':' + ('' + date.getMilliseconds()).padStart(3, '0');
+    if (withTimeZone) stamp += date.toTimeString().substring(date.toTimeString().indexOf(' '));
+    return stamp;
 }
 
 /**
@@ -41,7 +35,7 @@ export function timeparse(time: string): Date | undefined {
     const parser = /(\d+?)\/(\d+?)\/(\d+?), (\d+?):(\d+?):(\d+?):(\d+?)$/;
     const match = time.match(parser);
     if (match) {
-        const formatObj: any = new Intl.DateTimeFormat(locale).formatToParts(new Date());
+        const formatObj: any = new Intl.DateTimeFormat().formatToParts(new Date());
         const first = formatObj[Object.keys(formatObj)[0]].type;
         const month = first === 'month' ? 1 : 2;
         const day = month === 1 ? 2 : 1;
