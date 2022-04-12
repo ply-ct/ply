@@ -19,7 +19,7 @@ Postman and Insomnia are both awesome tools for sending HTTP requests. Where the
 |:---------------------|:----------------------:|:----------------------:|:----------------------:|:----------------------:|:----------------------:|:----------------------:|
 |Graphical Flows       |<span class="y">✓</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|
 |Side-by-Side Results  |<span class="y">✓</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|
-|Codeless Testing      |<span class="y">✓</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|
+|Low-Code Testing      |<span class="y">✓</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|
 |Auto-Generate Results |<span class="y">✓</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="n">✗</span>|
 |GraphQL Support       |<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="n">✗</span>|<span class="n">✗</span>|<span class="y">✓</span>|
 |Dynamic Input Values  |<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|<span class="y">✓</span>|

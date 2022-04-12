@@ -22,8 +22,14 @@
 
   - [Installation](#installation)
   - [Usage](#usage)
+    - [Submit a request](#submit-a-request)
+    - [Verify response](#verify-response)
+    - [Expected results](#expected-results)
   - [Documentation](#documentation)
-  - [Demo](#demo)
+    - [Guide](guide)
+    - [CLI](cli)
+    - [API](api)
+  - [Demo](#demo-project)
   - [VS Code Extension](#vs-code-extension)
 
 ## Installation
@@ -47,7 +53,7 @@ repositoryTopics:
     Accept: application/vnd.github.mercy-preview+json
 ```
 
-### Run a request
+### Submit a request
 Suppose you save this in a file named "github.ply.yaml". Then you can submit the
 `repositoryTopics` request from a command line by typing:
 ```
@@ -60,27 +66,49 @@ meaning submit an *ad hoc* request and don't bother with verification).
 If you run without `-s` you'll get an error saying, "Expected result file not found". Ply verification
 works by comparing expected vs actual. So a complete test requires an expected result file. Run again
 with `--create`, and the expected result file will be created from the actual response.
-```
+```shell
 ply --create github.ply.yaml
 ```
 Output looks like this:
-```
-Request 'repositoryTopics' submitted at 8/28/2020, 10:54:40:667
+```shell
+Request 'repositoryTopics' submitted at 4/11/2022, 11:19:46:292
 Creating expected result: ./results/expected/github.yaml
-Test 'repositoryTopics' PASSED in 303 ms
+Request 'repositoryTopics' PASSED in 332 ms
+
+Overall Results: {"Passed":1,"Failed":0,"Errored":0,"Pending":0,"Submitted":0}
+Overall Time: 373 ms
 ```
 During execution Ply submits the request and writes **actual** result file "./results/actual/github.yaml"
 based on the response. Because of `--create`, Ply then copies the actual result over **expected** result file "./results/expected/github.yaml"
 before comparing. This test naturally passes since the results are identical.
 
 ### Expected results
-Auto-creating an expected result provides a good starting point. But looking at "./results/expected/github.yaml",
+Auto-creating an expected result provides a good starting point. But if you run the request again (without creating), it'll fail:
+```shell
+ply github.ply.yaml
+Request 'repositoryTopics' submitted at 4/11/2022, 11:20:44:478
+Request 'repositoryTopics' FAILED in 372 ms: Results differ from line 24
+24
+-       x-github-request-id: E8C2:3201:51B1B:D9917:62546332
++       x-github-request-id: E8C3:7857:386D8:7DDEE:6254636C
+===
+26
+-       x-ratelimit-remaining: '56'
++       x-ratelimit-remaining: '55'
+===
+29
+-       x-ratelimit-used: '4'
++       x-ratelimit-used: '5'
+===
+```
+
+But looking at "./results/expected/github.yaml",
 you'll notice that it includes many response headers that are not of interest for testing purposes. Here's a
 cleaned-up version of similar expected results from [ply-demo](https://github.com/ply-ct/ply-demo/blob/master/test/requests/github-api.ply.yaml#L1):
 ```yaml
 repositoryTopics:
   request:
-    url: 'https://api.github.com/repos/${github.organization}/${github.repository}/topics'
+    url: https://api.github.com/repos/${github.organization}/${github.repository}/topics
     method: GET
     headers:
       Accept: application/vnd.github.mercy-preview+json
@@ -90,7 +118,6 @@ repositoryTopics:
       message: OK
     headers:
       content-type: application/json; charset=utf-8
-      status: 200 OK
     body: |-
       {
         "names": [
@@ -100,7 +127,7 @@ repositoryTopics:
           "example-project",
           "graphql",
           "typescript",
-          "github-workflow"
+          "workflow"
         ]
       }
 ```
@@ -124,39 +151,14 @@ Check out the [Results](https://ply-ct.github.io/ply/topics/results) topic for d
 
 ### Flows
 If you have [Visual Studio Code](https://code.visualstudio.com/) with the [Ply extension](https://marketplace.visualstudio.com/items?itemName=ply-ct.vscode-ply),
-you can graphically stitch together multiple requests into a workflow. See the [Ply flows documentation](https://ply-ct.org/ply/topics/flows) for details.
+you can graphically chain multiple requests into a workflow. See the [Ply flows documentation](https://ply-ct.org/ply/topics/flows) for details.
 
-### Cases
-For very complex testing scenarios, you'll want even greater control over request execution.
-Implement a Ply [case](https://ply-ct.github.io/ply/topics/cases) suite using TypeScript for programmatic
-access to your requests/responses. Here's [add new movie](https://github.com/ply-ct/ply-demo/blob/master/test/cases/movieCrud.ply.ts#L31) 
-from ply-demo:
-```typescript
-@test('add new movie')
-async createMovie(values: any) {
-    const result = await this.requestSuite.run('createMovie', values);
-    assert.exists(result.response);
-    assert.exists(result.response?.body);
-    // capture movie id from response -- used in downstream values
-    this.movieId = result.response?.body?.id;
-    this.requestSuite.log.info(`Created movie: id=${this.movieId}`);
-}
-```
-Applying the `@test` decorator to a method automatically makes it a Ply case. At this point `this.requestSuite` has already 
-been loaded from request YAML (in the case suite's constructor):
-```typescript
-this.requestSuite = ply.loadSuiteSync('test/requests/movies-api.ply.yaml');
-```
-Then in `createMovie()` above, the request named 'createMovie' from movies-api.ply.yaml is invoked by calling Ply's API
-method [Suite.run()](https://ply-ct.github.io/ply/api-docs/classes/suite.html#run).
+Flows can include [custom TypeScript steps](https://ply-ct.org/ply/topics/steps) to perform complex interactions and update runtime values.
 
-Running a case suite from the command line is similar to running a request suite:
+Running a flow from the command line is similar to running a request suite:
 ```
-ply test/cases/movieCrud.ply.ts
+ply test/flows/movies-api.flow
 ```
-This executes all cases in movieCrud.ply.ts (in the order they're declared), and compiles actual results from all requests
-into a file named after the `@suite` ("movie-crud.yaml"). At the end of the run, actual results are compared against expected
-to determine whether the suite has passed. 
 
 ### GraphQL
 Body content in request YAML can be any text payload (typically JSON). GraphQL syntax is also supported, as in this
@@ -185,16 +187,21 @@ repositoryTopicsQuery:
     }
 ```
 
+
 ## Documentation
 
 ### Guide
-<https://ply-ct.github.io/ply/topics/requests>
+<https://ply-ct.org/ply/topics/requests>
 
 ### API
-<https://ply-ct.github.io/ply/api>
+<https://ply-ct.org/ply/api>
 
-### Demo Project
+### CLI
+<https://ply-ct.org/ply/topics/cli>
+
+## Demo Project
 <https://github.com/ply-ct/ply-demo/>
+
 
 ## VS Code Extension
 <https://marketplace.visualstudio.com/items?itemName=ply-ct.vscode-ply>  
