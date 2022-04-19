@@ -30,4 +30,8 @@ An API endpoint method implementation can be tied to its respective Ply request/
 As a bonus, if the OpenAPI summary and description for this POST operation are empty in movies.yaml, Ply will set
 summary to 'Create a movie' and description to 'Add a movie with its details to the collection'.
 
+## Java API implementations
+Now there's a Java annotation-based implementation of Ply's OpenAPI augmentation, so Spring REST APIs can take
+advantage of this as well: https://github.com/ply-ct/ply-java.
+
 Next Topic: [GitHub Action](action)
