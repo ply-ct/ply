@@ -511,7 +511,7 @@ export class Suite<T extends Test> {
                 .reduce((yamlLines: string[], line) => {
                     const lastHash = line.lastIndexOf('#');
                     yamlLines.push(
-                        lastHash === -1 ? line : line.substring(0, lastHash - 1).trimEnd()
+                        lastHash === -1 ? line : line.substring(0, lastHash - 1).trimRight()
                     );
                     return yamlLines;
                 }, [])

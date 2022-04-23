@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import { EventEmitter } from 'events';
 import { Options, Config, PlyOptions, RunOptions, Defaults } from './options';
@@ -302,6 +301,7 @@ export class Plier extends EventEmitter {
     }
 
     constructor(options?: Options) {
+        // @ts-ignore node 12 takes no params
         super({ captureRejections: true });
 
         this.ply = new Ply(options);
@@ -332,10 +332,7 @@ export class Plier extends EventEmitter {
         const values = await plyValues.read();
 
         // remove all previous runs
-        await fs.promises.rm(`${this.options.logLocation}/runs`, {
-            force: true,
-            recursive: true
-        });
+        await util.rmdirs(`${this.options.logLocation}/runs`);
 
         let promises: Promise<Result[]>[] = [];
         let combined: Result[] = [];

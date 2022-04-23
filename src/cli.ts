@@ -119,7 +119,7 @@ if (runOptions?.import) {
                     const res = { Passed: 0, Failed: 0, Errored: 0, Pending: 0, Submitted: 0 };
                     results.forEach((result) => res[result.status]++);
                     plier.logger.error('\nOverall Results: ' + JSON.stringify(res));
-                    plier.logger.info(`Overall Time: ${Date.now() - start} ms`);
+                    plier.logger.error(`Overall Time: ${Date.now() - start} ms`);
                     if (plier.options.outputFile) {
                         new Storage(plier.options.outputFile).write(
                             JSON.stringify(res, null, plier.options.prettyIndent)
