@@ -3,9 +3,10 @@ import { TestType } from '../test';
 import { Request } from '../request';
 import { Response } from '../response';
 
-export type ReportFormat = 'json' | 'csv' | 'html';
+export type ReportFormat = 'json' | 'csv' | 'xlsx' | 'png' | 'svg' | 'pdf' | 'html';
 
 export interface ReportOptions {
+    format: ReportFormat;
     runsLocation: string;
     outputLocation: string;
     indent?: number;

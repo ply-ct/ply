@@ -1,6 +1,7 @@
 import * as findUp from 'find-up';
 import * as yargs from 'yargs';
 import { Retrieval } from './retrieval';
+import { ReportFormat } from './runs/model';
 import * as yaml from './yaml';
 
 /**
@@ -84,7 +85,7 @@ export interface Options {
     /**
      * Reporter output format.
      */
-    reporter?: 'json' | 'html';
+    reporter?: 'json' | 'csv' | 'xlsx' | 'png' | 'svg' | 'pdf' | 'html';
     /**
      * (When flows have loopback links). Max instance count per step (10). Overridable in flow design.
      */
@@ -125,7 +126,7 @@ export interface PlyOptions extends Options {
     parallel: boolean;
     batchRows: number;
     batchDelay: number;
-    reporter?: 'json' | 'html';
+    reporter?: ReportFormat;
     maxLoops: number;
     responseBodySortedKeys: boolean;
     genExcludeResponseHeaders?: string[];
@@ -171,6 +172,11 @@ export interface RunOptions {
      * Import collections into request suites (.yaml files), instead of individual (.ply) requests.
      */
     importToSuite?: boolean;
+
+    /**
+     * Generate report from previously-executed Ply results. See --reporter for options.
+     */
+    report?: 'json' | 'csv' | 'xlsx' | 'png' | 'svg' | 'pdf' | 'html';
 
     /**
      * Augment OpenAPI v3 doc at specified path with operation summaries, request/response samples,
@@ -341,6 +347,10 @@ export class Config {
             describe: 'Import into .yaml suite files',
             type: 'boolean'
         },
+        report: {
+            describe: 'Generate report from ply results',
+            type: 'string'
+        },
         openapi: {
             describe: 'Augment OpenAPI 3 docs with examples',
             type: 'string'
@@ -477,6 +487,10 @@ export class Config {
         if (options.importToSuite) {
             options.runOptions.importToSuite = options.importToSuite;
             delete options.importToSuite;
+        }
+        if (options.report) {
+            options.runOptions.report = options.report;
+            delete options.report;
         }
         if (options.openapi) {
             options.runOptions.openapi = options.openapi;

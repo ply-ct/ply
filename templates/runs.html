@@ -1,18 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ply Runs</title>
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+    <link href="${webBase}/css/flowbee.css" rel="stylesheet" />
+    <link href="${webBase}/css/viz.css" rel="stylesheet" />
+    -->
+    <title>Ply Results</title>
+  </head>
 
-<body>
-  <div>
-    ${overallResults}
-  </div>
-  <div>
-    ${suiteRuns}
-  </div>
-</body>
-
+  <body>
+    <div id="container" class="container" class="container">
+      <div id="viz-container" class="viz-container">
+        <div id="viz-header" class="viz-header">
+          <div id="viz-title" class="viz-title">Request Throughput</div>
+        </div>
+        <div id="viz-chart" class="viz-chart">
+          <canvas id="viz-canvas"></canvas>
+        </div>
+        <!--
+        <div id="viz-data" class="viz-data"></div>
+        -->
+      </div>
+    </div>
+  </body>
 </html>

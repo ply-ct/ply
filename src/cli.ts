@@ -13,6 +13,8 @@ import { OpenApi } from './plyex/openapi';
 import { Plyex } from './plyex/plyex';
 import * as yaml from './yaml';
 import { ImportOptions } from './import/model';
+import { ReportFormat } from './runs/model';
+import { Report } from './report/report';
 
 const start = Date.now();
 
@@ -45,6 +47,15 @@ if (runOptions?.import) {
         plier.logger.error(`${err}`, err);
         process.exit(1);
     }
+} else if (runOptions?.report) {
+    const format: ReportFormat = runOptions.report;
+    const reporter = new Report(format, plier.logger).createReporter();
+    reporter.report({
+        format,
+        runsLocation: `${opts.logLocation}/runs`,
+        outputLocation: opts.logLocation,
+        indent: opts.prettyIndent
+    });
 } else if (runOptions?.openapi) {
     plier.logger.debug('Options', options);
     const plyex = new Plyex(runOptions.openapi, plier.logger);

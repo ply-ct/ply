@@ -14,7 +14,7 @@ import * as util from './util';
 import { FlowLoader, FlowSuite } from './flows';
 import { Values } from './values';
 import { PlyRunner } from './runner';
-import { Reporter } from './runs/model';
+import { Reporter, ReportFormat } from './runs/model';
 import { Report } from './report/report';
 
 export class Ply {
@@ -408,6 +408,7 @@ export class Plier extends EventEmitter {
 
         if (this.reporter) {
             await this.reporter.report({
+                format: this.options.reporter as ReportFormat,
                 runsLocation: `${this.options.logLocation}/runs`,
                 outputLocation: this.options.logLocation,
                 indent: this.options.prettyIndent

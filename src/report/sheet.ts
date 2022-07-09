@@ -6,9 +6,12 @@ import { Runs } from '../runs/runs';
 import { ReportData } from './data';
 import { timestamp } from '../util';
 
-export class CsvReporter implements Reporter {
+export class SheetReporter implements Reporter {
     constructor(readonly logger: Log) {}
 
+    /**
+     * TODO xlsx
+     */
     async report(options: ReportOptions) {
         const runs = new Runs(options.runsLocation);
         const suiteRuns = await runs.loadSuiteRuns();

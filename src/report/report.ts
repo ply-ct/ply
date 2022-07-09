@@ -2,7 +2,8 @@ import { Reporter, ReportFormat } from '../runs/model';
 import { Log } from '../logger';
 import { JsonReporter } from './json';
 import { HtmlReporter } from './html';
-import { CsvReporter } from './csv';
+import { SheetReporter } from './sheet';
+import { ImageReporter } from './image';
 
 export class Report {
     constructor(readonly format: ReportFormat, readonly logger: Log) {}
@@ -12,12 +13,15 @@ export class Report {
             case 'json': {
                 return new JsonReporter(this.logger);
             }
-            case 'csv': {
-                return new CsvReporter(this.logger);
+            case 'csv':
+            case 'xlsx': {
+                return new SheetReporter(this.logger);
             }
-            // case 'xlsx': {
-            //     return new XlsxReporter(this.logger);
-            // }
+            case 'png':
+            case 'svg':
+            case 'pdf': {
+                return new ImageReporter(this.logger);
+            }
             case 'html': {
                 return new HtmlReporter(this.logger);
             }
