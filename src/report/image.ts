@@ -5,6 +5,7 @@ import { Runs } from '../runs/runs';
 import { ChartCallback, ChartJSNodeCanvas, ChartJSNodeCanvasOptions } from 'chartjs-node-canvas';
 import { TestRunData } from './chart/data';
 import { ResultsChart } from './chart/chart';
+import { Plugin } from 'chart.js';
 
 export class ImageReporter implements Reporter {
     constructor(readonly logger: Log) {}
@@ -20,8 +21,8 @@ export class ImageReporter implements Reporter {
             ChartJS.defaults.maintainAspectRatio = false;
         };
 
-        const width = 2400;
-        const height = 1350;
+        const width = 1600;
+        const height = 1000;
         const backgroundColour = '#ffffff';
 
         const canvasOptions: ChartJSNodeCanvasOptions = {
