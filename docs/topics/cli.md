@@ -39,7 +39,7 @@ Command-line exercises in this guide assume you have Ply installed globally.
 | **<code>--trusted</code>** | Expressions are from trusted sources (otherwise safe evalation is performed with limited subset of template literal syntax)
 | **<code>--import</code>** | Import requests or values from specified format. Currently 'postman' and 'insomnia' are supported formats. *Overwrites* existing same-named files.
 | **<code>--importToSuite</code>** | Import collections into request suites (.yaml files), instead of individual (.ply) requests.
-| **<code>--report</code>** | Generate report from from previously-executed Ply results. Valid values are `json`, `csv`, `xlsx`, `png`, `svg`, `pdf` and `html`.
+| **<code>--report</code>** | Generate report from from previously-executed Ply results. Valid values are `json`, `csv`, `xlsx` (see https://github.com/ply-ct/ply-viz for other formats).
 | **<code>--openapi</code>** | Augment OpenAPI spec with Ply example requests/responses and code samples. *Overwrites* existing OpenAPI spec file.
 | **<code>--create</code>** | Create expected result file from actual responses
 | **<code>--useDist</code>** | Import case modules from build output (eg dist) instead of from TypeScript sources

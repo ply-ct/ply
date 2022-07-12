@@ -1,29 +1,43 @@
-import { Reporter, ReportFormat } from '../runs/model';
-import { Log } from '../logger';
+import * as fs from 'fs';
+import { isAbsolute, join } from 'path';
+import { Reporter } from '../runs/model';
 import { JsonReporter } from './json';
-import { HtmlReporter } from './html';
 import { SheetReporter } from './sheet';
-import { ImageReporter } from './image';
 
-export class Report {
-    constructor(readonly format: ReportFormat, readonly logger: Log) {}
+export class ReporterFactory {
+    constructor(public format: string) {}
 
-    createReporter(): Reporter {
+    async createReporter(): Promise<Reporter> {
         switch (this.format) {
             case 'json': {
-                return new JsonReporter(this.logger);
+                return new JsonReporter();
             }
             case 'csv':
             case 'xlsx': {
-                return new SheetReporter(this.logger);
+                return new SheetReporter();
             }
-            case 'png':
-            case 'svg':
-            case 'pdf': {
-                return new ImageReporter(this.logger);
-            }
-            case 'html': {
-                return new HtmlReporter(this.logger);
+            default: {
+                const hash = this.format.indexOf('#');
+                if (hash <= 0 || hash >= this.format.length - 1) {
+                    throw new Error(`Unsupported reporter format: ${this.format}`);
+                }
+                let modFile = this.format.substring(0, hash);
+                if (!isAbsolute(modFile)) {
+                    modFile = join(process.cwd(), modFile);
+                }
+                if (!fs.existsSync(modFile)) {
+                    throw new Error(`Reporter not found at: ${modFile}`);
+                }
+                const mod = await import(modFile);
+                this.format = this.format.substring(hash + 1);
+                const reporter = mod[this.format];
+                if (!reporter) {
+                    throw new Error(`Reporter not found: ${this.format}`);
+                }
+                if (typeof reporter.report !== 'function') {
+                    throw new Error(`Invalid reporter: ${this.format}`);
+                }
+                return reporter;
             }
         }
     }

@@ -3,12 +3,10 @@ import { TestType } from '../test';
 import { Request } from '../request';
 import { Response } from '../response';
 
-export type ReportFormat = 'json' | 'csv' | 'xlsx' | 'png' | 'svg' | 'pdf' | 'html';
-
 export interface ReportOptions {
-    format: ReportFormat;
+    format: string;
+    output: string;
     runsLocation: string;
-    outputLocation: string;
     indent?: number;
 }
 

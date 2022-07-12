@@ -1,13 +1,12 @@
 import * as os from 'os';
 import * as fs from 'fs';
 import { Reporter, ReportOptions } from '../runs/model';
-import { Log } from '../logger';
 import { Runs } from '../runs/runs';
 import { ReportData } from './data';
 import { timestamp } from '../util';
 
 export class SheetReporter implements Reporter {
-    constructor(readonly logger: Log) {}
+    constructor() {}
 
     /**
      * TODO xlsx
@@ -33,8 +32,7 @@ export class SheetReporter implements Reporter {
             rows.push(row.join(','));
         }
         const csv = rows.join(os.EOL);
-        await fs.promises.writeFile(`${options.outputLocation}/ply-runs.csv`, csv, {
-            encoding: 'utf-8'
-        });
+        console.log(`Writing file: ${options.output}`);
+        await fs.promises.writeFile(options.output, csv, { encoding: 'utf-8' });
     }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@ply-ct/ply",
-  "version": "3.0.41",
+  "version": "3.0.42",
   "description": "REST API Automated Testing",
   "main": "dist",
   "bin": {
@@ -49,13 +49,8 @@
   },
   "homepage": "https://github.com/ply-ct/ply#readme",
   "dependencies": {
-    "@kurkle/color": "^0.1.9",
-    "chart.js": "^3.7.1",
-    "chartjs-adapter-date-fns": "^2.0.0",
-    "chartjs-node-canvas": "^4.1.6",
     "cross-fetch": "^3.1.4",
     "csv-parse": "^4.16.3",
-    "date-fns": "^2.28.0",
     "deepmerge": "^4.2.2",
     "diff-match-patch": "^1.0.5",
     "find-up": "^5.0.0",

@@ -32,5 +32,6 @@ export { Step as FlowStep, StepInstance, Subflow };
 export * from './exec/exec';
 export { Runtime } from './runtime';
 export * from './runs/model';
+export * from './runs/runs';
 export * from './report/report';
 export default new Ply();

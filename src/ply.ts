@@ -14,8 +14,7 @@ import * as util from './util';
 import { FlowLoader, FlowSuite } from './flows';
 import { Values } from './values';
 import { PlyRunner } from './runner';
-import { Reporter, ReportFormat } from './runs/model';
-import { Report } from './report/report';
+import { ReporterFactory } from './report/report';
 
 export class Ply {
     readonly options: PlyOptions;
@@ -294,7 +293,6 @@ export class Plier extends EventEmitter {
      * general purpose logger not associated with suite (goes to console)
      */
     readonly logger: Logger;
-    readonly reporter?: Reporter;
 
     get options() {
         return this.ply.options;
@@ -313,10 +311,6 @@ export class Plier extends EventEmitter {
                 : LogLevel.info,
             prettyIndent: this.ply.options.prettyIndent
         });
-
-        if (this.options.reporter) {
-            this.reporter = new Report(this.options.reporter, this.logger).createReporter();
-        }
     }
 
     /**
@@ -406,11 +400,15 @@ export class Plier extends EventEmitter {
             }
         }
 
-        if (this.reporter) {
-            await this.reporter.report({
-                format: this.options.reporter as ReportFormat,
+        if (this.options.reporter) {
+            const factory = new ReporterFactory(this.options.reporter);
+            const reporter = await factory.createReporter();
+            await reporter.report({
+                format: factory.format,
+                output:
+                    this.options.outputFile ||
+                    `${this.options.logLocation}/ply-runs.${factory.format}`,
                 runsLocation: `${this.options.logLocation}/runs`,
-                outputLocation: this.options.logLocation,
                 indent: this.options.prettyIndent
             });
         }

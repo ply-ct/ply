@@ -1,7 +1,6 @@
 import * as findUp from 'find-up';
 import * as yargs from 'yargs';
 import { Retrieval } from './retrieval';
-import { ReportFormat } from './runs/model';
 import * as yaml from './yaml';
 
 /**
@@ -83,9 +82,10 @@ export interface Options {
      */
     batchDelay?: number;
     /**
-     * Reporter output format.
+     * Reporter output format. Built-in formats: json, csv, xlsx.
+     * See https://github.com/ply-ct/ply-viz for more options.
      */
-    reporter?: 'json' | 'csv' | 'xlsx' | 'png' | 'svg' | 'pdf' | 'html';
+    reporter?: string;
     /**
      * (When flows have loopback links). Max instance count per step (10). Overridable in flow design.
      */
@@ -126,7 +126,7 @@ export interface PlyOptions extends Options {
     parallel: boolean;
     batchRows: number;
     batchDelay: number;
-    reporter?: ReportFormat;
+    reporter?: string;
     maxLoops: number;
     responseBodySortedKeys: boolean;
     genExcludeResponseHeaders?: string[];
@@ -176,7 +176,7 @@ export interface RunOptions {
     /**
      * Generate report from previously-executed Ply results. See --reporter for options.
      */
-    report?: 'json' | 'csv' | 'xlsx' | 'png' | 'svg' | 'pdf' | 'html';
+    report?: string;
 
     /**
      * Augment OpenAPI v3 doc at specified path with operation summaries, request/response samples,
@@ -312,7 +312,8 @@ export class Config {
             type: 'string'
         },
         outputFile: {
-            describe: 'Results summary json file path',
+            describe: 'Report or summary json file path',
+            alias: 'o',
             type: 'string'
         },
         verbose: {
@@ -462,6 +463,7 @@ export class Config {
             }
             return obj;
         }, {});
+
         // run options
         options.runOptions = {};
         if (options.submit) {
@@ -495,6 +497,11 @@ export class Config {
         if (options.openapi) {
             options.runOptions.openapi = options.openapi;
             delete options.openapi;
+        }
+        if (options.reporter || options.runOptions.report) {
+            if (!process.argv.includes('-o') && !process.argv.find(av => av.startsWith('--outputFile='))) {
+                delete options.outputFile;
+            }
         }
 
         return options;
