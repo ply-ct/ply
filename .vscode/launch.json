@@ -7,7 +7,11 @@
       "name": "cli",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/dist/cli.js",
-      "args": ["--trusted", "test/ply/flows/loops.ply.flow"],
+      "args": [
+        "--trusted",
+        "--reporter=json",
+        "--outputFile=test/ply/results/actual/ply-results.json"
+      ],
       "preLaunchTask": "tsc: build - tsconfig.json"
     }
   ]

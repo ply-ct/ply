@@ -139,7 +139,8 @@ if (runOptions?.import) {
                     results.forEach((result) => res[result.status]++);
                     plier.logger.error('\nOverall Results: ' + JSON.stringify(res));
                     plier.logger.error(`Overall Time: ${Date.now() - start} ms`);
-                    if (plier.options.outputFile) {
+                    // json reporter overrides overall outputFile
+                    if (plier.options.outputFile && plier.options.reporter !== 'json') {
                         new Storage(plier.options.outputFile).write(
                             JSON.stringify(res, null, plier.options.prettyIndent)
                         );

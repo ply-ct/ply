@@ -1,6 +1,6 @@
 {
   "name": "@ply-ct/ply",
-  "version": "3.0.42",
+  "version": "3.0.43",
   "description": "REST API Automated Testing",
   "main": "dist",
   "bin": {
@@ -40,7 +40,7 @@
     "pretest": "npm run start-movies",
     "prepublish": "npm run build",
     "mocha": "mocha --require ts-node/register",
-    "ply": "dist/cli.js --trusted",
+    "ply": "dist/cli.js --trusted --reporter=json --outputFile=test/ply/results/actual/ply-results.json",
     "stop-movies": "ply-movies stop",
     "test": "npm-run-all mocha ply stop-movies --continue-on-error",
     "typedoc": "typedoc --name 'ply' --out docs/api-docs --excludePrivate true src",

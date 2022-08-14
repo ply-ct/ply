@@ -553,7 +553,7 @@ export class Suite<T extends Test> {
 
         if (this.type !== 'flow') {
             // flows are logged through their requestSuites
-            this.runtime.results.runs.writeRun(this.name, test, outcome, message, runNum);
+            this.runtime.results.runs.writeRun(this.path, test, outcome, message, runNum);
         }
 
         if (this.emitter) {
