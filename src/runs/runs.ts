@@ -7,6 +7,7 @@ import { Request } from '../request';
 import { Response } from '../response';
 import { Test } from '../test';
 import { Outcome } from '../result';
+import { fwdSlashes } from '../util';
 
 export class Runs {
     constructor(readonly path: string) {}
@@ -102,9 +103,11 @@ export class Runs {
                 return { status: anySubmitted ? 'Submitted' : 'Passed' };
             };
 
-            let suitePath = `${path.relative(this.path, path.dirname(runFile))}/${suiteName}`;
+            let suitePath = `${fwdSlashes(
+                path.relative(this.path, path.dirname(runFile))
+            )}/${suiteName}`;
             // undo file path double-dipping
-            const segs = suitePath.split(path.sep);
+            const segs = suitePath.split('/');
             if (segs.length % 2 === 0) {
                 suitePath = segs.slice(segs.length / 2).join('/');
             }
