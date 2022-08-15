@@ -102,8 +102,17 @@ export class Runs {
                 return { status: anySubmitted ? 'Submitted' : 'Passed' };
             };
 
+            let suitePath = `${path.relative(this.path, path.dirname(runFile))}${
+                path.sep
+            }${suiteName}`;
+            // undo file path double-dipping
+            const segs = suitePath.split(path.sep);
+            if (segs.length % 2 === 0) {
+                suitePath = segs.slice(segs.length / 2).join(path.sep);
+            }
+
             suiteRuns.push({
-                suite: suiteName,
+                suite: suitePath,
                 run: runNumber,
                 result: consolidateResults(testRuns),
                 ...(testRuns.length > 0 && testRuns[0].start && { start: testRuns[0].start }),
