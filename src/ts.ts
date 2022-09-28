@@ -56,29 +56,38 @@ export class Ts {
         classDeclaration: ts.ClassDeclaration,
         decs: string[]
     ): Decorator[] {
-        const decorators: Decorator[] = [];
+        const classDecs: Decorator[] = [];
         const classSymbol = this.checker.getSymbolAtLocation(<ts.Node>classDeclaration.name);
-        if (classSymbol && classDeclaration.decorators) {
-            for (const decorator of classDeclaration.decorators) {
-                const decoratorSymbol = this.getDecoratorSymbol(decorator);
-                if (decoratorSymbol) {
-                    const decoratorType = this.checker.getAliasedSymbol(decoratorSymbol).name;
-                    if (decs.includes(decoratorType)) {
-                        decorators.push({
-                            file: sourceFile.fileName,
-                            class: classSymbol.name,
-                            decorator: decoratorType,
-                            ...Ts.decoratorArgs(decorator)
-                        });
+        if (classSymbol) {
+            let decorators: ts.Decorator[] | undefined;
+            if ((ts as any).getDecorators) {
+                decorators = (ts as any).getDecorators(classDeclaration);
+            } else {
+                // old typescript compiler sdk incompatible
+                decorators = (classDeclaration as any).decorators;
+            }
+            if (decorators) {
+                for (const decorator of decorators) {
+                    const decoratorSymbol = this.getDecoratorSymbol(decorator);
+                    if (decoratorSymbol) {
+                        const decoratorType = this.checker.getAliasedSymbol(decoratorSymbol).name;
+                        if (decs.includes(decoratorType)) {
+                            classDecs.push({
+                                file: sourceFile.fileName,
+                                class: classSymbol.name,
+                                decorator: decoratorType,
+                                ...Ts.decoratorArgs(decorator)
+                            });
+                        }
                     }
                 }
             }
         }
-        return decorators;
+        return classDecs;
     }
 
     findMethodDecorators(classDecorator: Decorator, decs: string[]): Decorator[] {
-        const decorators: Decorator[] = [];
+        const methodDecs: Decorator[] = [];
         const classDeclaration = this.getClassDeclaration(
             classDecorator.file,
             classDecorator.class
@@ -88,20 +97,29 @@ export class Ts {
                 const methodSymbol = this.checker.getSymbolAtLocation(
                     <ts.Node>methodDeclaration.name
                 );
-                if (methodSymbol && methodDeclaration.decorators) {
-                    for (const decorator of methodDeclaration.decorators) {
-                        const decoratorSymbol = this.getDecoratorSymbol(decorator);
-                        if (decoratorSymbol) {
-                            const decoratorType =
-                                this.checker.getAliasedSymbol(decoratorSymbol).name;
-                            if (decs.includes(decoratorType)) {
-                                decorators.push({
-                                    file: classDecorator.file,
-                                    class: classDecorator.class,
-                                    decorator: decoratorType,
-                                    method: methodSymbol.name,
-                                    ...Ts.decoratorArgs(decorator)
-                                });
+                let decorators: ts.Decorator[] | undefined;
+                if (methodSymbol) {
+                    if ((ts as any).getDecorators) {
+                        decorators = (ts as any).getDecorators(methodDeclaration);
+                    } else {
+                        // old typescript compiler sdk incompatible
+                        decorators = (methodDeclaration as any).decorators;
+                    }
+                    if (decorators) {
+                        for (const decorator of decorators) {
+                            const decoratorSymbol = this.getDecoratorSymbol(decorator);
+                            if (decoratorSymbol) {
+                                const decoratorType =
+                                    this.checker.getAliasedSymbol(decoratorSymbol).name;
+                                if (decs.includes(decoratorType)) {
+                                    methodDecs.push({
+                                        file: classDecorator.file,
+                                        class: classDecorator.class,
+                                        decorator: decoratorType,
+                                        method: methodSymbol.name,
+                                        ...Ts.decoratorArgs(decorator)
+                                    });
+                                }
                             }
                         }
                     }
@@ -109,7 +127,7 @@ export class Ts {
             }
         }
 
-        return decorators;
+        return methodDecs;
     }
 
     getClassDeclaration(file: string, className: string): ts.ClassDeclaration | undefined {

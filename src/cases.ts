@@ -159,32 +159,43 @@ export class CaseLoader {
         classDeclaration: ts.ClassDeclaration
     ): SuiteDecoration | undefined {
         const classSymbol = this.checker.getSymbolAtLocation(<ts.Node>classDeclaration.name);
-        if (classSymbol && classDeclaration.decorators) {
-            for (const decorator of classDeclaration.decorators) {
-                if (decorator.expression) {
-                    let decoratorSymbol: ts.Symbol | undefined;
-                    const firstToken = decorator.expression.getFirstToken();
-                    if (firstToken) {
-                        decoratorSymbol = this.checker.getSymbolAtLocation(firstToken);
-                    } else {
-                        decoratorSymbol = this.checker.getSymbolAtLocation(decorator.expression);
-                    }
-                    if (
-                        decoratorSymbol &&
-                        (decoratorSymbol.name === 'suite' ||
-                            this.checker.getAliasedSymbol(decoratorSymbol).name === 'suite')
-                    ) {
-                        let suiteName = classSymbol.name;
-                        if (decorator.expression.getChildCount() >= 3) {
-                            // suite name arg
-                            const text = decorator.expression.getChildAt(2).getText();
-                            suiteName = text.substring(1, text.length - 1);
+        if (classSymbol) {
+            let decorators: ts.Decorator[] | undefined;
+            if ((ts as any).getDecorators) {
+                decorators = (ts as any).getDecorators(classDeclaration);
+            } else {
+                // old typescript compiler sdk incompatible
+                decorators = (classDeclaration as any).decorators;
+            }
+            if (decorators) {
+                for (const decorator of decorators) {
+                    if (decorator.expression) {
+                        let decoratorSymbol: ts.Symbol | undefined;
+                        const firstToken = decorator.expression.getFirstToken();
+                        if (firstToken) {
+                            decoratorSymbol = this.checker.getSymbolAtLocation(firstToken);
+                        } else {
+                            decoratorSymbol = this.checker.getSymbolAtLocation(
+                                decorator.expression
+                            );
                         }
-                        return {
-                            name: suiteName,
-                            classDeclaration: classDeclaration,
-                            className: classSymbol.name
-                        };
+                        if (
+                            decoratorSymbol &&
+                            (decoratorSymbol.name === 'suite' ||
+                                this.checker.getAliasedSymbol(decoratorSymbol).name === 'suite')
+                        ) {
+                            let suiteName = classSymbol.name;
+                            if (decorator.expression.getChildCount() >= 3) {
+                                // suite name arg
+                                const text = decorator.expression.getChildAt(2).getText();
+                                suiteName = text.substring(1, text.length - 1);
+                            }
+                            return {
+                                name: suiteName,
+                                classDeclaration: classDeclaration,
+                                className: classSymbol.name
+                            };
+                        }
                     }
                 }
             }
@@ -208,31 +219,42 @@ export class CaseLoader {
         methodDeclaration: ts.MethodDeclaration
     ): CaseDecoration | undefined {
         const methodSymbol = this.checker.getSymbolAtLocation(<ts.Node>methodDeclaration.name);
-        if (methodSymbol && methodDeclaration.decorators) {
-            for (const decorator of methodDeclaration.decorators) {
-                if (decorator.expression) {
-                    let decoratorSymbol: ts.Symbol | undefined;
-                    const firstToken = decorator.expression.getFirstToken();
-                    if (firstToken) {
-                        decoratorSymbol = this.checker.getSymbolAtLocation(firstToken);
-                    } else {
-                        decoratorSymbol = this.checker.getSymbolAtLocation(decorator.expression);
-                    }
-                    if (
-                        decoratorSymbol &&
-                        (decoratorSymbol.name === 'test' ||
-                            this.checker.getAliasedSymbol(decoratorSymbol).name === 'test')
-                    ) {
-                        let testName = methodSymbol.name;
-                        if (decorator.expression.getChildCount() >= 3) {
-                            const text = decorator.expression.getChildAt(2).getText();
-                            testName = text.substring(1, text.length - 1);
+        if (methodSymbol) {
+            let decorators: ts.Decorator[] | undefined;
+            if ((ts as any).getDecorators) {
+                decorators = (ts as any).getDecorators(methodDeclaration);
+            } else {
+                // old typescript compiler sdk incompatible
+                decorators = (methodDeclaration as any).decorators;
+            }
+            if (decorators) {
+                for (const decorator of decorators) {
+                    if (decorator.expression) {
+                        let decoratorSymbol: ts.Symbol | undefined;
+                        const firstToken = decorator.expression.getFirstToken();
+                        if (firstToken) {
+                            decoratorSymbol = this.checker.getSymbolAtLocation(firstToken);
+                        } else {
+                            decoratorSymbol = this.checker.getSymbolAtLocation(
+                                decorator.expression
+                            );
                         }
-                        return {
-                            name: testName,
-                            methodDeclaration: methodDeclaration,
-                            methodName: methodSymbol.name
-                        };
+                        if (
+                            decoratorSymbol &&
+                            (decoratorSymbol.name === 'test' ||
+                                this.checker.getAliasedSymbol(decoratorSymbol).name === 'test')
+                        ) {
+                            let testName = methodSymbol.name;
+                            if (decorator.expression.getChildCount() >= 3) {
+                                const text = decorator.expression.getChildAt(2).getText();
+                                testName = text.substring(1, text.length - 1);
+                            }
+                            return {
+                                name: testName,
+                                methodDeclaration: methodDeclaration,
+                                methodName: methodSymbol.name
+                            };
+                        }
                     }
                 }
             }
