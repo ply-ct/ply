@@ -50,7 +50,7 @@ describe('API Docs', () => {
             tsConfig: 'test/tsconfig.json',
             sourcePatterns: [file]
         });
-        const augmented = plyex.augment(openApi);
+        const augmented = await plyex.augment(openApi);
         Object.keys(augmented.paths!).forEach((p) => {
             const path = augmented.paths![p];
             Object.keys(path).forEach((m) => {
