@@ -72,11 +72,15 @@ if (runOptions?.import) {
         plier.logger.info('Overwriting', path);
         const isYaml = !contents.startsWith('{');
         const openApi: OpenApi = isYaml ? yaml.load(path, contents) : JSON.parse(contents);
-        const augmented = plyex.augment(openApi);
-        let updated: string;
-        if (isYaml) updated = yaml.dump(augmented, options.prettyIndent);
-        else updated = JSON.stringify(augmented, null, options.prettyIndent);
-        fs.writeFileSync(path, updated, { encoding: 'utf8' });
+        plyex
+            .augment(openApi)
+            .then((augmented) => {
+                let updated: string;
+                if (isYaml) updated = yaml.dump(augmented, options.prettyIndent);
+                else updated = JSON.stringify(augmented, null, options.prettyIndent);
+                fs.writeFileSync(path, updated, { encoding: 'utf8' });
+            })
+            .catch(console.error);
     }
 } else {
     let paths: string[] = [];

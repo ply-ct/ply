@@ -55,7 +55,7 @@ export class Plyex {
         }
     }
 
-    augment(openApi: OpenApi, endpointMethods?: EndpointMethod[]): OpenApi {
+    async augment(openApi: OpenApi, endpointMethods?: EndpointMethod[]): Promise<OpenApi> {
         if (!endpointMethods) {
             endpointMethods = this.getPluginEndpointMethods();
         }
@@ -73,12 +73,12 @@ export class Plyex {
             }
         }
 
-        const augmented = this.doAugment(openApi, endpointMethods);
+        const augmented = await this.doAugment(openApi, endpointMethods);
 
         return augmented;
     }
 
-    doAugment(openApi: OpenApi, endpointMethods: EndpointMethod[]): OpenApi {
+    async doAugment(openApi: OpenApi, endpointMethods: EndpointMethod[]): Promise<OpenApi> {
         const deepCopy = JSON.parse(JSON.stringify(openApi));
         const openApiPaths: { [path: string]: Path } = deepCopy.paths || {};
         for (const path of Object.keys(openApiPaths)) {
@@ -105,7 +105,7 @@ export class Plyex {
                         this.jsDocReaders.set(endpointMethod.file, jsDocReader);
                     }
 
-                    const plyEndpointMeta = jsDocReader.getPlyEndpointMeta(
+                    const plyEndpointMeta = await jsDocReader.getPlyEndpointMeta(
                         endpointMethod,
                         'ply',
                         this.options.includeUntagged
@@ -154,8 +154,9 @@ export class Plyex {
         plyEndpointMeta: PlyEndpointMeta
     ) {
         if (plyEndpointMeta.examples?.request) {
-            if (!operation.requestBody)
+            if (!operation.requestBody) {
                 operation.requestBody = { description: '', content: {}, required: true };
+            }
             const reqContent = operation.requestBody.content;
             let jsonPayload = reqContent['application/json'];
             if (!jsonPayload) {

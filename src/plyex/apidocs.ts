@@ -1,6 +1,7 @@
 import * as ts from 'typescript';
 import { Ply } from '../ply';
 import { Request } from '../request';
+import { FlowSuite } from '../flows';
 import { Suite } from '../suite';
 import { Ts } from '../ts';
 import * as yaml from '../yaml';
@@ -44,47 +45,73 @@ export class PlyExampleRequest {
         this.requestName = requestPath.substring(hash + 1);
     }
 
-    get suite(): Suite<Request> {
-        let requestSuite = PlyExampleRequest.requestSuites.get(this.suitePath);
-        if (!requestSuite) {
-            requestSuite = new Ply().loadRequestSuiteSync(this.suitePath);
-            PlyExampleRequest.requestSuites.set(this.suitePath, requestSuite);
+    async getSuite(): Promise<Suite<Request> | FlowSuite> {
+        let suite: Suite<Request> | FlowSuite;
+        if (this.suitePath.endsWith('.flow')) {
+            suite = PlyExampleRequest.flowSuites.get(this.suitePath);
+            if (!suite) {
+                suite = await new Ply().loadFlow(this.suitePath);
+                PlyExampleRequest.requestSuites.set(this.suitePath, suite);
+            }
+        } else {
+            suite = PlyExampleRequest.requestSuites.get(this.suitePath);
+            if (!suite) {
+                suite = await new Ply().loadRequestSuite(this.suitePath);
+                PlyExampleRequest.requestSuites.set(this.suitePath, suite);
+            }
         }
-        return requestSuite;
+        return suite;
     }
 
-    get expected(): any {
+    async getExpected(): Promise<any> {
         let expectedObj = PlyExampleRequest.expectedObjs.get(this.suitePath);
         if (!expectedObj) {
-            const expected = this.suite.runtime.results.expected;
+            const suite = await this.getSuite();
+            const expected = suite.runtime.results.expected;
             const contents = expected.storage?.read();
             if (!contents) throw new Error(`Invalid results location: ${expected.storage}`);
             expectedObj = yaml.load('' + expected.storage, contents);
+            if (this.suitePath.endsWith('.flow')) {
+                expectedObj = Object.keys(expectedObj).reduce((obj, key) => {
+                    const step = expectedObj[key];
+                    if (step.id && step.request && step.response) {
+                        obj[step.id] = {
+                            id: step.id,
+                            request: step.request,
+                            response: step.response
+                        };
+                    }
+                    return obj;
+                }, {} as any);
+            }
             PlyExampleRequest.expectedObjs.set(this.suitePath, expectedObj);
         }
         return expectedObj;
     }
 
-    get exampleRequest(): string | undefined {
-        return this.expected[this.requestName]?.request?.body;
+    async getExampleRequest(): Promise<string | undefined> {
+        const expected = await this.getExpected();
+        return expected[this.requestName]?.request?.body;
     }
 
-    get exampleResponse(): string | undefined {
-        return this.expected[this.requestName]?.response?.body;
+    async getExampleResponse(): Promise<string | undefined> {
+        const expected = await this.getExpected();
+        return expected[this.requestName]?.response?.body;
     }
 
     private static requestSuites = new Map<string, any>();
+    private static flowSuites = new Map<string, any>();
     private static expectedObjs = new Map<string, any>();
 }
 
 export class JsDocReader {
     constructor(private ts: Ts, readonly sourceFile: ts.SourceFile) {}
 
-    getPlyEndpointMeta(
+    async getPlyEndpointMeta(
         endpointMethod: EndpointMethod,
         tag = 'ply',
         untaggedMethods = false
-    ): PlyEndpointMeta | undefined {
+    ): Promise<PlyEndpointMeta | undefined> {
         const classDecl = this.ts.getClassDeclaration(
             this.sourceFile.fileName,
             endpointMethod.class
@@ -120,15 +147,18 @@ export class JsDocReader {
                         // @ply tag
                         let exampleRequest: string | undefined;
                         if (plyMeta?.request) {
-                            exampleRequest = new PlyExampleRequest(plyMeta.request).exampleRequest;
+                            exampleRequest = await new PlyExampleRequest(
+                                plyMeta.request
+                            ).getExampleRequest();
                         }
                         let exampleResponses: { [key: string]: string[] } | undefined;
                         if (plyMeta?.responses) {
                             for (const key of Object.keys(plyMeta.responses)) {
                                 const responses = plyMeta.responses[key];
                                 for (const response of responses) {
-                                    const exampleResponse = new PlyExampleRequest(response)
-                                        .exampleResponse;
+                                    const exampleResponse = await new PlyExampleRequest(
+                                        response
+                                    ).getExampleResponse();
                                     if (exampleResponse) {
                                         if (!exampleResponses) {
                                             exampleResponses = {};
