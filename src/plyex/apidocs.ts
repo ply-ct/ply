@@ -36,7 +36,7 @@ export class PlyExampleRequest {
     readonly suitePath: string;
     readonly requestName: string;
 
-    constructor(requestPath: string) {
+    constructor(requestPath: string, readonly options?: { samplesFromActual?: boolean }) {
         const hash = requestPath.lastIndexOf('#');
         if (hash === -1 || hash > requestPath.length - 1) {
             throw new Error(`Ply example path must include '#<requestName>': ${requestPath}`);
@@ -69,7 +69,7 @@ export class PlyExampleRequest {
             const suite = await this.getSuite();
             const expected = suite.runtime.results.expected;
             const contents = expected.storage?.read();
-            if (!contents) throw new Error(`Invalid results location: ${expected.storage}`);
+            if (!contents) throw new Error(`Expected results not found: ${expected.storage}`);
             expectedObj = yaml.load('' + expected.storage, contents);
             if (this.suitePath.endsWith('.flow')) {
                 expectedObj = Object.keys(expectedObj).reduce((obj, key) => {
@@ -89,19 +89,56 @@ export class PlyExampleRequest {
         return expectedObj;
     }
 
+    async getActual(): Promise<any> {
+        let actualObj = PlyExampleRequest.actualObjs.get(this.suitePath);
+        if (!actualObj) {
+            const suite = await this.getSuite();
+            const actual = suite.runtime.results.actual;
+            const contents = actual.read();
+            if (!contents) throw new Error(`Actual results not found: ${actual}`);
+            actualObj = yaml.load('' + actual, contents);
+            if (this.suitePath.endsWith('.flow')) {
+                actualObj = Object.keys(actualObj).reduce((obj, key) => {
+                    const step = actualObj[key];
+                    if (step.id && step.request && step.response) {
+                        obj[step.id] = {
+                            id: step.id,
+                            request: step.request,
+                            response: step.response
+                        };
+                    }
+                    return obj;
+                }, {} as any);
+            }
+            PlyExampleRequest.actualObjs.set(this.suitePath, actualObj);
+        }
+        return actualObj;
+    }
+
     async getExampleRequest(): Promise<string | undefined> {
-        const expected = await this.getExpected();
-        return expected[this.requestName]?.request?.body;
+        if (this.options?.samplesFromActual) {
+            const actual = await this.getActual();
+            return actual[this.requestName]?.request?.body;
+        } else {
+            const expected = await this.getExpected();
+            return expected[this.requestName]?.request?.body;
+        }
     }
 
     async getExampleResponse(): Promise<string | undefined> {
-        const expected = await this.getExpected();
-        return expected[this.requestName]?.response?.body;
+        if (this.options?.samplesFromActual) {
+            const actual = await this.getActual();
+            return actual[this.requestName]?.response?.body;
+        } else {
+            const expected = await this.getExpected();
+            return expected[this.requestName]?.response?.body;
+        }
     }
 
     private static requestSuites = new Map<string, any>();
     private static flowSuites = new Map<string, any>();
     private static expectedObjs = new Map<string, any>();
+    private static actualObjs = new Map<string, any>();
 }
 
 export class JsDocReader {
@@ -110,7 +147,8 @@ export class JsDocReader {
     async getPlyEndpointMeta(
         endpointMethod: EndpointMethod,
         tag = 'ply',
-        untaggedMethods = false
+        untaggedMethods = false,
+        samplesFromActual?: boolean
     ): Promise<PlyEndpointMeta | undefined> {
         const classDecl = this.ts.getClassDeclaration(
             this.sourceFile.fileName,
@@ -147,18 +185,18 @@ export class JsDocReader {
                         // @ply tag
                         let exampleRequest: string | undefined;
                         if (plyMeta?.request) {
-                            exampleRequest = await new PlyExampleRequest(
-                                plyMeta.request
-                            ).getExampleRequest();
+                            exampleRequest = await new PlyExampleRequest(plyMeta.request, {
+                                samplesFromActual
+                            }).getExampleRequest();
                         }
                         let exampleResponses: { [key: string]: string[] } | undefined;
                         if (plyMeta?.responses) {
                             for (const key of Object.keys(plyMeta.responses)) {
                                 const responses = plyMeta.responses[key];
                                 for (const response of responses) {
-                                    const exampleResponse = await new PlyExampleRequest(
-                                        response
-                                    ).getExampleResponse();
+                                    const exampleResponse = await new PlyExampleRequest(response, {
+                                        samplesFromActual
+                                    }).getExampleResponse();
                                     if (exampleResponse) {
                                         if (!exampleResponses) {
                                             exampleResponses = {};

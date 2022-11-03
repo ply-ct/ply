@@ -27,6 +27,10 @@ export interface PlyexOptions {
      * Add operations summaries/descripts for endpoint methods not tagged with @ply.
      */
     includeUntagged?: boolean;
+    /**
+     * Request/response samples from actual results instead of expected.
+     */
+    samplesFromActual?: boolean;
 }
 
 export const defaultOptions: PlyexOptions = {
@@ -34,7 +38,8 @@ export const defaultOptions: PlyexOptions = {
     sourcePatterns: ['src/**/*.ts'],
     addMissingOperations: true,
     overwrite: false,
-    includeUntagged: true
+    includeUntagged: true,
+    samplesFromActual: false
 };
 
 export class Plyex {
@@ -108,7 +113,8 @@ export class Plyex {
                     const plyEndpointMeta = await jsDocReader.getPlyEndpointMeta(
                         endpointMethod,
                         'ply',
-                        this.options.includeUntagged
+                        this.options.includeUntagged,
+                        this.options.samplesFromActual
                     );
                     if (plyEndpointMeta) {
                         if (!operation.summary || this.options.overwrite) {
