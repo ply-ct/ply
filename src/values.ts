@@ -70,7 +70,7 @@ export class Values {
     private substEnvVars(values: any): any {
         // operate on a clone
         const vals = JSON.parse(JSON.stringify(values));
-        traverse(values).forEach(function (val) {
+        traverse(vals).forEach(function (val) {
             if (typeof val === 'string') {
                 const envVar = val.match(/^\$\{.+?}/);
                 if (envVar && envVar.length === 1) {
