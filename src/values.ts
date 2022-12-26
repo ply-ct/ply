@@ -5,6 +5,7 @@ import * as deepmerge from 'deepmerge';
 import * as csv from 'csv-parse';
 import * as transform from 'stream-transform';
 import readXlsx from 'read-excel-file/node';
+import * as traverse from 'traverse';
 import { Retrieval } from './retrieval';
 import { Logger } from './logger';
 
@@ -52,9 +53,10 @@ export class Values {
                 }
             }
         }
-        this.logger.debug('Values (excluding PLY_VALUES env var)', values);
+        this.logger.debug('Values', values);
         const envValues = process.env[PLY_VALUES];
         if (envValues) {
+            this.logger.error('PLY_VALUES environment variable is deprecated');
             try {
                 const obj = JSON.parse(envValues);
                 values = deepmerge(values, obj);
@@ -62,7 +64,30 @@ export class Values {
                 throw new Error(`Cannot parse ${PLY_VALUES} (${err.message})`);
             }
         }
-        return values;
+        return this.substEnvVars(values);
+    }
+
+    private substEnvVars(values: any): any {
+        // operate on a clone
+        const vals = JSON.parse(JSON.stringify(values));
+        traverse(values).forEach(function (val) {
+            if (typeof val === 'string') {
+                const envVar = val.match(/^\$\{.+?}/);
+                if (envVar && envVar.length === 1) {
+                    const varName = envVar[0].substring(2, envVar[0].length - 1);
+                    let varVal: any = process.env[varName];
+                    if (typeof varVal === 'undefined' && val.trim().length > varName.length + 3) {
+                        // fallback specified?
+                        const extra = val.substring(envVar[0].length).trim();
+                        if (extra.startsWith('||')) {
+                            varVal = extra.substring(1).trim();
+                        }
+                    }
+                    this.update(varVal);
+                }
+            }
+        });
+        return vals;
     }
 
     async getRowStream(): Promise<stream.Readable> {
