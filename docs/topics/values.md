@@ -51,13 +51,20 @@ only a.json and b.json will be considered (not any files designated in plyconfig
 
 Values files that are specified but not present on the file system are simply ignored and no error is thrown.
 
-## Environment Variable
-Values are also read from environment variable PLY_VALUES, which should be JSON format. For example:
+## Environment Variables
+For secrets and other sensitive values, environment variables in the format ${ENV_VAR_NAME} are replaced in values files. Here's an example
+from [ply-demo global.json](https://github.com/ply-ct/ply-demo/blob/main/test/values/global.json):
+```json
+{
+  "github": {
+    "organization": "ply-ct",
+    "repository": "ply",
+    "token": "${GITHUB_TOKEN}"
+  }  
+}
 ```
-export PLY_VALUES="{ \"githubToken\": \"mygithubtokenvalue\" }"
-```
-Values from PLY_VALUES are merged with (and take precedence over) values files designated in whichever other method(s) you employ. 
-This enables you to keep secrets for containerized/cloud deployments in PLY_VALUES, while using the file-based method for non-secrets.
+**Note:** The legacy JSON-format environment variable PLY_VALUES is deprecated
+
 
 ## Rowwise Values
 Ply supports [iterative test execution](iterate), which is indicated simply by including a .csv or .xlsx file among `valuesFiles`:
