@@ -73,7 +73,7 @@ export function lines(input: string): string[] {
 export function lineComment(line: string, token = '#'): string | undefined {
     const hash = line.indexOf(token);
     if (hash >= 0 && hash < line.length - 1) {
-        return line.substr(hash + 1).trim();
+        return line.substring(hash + 1).trim();
     }
 }
 

@@ -83,7 +83,7 @@ export class Compare {
                     let regex = exp.replace(/\(/g, '\\(').replace(/\)/g, '\\)');
                     // capture groups for expressions
                     regex = regex.replace(/\$\{~.+?}/g, (match) => {
-                        return '(' + match.substr(3, match.length - 4) + ')';
+                        return '(' + match.substring(3, match.length - 4) + ')';
                     });
 
                     // TODO: this is an ugly way of handling optional fields which otherwise mess up regex match
