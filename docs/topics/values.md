@@ -52,7 +52,7 @@ only a.json and b.json will be considered (not any files designated in plyconfig
 Values files that are specified but not present on the file system are simply ignored and no error is thrown.
 
 ## Environment Variables
-For secrets and other sensitive values, environment variables in the format ${ENV_VAR_NAME} are replaced in values files. Here's an example
+For secrets and other sensitive values, environment variables in the form `${ENV_VAR_NAME}` are replaced in values files. Here's an example
 from [ply-demo global.json](https://github.com/ply-ct/ply-demo/blob/main/test/values/global.json):
 ```json
 {
