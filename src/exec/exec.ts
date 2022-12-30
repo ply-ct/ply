@@ -3,6 +3,7 @@ import { RunOptions } from '../options';
 import { ResultStatus } from '../result';
 import { Runtime } from '../runtime';
 import { Logger } from '../logger';
+import * as subst from '../subst';
 
 export interface ExecResult {
     status: ResultStatus;
@@ -46,6 +47,21 @@ export abstract class PlyExecBase implements PlyExec {
         }
         if (instance.message) execResult.message = instance.message;
         return execResult;
+    }
+
+    /**
+     * Returns a substituted attribute value
+     */
+    protected getAttribute(
+        name: string,
+        values: object,
+        options?: { trusted?: boolean; required?: boolean }
+    ): string | undefined {
+        if (this.step.attributes) {
+            const val = this.step.attributes[name];
+            if (val) return subst.replace(val, values, this.logger, options?.trusted);
+        }
+        if (options?.required) throw new Error(`Missing required attribute: ${name}`);
     }
 
     isTrustRequired(): boolean {

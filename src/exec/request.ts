@@ -22,12 +22,9 @@ export class RequestExec extends PlyExecBase {
     }
 
     async run(runtime: Runtime, values: any, runOptions?: RunOptions): Promise<ExecResult> {
-        let url = this.step.attributes?.url;
-        if (!url) throw new Error('Missing attribute: url');
-        url = subst.replace(url, values, this.logger, runOptions?.trusted);
-        let method = this.step.attributes?.method;
-        if (!method) throw new Error('Missing attribute: method');
-        method = subst.replace(method, values, this.logger, runOptions?.trusted);
+        const trusted = runOptions?.trusted;
+        const url = this.getAttribute('url', values, { trusted, required: true });
+        const method = this.getAttribute('method', values, { trusted, required: true });
         const headers: { [key: string]: string } = {};
         if (this.step.attributes?.headers) {
             const rows = JSON.parse(this.step.attributes.headers);
@@ -35,16 +32,13 @@ export class RequestExec extends PlyExecBase {
                 headers[row[0]] = subst.replace(row[1], values, this.logger, runOptions?.trusted);
             }
         }
-        let body = this.step.attributes?.body;
-        if (body) {
-            body = subst.replace(body, values, this.logger, runOptions?.trusted);
-        }
+        let body = this.getAttribute('body', values, { trusted });
 
         const requestObj: Request = {
             name: this.name,
             type: 'request',
-            url,
-            method,
+            url: url!, // required above
+            method: method!, // required above
             headers,
             body,
             submitted: new Date(),

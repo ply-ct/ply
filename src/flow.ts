@@ -6,10 +6,10 @@ import { Runtime } from './runtime';
 import { PlyStep } from './step';
 import { Suite } from './suite';
 import { Request } from './request';
-import * as util from './util';
 import { Step } from 'flowbee';
 import { Result } from './result';
 import { RUN_ID } from './names';
+import * as util from './util';
 
 export interface Flow {
     flow: flowbee.Flow;

@@ -191,10 +191,11 @@ export class Compare {
                         // TODO: handle oldLines > newLines or vice-versa
                     } else {
                         // mark every line
+                        // eslint-disable-next-line prefer-spread
                         markers.push.apply(
                             markers,
                             this.markLines(idx, oldLines, diff.ignored === true)
-                        ); // eslint-disable-line prefer-spread
+                        );
                     }
 
                     if (correspondingAdd) {

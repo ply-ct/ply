@@ -78,10 +78,9 @@ export function tokenize(path: string, context: any): (string | number)[] {
 }
 
 /**
- * Replaces template expressions with values from context (per line).
- * Supports a limited subset of template literal expressions
- * Ignores regular expressions starting with ${~.
- * Resulting newlines are always \n
+ * Replaces template expressions with values from context (per line), with template literal
+ * syntax. Untrusted supports a limited subset of template literal. Ignores regular expressions
+ * starting with ${~. * Resulting newlines are always \n.
  */
 export function replace(
     template: string,
