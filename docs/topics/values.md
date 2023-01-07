@@ -101,7 +101,6 @@ These changes are cumulative, so subsequent tests can modify values as needed fo
 
 ## Precedence
 User-specified values take precedence in the following order (highest to lowest):
-  1. Values defined in the PLY_VALUES environment variable
   1. Values specified in the popup when running a [flow](flows)
   1. Fixed values defined in flow via the Values configurator tab
   1. Runtime values set programmatically or autopopulated from previous requests
