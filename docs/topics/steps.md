@@ -47,7 +47,7 @@ flow direction. See the "Done" step in the screenshot below for an example of ho
 
 ## TypeScript step
 A TypeScript step executes your custom .ts module that default-exports a class implementing the 
-[`PlyExec`](https://ply-ct.github.io/ply/api-docs/interfaces/PlyExec.html) interface.
+[`PlyExec`](../../api-docs/interfaces/PlyExec.html) interface.
 Here's an [example implementation](https://github.com/ply-ct/ply-demo/blob/main/src/movie.ts) from ply-demo:
 ```typescript
 import * as ply from '@ply-ct/ply';
