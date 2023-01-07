@@ -27,7 +27,7 @@ When a case suite is executed here's what happens:
 
 Let's walk through ply-demo's [movieCrud.ply.ts](https://github.com/ply-ct/ply-demo/blob/main/test/cases/movieCrud.ply.ts)
 suite to further understand how Ply cases relate to requests. MovieCrud's constructor loads a request suite by calling
-[loadSuiteSync](https://ply-ct.github.io/ply/api-docs/classes/Ply.html#loadSuiteSync):
+[loadSuiteSync](../../api-docs/classes/Ply#loadSuiteSync):
 ```typescript
   constructor() {
     this.requestSuite = ply.loadSuiteSync('test/ply/requests/movies-api.ply.yaml');

@@ -81,7 +81,7 @@ invoke the custom step wizard, click the Custom Step icon at the top of the tool
 Like TypeScript steps, custom steps implement the `PlyExec` interface.
 Custom steps require a JSON *descriptor* indicating how they're to be displayed and configured.
 See [ply-demo's tmdb step](https://github.com/ply-ct/ply-demo/tree/main/custom/steps) for a working example.
-Descriptors enable per-use configuration as with this tmdb step in
+Descriptors enable per-use configuration like this tmdb step in
 [tmdb-movies.ply.flow](https://github.com/ply-ct/ply-demo/tree/main/test/flows), 
 as depicted below.
 <img src="../img/tmdb-flow.png" alt="TMDB flow" width="1233px">
@@ -91,14 +91,13 @@ Attributes are design-time values that reflect the per-use configuration of a st
 These can be read at runtime to drive custom step behavior:
 ```typescript
     async run(_runtime: ply.Runtime, values: any): Promise<ply.ExecResult> {
-        if (!this.step.attributes?.apiKey) {
-            throw new Error('Missing attribute: apiKey');
-        }
-        values.apiKey = this.step.attributes?.apiKey;
-
+        const tmdb: { [name: string]: any } = {};
+        tmdb.key = this.getAttribute('apiKey', values, {trusted, required: true});
         // ... further processing
     }
 ```
+The `getAttribute()` method inherited from [PlyExecBase](../../api-docs/classes/PlyExecBase) automatically
+substitutes expressions from runtime [values](values). 
 
 Attribute values are always strings. Date and DateTime values are ISO-formatted. Tabular values are serialized two-dimensional arrays of strings.
 
