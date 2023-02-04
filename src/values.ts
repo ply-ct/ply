@@ -15,10 +15,12 @@ import { Logger } from './logger';
 const PLY_VALUES = 'PLY_VALUES';
 
 export class Values {
-    private rowsLoc: string | undefined;
+    private readonly enabledLocs: string[];
+    private readonly rowsLoc: string | undefined;
 
-    constructor(private readonly locations: string[], private readonly logger: Logger) {
-        for (const loc of locations) {
+    constructor(valuesFiles: { [file: string]: boolean }, private readonly logger: Logger) {
+        this.enabledLocs = Object.keys(valuesFiles).filter(vf => valuesFiles[vf]);
+        for (const loc of this.enabledLocs) {
             if (loc.endsWith('.csv') || loc.endsWith('.xlsx')) {
                 if (this.rowsLoc) {
                     throw new Error('Only one values file may be .csv or .xlsx');
@@ -34,7 +36,7 @@ export class Values {
 
     async read(): Promise<any> {
         let values = {};
-        for (const location of this.locations) {
+        for (const location of this.enabledLocs) {
             if (location.endsWith('.csv') || location.endsWith('.xlsx')) {
                 this.logger.debug(`Delayed load rowwise values file" ${location}`);
             } else {

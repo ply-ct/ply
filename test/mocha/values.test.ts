@@ -9,12 +9,13 @@ describe('Values', () => {
     const options = new Config().options;
 
     it('should merge files', async () => {
-        const locations = [
-            'test/ply/values/localhost.json',
-            'test/ply/values/global.json',
-            'test/mocha/values/a.json',
-            'test/mocha/values/b.json'
-        ];
+        const locations = {
+            'test/ply/values/localhost.json': true,
+            'test/ply/values/global.json': true,
+            'test/mocha/values/a.json': true,
+            'test/mocha/values/b.json': true,
+            'not/here/at/all.json': false
+        };
 
         const values = await new Values(locations, logger).read();
 
@@ -61,7 +62,10 @@ describe('Values', () => {
     });
 
     it('should stream csv', async () => {
-        const values = new Values([...options.valuesFiles, 'test/mocha/values/movies.csv'], logger);
+        const values = new Values(
+            { ...options.valuesFiles, 'test/mocha/values/movies.csv': true },
+            logger
+        );
 
         const rowValues = [];
         for await (const rowVals of await values.getRowStream()) {
@@ -91,7 +95,7 @@ describe('Values', () => {
 
     it('should stream xlsx', async () => {
         const values = new Values(
-            [...options.valuesFiles, 'test/mocha/values/movies.xlsx'],
+            { ...options.valuesFiles, 'test/mocha/values/movies.xlsx': true },
             logger
         );
 

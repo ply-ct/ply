@@ -28,9 +28,11 @@ if (runOptions?.import) {
     const importer = new Import(runOptions.import as any, plier.logger);
     try {
         let valuesLoc = `${options.testsLocation}/values`;
-        if (options.valuesFiles?.length) {
-            const firstValuesFile = options.valuesFiles[0];
-            valuesLoc = path.dirname(firstValuesFile);
+        if (options.valuesFiles) {
+            const firstEnabledValFile = Object.keys(options.valuesFiles).find((vf) => {
+                return options.valuesFiles[vf];
+            });
+            if (firstEnabledValFile) valuesLoc = path.dirname(firstEnabledValFile);
         }
         const opts: ImportOptions = {
             testsLocation: options.testsLocation,

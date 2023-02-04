@@ -12,6 +12,10 @@ This is in json format instead of yaml to illustrate jsonc commenting support
   // needs ply-movies branch
   "ignore": "flows/plain-text-id.ply.flow",
   "verbose": false,
-  "valuesFiles": ["test/ply/values/global.json", "test/ply/values/localhost.json"],
+  // "valuesFiles": ["test/ply/values/global.json", "test/ply/values/localhost.json"],
+  "valuesFiles": {
+    "test/ply/values/global.json": true,
+    "test/ply/values/localhost.json": true
+  },
   "outputFile": "ply-results.json"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@ply-ct/ply",
-  "version": "3.0.52",
+  "version": "3.0.53",
   "description": "REST API Automated Testing",
   "main": "dist",
   "bin": {

@@ -76,12 +76,12 @@ describe('Insomnia', () => {
         assert.strictEqual(greatsAfter1935.url, '${baseUrl}/movies?rating=5&year=>1935');
         assert.strictEqual(greatsAfter1935.method, 'GET');
 
-        const baseValues = new Values([`${valRoot}/Base Environment.json`], new Logger());
+        const baseValues = new Values({ [`${valRoot}/Base Environment.json`]: true }, new Logger());
         const baseObj = await baseValues.read();
         assert.ok(baseObj);
         assert.strictEqual(baseObj.movieId, '435b30ad');
 
-        const plyctValues = new Values([`${valRoot}/ply-ct.json`], new Logger());
+        const plyctValues = new Values({ [`${valRoot}/ply-ct.json`]: true }, new Logger());
         const plyctObj = await plyctValues.read();
         assert.ok(plyctObj);
         assert.strictEqual(plyctObj.baseUrl, 'https://ply-ct.org');

@@ -153,7 +153,10 @@ describe('Requests', async () => {
         const ply = new Ply();
         const suites = await ply.loadRequests('test/ply/requests/github-api.ply.yaml');
         const suite = suites[0];
-        const vals = await new Values(['test/ply/values/global.json'], suite.logger).read();
+        const vals = await new Values(
+            { ['test/ply/values/global.json']: true },
+            suite.logger
+        ).read();
 
         const result = await suite.run('repositoryTopicsQuery', vals);
         assert.strictEqual(result.status, 'Passed');
@@ -295,7 +298,10 @@ value2
             ...new Config().options,
             expectedLocation: 'test/mocha/results/expected',
             actualLocation: 'test/mocha/results/actual',
-            valuesFiles: ['test/mocha/values/movies.csv', 'test/ply/values/localhost.json']
+            valuesFiles: {
+                'test/mocha/values/movies.csv': true,
+                'test/ply/values/localhost.json': true
+            }
         });
         const results = await plier.run([
             'test/mocha/requests/row-requests.ply.yaml#createMovie',

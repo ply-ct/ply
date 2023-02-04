@@ -2,7 +2,7 @@
 layout: topic
 ---
 # Values
-Values provide a way to parameterize request content and response matching per environment or other varying condition. Values files are JSON format.
+Values provide a way to parameterize request content and response matching per environment or other varying conditions. Values files are JSON format.
 For example, here's ply-demo's [ply-ct.json](https://github.com/ply-ct/ply-demo/blob/main/test/values/ply-ct.json) values file:
 ```json
 {
@@ -39,11 +39,18 @@ Multiple values files may be specified, in which case their JSON objects are dee
 So in `valuesFiles` from ply-demo's [plyconfig.yaml](https://github.com/ply-ct/ply-demo/blob/main/plyconfig.yaml):
 ```yaml
 valuesFiles:
+  test/values/global.json: on
+  test/values/ply-ct.json: on
+  test/values/localhost.json: off
+```
+or in list form:
+```yaml
+valuesFiles:
   - test/values/global.json
   - test/values/ply-ct.json
   # - test/values/localhost.json
 ```
-same-named properties from localhost.json supersede those from global.json.
+Either way, in this example same-named properties from ply-ct.json supersede those from global.json.
 
 As with other Ply options, `valuesFiles` specified on the command line take precedence over the `valuesFiles` array in plyconfig.
 No merging is performed among values objects provided by these separate methods. For example, if you run `ply --valuesFiles "a.json, b.json"`, then

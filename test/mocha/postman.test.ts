@@ -154,7 +154,7 @@ describe('Postman', () => {
             valuesLocation: valRoot,
             indent: 2
         });
-        const values = new Values([`${valRoot}/localhost.json`], new Logger());
+        const values = new Values({ [`${valRoot}/localhost.json`]: true }, new Logger());
         const obj = await values.read();
         assert.ok(obj);
         assert.strictEqual(obj.baseUrl, 'http://localhost:8080');

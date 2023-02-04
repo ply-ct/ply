@@ -53,7 +53,7 @@ export interface Options {
     /**
      * Files containing values JSON (or CSV or XLSX).
      */
-    valuesFiles?: string[];
+    valuesFiles?: { [file: string]: boolean };
     /**
      * Results summary output JSON
      */
@@ -119,7 +119,7 @@ export interface PlyOptions extends Options {
     actualLocation: string;
     resultFollowsRelativePath: boolean;
     logLocation: string;
-    valuesFiles: string[];
+    valuesFiles: { [file: string]: boolean };
     outputFile?: string;
     verbose: boolean;
     quiet: boolean;
@@ -233,7 +233,7 @@ export class Defaults implements PlyOptions {
         return this._logLocation;
     }
     resultFollowsRelativePath = true;
-    valuesFiles = [];
+    valuesFiles = {};
     verbose = false;
     quiet = false;
     bail = false;
@@ -437,6 +437,22 @@ export class Config {
             if (typeof opts.valuesFiles === 'string') {
                 opts.valuesFiles = opts.valuesFiles.split(',').map((v: string) => v.trim());
             }
+            if (Array.isArray(opts.valuesFiles)) {
+                // covert all to enabled format
+                opts.valuesFiles = opts.valuesFiles.reduce(
+                    (obj: { [file: string]: boolean }, valFile: string) => {
+                        obj[valFile] = true;
+                        return obj;
+                    },
+                    {}
+                );
+            } else if (
+                typeof opts.valuesFiles === 'object' &&
+                typeof config.valuesFiles === 'object'
+            ) {
+                // undo yargs messing this up due to dots
+                opts.valuesFiles = config.valuesFiles;
+            }
             if (opts.genExcludeResponseHeaders) {
                 if (typeof opts.genExcludeResponseHeaders === 'string') {
                     opts.genExcludeResponseHeaders = opts.genExcludeResponseHeaders
@@ -510,7 +526,7 @@ export class Config {
 
         return options;
     }
-    private read(configPath: string): object {
+    private read(configPath: string): any {
         const retrieval = new Retrieval(configPath);
         const contents = retrieval.sync();
         if (typeof contents === 'string') {
