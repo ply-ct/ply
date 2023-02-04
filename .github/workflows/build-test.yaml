@@ -13,7 +13,7 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
     env:
-      PLY_VALUES: ${{ secrets.PLY_VALUES }}
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3

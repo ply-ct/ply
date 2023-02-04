@@ -2,6 +2,7 @@ import * as findUp from 'find-up';
 import * as yargs from 'yargs';
 import { Retrieval } from './retrieval';
 import * as yaml from './yaml';
+import { parse as jsoncParse, ParseError, printParseErrorCode } from 'jsonc-parser';
 
 /**
  * Ply options.  Empty values are populated with Defaults.
@@ -20,7 +21,7 @@ export interface Options {
      */
     caseFiles?: string;
     /**
-     * Flow files glob pattern, relative to testsLocation ('**\/*.flow').
+     * Flow files glob pattern, relative to testsLocation ('**\/*.ply.flow').
      */
     flowFiles?: string;
     /**
@@ -209,7 +210,7 @@ export class Defaults implements PlyOptions {
     constructor(readonly testsLocation: string = '.') {}
     requestFiles = '**/*.{ply,ply.yaml,ply.yml}';
     caseFiles = '**/*.ply.ts';
-    flowFiles = '**/*.flow';
+    flowFiles = '**/*.ply.flow';
     ignore = '**/{node_modules,bin,dist,out}/**';
     skip = '**/*.ply';
     reporter = '' as any;
@@ -499,14 +500,16 @@ export class Config {
             delete options.openapi;
         }
         if (options.reporter || options.runOptions.report) {
-            if (!process.argv.includes('-o') && !process.argv.find(av => av.startsWith('--outputFile='))) {
+            if (
+                !process.argv.includes('-o') &&
+                !process.argv.find((av) => av.startsWith('--outputFile='))
+            ) {
                 delete options.outputFile;
             }
         }
 
         return options;
     }
-
     private read(configPath: string): object {
         const retrieval = new Retrieval(configPath);
         const contents = retrieval.sync();
@@ -514,7 +517,17 @@ export class Config {
             if (retrieval.location.isYaml) {
                 return yaml.load(retrieval.location.path, contents);
             } else {
-                return JSON.parse(contents);
+                const errs: ParseError[] = [];
+                const parsed = jsoncParse(contents, errs);
+                if (errs.length > 0) {
+                    console.error('jsonc-parser errors:');
+                    for (const err of errs) {
+                        const label = printParseErrorCode(err.error);
+                        console.error(` - ${label}:` + JSON.stringify(err));
+                    }
+                    console.log('');
+                }
+                return parsed;
             }
         } else {
             throw new Error('Cannot load config: ' + configPath);

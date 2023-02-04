@@ -10,7 +10,8 @@
       "args": [
         "--trusted",
         "--reporter=json",
-        "--outputFile=test/ply/results/actual/ply-results.json"
+        "--outputFile=test/ply/results/actual/ply-results.json",
+        "test/ply/requests/movie-queries.ply.yaml"
       ],
       "preLaunchTask": "tsc: build - tsconfig.json"
     }

@@ -4,7 +4,7 @@
 | **<code>testsLocation</code>**<br>**<code>--testsLocation, -t</code>** | `"."` | Tests base directory. Ply finds requests/cases/flows under here.
 | **<code>requestFiles</code>**<br>**<code>--requestFiles</code>** | `"**/*.{ply,ply.yaml,ply.yml}"` | Request files glob pattern, relative to testsLocation.
 | **<code>caseFiles</code>**<br>**<code>--caseFiles</code>** | `"**/*.ply.ts"` | Case files glob pattern, relative to testsLocation.
-| **<code>flowFiles</code>**<br>**<code>--flowFiles</code>** | `"**/*.flow"` | Flow files glob pattern, relative to testsLocation.
+| **<code>flowFiles</code>**<br>**<code>--flowFiles</code>** | `"**/*.ply.flow"` | Flow files glob pattern, relative to testsLocation.
 | **<code>ignore</code>**<br>**<code>--ignore</code>** | `"**/{node_modules,bin,dist,out}/**"` | File pattern to ignore, relative to testsLocation. Ignored files are not even parsed by Ply.
 | **<code>skip</code>**<br>**<code>--skip</code>** | `"**/*.ply"` | File pattern for requests/cases/flows that are loaded but shouldn't be directly executed. By default, standalone requests (.ply files) are skipped by CLI test execution.
 | **<code>expectedLocation</code>**<br>**<code>--expectedLocation</code>** | `testsLocation + "/results/expected"` | Base directory containing expected result files.

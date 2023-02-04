@@ -8,6 +8,7 @@
     "poorlyRated1932": "year=1932&rating=<=2"
   },
   "github": {
+    "token": "${GITHUB_TOKEN}",
     "organization": "ply-ct",
     "repository": "ply"
   }
