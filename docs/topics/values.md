@@ -39,9 +39,9 @@ Multiple values files may be specified, in which case their JSON objects are dee
 So in `valuesFiles` from ply-demo's [plyconfig.yaml](https://github.com/ply-ct/ply-demo/blob/main/plyconfig.yaml):
 ```yaml
 valuesFiles:
-  test/values/global.json: on
-  test/values/ply-ct.json: on
-  test/values/localhost.json: off
+  test/values/global.json: true
+  test/values/ply-ct.json: true
+  test/values/localhost.json: false
 ```
 or in list form:
 ```yaml
@@ -49,6 +49,13 @@ valuesFiles:
   - test/values/global.json
   - test/values/ply-ct.json
   # - test/values/localhost.json
+```
+or even:
+```yaml
+valuesFiles:
+  - test/values/global.json: true
+  - test/values/ply-ct.json: true
+  - test/values/localhost.json: false
 ```
 Either way, in this example same-named properties from ply-ct.json supersede those from global.json.
 

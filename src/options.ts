@@ -437,19 +437,7 @@ export class Config {
             if (typeof opts.valuesFiles === 'string') {
                 opts.valuesFiles = opts.valuesFiles.split(',').map((v: string) => v.trim());
             }
-            if (Array.isArray(opts.valuesFiles)) {
-                // covert all to enabled format
-                opts.valuesFiles = opts.valuesFiles.reduce(
-                    (obj: { [file: string]: boolean }, valFile: string) => {
-                        obj[valFile] = true;
-                        return obj;
-                    },
-                    {}
-                );
-            } else if (
-                typeof opts.valuesFiles === 'object' &&
-                typeof config.valuesFiles === 'object'
-            ) {
+            if (typeof opts.valuesFiles === 'object' && typeof config.valuesFiles === 'object') {
                 // undo yargs messing this up due to dots
                 opts.valuesFiles = config.valuesFiles;
             }
@@ -530,11 +518,12 @@ export class Config {
         const retrieval = new Retrieval(configPath);
         const contents = retrieval.sync();
         if (typeof contents === 'string') {
+            let config: any;
             if (retrieval.location.isYaml) {
-                return yaml.load(retrieval.location.path, contents);
+                config = yaml.load(retrieval.location.path, contents);
             } else {
                 const errs: ParseError[] = [];
-                const parsed = jsoncParse(contents, errs);
+                config = jsoncParse(contents, errs);
                 if (errs.length > 0) {
                     console.error('jsonc-parser errors:');
                     for (const err of errs) {
@@ -543,8 +532,23 @@ export class Config {
                     }
                     console.log('');
                 }
-                return parsed;
             }
+            if (Array.isArray(config.valuesFiles)) {
+                // covert all to enabled format
+                config.valuesFiles = config.valuesFiles.reduce(
+                    (obj: { [file: string]: boolean }, valFile: string) => {
+                        if (typeof valFile === 'object') {
+                            const file = Object.keys(valFile)[0];
+                            obj[file] = valFile[file];
+                        } else {
+                            obj[valFile] = true;
+                        }
+                        return obj;
+                    },
+                    {}
+                );
+            }
+            return config;
         } else {
             throw new Error('Cannot load config: ' + configPath);
         }
