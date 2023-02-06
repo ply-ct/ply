@@ -2,7 +2,7 @@ import * as findUp from 'find-up';
 import * as yargs from 'yargs';
 import { Retrieval } from './retrieval';
 import * as yaml from './yaml';
-import { parse as jsoncParse, ParseError, printParseErrorCode } from 'jsonc-parser';
+import { parseJsonc } from './json';
 
 /**
  * Ply options.  Empty values are populated with Defaults.
@@ -522,16 +522,7 @@ export class Config {
             if (retrieval.location.isYaml) {
                 config = yaml.load(retrieval.location.path, contents);
             } else {
-                const errs: ParseError[] = [];
-                config = jsoncParse(contents, errs);
-                if (errs.length > 0) {
-                    console.error('jsonc-parser errors:');
-                    for (const err of errs) {
-                        const label = printParseErrorCode(err.error);
-                        console.error(` - ${label}:` + JSON.stringify(err));
-                    }
-                    console.log('');
-                }
+                config = parseJsonc(contents);
             }
             if (Array.isArray(config.valuesFiles)) {
                 // covert all to enabled format
