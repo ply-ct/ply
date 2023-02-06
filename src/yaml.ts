@@ -55,7 +55,7 @@ export function load(file: string, contents: string, assignLines: boolean | 'for
                         );
                     }
                     lastObjProp = objProp;
-                } else if (obj[key] !== undefined) {
+                } else if (assignLines === 'force' && obj[key] !== undefined) {
                     obj[key] = {
                         __: obj[key],
                         __start: line,
@@ -113,7 +113,7 @@ function isCommentOrBlank(line: string) {
 export function merge(file: string, yaml: string, delta: any, indent = 2): string {
     const yamlLines = util.lines(yaml);
     const outLines: string[] = [];
-    const curObj = load(file, yaml, true);
+    const curObj = load(file, yaml, 'force');
     const curKeys = Object.keys(curObj);
     const delKeys = Object.keys(delta);
 
