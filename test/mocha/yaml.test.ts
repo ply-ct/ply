@@ -99,4 +99,38 @@ describe('yaml', () => {
             '      <?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
         );
     });
+
+    it('merges yaml deltas', async () => {
+        const beforeFile = 'test/mocha/yaml/before.yaml';
+        const beforeYaml = await fs.promises.readFile(beforeFile, {
+            encoding: 'utf-8'
+        });
+
+        const delta = {
+            last: {
+                should: 'be new',
+                yet: 'have more'
+            },
+            bar: 'new value',
+            newbie: {
+                greeting: 'hello'
+            },
+            disappearingObj: undefined,
+            disappearingInt: undefined,
+            newNull: null
+        };
+
+        const result = yaml.merge(beforeFile, beforeYaml, delta, 2);
+        const resultLines = util.lines(result);
+
+        const afterFile = 'test/mocha/yaml/after.yaml';
+        const afterYaml = await fs.promises.readFile(afterFile, {
+            encoding: 'utf-8'
+        });
+        const afterLines = util.lines(afterYaml);
+
+        for (let i = 0; i < afterLines.length; i++) {
+            assert.strictEqual(resultLines[i], afterLines[i]);
+        }
+    });
 });

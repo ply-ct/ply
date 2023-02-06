@@ -1,0 +1,37 @@
+# leading comment 1
+# leading comment 2
+
+# i be foo
+foo:
+  bar: xyz # trailer should be kept
+  # in-between should be kept
+  baz: abc
+
+arr:
+  # poorly-placed comment
+  - item1 # comment 1
+  - item2
+
+str: xyz
+
+num: 123
+bool: false
+
+bunched1: 1
+bunched2:
+  value: 2 # you better believe it
+disappearingObj:
+  im: gone
+nope: null
+
+bar:
+  # not to be seen
+  tobe: replaced # will be lost
+
+disappearingInt: 12
+
+baz:
+  bringing: up the rear
+last:
+  should: be # try to preserve
+# ending comment

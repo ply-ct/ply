@@ -6,6 +6,7 @@ package-lock.json
 /temp
 /dist
 /notes
+/test/mocha/yaml/after.yaml
 .gitignore
 .gitattributes
 .prettierignore
