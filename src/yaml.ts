@@ -159,9 +159,7 @@ export function merge(file: string, yaml: string, delta: any, indent = 2): strin
             const trailing = trailingBlanksAndComments(curLines);
             outLines.push(...trailing);
         } else {
-            if (i < curKeys.length - 1) {
-                outLines.push(...curLines);
-            }
+            outLines.push(...curLines);
         }
     }
 
