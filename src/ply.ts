@@ -302,17 +302,15 @@ export class Plier extends EventEmitter {
         // @ts-ignore node 12 takes no params
         super({ captureRejections: true });
 
-        this.ply = new Ply(options);
+        const opts = Object.assign({}, new Defaults(), options || new Config().options);
         this.logger =
             logger ||
             new Logger({
-                level: this.ply.options.verbose
-                    ? LogLevel.debug
-                    : this.ply.options.quiet
-                    ? LogLevel.error
-                    : LogLevel.info,
-                prettyIndent: this.ply.options.prettyIndent
+                level: opts.verbose ? LogLevel.debug : opts.quiet ? LogLevel.error : LogLevel.info,
+                prettyIndent: opts.prettyIndent
             });
+
+        this.ply = new Ply(options, logger);
     }
 
     /**
