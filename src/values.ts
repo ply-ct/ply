@@ -7,7 +7,7 @@ import * as transform from 'stream-transform';
 import readXlsx from 'read-excel-file/node';
 import * as traverse from 'traverse';
 import { Retrieval } from './retrieval';
-import { Logger } from './logger';
+import { Log } from './logger';
 
 /**
  * Environment variable for additional values
@@ -18,8 +18,8 @@ export class Values {
     private readonly enabledLocs: string[];
     private readonly rowsLoc: string | undefined;
 
-    constructor(valuesFiles: { [file: string]: boolean }, private readonly logger: Logger) {
-        this.enabledLocs = Object.keys(valuesFiles).filter(vf => valuesFiles[vf]);
+    constructor(valuesFiles: { [file: string]: boolean }, private readonly logger: Log) {
+        this.enabledLocs = Object.keys(valuesFiles).filter((vf) => valuesFiles[vf]);
         for (const loc of this.enabledLocs) {
             if (loc.endsWith('.csv') || loc.endsWith('.xlsx')) {
                 if (this.rowsLoc) {

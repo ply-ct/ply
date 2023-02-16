@@ -1,7 +1,7 @@
 import * as process from 'process';
 import * as path from 'path';
 import * as flowbee from 'flowbee';
-import { Logger } from './logger';
+import { Log } from './logger';
 import { RunOptions } from './options';
 import { Request } from './request';
 import { Runtime } from './runtime';
@@ -41,7 +41,7 @@ export class PlyStep implements Step, PlyTest {
     constructor(
         readonly step: flowbee.Step,
         private readonly requestSuite: Suite<Request>,
-        private readonly logger: Logger,
+        private readonly logger: Log,
         readonly flowPath: string,
         flowInstanceId: string,
         readonly subflow?: flowbee.Subflow

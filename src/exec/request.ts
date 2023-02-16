@@ -4,7 +4,7 @@ import { Suite } from '../suite';
 import { Request, PlyRequest } from '../request';
 import { Runtime } from '../runtime';
 import { RunOptions } from '../options';
-import { Logger } from '../logger';
+import { Log } from '../logger';
 import * as subst from '../subst';
 import * as yaml from '../yaml';
 
@@ -14,7 +14,7 @@ export class RequestExec extends PlyExecBase {
         private readonly requestSuite: Suite<Request>, // unique
         readonly step: flowbee.Step,
         readonly instance: flowbee.StepInstance,
-        readonly logger: Logger,
+        readonly logger: Log,
         private readonly runNum?: number,
         private readonly instNum?: number
     ) {

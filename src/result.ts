@@ -6,7 +6,7 @@ import { Location } from './location';
 import { Storage } from './storage';
 import { Retrieval } from './retrieval';
 import { Options, PlyOptions, RunOptions } from './options';
-import { Logger } from './logger';
+import { Log } from './logger';
 import { CodeLine, Code } from './code';
 import { Compare, Diff } from './compare';
 import { Yaml } from './yaml';
@@ -96,7 +96,7 @@ export class Verifier {
     constructor(
         private readonly name: string,
         private readonly expectedYaml: Yaml,
-        private readonly logger: Logger
+        private readonly logger: Log
     ) {}
 
     /**

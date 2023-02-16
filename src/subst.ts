@@ -1,4 +1,4 @@
-import { Logger } from './logger';
+import { Log } from './logger';
 import { RESULTS } from './names';
 import * as util from './util';
 
@@ -82,12 +82,7 @@ export function tokenize(path: string, context: any): (string | number)[] {
  * syntax. Untrusted supports a limited subset of template literal. Ignores regular expressions
  * starting with ${~. * Resulting newlines are always \n.
  */
-export function replace(
-    template: string,
-    context: object,
-    logger: Logger,
-    trusted = false
-): string {
+export function replace(template: string, context: object, logger: Log, trusted = false): string {
     const lines: string[] = [];
     for (const line of util.lines(template)) {
         try {

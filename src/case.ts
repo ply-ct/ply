@@ -1,5 +1,5 @@
 import { TestType, Test, PlyTest } from './test';
-import { Logger } from './logger';
+import { Log } from './logger';
 import { Runtime } from './runtime';
 import { RunOptions } from './options';
 import { Result } from './result';
@@ -16,7 +16,7 @@ export class PlyCase implements Case, PlyTest {
         readonly method: string,
         readonly start: number,
         readonly end: number,
-        readonly logger: Logger
+        readonly logger: Log
     ) {}
 
     /**

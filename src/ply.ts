@@ -9,7 +9,7 @@ import { CaseLoader } from './cases';
 import { RequestLoader } from './requests';
 import { Result } from './result';
 import { TsCompileOptions } from './compile';
-import { Logger, LogLevel } from './logger';
+import { Log, Logger, LogLevel } from './logger';
 import * as util from './util';
 import { FlowLoader, FlowSuite } from './flows';
 import { Values } from './values';
@@ -19,7 +19,7 @@ import { ReporterFactory } from './report/report';
 export class Ply {
     readonly options: PlyOptions;
 
-    constructor(options?: Options) {
+    constructor(options?: Options, private logger?: Log) {
         this.options = Object.assign({}, new Defaults(), options || new Config().options);
     }
 
@@ -55,7 +55,7 @@ export class Ply {
         if (moreLocations) {
             locations = [...locations, ...moreLocations];
         }
-        const requestLoader = new RequestLoader(locations, this.options);
+        const requestLoader = new RequestLoader(locations, this.options, this.logger);
         return await requestLoader.load();
     }
 
@@ -84,7 +84,7 @@ export class Ply {
         if (moreLocations) {
             locations = [...locations, ...moreLocations];
         }
-        const requestLoader = new RequestLoader(locations, this.options);
+        const requestLoader = new RequestLoader(locations, this.options, this.logger);
         return requestLoader.sync();
     }
 
@@ -129,7 +129,7 @@ export class Ply {
             files = [...files, ...moreFiles];
         }
         const compileOptions = new TsCompileOptions(this.options);
-        const caseLoader = new CaseLoader(files, this.options, compileOptions);
+        const caseLoader = new CaseLoader(files, this.options, compileOptions, this.logger);
 
         const suites = await caseLoader.load();
         return suites;
@@ -162,7 +162,7 @@ export class Ply {
         if (moreFiles) {
             files = [...files, ...moreFiles];
         }
-        const flowLoader = new FlowLoader(files, this.options);
+        const flowLoader = new FlowLoader(files, this.options, this.logger);
         const suites = await flowLoader.load();
         return suites;
     }
@@ -292,25 +292,27 @@ export class Plier extends EventEmitter {
     /**
      * general purpose logger not associated with suite (goes to console)
      */
-    readonly logger: Logger;
+    readonly logger: Log;
 
     get options() {
         return this.ply.options;
     }
 
-    constructor(options?: Options) {
+    constructor(options?: Options, logger?: Log) {
         // @ts-ignore node 12 takes no params
         super({ captureRejections: true });
 
         this.ply = new Ply(options);
-        this.logger = new Logger({
-            level: this.ply.options.verbose
-                ? LogLevel.debug
-                : this.ply.options.quiet
-                ? LogLevel.error
-                : LogLevel.info,
-            prettyIndent: this.ply.options.prettyIndent
-        });
+        this.logger =
+            logger ||
+            new Logger({
+                level: this.ply.options.verbose
+                    ? LogLevel.debug
+                    : this.ply.options.quiet
+                    ? LogLevel.error
+                    : LogLevel.info,
+                prettyIndent: this.ply.options.prettyIndent
+            });
     }
 
     /**

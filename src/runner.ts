@@ -1,4 +1,4 @@
-import { Logger } from './logger';
+import { Log } from './logger';
 import { PlyOptions, RunOptions } from './options';
 import { Result } from './result';
 import { Suite } from './suite';
@@ -23,7 +23,7 @@ export class PlyRunner<T extends Test> {
         readonly options: PlyOptions,
         readonly suiteTests: Map<Suite<T>, string[]>,
         readonly plyValues: Values,
-        private logger: Logger
+        private logger: Log
     ) {}
 
     async runSuiteTests(values: object, runOptions?: RunOptions) {

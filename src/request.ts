@@ -1,7 +1,7 @@
 import fetch from 'cross-fetch';
 import { TestType, Test, PlyTest } from './test';
 import { Response, PlyResponse } from './response';
-import { Logger, LogLevel } from './logger';
+import { Log, LogLevel } from './logger';
 import { Retrieval } from './retrieval';
 import { Runtime } from './runtime';
 import { Options, RunOptions } from './options';
@@ -35,12 +35,7 @@ export class PlyRequest implements Request, PlyTest {
      * @param name test name
      * @param obj object to parse for contents
      */
-    constructor(
-        readonly name: string,
-        obj: Request,
-        readonly logger: Logger,
-        retrieval: Retrieval
-    ) {
+    constructor(readonly name: string, obj: Request, readonly logger: Log, retrieval: Retrieval) {
         if (!obj.url) {
             throw new Error(`Request '${name}' in ${retrieval} is missing 'url'`);
         }
@@ -101,12 +96,14 @@ export class PlyRequest implements Request, PlyTest {
         requestObj: Request,
         runOptions?: RunOptions
     ): Promise<PlyResponse> {
-        const logLevel = runOptions?.submit ? LogLevel.info : LogLevel.debug;
-
         const before = new Date().getTime();
         const { Authorization: _auth, ...loggedHeaders } = requestObj.headers;
         const loggedRequest = { ...requestObj, runId, headers: loggedHeaders };
-        this.logger.log(logLevel, 'Request', loggedRequest);
+        if (runOptions?.submit) {
+            this.logger.info('Request', loggedRequest);
+        } else {
+            this.logger.debug('Request', loggedRequest);
+        }
 
         const ctHeader = util.header(requestObj.headers, 'content-type');
         if (ctHeader && ctHeader[1].startsWith('multipart/form-data')) {
@@ -124,7 +121,11 @@ export class PlyRequest implements Request, PlyTest {
         const body = await response.text();
         const time = new Date().getTime() - before;
         const plyResponse = new PlyResponse(runId, status, headers, body, time);
-        this.logger.log(logLevel, 'Response', plyResponse);
+        if (runOptions?.submit) {
+            this.logger.info('Response', plyResponse);
+        } else {
+            this.logger.debug('Response', plyResponse);
+        }
         return plyResponse;
     }
 

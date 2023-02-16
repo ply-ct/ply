@@ -1,6 +1,6 @@
 import { diff_match_patch as DiffMatchPatch, Diff as DmpDiff } from 'diff-match-patch';
 import { CodeLine } from './code';
-import { Logger } from './logger';
+import { Log } from './logger';
 import * as subst from './subst';
 import { lines } from './util';
 
@@ -22,7 +22,7 @@ export type Marker = {
 };
 
 export class Compare {
-    constructor(readonly logger: Logger) {}
+    constructor(readonly logger: Log) {}
 
     /**
      * Diff results always contain \n newlines

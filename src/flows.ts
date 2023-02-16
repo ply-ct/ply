@@ -1,6 +1,6 @@
 import * as flowbee from 'flowbee';
 import { PlyFlow } from './flow';
-import { Logger, LogLevel } from './logger';
+import { Log, Logger, LogLevel } from './logger';
 import { PlyOptions, RunOptions } from './options';
 import { Retrieval } from './retrieval';
 import { Runtime } from './runtime';
@@ -29,7 +29,7 @@ export class FlowSuite extends Suite<Step> {
         public plyFlow: PlyFlow,
         readonly path: string,
         readonly runtime: Runtime,
-        readonly logger: Logger,
+        readonly logger: Log,
         readonly start: number = 0,
         readonly end: number
     ) {
@@ -321,7 +321,7 @@ export class FlowSuite extends Suite<Step> {
 export class FlowLoader {
     private skip: Skip | undefined;
 
-    constructor(readonly locations: string[], private options: PlyOptions) {
+    constructor(readonly locations: string[], private options: PlyOptions, private logger?: Log) {
         if (options.skip) {
             this.skip = new Skip(options.testsLocation, options.skip);
         }
@@ -349,17 +349,19 @@ export class FlowLoader {
     buildSuite(retrieval: Retrieval, contents: string, resultPaths: ResultPaths): FlowSuite {
         const runtime = new Runtime(this.options, retrieval, resultPaths);
 
-        const logger = new Logger(
-            {
-                level: this.options.verbose
-                    ? LogLevel.debug
-                    : this.options.quiet
-                    ? LogLevel.error
-                    : LogLevel.info,
-                prettyIndent: this.options.prettyIndent
-            },
-            runtime.results.log
-        );
+        const logger =
+            this.logger ||
+            new Logger(
+                {
+                    level: this.options.verbose
+                        ? LogLevel.debug
+                        : this.options.quiet
+                        ? LogLevel.error
+                        : LogLevel.info,
+                    prettyIndent: this.options.prettyIndent
+                },
+                runtime.results.log
+            );
 
         // request suite comprising all requests configured in steps
         const requestSuite = new Suite<Request>(

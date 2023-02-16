@@ -16,6 +16,8 @@ export interface Log {
     error(message: string, obj?: any): void;
     debug(message: string, obj?: any): void;
     enabled: boolean;
+    storage?: Storage;
+    level?: LogLevel;
 }
 
 export class Logger implements Log {
@@ -35,7 +37,7 @@ export class Logger implements Log {
         }
     }
 
-    log(level: LogLevel, message: string, obj: any) {
+    private log(level: LogLevel, message: string, obj: any) {
         if (level <= this.options.level) {
             if (level === LogLevel.error) {
                 if (obj) {

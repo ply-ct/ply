@@ -2,7 +2,7 @@ import * as flowbee from 'flowbee';
 import { RunOptions } from '../options';
 import { ResultStatus } from '../result';
 import { Runtime } from '../runtime';
-import { Logger } from '../logger';
+import { Log } from '../logger';
 import * as subst from '../subst';
 
 export interface ExecResult {
@@ -18,7 +18,7 @@ export abstract class PlyExecBase implements PlyExec {
     constructor(
         readonly step: flowbee.Step,
         readonly instance: flowbee.StepInstance,
-        readonly logger: Logger
+        readonly logger: Log
     ) {}
 
     abstract run(runtime: Runtime, values: any, runOptions?: RunOptions): Promise<ExecResult>;

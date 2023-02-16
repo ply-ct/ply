@@ -7,7 +7,7 @@ import { Retrieval } from './retrieval';
 import { Location } from './location';
 import { Runtime } from './runtime';
 import { ResultPaths } from './result';
-import { Logger, LogLevel } from './logger';
+import { Log, Logger, LogLevel } from './logger';
 import { Skip } from './skip';
 
 interface SuiteDecoration {
@@ -32,7 +32,8 @@ export class CaseLoader {
     constructor(
         sourceFiles: string[],
         private options: PlyOptions,
-        private compileOptions: TsCompileOptions
+        private compileOptions: TsCompileOptions,
+        private logger?: Log
     ) {
         this.program = ts.createProgram(sourceFiles, compileOptions.compilerOptions);
         this.checker = this.program.getTypeChecker();
@@ -61,17 +62,19 @@ export class CaseLoader {
                     );
                     const runtime = new Runtime(this.options, retrieval, results);
 
-                    const logger = new Logger(
-                        {
-                            level: this.options.verbose
-                                ? LogLevel.debug
-                                : this.options.quiet
-                                ? LogLevel.error
-                                : LogLevel.info,
-                            prettyIndent: this.options.prettyIndent
-                        },
-                        runtime.results.log
-                    );
+                    const logger =
+                        this.logger ||
+                        new Logger(
+                            {
+                                level: this.options.verbose
+                                    ? LogLevel.debug
+                                    : this.options.quiet
+                                    ? LogLevel.error
+                                    : LogLevel.info,
+                                prettyIndent: this.options.prettyIndent
+                            },
+                            runtime.results.log
+                        );
 
                     let outFile = this.compileOptions.outFile;
                     if (!outFile) {

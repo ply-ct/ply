@@ -4,7 +4,7 @@ import { Retrieval } from './retrieval';
 import { Request, PlyRequest } from './request';
 import { Runtime } from './runtime';
 import { ResultPaths } from './result';
-import { Logger, LogLevel } from './logger';
+import { Log, Logger, LogLevel } from './logger';
 import { Skip } from './skip';
 import * as yaml from './yaml';
 import * as util from './util';
@@ -12,7 +12,7 @@ import * as util from './util';
 export class RequestLoader {
     private skip: Skip | undefined;
 
-    constructor(readonly locations: string[], private options: PlyOptions) {
+    constructor(readonly locations: string[], private options: PlyOptions, private logger?: Log) {
         if (options.skip) {
             this.skip = new Skip(options.testsLocation, options.skip);
         }
@@ -57,17 +57,19 @@ export class RequestLoader {
     buildSuite(retrieval: Retrieval, contents: string, resultPaths: ResultPaths): Suite<Request> {
         const runtime = new Runtime(this.options, retrieval, resultPaths);
 
-        const logger = new Logger(
-            {
-                level: this.options.verbose
-                    ? LogLevel.debug
-                    : this.options.quiet
-                    ? LogLevel.error
-                    : LogLevel.info,
-                prettyIndent: this.options.prettyIndent
-            },
-            runtime.results.log
-        );
+        const logger =
+            this.logger ||
+            new Logger(
+                {
+                    level: this.options.verbose
+                        ? LogLevel.debug
+                        : this.options.quiet
+                        ? LogLevel.error
+                        : LogLevel.info,
+                    prettyIndent: this.options.prettyIndent
+                },
+                runtime.results.log
+            );
 
         const suite = new Suite<Request>(
             retrieval.location.base,

@@ -1,13 +1,13 @@
 import * as flowbee from 'flowbee';
 import { ExecResult, PlyExecBase } from './exec';
-import { LogLevel, Logger } from '../logger';
+import { LogLevel, Log } from '../logger';
 
 export class StopExec extends PlyExecBase {
     constructor(
         private readonly flowPath: string, // unique
         readonly step: flowbee.Step,
         readonly instance: flowbee.StepInstance,
-        readonly logger: Logger,
+        readonly logger: Log,
         readonly subflow?: flowbee.Subflow // unique
     ) {
         super(step, instance, logger);

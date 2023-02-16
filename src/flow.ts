@@ -1,6 +1,6 @@
 import * as minimatch from 'minimatch';
 import * as flowbee from 'flowbee';
-import { Logger, LogLevel } from './logger';
+import { Log, LogLevel } from './logger';
 import { RunOptions } from './options';
 import { Runtime } from './runtime';
 import { PlyStep } from './step';
@@ -67,7 +67,7 @@ export class PlyFlow implements Flow {
     constructor(
         readonly flow: flowbee.Flow,
         readonly requestSuite: Suite<Request>,
-        private readonly logger: Logger
+        private readonly logger: Log
     ) {
         this.name = flowbee.getFlowName(flow);
         this.instance = this.newInstance();

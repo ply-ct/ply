@@ -4,7 +4,7 @@ import { TestType, Test, PlyTest } from './test';
 import { Result, Outcome, Verifier, PlyResult, ResultPaths } from './result';
 import { Location } from './location';
 import { Storage } from './storage';
-import { Logger, LogLevel } from './logger';
+import { Log, LogLevel } from './logger';
 import { Runtime, DecoratedSuite, CallingCaseInfo } from './runtime';
 import { RunOptions } from './options';
 import { SUITE, TEST, RESULTS, RUN_ID } from './names';
@@ -50,7 +50,7 @@ export class Suite<T extends Test> {
         readonly type: TestType,
         readonly path: string,
         readonly runtime: Runtime,
-        readonly logger: Logger,
+        readonly logger: Log,
         readonly start: number = 0,
         readonly end: number,
         readonly className?: string,
@@ -77,7 +77,7 @@ export class Suite<T extends Test> {
         yield* this.all()[Symbol.iterator]();
     }
 
-    get log(): Logger {
+    get log(): Log {
         return this.logger;
     }
 
