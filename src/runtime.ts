@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as minimatch from 'minimatch';
+import { minimatch } from 'minimatch';
 import { Location } from './location';
 import { Retrieval } from './retrieval';
 import { PlyOptions } from './options';

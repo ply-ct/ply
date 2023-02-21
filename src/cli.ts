@@ -59,6 +59,7 @@ if (runOptions?.import) {
                 format: factory.format,
                 output: opts.outputFile || `${opts.logLocation}/ply-runs.${factory.format}`,
                 runsLocation: `${opts.logLocation}/runs`,
+                logger: plier.logger,
                 indent: opts.prettyIndent
             });
         })
@@ -141,17 +142,15 @@ if (runOptions?.import) {
             plier
                 .run(plyees, runOptions)
                 .then((results) => {
-                    const res = { Passed: 0, Failed: 0, Errored: 0, Pending: 0, Submitted: 0 };
-                    results.forEach((result) => res[result.status]++);
-                    plier.logger.error('\nOverall Results: ' + JSON.stringify(res));
+                    plier.logger.error('\nOverall Results: ' + JSON.stringify(results));
                     plier.logger.error(`Overall Time: ${Date.now() - start} ms`);
                     // json reporter overrides overall outputFile
                     if (plier.options.outputFile && plier.options.reporter !== 'json') {
                         new Storage(plier.options.outputFile).write(
-                            JSON.stringify(res, null, plier.options.prettyIndent)
+                            JSON.stringify(results, null, plier.options.prettyIndent)
                         );
                     }
-                    if (res.Failed || res.Errored) {
+                    if (results.Failed || results.Errored) {
                         process.exit(1);
                     }
                 })

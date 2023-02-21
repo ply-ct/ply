@@ -133,8 +133,9 @@ describe('Cases', async () => {
             values,
             trusted: true
         });
-        assert.strictEqual(results[0].status, 'Passed');
-        assert.strictEqual(results[0].message, 'Test succeeded');
+        assert.strictEqual(results.Passed, 1);
+        assert.strictEqual(results.Failed, 0);
+        assert.strictEqual(results.Errored, 0);
     });
 
     it('can run plyees', async () => {
@@ -147,12 +148,9 @@ describe('Cases', async () => {
             ],
             { values, trusted: true }
         );
-        assert.strictEqual(results[0].status, 'Passed');
-        assert.strictEqual(results[0].message, 'Test succeeded');
-        assert.strictEqual(results[1].status, 'Passed');
-        assert.strictEqual(results[1].message, 'Test succeeded');
-        assert.strictEqual(results[2].status, 'Passed');
-        assert.strictEqual(results[2].message, 'Test succeeded');
+        assert.strictEqual(results.Passed, 3);
+        assert.strictEqual(results.Failed, 0);
+        assert.strictEqual(results.Errored, 0);
     });
 
     it('can handle error', async () => {

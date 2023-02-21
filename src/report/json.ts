@@ -13,7 +13,7 @@ export class JsonReporter implements Reporter {
             if (sr.end) sr.end = sr.end.toISOString() as any;
         });
         const runsContent = JSON.stringify(plyResults, null, options.indent);
-        console.log(`Writing file: ${options.output}`);
+        options.logger.info(`Writing file: ${options.output}`);
         await fs.promises.writeFile(options.output, runsContent, { encoding: 'utf-8' });
     }
 }

@@ -1,6 +1,5 @@
 import * as process from 'process';
 import * as fs from 'fs';
-import * as rimraf from 'rimraf';
 
 /**
  * Turn a date into a timestamp based on the OS locale
@@ -154,17 +153,5 @@ export function plyVersion(): Promise<string> {
                 reject(err);
             }
         }
-    });
-}
-
-export async function rmdirs(dir: string) {
-    return new Promise<void>((resolve, reject) => {
-        rimraf(dir, (err) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve();
-            }
-        });
     });
 }

@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import * as FormData from 'form-data';
+import FormData from 'form-data';
 import { Request } from './request';
 import * as util from './util';
 

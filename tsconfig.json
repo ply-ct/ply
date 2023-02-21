@@ -10,6 +10,7 @@
     "strict": true,
     "allowJs": true,
     "declaration": true,
+    "esModuleInterop": true,
     "noUnusedLocals": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,

@@ -14,6 +14,7 @@ import { Plyee } from './ply';
 import { PlyEvent, SuiteEvent, OutcomeEvent } from './event';
 import { PlyResponse } from './response';
 import { TsCompileOptions } from './compile';
+import StackTracey from 'stacktracey';
 
 export interface Tests<T extends Test> {
     [key: string]: T;
@@ -570,14 +571,13 @@ export class Suite<T extends Test> {
     private async getCallingCaseInfo(
         runOptions?: RunOptions
     ): Promise<CallingCaseInfo | undefined> {
-        const stacktracey = 'stacktracey';
-        const StackTracey = await import(stacktracey);
         const stack = new StackTracey();
-        const plyCaseInvoke = stack.findIndex((elem: { callee: string }) => {
-            return elem.callee === 'PlyCase.run' || elem.callee === 'async PlyCase.run';
+        const items = stack.items.filter((item) => !item.file.startsWith('node:internal/'));
+        const plyCaseInvoke = items.findIndex((item) => {
+            return item.callee === 'PlyCase.run' || item.callee === 'async PlyCase.run';
         });
         if (plyCaseInvoke > 0) {
-            const element = stack[plyCaseInvoke - 1];
+            const element = items[plyCaseInvoke - 1];
             const dot = element.callee.indexOf('.');
             if (dot > 0 && dot < element.callee.length - 1) {
                 let clsName = element.callee.substring(0, dot);

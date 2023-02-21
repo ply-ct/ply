@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as glob from 'glob';
+import glob from 'glob';
 import { Storage } from '../storage';
 import { PlyResults, RunResult, SuiteRun, TestRun } from '../runs/model';
 import { Request } from '../request';

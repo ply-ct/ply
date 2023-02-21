@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { rimraf } from 'rimraf';
 import { EventEmitter } from 'events';
 import { Options, Config, PlyOptions, RunOptions, Defaults } from './options';
 import { Suite } from './suite';
@@ -15,6 +16,7 @@ import { FlowLoader, FlowSuite } from './flows';
 import { Values } from './values';
 import { PlyRunner } from './runner';
 import { ReporterFactory } from './report/report';
+import { OverallResults } from './runs/model';
 
 export class Ply {
     readonly options: PlyOptions;
@@ -317,7 +319,11 @@ export class Plier extends EventEmitter {
      * Plyees should be test paths (not suites).
      * TODO: DRY this out
      */
-    async run(plyees: string[], runOptions?: RunOptions, plyVersion?: string): Promise<Result[]> {
+    async run(
+        plyees: string[],
+        runOptions?: RunOptions,
+        plyVersion?: string
+    ): Promise<OverallResults> {
         const version = plyVersion || (await util.plyVersion());
         if (version) this.logger.info('Ply version', version);
         this.logger.debug('Options', this.ply.options);
@@ -326,10 +332,16 @@ export class Plier extends EventEmitter {
         const values = await plyValues.read();
 
         // remove all previous runs
-        await util.rmdirs(`${this.options.logLocation}/runs`);
+        await rimraf(`${this.options.logLocation}/runs`);
 
-        let promises: Promise<Result[]>[] = [];
-        let combined: Result[] = [];
+        let promises: Promise<Result[]>[] = []; // for parallel exec
+        const overall: OverallResults = {
+            Passed: 0,
+            Failed: 0,
+            Errored: 0,
+            Pending: 0,
+            Submitted: 0
+        };
 
         // requests
         const requestTests = new Map<Suite<Request>, string[]>();
@@ -347,8 +359,11 @@ export class Plier extends EventEmitter {
 
         const requestRunner = new PlyRunner(this.ply.options, requestTests, plyValues, this.logger);
         await requestRunner.runSuiteTests(values, runOptions);
-        if (this.ply.options.parallel) promises = [...promises, ...requestRunner.promises];
-        else combined = [...combined, ...requestRunner.results];
+        if (this.ply.options.parallel) {
+            promises = [...promises, ...requestRunner.promises];
+        } else {
+            requestRunner.results.forEach((result) => overall[result.status]++);
+        }
 
         // flows
         const flowTests = new Map<FlowSuite, string[]>();
@@ -369,8 +384,11 @@ export class Plier extends EventEmitter {
 
         const flowRunner = new PlyRunner(this.ply.options, flowTests, plyValues, this.logger);
         await flowRunner.runSuiteTests(values, runOptions);
-        if (this.ply.options.parallel) promises = [...promises, ...flowRunner.promises];
-        else combined = [...combined, ...flowRunner.results];
+        if (this.ply.options.parallel) {
+            promises = [...promises, ...flowRunner.promises];
+        } else {
+            flowRunner.results.forEach((result) => overall[result.status]++);
+        }
 
         // cases
         const caseTests = new Map<Suite<Case>, string[]>();
@@ -391,13 +409,15 @@ export class Plier extends EventEmitter {
 
         const caseRunner = new PlyRunner(this.ply.options, caseTests, plyValues, this.logger);
         await caseRunner.runSuiteTests(values, runOptions);
-        if (this.ply.options.parallel) promises = [...promises, ...caseRunner.promises];
-        else combined = [...combined, ...caseRunner.results];
+        if (this.ply.options.parallel) {
+            promises = [...promises, ...caseRunner.promises];
+        } else {
+            caseRunner.results.forEach((result) => overall[result.status]++);
+        }
 
         if (this.ply.options.parallel) {
-            for (const results of await Promise.all(promises)) {
-                combined = [...combined, ...results];
-            }
+            const allResults = await Promise.all(promises);
+            allResults.forEach((results) => results.forEach((res) => overall[res.status]++));
         }
 
         if (this.options.reporter) {
@@ -409,11 +429,12 @@ export class Plier extends EventEmitter {
                     this.options.outputFile ||
                     `${this.options.logLocation}/ply-runs.${factory.format}`,
                 runsLocation: `${this.options.logLocation}/runs`,
+                logger: this.logger,
                 indent: this.options.prettyIndent
             });
         }
 
-        return combined;
+        return overall;
     }
 
     /**

@@ -32,7 +32,7 @@ export class SheetReporter implements Reporter {
             rows.push(row.join(','));
         }
         const csv = rows.join(os.EOL);
-        console.log(`Writing file: ${options.output}`);
+        options.logger.info(`Writing file: ${options.output}`);
         await fs.promises.writeFile(options.output, csv, { encoding: 'utf-8' });
     }
 }

@@ -1,4 +1,4 @@
-import * as minimatch from 'minimatch';
+import { minimatch } from 'minimatch';
 import * as flowbee from 'flowbee';
 import { Log, LogLevel } from './logger';
 import { RunOptions } from './options';

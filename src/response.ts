@@ -1,5 +1,5 @@
 import { Options } from './options';
-import * as stringify from 'json-stable-stringify';
+import stringify from 'json-stable-stringify';
 import { fixEol } from './util';
 
 export interface Status {

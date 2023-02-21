@@ -1,11 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as stream from 'stream';
-import * as deepmerge from 'deepmerge';
-import * as csv from 'csv-parse';
-import * as transform from 'stream-transform';
+import deepmerge from 'deepmerge';
+import { parse as csvParse } from 'csv-parse';
+import { transform } from 'stream-transform';
 import readXlsx from 'read-excel-file/node';
-import * as traverse from 'traverse';
+import traverse from 'traverse';
 import { Retrieval } from './retrieval';
 import { Log } from './logger';
 
@@ -109,7 +109,7 @@ export class Values {
             return readable;
         } else {
             // stream csv records
-            const parser = fs.createReadStream(this.rowsLoc).pipe(csv({ to_line: 1 }));
+            const parser = fs.createReadStream(this.rowsLoc).pipe(csvParse({ to_line: 1 }));
             // header row
             let converter: RowConverter;
             for await (const row of parser) {
@@ -122,7 +122,7 @@ export class Values {
             });
             return fs
                 .createReadStream(this.rowsLoc)
-                .pipe(csv({ from_line: 2 }))
+                .pipe(csvParse({ from_line: 2 }))
                 .pipe(transformer);
         }
     }
@@ -134,7 +134,7 @@ export class Values {
 export const fromCsv = async (file: string): Promise<any[]> => {
     const valueObjs: any[] = [];
     const parser = fs.createReadStream(file).pipe(
-        csv({
+        csvParse({
             // CSV options if any
         })
     );

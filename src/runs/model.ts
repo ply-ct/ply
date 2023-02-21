@@ -2,11 +2,13 @@ import { ResultStatus } from '../result';
 import { TestType } from '../test';
 import { Request } from '../request';
 import { Response } from '../response';
+import { Log } from '../logger';
 
 export interface ReportOptions {
     format: string;
     output: string;
     runsLocation: string;
+    logger: Log;
     indent?: number;
 }
 
@@ -19,14 +21,16 @@ export interface RunResult {
     message?: string;
 }
 
+export interface OverallResults {
+    Passed: number;
+    Failed: number;
+    Errored: number;
+    Pending: number;
+    Submitted: number;
+}
+
 export interface PlyResults {
-    overall: {
-        Passed: number;
-        Failed: number;
-        Errored: number;
-        Pending: number;
-        Submitted: number;
-    };
+    overall: OverallResults;
     runs: SuiteRun[];
 }
 
