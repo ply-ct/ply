@@ -35,5 +35,6 @@
   "mochaExplorer.env": {
     "TS_NODE_TRANSPILE_ONLY": "1"
   },
-  "ply.plyPath": "dist"
+  "ply.plyPath": "dist",
+  "ply.requireTsNode": true
 }
