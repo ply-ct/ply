@@ -8,7 +8,7 @@ This is in json format instead of yaml to illustrate jsonc commenting support
   "requestFiles": "**/*.{ply,ply.yaml}",
   "caseFiles": "**/*.ply.ts",
   "flowFiles": "**/*.ply.flow",
-  "skip": "{requests/movies-api.ply.yaml,flows/plain-text-id.ply.flow}",
+  "skip": "{requests/movies-api.ply.yaml,flows/plain-text-id.ply.flow,**/*.ply}",
   // needs ply-movies branch
   "ignore": "flows/plain-text-id.ply.flow",
   "verbose": false,
