@@ -1,0 +1,5 @@
+Get Movies by Year:
+  url: ${baseUrl}/movies?year=1931&sort=rating&descending=true
+  method: GET
+  headers:
+    Accept: application/json

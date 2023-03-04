@@ -1,0 +1,5 @@
+{
+  "baseUrl": "https://ply-ct.org",
+  "array": ["one", "two", "three"],
+  "nums": [1, 2, 3]
+}

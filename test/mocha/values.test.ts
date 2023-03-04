@@ -42,9 +42,8 @@ describe('Values', () => {
         const prevValues = process.env.PLY_VALUES;
         process.env.PLY_VALUES = '{ "rating": 1, "baseUrl": "http://localhost/movies" }';
         const values = await new Values(options.valuesFiles, logger).read();
-        if (prevValues) {
-            process.env.PLY_VALUES = prevValues;
-        }
+        if (prevValues) process.env.PLY_VALUES = prevValues;
+        else delete process.env.PLY_VALUES;
 
         assert.strictEqual(values.baseUrl, 'http://localhost/movies');
         assert.strictEqual(values.year, 1931);
@@ -111,5 +110,40 @@ describe('Values', () => {
         assert.strictEqual(rowValues[1].description, null);
         // global value
         assert.strictEqual(rowValues[1].query, 'year=1935&rating=>4&sort=rating&descending=true');
+    });
+
+    it('should locate values', async () => {
+        const values = new Values(
+            {
+                'test/ply/values/global.json': true,
+                'test/ply/values/localhost.json': true,
+                'test/mocha/values/ply-ct.json': true
+            },
+            logger
+        );
+        const vals = await values.read();
+
+        let yearLoc = await values.getLocation('${year}');
+        assert.strictEqual(yearLoc?.file, 'test/ply/values/global.json');
+        yearLoc = await values.getLocation('${year}', true);
+        assert.strictEqual(yearLoc?.file, 'test/ply/values/global.json');
+
+        const queryLoc = await values.getLocation('${queries.tipTop1935}');
+        assert.strictEqual(queryLoc?.file, 'test/ply/values/global.json');
+
+        const nonLoc = await values.getLocation('${not.there}');
+        assert.strictEqual(nonLoc, undefined);
+
+        const baseUrlLoc = await values.getLocation('${baseUrl}');
+        // ply-ct.json should override
+        assert.strictEqual(baseUrlLoc?.file, 'test/mocha/values/ply-ct.json');
+        // confirm
+        assert.strictEqual(vals.baseUrl, 'https://ply-ct.org');
+
+        const arr2Loc = await values.getLocation('${array[1]}');
+        assert.strictEqual(arr2Loc?.file, 'test/mocha/values/ply-ct.json');
+
+        const nums2Loc = await values.getLocation('${nums[1]}');
+        assert.strictEqual(nums2Loc?.file, 'test/mocha/values/ply-ct.json');
     });
 });

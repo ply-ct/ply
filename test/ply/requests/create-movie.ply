@@ -1,0 +1,42 @@
+Create Movie:
+  url: ${baseUrl}/movies
+  method: POST
+  headers:
+    Accept: application/json
+    Content-Type: application/json
+  body: |-
+    {
+      "credits": [
+        {
+          "name": "Michael Curtiz",
+          "role": "director"
+        },
+        {
+          "name": "John Barrymore",
+          "role": "actor"
+        },
+        {
+          "name": "Marian Marsh",
+          "role": "actor"
+        },
+        {
+          "name": "Charles Butterworth",
+          "role": "actor"
+        },
+        {
+          "name": "Donald Cook",
+          "role": "actor"
+        },
+        {
+          "name": "Luis Alberni",
+          "role": "actor"
+        }
+      ],
+      "poster": "mg.jpg",
+      "title": "The Mad Genius",
+      "webRef": {
+        "ref": "tt0022103",
+        "site": "imdb.com"
+      },
+      "year": 1931
+    }

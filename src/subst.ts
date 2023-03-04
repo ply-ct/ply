@@ -16,7 +16,7 @@ export function get(input: string, context: any): string {
     // directly contains expression (flat obj or user-entered values in vscode)
     const type = typeof context[path];
     if (type === 'string' || type === 'number' || type === 'boolean') {
-        return context[path];
+        return '' + context[path];
     }
 
     let res: any = context;

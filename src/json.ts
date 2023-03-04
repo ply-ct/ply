@@ -1,18 +1,22 @@
 import { EOL } from 'os';
 import { parse, modify, applyEdits, Edit, ParseError, printParseErrorCode } from 'jsonc-parser';
 
-export function parseJsonc(input: string) {
+export function parseJsonc(file: string, input: string): any {
     const errs: ParseError[] = [];
     const output = parse(input, errs);
-    if (errs.length > 0) {
-        console.error('jsonc-parser errors:');
-        for (const err of errs) {
+    printErrors(file, errs);
+    return output;
+}
+
+function printErrors(file: string, errors: ParseError[]) {
+    if (errors.length > 0) {
+        console.error(`jsonc-parser errors in ${file}:`);
+        for (const err of errors) {
             const label = printParseErrorCode(err.error);
             console.error(` - ${label}:` + JSON.stringify(err));
         }
         console.log('');
     }
-    return output;
 }
 
 /**

@@ -8,14 +8,22 @@ import readXlsx from 'read-excel-file/node';
 import traverse from 'traverse';
 import { Retrieval } from './retrieval';
 import { Log } from './logger';
+import * as subst from './subst';
 
 /**
  * Environment variable for additional values
  */
 const PLY_VALUES = 'PLY_VALUES';
 
+export interface ValueLocation {
+    file: string;
+    line?: number; // someday maybe
+}
+
 export class Values {
     private readonly enabledLocs: string[];
+    private valuesObjects?: { [file: string]: any };
+    private readonly valueLocations: { [expression: string]: ValueLocation } = {};
     private readonly rowsLoc: string | undefined;
 
     constructor(valuesFiles: { [file: string]: boolean }, private readonly logger: Log) {
@@ -36,6 +44,7 @@ export class Values {
 
     async read(): Promise<any> {
         let values = {};
+        this.valuesObjects = {};
         for (const location of this.enabledLocs) {
             if (location.endsWith('.csv') || location.endsWith('.xlsx')) {
                 this.logger.debug(`Delayed load rowwise values file" ${location}`);
@@ -44,12 +53,13 @@ export class Values {
                 if (contents) {
                     try {
                         const obj = JSON.parse(contents);
+                        this.valuesObjects[location] = obj;
                         values = deepmerge(values, obj);
                     } catch (err: any) {
                         throw new Error(`Cannot parse values file: ${location} (${err.message})`);
                     }
                 } else {
-                    this.logger.debug(
+                    this.logger.error(
                         `Values file not found: ${path.normalize(path.resolve(location))}`
                     );
                 }
@@ -67,6 +77,35 @@ export class Values {
             }
         }
         return this.substEnvVars(values);
+    }
+
+    async getLocation(expression: string, trusted = false): Promise<ValueLocation | undefined> {
+        let location: ValueLocation | undefined = this.valueLocations[expression];
+        if (!location) {
+            location = await this.findLocation(expression, trusted);
+            if (location) this.valueLocations[expression] = location;
+        }
+        return location;
+    }
+
+    private async findLocation(
+        expression: string,
+        trusted: boolean
+    ): Promise<ValueLocation | undefined> {
+        if (!expression.startsWith('${~)') && !expression.startsWith('${@')) {
+            if (!this.valuesObjects) await this.read();
+            // reverse so later overrides
+            const files = Object.keys(this.valuesObjects!).reverse();
+            for (const file of files) {
+                const obj = this.valuesObjects![file];
+                const res = trusted
+                    ? subst.trustedGet(expression, obj)
+                    : subst.get(expression, obj);
+                if (!res.startsWith('${')) {
+                    return { file };
+                }
+            }
+        }
     }
 
     private substEnvVars(values: any): any {

@@ -4,8 +4,8 @@ import * as json from '../../src/json';
 
 describe('json', () => {
     it('merges json deltas', async () => {
-        const beforeFile = 'plyconfig.json';
-        const beforeJson = await fs.promises.readFile(beforeFile, {
+        const configFile = 'plyconfig.json';
+        const configJson = await fs.promises.readFile(configFile, {
             encoding: 'utf-8'
         });
 
@@ -16,7 +16,7 @@ describe('json', () => {
             }
         };
 
-        const result = json.merge(beforeFile, beforeJson, delta, 2);
+        const result = json.merge(configFile, configJson, delta, 2);
 
         const afterFile = 'test/mocha/json/after.json';
         const afterJson = await fs.promises.readFile(afterFile, {

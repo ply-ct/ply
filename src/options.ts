@@ -522,7 +522,7 @@ export class Config {
             if (retrieval.location.isYaml) {
                 config = yaml.load(retrieval.location.path, contents);
             } else {
-                config = parseJsonc(contents);
+                config = parseJsonc(configPath, contents);
             }
             if (Array.isArray(config.valuesFiles)) {
                 // covert all to enabled format
