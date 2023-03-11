@@ -1,19 +1,16 @@
+import * as process from 'process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as stream from 'stream';
-import deepmerge from 'deepmerge';
+import { ValuesAccess } from 'flowbee';
+import { merge } from 'merge-anything';
 import { parse as csvParse } from 'csv-parse';
 import { transform } from 'stream-transform';
 import readXlsx from 'read-excel-file/node';
-import traverse from 'traverse';
 import { Retrieval } from './retrieval';
-import { Log } from './logger';
-import * as subst from './subst';
+import { Log } from './log';
 
-/**
- * Environment variable for additional values
- */
-const PLY_VALUES = 'PLY_VALUES';
+export type ValueType = string | number | boolean | Date | null;
 
 export interface ValueLocation {
     file: string;
@@ -22,8 +19,7 @@ export interface ValueLocation {
 
 export class Values {
     private readonly enabledLocs: string[];
-    private valuesObjects?: { [file: string]: any };
-    private readonly valueLocations: { [expression: string]: ValueLocation } = {};
+    private values: any = {};
     private readonly rowsLoc: string | undefined;
 
     constructor(valuesFiles: { [file: string]: boolean }, private readonly logger: Log) {
@@ -43,8 +39,12 @@ export class Values {
     }
 
     async read(): Promise<any> {
-        let values = {};
-        this.valuesObjects = {};
+        if (process.env['PLY_VALUES']) {
+            this.logger.error('PLY_VALUES environment variable is no longer supported');
+        }
+
+        this.values = {};
+        const valueObjects: { [loc: string]: object } = {};
         for (const location of this.enabledLocs) {
             if (location.endsWith('.csv') || location.endsWith('.xlsx')) {
                 this.logger.debug(`Delayed load rowwise values file" ${location}`);
@@ -52,9 +52,7 @@ export class Values {
                 const contents = await new Retrieval(location).read();
                 if (contents) {
                     try {
-                        const obj = JSON.parse(contents);
-                        this.valuesObjects[location] = obj;
-                        values = deepmerge(values, obj);
+                        valueObjects[location] = JSON.parse(contents);
                     } catch (err: any) {
                         throw new Error(`Cannot parse values file: ${location} (${err.message})`);
                     }
@@ -65,70 +63,9 @@ export class Values {
                 }
             }
         }
-        this.logger.debug('Values', values);
-        const envValues = process.env[PLY_VALUES];
-        if (envValues) {
-            this.logger.error('PLY_VALUES environment variable is deprecated');
-            try {
-                const obj = JSON.parse(envValues);
-                values = deepmerge(values, obj);
-            } catch (err: any) {
-                throw new Error(`Cannot parse ${PLY_VALUES} (${err.message})`);
-            }
-        }
-        return this.substEnvVars(values);
-    }
-
-    async getLocation(expression: string, trusted = false): Promise<ValueLocation | undefined> {
-        let location: ValueLocation | undefined = this.valueLocations[expression];
-        if (!location) {
-            location = await this.findLocation(expression, trusted);
-            if (location) this.valueLocations[expression] = location;
-        }
-        return location;
-    }
-
-    private async findLocation(
-        expression: string,
-        trusted: boolean
-    ): Promise<ValueLocation | undefined> {
-        if (!expression.startsWith('${~)') && !expression.startsWith('${@')) {
-            if (!this.valuesObjects) await this.read();
-            // reverse so later overrides
-            const files = Object.keys(this.valuesObjects!).reverse();
-            for (const file of files) {
-                const obj = this.valuesObjects![file];
-                const res = trusted
-                    ? subst.trustedGet(expression, obj)
-                    : subst.get(expression, obj);
-                if (!res.startsWith('${')) {
-                    return { file };
-                }
-            }
-        }
-    }
-
-    private substEnvVars(values: any): any {
-        // operate on a clone
-        const vals = JSON.parse(JSON.stringify(values));
-        traverse(vals).forEach(function (val) {
-            if (typeof val === 'string') {
-                const envVar = val.match(/^\$\{.+?}/);
-                if (envVar && envVar.length === 1) {
-                    const varName = envVar[0].substring(2, envVar[0].length - 1);
-                    let varVal: any = process.env[varName];
-                    if (typeof varVal === 'undefined' && val.trim().length > varName.length + 3) {
-                        // fallback specified?
-                        const extra = val.substring(envVar[0].length).trim();
-                        if (extra.startsWith('||')) {
-                            varVal = extra.substring(1).trim();
-                        }
-                    }
-                    this.update(varVal);
-                }
-            }
-        });
-        return vals;
+        this.values = new ValuesAccess(valueObjects, process.env).values;
+        this.logger.debug('Values', this.values);
+        return this.values;
     }
 
     async getRowStream(): Promise<stream.Readable> {
@@ -142,7 +79,7 @@ export class Values {
             const readable = new stream.Readable({ objectMode: true });
             for (const row of await fromXlsx(this.rowsLoc)) {
                 this.logger.debug('Row values', row);
-                readable.push(deepmerge(baseVals, row));
+                readable.push(merge(baseVals, row));
             }
             readable.push(null);
             return readable;
@@ -157,7 +94,7 @@ export class Values {
             const transformer = transform(async (row, cb) => {
                 const converted = converter.convert(row);
                 this.logger.debug('Row values', converted);
-                cb(null, deepmerge(baseVals, converted));
+                cb(null, merge(baseVals, converted));
             });
             return fs
                 .createReadStream(this.rowsLoc)
@@ -222,8 +159,6 @@ export interface ConverterOptions {
     dateFormat?: string; // TODO
 }
 
-export type ValueType = string | number | boolean | Date | null;
-
 const defaultOptions: ConverterOptions = {
     trimValues: true,
     trimLabels: true,
@@ -236,7 +171,7 @@ export class DefaultRowConverter implements RowConverter {
     readonly options: ConverterOptions;
 
     constructor(names: any[], options?: ConverterOptions) {
-        this.options = deepmerge(defaultOptions, options || {});
+        this.options = merge(defaultOptions, options || {});
         this.names = names.map((name) => {
             if (this.options.trimLabels) {
                 return ('' + name).trim();

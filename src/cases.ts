@@ -7,7 +7,8 @@ import { Retrieval } from './retrieval';
 import { Location } from './location';
 import { Runtime } from './runtime';
 import { ResultPaths } from './result';
-import { Log, Logger, LogLevel } from './logger';
+import { Log, LogLevel } from './log';
+import { Logger } from './logger';
 import { Skip } from './skip';
 
 interface SuiteDecoration {

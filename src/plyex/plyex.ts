@@ -2,7 +2,7 @@ import { getReasonPhrase } from 'http-status-codes';
 import { OpenApi, Path, Method, Operation, Media } from './openapi';
 import { NestJsPlugin } from './nestjs';
 import { JsDocReader, PlyEndpointMeta } from './apidocs';
-import { Log } from '../logger';
+import { Log } from '../log';
 import { Ts } from '../ts';
 import { CodeSamples, PathChunk, TemplateContext } from './code';
 

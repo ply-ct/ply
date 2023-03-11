@@ -2,7 +2,7 @@ import { ResultStatus } from '../result';
 import { TestType } from '../test';
 import { Request } from '../request';
 import { Response } from '../response';
-import { Log } from '../logger';
+import { Log } from '../log';
 
 export interface ReportOptions {
     format: string;

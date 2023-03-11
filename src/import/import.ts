@@ -1,6 +1,6 @@
 import { ImportFormat, ImportOptions } from './model';
 import { Retrieval } from '../retrieval';
-import { Log } from '../logger';
+import { Log } from '../log';
 import { Postman } from './postman';
 import { Insomnia } from './insomnia';
 

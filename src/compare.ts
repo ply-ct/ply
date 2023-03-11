@@ -1,7 +1,7 @@
 import { diff_match_patch as DiffMatchPatch, Diff as DmpDiff } from 'diff-match-patch';
 import { CodeLine } from './code';
-import { Log } from './logger';
-import * as subst from './subst';
+import { Log } from './log';
+import { replace } from './replace';
 import { lines } from './util';
 
 /**
@@ -72,7 +72,7 @@ export class Compare {
     private markIgnored(diffs: Diff[], values: object, trusted: boolean) {
         for (let i = 0; i < diffs.length; i++) {
             if (diffs[i].removed && diffs.length > i + 1 && diffs[i + 1].added) {
-                const exp = subst.replace(diffs[i].value, values, this.logger, trusted);
+                const exp = replace(diffs[i].value, values, { logger: this.logger, trusted });
                 const act = diffs[i + 1].value;
                 if (exp === act) {
                     diffs[i].ignored = diffs[i + 1].ignored = true;

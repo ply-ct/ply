@@ -1,6 +1,7 @@
 import * as flowbee from 'flowbee';
 import { PlyFlow } from './flow';
-import { Log, Logger, LogLevel } from './logger';
+import { Log, LogLevel } from './log';
+import { Logger } from './logger';
 import { PlyOptions, RunOptions } from './options';
 import { Retrieval } from './retrieval';
 import { Runtime } from './runtime';

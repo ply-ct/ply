@@ -1,4 +1,4 @@
-import { Log } from './logger';
+import { Log } from './log';
 import { PlyOptions, RunOptions } from './options';
 import { Result } from './result';
 import { Suite } from './suite';

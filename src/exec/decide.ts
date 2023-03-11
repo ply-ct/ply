@@ -1,7 +1,7 @@
 import * as flowbee from 'flowbee';
 import { ExecResult, PlyExecBase } from './exec';
 import { Runtime } from '../runtime';
-import { Log } from '../logger';
+import { Log } from '../log';
 
 /**
  * Cannot have side-effects (no updating values);

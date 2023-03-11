@@ -1,6 +1,6 @@
 {
   "name": "@ply-ct/ply",
-  "version": "3.1.0",
+  "version": "3.3.0",
   "description": "REST API Automated Testing",
   "main": "dist",
   "bin": {
@@ -51,10 +51,9 @@
   "dependencies": {
     "cross-fetch": "^3.1.5",
     "csv-parse": "^5.3.5",
-    "deepmerge": "^4.3.0",
     "diff-match-patch": "^1.0.5",
     "find-up": "^5.0.0",
-    "flowbee": "^0.4.16",
+    "flowbee": "^1.0.1",
     "form-data": "^4.0.0",
     "glob": "^8.1.0",
     "handlebars": "^4.7.7",
@@ -62,12 +61,12 @@
     "js-yaml": "^4.1.0",
     "json-stable-stringify": "^1.0.1",
     "jsonc-parser": "^3.2.0",
+    "merge-anything": "^5.1.4",
     "minimatch": "^7.1.0",
     "read-excel-file": "^5.6.1",
     "rimraf": "^4.1.2",
     "stacktracey": "^2.1.8",
     "stream-transform": "^3.2.2",
-    "traverse": "^0.6.7",
     "ts-node": "^10.9.1",
     "xml-formatter": "^2.6.1",
     "yargs": "^16.2.0"
@@ -81,7 +80,6 @@
     "@types/json-stable-stringify": "^1.0.34",
     "@types/mocha": "^10.0.1",
     "@types/node": "^12.12.6",
-    "@types/traverse": "^0.6.32",
     "@types/yargs": "^16.0.4",
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",

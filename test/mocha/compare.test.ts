@@ -1,16 +1,10 @@
 import * as assert from 'assert';
-import { Logger, LogLevel, LogOptions } from '../../src/logger';
+import { Logger } from '../../src/logger';
 import { Storage } from '../../src/storage';
 import { Compare } from '../../src/compare';
 
 describe('Compare', () => {
-    const logger = new Logger(
-        {
-            ...new LogOptions(),
-            level: LogLevel.info
-        },
-        new Storage('temp/output.log')
-    );
+    const logger = new Logger({}, new Storage('temp/output.log'));
 
     it('handles regex', () => {
         const compare = new Compare(logger);

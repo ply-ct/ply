@@ -2,8 +2,8 @@ import * as flowbee from 'flowbee';
 import { RunOptions } from '../options';
 import { ResultStatus } from '../result';
 import { Runtime } from '../runtime';
-import { Log } from '../logger';
-import * as subst from '../subst';
+import { Log } from '../log';
+import { replace } from '../replace';
 
 export interface ExecResult {
     status: ResultStatus;
@@ -59,7 +59,9 @@ export abstract class PlyExecBase implements PlyExec {
     ): string | undefined {
         if (this.step.attributes) {
             const val = this.step.attributes[name];
-            if (val) return subst.replace(val, values, this.logger, options?.trusted);
+            if (val) {
+                return replace(val, values, { logger: this.logger, trusted: options?.trusted });
+            }
         }
         if (options?.required) throw new Error(`Missing required attribute: ${name}`);
     }

@@ -1,6 +1,6 @@
 import * as flowbee from 'flowbee';
 import { ExecResult, PlyExecBase } from './exec';
-import { LogLevel, Log } from '../logger';
+import { LogLevel, Log } from '../log';
 
 export class StopExec extends PlyExecBase {
     constructor(

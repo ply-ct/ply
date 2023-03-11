@@ -1,37 +1,27 @@
+import { Log, LogOptions, LogLevel } from './log';
 import { Storage } from './storage';
 
-export enum LogLevel {
-    error,
-    info,
-    debug
-}
+export const isLogger = (log: Log): log is Logger => {
+    return (log as Logger).isPlyLogger === true;
+};
 
-export class LogOptions {
-    level: LogLevel = LogLevel.info;
-    prettyIndent?: number = 0;
-}
-
-export interface Log {
-    info(message: string, obj?: any): void;
-    error(message: string, obj?: any): void;
-    debug(message: string, obj?: any): void;
-    enabled: boolean;
-    storage?: Storage;
-    level?: LogLevel;
+interface Options extends LogOptions {
+    level: LogLevel;
+    prettyIndent: number;
 }
 
 export class Logger implements Log {
+    readonly isPlyLogger = true;
     enabled = true;
 
-    private options: LogOptions = {
-        level: LogLevel.info,
-        prettyIndent: 0
-    };
+    readonly options: Options;
 
     constructor(options?: LogOptions, public storage?: Storage, append = false) {
-        if (options) {
-            this.options = { ...this.options, ...options };
-        }
+        this.options = {
+            level: LogLevel.info,
+            prettyIndent: 0,
+            ...(options || {})
+        };
         if (storage && !append) {
             storage.remove();
         }

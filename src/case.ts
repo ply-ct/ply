@@ -1,5 +1,5 @@
 import { TestType, Test, PlyTest } from './test';
-import { Log } from './logger';
+import { Log } from './log';
 import { Runtime } from './runtime';
 import { RunOptions } from './options';
 import { Result } from './result';

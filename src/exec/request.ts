@@ -4,8 +4,8 @@ import { Suite } from '../suite';
 import { Request, PlyRequest } from '../request';
 import { Runtime } from '../runtime';
 import { RunOptions } from '../options';
-import { Log } from '../logger';
-import * as subst from '../subst';
+import { Log } from '../log';
+import { replace } from '../replace';
 import * as yaml from '../yaml';
 
 export class RequestExec extends PlyExecBase {
@@ -29,7 +29,10 @@ export class RequestExec extends PlyExecBase {
         if (this.step.attributes?.headers) {
             const rows = JSON.parse(this.step.attributes.headers);
             for (const row of rows) {
-                headers[row[0]] = subst.replace(row[1], values, this.logger, runOptions?.trusted);
+                headers[row[0]] = replace(row[1], values, {
+                    logger: this.logger,
+                    trusted: runOptions?.trusted
+                });
             }
         }
         let body = this.getAttribute('body', values, { trusted });

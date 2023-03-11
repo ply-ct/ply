@@ -1,7 +1,7 @@
 import { Importer, ImportOptions, Request } from './model';
 import { Retrieval } from '../retrieval';
 import { Storage } from '../storage';
-import { Log } from '../logger';
+import { Log } from '../log';
 import * as yaml from '../yaml';
 import * as util from '../util';
 

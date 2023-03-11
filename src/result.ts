@@ -6,7 +6,7 @@ import { Location } from './location';
 import { Storage } from './storage';
 import { Retrieval } from './retrieval';
 import { Options, PlyOptions, RunOptions } from './options';
-import { Log } from './logger';
+import { Log } from './log';
 import { CodeLine, Code } from './code';
 import { Compare, Diff } from './compare';
 import { Yaml } from './yaml';

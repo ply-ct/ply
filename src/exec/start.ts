@@ -1,6 +1,6 @@
 import * as flowbee from 'flowbee';
 import { ExecResult, PlyExecBase } from './exec';
-import { Log } from '../logger';
+import { Log } from '../log';
 
 export class StartExec extends PlyExecBase {
     constructor(

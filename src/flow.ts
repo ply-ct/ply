@@ -1,6 +1,6 @@
 import { minimatch } from 'minimatch';
 import * as flowbee from 'flowbee';
-import { Log, LogLevel } from './logger';
+import { Log, LogLevel } from './log';
 import { RunOptions } from './options';
 import { Runtime } from './runtime';
 import { PlyStep } from './step';

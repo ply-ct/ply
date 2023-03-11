@@ -1,14 +1,14 @@
 import fetch from 'cross-fetch';
 import { TestType, Test, PlyTest } from './test';
 import { Response, PlyResponse } from './response';
-import { Log, LogLevel } from './logger';
+import { Log, LogLevel } from './log';
 import { Retrieval } from './retrieval';
 import { Runtime } from './runtime';
 import { Options, RunOptions } from './options';
 import { PlyResult } from './result';
 import { MultipartForm } from './form';
 import * as util from './util';
-import * as subst from './subst';
+import { replace } from './replace';
 import { RUN_ID } from './names';
 
 export interface Request extends Test {
@@ -138,24 +138,18 @@ export class PlyRequest implements Request, PlyTest {
         runOptions?: RunOptions,
         includeAuthHeader = false
     ): Request {
-        const url = subst.replace(this.url, values, this.logger, runOptions?.trusted);
+        const replaceOptions = { logger: this.logger, trusted: runOptions?.trusted };
+        const url = replace(this.url, values, replaceOptions);
         if (!url.startsWith('http://') && !url.startsWith('https://')) {
             throw new Error('Invalid url: ' + url);
         }
-        const method = subst
-            .replace(this.method, values, this.logger, runOptions?.trusted)
-            .toUpperCase();
+        const method = replace(this.method, values, replaceOptions).toUpperCase();
         if (!this.getSupportedMethod(method)) {
             throw new Error('Unsupported method: ' + method);
         }
         const headers: { [key: string]: string } = {};
         for (const key of Object.keys(this.headers)) {
-            headers[key] = subst.replace(
-                this.headers[key],
-                values,
-                this.logger,
-                runOptions?.trusted
-            );
+            headers[key] = replace(this.headers[key], values, replaceOptions);
         }
         if (!includeAuthHeader) {
             delete headers.Authorization;
@@ -163,7 +157,7 @@ export class PlyRequest implements Request, PlyTest {
 
         let body = this.body;
         if (body) {
-            body = subst.replace(body, values, this.logger, runOptions?.trusted);
+            body = replace(body, values, { logger: this.logger, trusted: runOptions?.trusted });
             if (this.isGraphQl) {
                 // graphql
                 this.graphQl = body;

@@ -4,7 +4,7 @@ import { TestType, Test, PlyTest } from './test';
 import { Result, Outcome, Verifier, PlyResult, ResultPaths } from './result';
 import { Location } from './location';
 import { Storage } from './storage';
-import { Log, LogLevel } from './logger';
+import { Log, LogLevel } from './log';
 import { Runtime, DecoratedSuite, CallingCaseInfo } from './runtime';
 import { RunOptions } from './options';
 import { SUITE, TEST, RESULTS, RUN_ID } from './names';
@@ -15,6 +15,7 @@ import { PlyEvent, SuiteEvent, OutcomeEvent } from './event';
 import { PlyResponse } from './response';
 import { TsCompileOptions } from './compile';
 import StackTracey from 'stacktracey';
+import { isLogger } from './logger';
 
 export interface Tests<T extends Test> {
     [key: string]: T;
@@ -202,7 +203,9 @@ export class Suite<T extends Test> {
                     callingCaseInfo = await this.getCallingCaseInfo(runOptions);
                     if (callingCaseInfo) {
                         this.runtime.results = callingCaseInfo.results;
-                        this.logger.storage = callingCaseInfo.results.log;
+                        if (isLogger(this.logger)) {
+                            this.logger.storage = callingCaseInfo.results.log;
+                        }
                     } else {
                         this.emitSuiteStarted();
                         this.runtime.results.actual.remove();

@@ -1,7 +1,7 @@
 import * as process from 'process';
 import * as path from 'path';
 import * as flowbee from 'flowbee';
-import { Log } from './logger';
+import { Log } from './log';
 import { RunOptions } from './options';
 import { Request } from './request';
 import { Runtime } from './runtime';
