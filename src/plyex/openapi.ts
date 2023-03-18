@@ -76,9 +76,16 @@ export type BodyContent = {
     [key in MediaType]?: Media;
 };
 
+export interface Example {
+    summary?: string;
+    description?: string;
+    value: string;
+}
+
 export interface Media {
     schema: Schema;
     example?: object | string;
+    examples?: { [name: string]: Example };
 }
 
 export interface Schema {
