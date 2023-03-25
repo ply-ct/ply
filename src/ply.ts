@@ -457,21 +457,25 @@ export class Plier extends EventEmitter {
     async find(paths: string[]): Promise<string[]> {
         const plyees: string[] = [];
         for (const path of paths) {
-            if (path.indexOf('#') > 0 || path.endsWith('.ply')) {
+            if (path.indexOf('#') > 0) {
                 plyees.push(path);
             } else {
                 // suite
                 if (Plyee.isRequest(path)) {
                     const requestSuite = await this.ply.loadRequestSuite(path);
                     if (!requestSuite.skip) {
-                        for (const request of requestSuite) {
-                            plyees.push(
-                                this.ply.options.testsLocation +
-                                    '/' +
-                                    requestSuite.path +
-                                    '#' +
-                                    request.name
-                            );
+                        if (path.endsWith('.ply')) {
+                            plyees.push(path);
+                        } else {
+                            for (const request of requestSuite) {
+                                plyees.push(
+                                    this.ply.options.testsLocation +
+                                        '/' +
+                                        requestSuite.path +
+                                        '#' +
+                                        request.name
+                                );
+                            }
                         }
                     }
                 } else if (Plyee.isCase(path)) {
