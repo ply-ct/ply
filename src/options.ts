@@ -405,6 +405,12 @@ export class Config {
                 configPath = findUp.sync(PLY_CONFIGS, { cwd: defaults.testsLocation });
             }
             const config = configPath ? this.read(configPath) : {};
+            if (
+                process.argv.length > 2 &&
+                process.argv.find((arg) => arg.startsWith('--valuesFiles'))
+            ) {
+                delete config.valuesFiles; // overridden by command-line option
+            }
             let spec = yargs
                 .usage('Usage: $0 <tests> [options]')
                 .help('help')
@@ -434,12 +440,17 @@ export class Config {
                 }
             }
             opts = spec.argv;
-            if (typeof opts.valuesFiles === 'string') {
-                opts.valuesFiles = opts.valuesFiles.split(',').map((v: string) => v.trim());
-            }
-            if (typeof opts.valuesFiles === 'object' && typeof config.valuesFiles === 'object') {
+            if (typeof config.valuesFiles === 'object') {
                 // undo yargs messing this up due to dots
                 opts.valuesFiles = config.valuesFiles;
+            }
+            if (typeof opts.valuesFiles === 'string') {
+                opts.valuesFiles = opts.valuesFiles
+                    .split(',')
+                    .reduce((vfs: { [file: string]: boolean }, v: string) => {
+                        vfs[v.trim()] = true;
+                        return vfs;
+                    }, {});
             }
             if (opts.genExcludeResponseHeaders) {
                 if (typeof opts.genExcludeResponseHeaders === 'string') {
