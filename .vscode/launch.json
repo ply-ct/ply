@@ -8,10 +8,12 @@
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/dist/cli.js",
       "args": [
-        "--trusted",
+        "--verbose",
         "--reporter=json",
         "--outputFile=test/ply/results/actual/ply-results.json",
-        "test/ply/requests/movie-queries.ply.yaml"
+        "test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating",
+        "test/ply/requests/create-movie.ply#Create Movie",
+        "test/ply/requests/get-movies-by-year.ply"
       ],
       "preLaunchTask": "tsc: build - tsconfig.json"
     }

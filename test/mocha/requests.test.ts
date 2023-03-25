@@ -204,6 +204,22 @@ describe('Requests', async () => {
         assert.strictEqual(results.Errored, 0);
     });
 
+    it('plier handles skip', async () => {
+        const plier = new Plier();
+        const results = await plier.run(
+            [
+                'test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating',
+                'test/ply/requests/create-movie.ply#Create Movie',
+                'test/ply/requests/get-movies-by-year.ply'
+            ],
+            { values }
+        );
+
+        // .ply files should error due to expected results not found
+        assert.strictEqual(results.Passed, 1);
+        assert.strictEqual(results.Errored, 2);
+    });
+
     it('can run suite', async () => {
         const ply = new Ply();
         const suites = await ply.loadRequests('test/ply/requests/movie-queries.ply.yaml');

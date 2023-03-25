@@ -57,9 +57,14 @@ Run a request suite:
 ply test/requests/movie-queries.ply.yaml
 ```
 
-Run a single request:
+Run a single request from a suite:
 ```
 ply test/requests/movie-queries.ply.yaml#moviesByYearAndRating
+```
+
+Run a request from a .ply file:
+```
+ply test/requests/create-movie.ply
 ```
 
 Run a case suite:

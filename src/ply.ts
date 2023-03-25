@@ -190,15 +190,20 @@ export class Plyee {
     constructor(pathOrSuite: string, test?: Test) {
         if (test) {
             this.path =
-                util.fwdSlashes(path.normalize(path.resolve(`${pathOrSuite}`))) + `#${test.name}`;
+                util.fwdSlashes(path.normalize(path.resolve(pathOrSuite))) + `#${test.name}`;
         } else {
             const hash = pathOrSuite.indexOf('#');
             if (hash === 0 || hash > pathOrSuite.length - 2) {
                 throw new Error(`Invalid path: ${pathOrSuite}`);
             }
-            const base = pathOrSuite.substring(0, hash);
-            const frag = pathOrSuite.substring(hash + 1);
-            this.path = util.fwdSlashes(path.normalize(path.resolve(base))) + `#${frag}`;
+            if (hash === -1 && pathOrSuite.endsWith('.ply')) {
+                // path and test will be the same
+                this.path = util.fwdSlashes(path.normalize(path.resolve(pathOrSuite)));
+            } else {
+                const base = pathOrSuite.substring(0, hash);
+                const frag = pathOrSuite.substring(hash + 1);
+                this.path = util.fwdSlashes(path.normalize(path.resolve(base))) + `#${frag}`;
+            }
         }
         this.hash = this.path.indexOf('#');
         this.hat = this.path.lastIndexOf('^');
@@ -230,6 +235,8 @@ export class Plyee {
             } else {
                 return this.path.substring(this.hash + 1);
             }
+        } else if (this.path.endsWith('.ply')) {
+            return this.path;
         }
     }
 
@@ -327,9 +334,10 @@ export class Plier extends EventEmitter {
     ): Promise<OverallResults> {
         const version = plyVersion || (await util.plyVersion());
         if (version) this.logger.info('Ply version', version);
-        this.logger.debug('Options', this.ply.options);
 
-        const plyValues = new Values(this.ply.options.valuesFiles, this.logger);
+        this.logger.debug('Options', this.options);
+
+        const plyValues = new Values(this.options.valuesFiles, this.logger);
         const values = await plyValues.read();
 
         // remove all previous runs
@@ -347,19 +355,23 @@ export class Plier extends EventEmitter {
         // requests
         const requestTests = new Map<Suite<Request>, string[]>();
         for (const [loc, requestPlyee] of Plyee.requests(plyees)) {
+            const requestSuite = await this.ply.loadRequestSuite(loc);
             const tests = requestPlyee.map((plyee) => {
                 if (!plyee.test) {
                     throw new Error(`Plyee is not a test: ${plyee}`);
                 }
+                if (plyee.test.endsWith('.ply') && requestSuite.size()) {
+                    return requestSuite.all().values().next().value.name;
+                }
                 return plyee.test;
             });
-            const requestSuite = await this.ply.loadRequestSuite(loc);
             requestSuite.emitter = this;
             requestTests.set(requestSuite, tests);
         }
 
         const requestRunner = new PlyRunner(this.ply.options, requestTests, plyValues, this.logger);
         await requestRunner.runSuiteTests(values, runOptions);
+        // TODO overall results should not count each request, but suites?
         if (this.ply.options.parallel) {
             promises = [...promises, ...requestRunner.promises];
         } else {
@@ -445,7 +457,7 @@ export class Plier extends EventEmitter {
     async find(paths: string[]): Promise<string[]> {
         const plyees: string[] = [];
         for (const path of paths) {
-            if (path.indexOf('#') > 0) {
+            if (path.indexOf('#') > 0 || path.endsWith('.ply')) {
                 plyees.push(path);
             } else {
                 // suite
