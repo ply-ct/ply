@@ -10,6 +10,7 @@
       "args": [
         "--verbose",
         "--reporter=json",
+        // "--skip=**/*.ply",
         "--outputFile=test/ply/results/actual/ply-results.json",
         "test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating",
         "test/ply/requests/create-movie.ply#Create Movie",

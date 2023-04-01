@@ -472,6 +472,12 @@ export class Config {
             opts = configPath ? this.read(configPath) : {};
         }
         let options = { ...defaults, ...opts };
+
+        if (opts.args.length > 0 && !process.argv.find((arg) => arg.startsWith('--skip'))) {
+            // command-line tests passed, and --skip option not supplied, override plyconfig skip
+            delete options.skip;
+        }
+
         // clean up garbage keys added by yargs, and private defaults
         options = Object.keys(options).reduce((obj: any, key) => {
             if (key.length > 1 && key.indexOf('_') === -1 && key.indexOf('-') === -1) {

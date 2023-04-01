@@ -94,6 +94,9 @@ if (runOptions?.import) {
         ignore: options.ignore
     };
     if (args && args.length > 0) {
+        // ignore skip unless passed on command-line since tests specified
+        if (!options.skip) plier.options.skip = '';
+
         // make arg paths relative to tests loc
         if (options.testsLocation !== '.') {
             args = args.map((arg) => {
