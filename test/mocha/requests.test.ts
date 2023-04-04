@@ -178,13 +178,26 @@ describe('Requests', async () => {
 
     it('can run plyee', async () => {
         const plier = new Plier();
-        const results = await plier.run(
-            ['test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating'],
-            { values }
-        );
+
+        const results = await plier.run([
+            'test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating'
+        ]);
 
         assert.strictEqual(results.Passed, 1);
         assert.strictEqual(results.Failed, 0);
+        assert.strictEqual(results.Errored, 0);
+    });
+
+    it('honors runtime values', async () => {
+        const plier = new Plier();
+
+        const results = await plier.run(
+            ['test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating'],
+            { values: { year: '1932' } }
+        );
+
+        assert.strictEqual(results.Passed, 0);
+        assert.strictEqual(results.Failed, 1);
         assert.strictEqual(results.Errored, 0);
     });
 

@@ -338,7 +338,11 @@ export class Plier extends EventEmitter {
         this.logger.debug('Options', this.options);
 
         const plyValues = new Values(this.options.valuesFiles, this.logger);
-        const values = await plyValues.read();
+        let values = await plyValues.read();
+        if (runOptions?.values) {
+            // runOptions values override file files
+            values = { ...values, ...runOptions.values };
+        }
 
         // remove all previous runs
         await rimraf(`${this.options.logLocation}/runs`);

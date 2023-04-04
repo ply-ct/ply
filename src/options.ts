@@ -473,7 +473,7 @@ export class Config {
         }
         let options = { ...defaults, ...opts };
 
-        if (opts.args.length > 0 && !process.argv.find((arg) => arg.startsWith('--skip'))) {
+        if (opts.args?.length > 0 && !process.argv.find((arg) => arg.startsWith('--skip'))) {
             // command-line tests passed, and --skip option not supplied, override plyconfig skip
             delete options.skip;
         }
