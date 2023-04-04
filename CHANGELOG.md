@@ -1,5 +1,8 @@
 # Change Log
 
+## [3.2.2](https://github.com/ply-ct/vscode-ply/tree/3.2.3) (2023-04-03)
+- Bug: Honor runOptions.values override [\#68](https://github.com/ply-ct/ply/issues/68)
+
 ## [3.2.1](https://github.com/ply-ct/vscode-ply/tree/3.2.1) (2023-03-25)
 - Enhancement: Support .ply request passed directly on command line [\#67](https://github.com/ply-ct/ply/issues/67)
 
