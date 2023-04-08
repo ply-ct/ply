@@ -29,7 +29,7 @@ export const replace = (template: string, context: object, options?: ReplaceOpti
                 err.message = 'No previous results found';
             }
             options?.logger?.error(`Error in expression:\n${line}\n** ${err.message} **`);
-            options?.logger?.debug(err);
+            options?.logger?.debug(`${err}`, err);
             lines.push(line);
         }
     }
