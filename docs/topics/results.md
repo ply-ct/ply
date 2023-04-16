@@ -190,5 +190,7 @@ moviesSortById: #! sort(${response.body.movies}, id)
   request:
     url: ${baseUrl}/movies?rating=5
 ```
+Example flow expected results in ply-demo with client sorting:  
+https://github.com/ply-ct/ply-demo/blob/main/test/results/expected/flows/movies-client-sort.yaml
 
 Next Topic: [Flows](flows)
