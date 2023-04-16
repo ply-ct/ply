@@ -2,6 +2,7 @@
 
 ## [3.2.3](https://github.com/ply-ct/vscode-ply/tree/3.2.3) (2023-04-16)
 - Enhancement: Client sorting of response body array [\#69](https://github.com/ply-ct/ply/issues/69)
+- Bug: Previous results excluded from flow step expression eval [\#70](https://github.com/ply-ct/ply/issues/70)
 
 ## [3.2.2](https://github.com/ply-ct/vscode-ply/tree/3.2.2) (2023-04-03)
 - Bug: Honor runOptions.values override [\#68](https://github.com/ply-ct/ply/issues/68)
