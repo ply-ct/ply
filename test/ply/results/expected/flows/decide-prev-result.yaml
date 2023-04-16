@@ -1,0 +1,66 @@
+Start:
+  id: s1
+  status: Completed
+Get Movie by Title:
+  id: s3
+  request:
+    url: ${baseUrl}/movies?title=Dracula
+    method: GET
+    headers:
+      Accept: application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      content-type: application/json; charset=utf-8
+    body: |-
+      {
+        "movies": [
+          {
+            "credits": [
+              {
+                "name": "Tod Browning",
+                "role": "director"
+              },
+              {
+                "name": "Bela Lugosi",
+                "role": "actor"
+              },
+              {
+                "name": "Helen Chandler",
+                "role": "actor"
+              },
+              {
+                "name": "David Manners",
+                "role": "actor"
+              },
+              {
+                "name": "Dwight Frye",
+                "role": "actor"
+              },
+              {
+                "name": "Edward Van Sloan",
+                "role": "actor"
+              }
+            ],
+            "description": "What's even more amazing than Lugosi's out-of-body performance is the fact that the finest horror movie ever made was filmed within 2 years of the advent of talking pictures.",
+            "id": "269b34c1",
+            "poster": "drac.jpg",
+            "rating": 5,
+            "title": "Dracula",
+            "webRef": {
+              "ref": "tt0021814",
+              "site": "imdb.com"
+            },
+            "year": 1931
+          }
+        ]
+      }
+  status: Completed
+Rating > 4:
+  id: s4
+  status: Completed
+Stop:
+  id: s2
+  status: Completed

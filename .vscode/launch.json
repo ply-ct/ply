@@ -7,15 +7,7 @@
       "name": "cli",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/dist/cli.js",
-      "args": [
-        "--verbose",
-        "--reporter=json",
-        // "--skip=**/*.ply",
-        "--outputFile=test/ply/results/actual/ply-results.json",
-        "test/ply/requests/movie-queries.ply.yaml#moviesByYearAndRating",
-        "test/ply/requests/create-movie.ply#Create Movie",
-        "test/ply/requests/get-movies-by-year.ply"
-      ],
+      "args": ["--trusted", "test/ply/flows/decide-prev-result.ply.flow"],
       "preLaunchTask": "tsc: build - tsconfig.json"
     }
   ]

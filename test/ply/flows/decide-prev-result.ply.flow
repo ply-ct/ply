@@ -1,0 +1,57 @@
+attributes:
+  NodeStyle: BoxIcon
+  display: x=23,y=18,w=156,h=27
+steps:
+  - id: s1
+    name: Start
+    path: start
+    attributes:
+      display: x=60,y=100,w=60,h=40
+    links:
+      - id: l1
+        attributes:
+          display: type=Elbow,x=166,y=120,xs=124&196,ys=120&120
+        to: s3
+  - id: s2
+    name: Stop
+    path: stop
+    attributes:
+      display: x=520,y=100,w=60,h=40
+  - id: s3
+    name: |-
+      Get Movie
+      by Title
+    path: request
+    links:
+      - id: l2
+        to: s4
+        attributes:
+          display: type=Elbow,x=330,y=120,xs=304&356,ys=120&120
+    attributes:
+      display: x=200,y=80,w=100,h=80
+      url: ${baseUrl}/movies?title=Dracula
+      method: GET
+      headers: '[["Accept","application/json"]]'
+  - id: s4
+    name: Rating > 4
+    path: decide
+    links:
+      - id: l3
+        to: s2
+        attributes:
+          display: type=Elbow,x=466,y=100,xs=444&516,ys=120&120
+        result: 'true'
+      - id: l4
+        to: s5
+        attributes:
+          display: type=Elbow,x=406,y=168,xs=400&400,ys=154&206
+        result: 'false'
+    attributes:
+      display: x=360,y=90,w=80,h=60
+      expression: ${@s3.response.body.movies[0].rating > 4}
+  - id: s5
+    name: Stop
+    path: stop
+    links: []
+    attributes:
+      display: x=370,y=210,w=60,h=40
