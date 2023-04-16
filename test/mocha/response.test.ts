@@ -18,7 +18,7 @@ describe('Response', async () => {
         assert.deepStrictEqual(response.body, bodyObj);
 
         plyResponse = new PlyResponse('456', { code: 200, message: 'OK' }, {}, bodyObj);
-        response = plyResponse.getResponse('456', options, [], true);
+        response = plyResponse.getResponse('456', options, {}, true);
         assert.strictEqual(typeof response.body, 'string');
         assert.strictEqual(response.body, JSON.stringify(bodyObj, null, options.prettyIndent));
     });
@@ -36,7 +36,7 @@ describe('Response', async () => {
         assert.deepStrictEqual(response.body, bodyArr);
 
         plyResponse = new PlyResponse('abc', { code: 200, message: 'OK' }, {}, bodyArr);
-        response = plyResponse.getResponse('abc', options, [], true);
+        response = plyResponse.getResponse('abc', options, {}, true);
         assert.strictEqual(typeof response.body, 'string');
         assert.strictEqual(response.body, JSON.stringify(bodyArr, null, options.prettyIndent));
     });

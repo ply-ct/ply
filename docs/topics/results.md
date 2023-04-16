@@ -181,4 +181,14 @@ In the initial `moviesByYearAndRating` result shown above, instead of hardcoding
 any hexidecimal string value, since that's the expected format. To achieve this we use a regular expression, signified by 
 special designator `~`.
 
+## Response Array Client Sorting
+Some APIs may return JSON response bodies containing arrays that come back in an unpredictable order. Calls tomorrow may return
+arrays with the same elements as calls today, but in a different order. This can break expected results comparison. The solution
+is to stipulate client-side sorting with a meta-comment like the following in expected results yaml:
+```yaml
+moviesSortById: #! sort(${response.body.movies}, id)
+  request:
+    url: ${baseUrl}/movies?rating=5
+```
+
 Next Topic: [Flows](flows)
