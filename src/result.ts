@@ -385,6 +385,7 @@ export class ResultPaths {
                 if (instNum > 0) label += ` (${instNum})`;
                 throw new Error(`Expected result not found: ${label}`);
             }
+
             let expectedLines: string[];
             if (this.isFlowResult) {
                 // exclude step info from request expected

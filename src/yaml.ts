@@ -173,3 +173,19 @@ export function merge(file: string, yaml: string, delta: any, indent = 2): strin
 
     return outLines.join(EOL);
 }
+
+/**
+ * Meta comments (trimmed with trailing semis removed)
+ */
+export function metas(yaml: string): string[] {
+    return util.lines(yaml).reduce((metaLines, line) => {
+        const trimmed = line.trim();
+        const hashBang = trimmed.indexOf('#!');
+        if (hashBang >= 0 && hashBang < trimmed.length - 2) {
+            let meta = trimmed.substring(hashBang + 2).trim();
+            if (meta.endsWith(';')) meta = meta.substring(0, meta.length - 1);
+            metaLines.push(meta);
+        }
+        return metaLines;
+    }, [] as string[]);
+}

@@ -234,7 +234,7 @@ export class PlyRequest implements Request, PlyTest {
                 response.getResponse(
                     runId,
                     runtime.options,
-                    runOptions?.submit ? undefined : runtime.responseHeaders,
+                    runOptions?.submit ? undefined : runtime.responseMassagers,
                     true
                 )
             );

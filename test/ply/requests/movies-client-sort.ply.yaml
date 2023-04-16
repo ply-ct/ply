@@ -1,0 +1,11 @@
+moviesSortByPoster:
+  url: ${baseUrl}/movies?year=1936&rating=3.5
+  method: GET
+  headers:
+    Accept: application/json
+
+moviesSortByYear:
+  url: ${baseUrl}/movies?rating=5
+  method: GET
+  headers:
+    Accept: application/json

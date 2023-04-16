@@ -12,7 +12,7 @@ import { Retrieval } from './retrieval';
 import { EventEmitter } from 'events';
 import { Plyee } from './ply';
 import { PlyEvent, SuiteEvent, OutcomeEvent } from './event';
-import { PlyResponse } from './response';
+import { PlyResponse, ResponseMassagers } from './response';
 import { TsCompileOptions } from './compile';
 import StackTracey from 'stacktracey';
 import { isLogger } from './logger';
@@ -174,7 +174,7 @@ export class Suite<T extends Test> {
         if (!runValues[RUN_ID]) {
             runValues[RUN_ID] = util.genId();
         }
-        this.runtime.responseHeaders = undefined;
+        this.runtime.responseMassagers = undefined;
 
         let callingCaseInfo: CallingCaseInfo | undefined;
         try {
@@ -245,7 +245,7 @@ export class Suite<T extends Test> {
                 this.emitTest(test);
                 // determine wanted headers (for requests)
                 if (test.type === 'request') {
-                    this.runtime.responseHeaders = await this.getExpectedResponseHeaders(
+                    this.runtime.responseMassagers = await this.getResponseMassagers(
                         test.name,
                         callingCaseInfo?.caseName,
                         instNum
@@ -453,11 +453,11 @@ export class Suite<T extends Test> {
         results.push(result);
     }
 
-    private async getExpectedResponseHeaders(
+    private async getResponseMassagers(
         requestName: string,
         caseName?: string,
         instNum = 0
-    ): Promise<string[] | undefined> {
+    ): Promise<ResponseMassagers | undefined> {
         if (await this.runtime.results.expectedExists(caseName ? caseName : requestName, instNum)) {
             const yml = await this.runtime.results.getExpectedYaml(
                 caseName ? caseName : requestName
@@ -476,7 +476,39 @@ export class Suite<T extends Test> {
             if (obj) {
                 const response = obj?.response;
                 if (response) {
-                    return response.headers ? Object.keys(response.headers) : [];
+                    const massagers: ResponseMassagers = {};
+                    massagers.headers = response.headers ? Object.keys(response.headers) : [];
+                    if (response.body && util.isJson(response.body)) {
+                        for (const meta of yaml.metas(yml.text)) {
+                            if (meta.startsWith('sort(') && meta.endsWith(')')) {
+                                const comma = meta.indexOf(',');
+                                if (comma > 0 && comma < meta.length - 1) {
+                                    let expr = meta.substring(5, comma).trim();
+                                    if (expr.startsWith('`') && expr.endsWith('`')) {
+                                        expr = expr.substring(1, expr.length - 1);
+                                    }
+                                    if (expr.startsWith('${') && expr.endsWith('}')) {
+                                        let value = meta
+                                            .substring(comma + 1, meta.length - 1)
+                                            .trim();
+                                        if (
+                                            (value.startsWith('"') && value.endsWith('"')) ||
+                                            (value.startsWith("'") && value.endsWith("'"))
+                                        ) {
+                                            value = value.substring(1, value.length - 1);
+                                        }
+                                        if (expr && value) {
+                                            massagers.arraySorts = {
+                                                ...(massagers.arraySorts || {}),
+                                                [expr]: value
+                                            };
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return massagers;
                 }
             }
         }

@@ -59,7 +59,7 @@ export class FlowSuite extends Suite<Step> {
 
         // runtime values are a deep copy of passed values
         const runValues = JSON.parse(JSON.stringify(values));
-        this.runtime.responseHeaders = undefined;
+        this.runtime.responseMassagers = undefined;
 
         let results: Result[];
         if (this.isFlowSpec(steps)) {

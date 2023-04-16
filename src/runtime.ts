@@ -6,6 +6,7 @@ import { PlyOptions } from './options';
 import { ResultPaths } from './result';
 import { TEST, BEFORE, AFTER, SUITE } from './names';
 import { TestSuite, TestCase, Before, After } from './decorators';
+import { ResponseMassagers } from './response';
 
 /**
  * Runtime information for a test suite.
@@ -17,7 +18,7 @@ export class Runtime {
     /**
      * Verified response header names.
      */
-    responseHeaders: string[] | undefined;
+    responseMassagers?: ResponseMassagers;
 
     constructor(
         readonly options: PlyOptions,

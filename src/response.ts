@@ -1,5 +1,6 @@
-import { Options } from './options';
+import { safeEval } from 'flowbee';
 import stringify from 'json-stable-stringify';
+import { Options } from './options';
 import { fixEol } from './util';
 
 export interface Status {
@@ -25,8 +26,10 @@ export class PlyResponse implements Response {
     ) {}
 
     /**
-     * Orders body object keys unless suppressed by options.  Does not substitute values.
-     * Response header keys are always lowercase
+     * Orders body object keys unless suppressed by options.
+     * Sorts arrays if...
+     * Does not substitute values.
+     * Response header keys are always lowercase.
      * @param runId
      * @param options
      * @param wantedHeaders optional name of headers subset to keep
@@ -35,11 +38,11 @@ export class PlyResponse implements Response {
     getResponse(
         runId: string,
         options: Options,
-        wantedHeaders?: string[],
+        massagers?: ResponseMassagers,
         stringBody = false
     ): PlyResponse {
         const headers: any = {};
-        const headerNames = wantedHeaders || Object.keys(this.headers);
+        const headerNames = massagers?.headers || Object.keys(this.headers);
         headerNames.forEach((h) => {
             headers[h.toLowerCase()] = this.headers[h];
         });
@@ -55,6 +58,26 @@ export class PlyResponse implements Response {
                 if (options.verbose) console.debug(err);
             }
         }
+
+        if (typeof body === 'object' && massagers?.arraySorts) {
+            for (const expr of Object.keys(massagers.arraySorts)) {
+                if (expr === '${response.body}' || expr.startsWith('${response.body.')) {
+                    const arr = safeEval(expr, { response: { body } });
+                    if (Array.isArray(arr)) {
+                        const prop = massagers.arraySorts[expr];
+                        arr.sort((a1, a2) => {
+                            const v1 = a1[prop];
+                            const v2 = a2[prop];
+                            if (v1 === undefined && v2 !== undefined) return -1;
+                            if (v2 === undefined && v1 !== undefined) return 1;
+                            if (typeof v1 === 'number' && typeof v2 === 'number') return v1 - v2;
+                            return ('' + v1).localeCompare('' + v2);
+                        });
+                    }
+                }
+            }
+        }
+
         if (stringBody && typeof body === 'object') {
             if (options.responseBodySortedKeys) {
                 body = stringify(body, { space: ''.padStart(options.prettyIndent || 0, ' ') });
@@ -85,4 +108,9 @@ export class PlyResponse implements Response {
 
         return new PlyResponse(runId, this.status, headers, body, this.time);
     }
+}
+
+export interface ResponseMassagers {
+    headers?: string[];
+    arraySorts?: { [expr: string]: string };
 }

@@ -1,0 +1,479 @@
+moviesSortByPoster: #! sort(${response.body.movies}, poster)
+  request:
+    url: ${baseUrl}/movies?year=1936&rating=3.5
+    method: GET
+    headers:
+      Accept: application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      content-type: application/json; charset=utf-8
+    body: |-
+      {
+        "movies": [
+          {
+            "credits": [
+              {
+                "name": "Tod Browning",
+                "role": "director"
+              },
+              {
+                "name": "Lionel Barrymore",
+                "role": "actor"
+              },
+              {
+                "name": "Maureen O'Sullivan",
+                "role": "actor"
+              },
+              {
+                "name": "Frank Lawton",
+                "role": "actor"
+              },
+              {
+                "name": "Rafaela Ottiano",
+                "role": "actor"
+              }
+            ],
+            "description": "Lionel Barrymore rarely appeared in horror films, and his performance in this one is delightfully entertaining, especially when he dons the guise of an old woman to exact revenge against his enemies.",
+            "id": "bef1cbd4",
+            "poster": "dd.jpg",
+            "rating": 3.5,
+            "title": "The Devil Doll",
+            "webRef": {
+              "ref": "tt0027521",
+              "site": "imdb.com"
+            },
+            "year": 1936
+          },
+          {
+            "credits": [
+              {
+                "name": "Charles Lamont",
+                "role": "director"
+              },
+              {
+                "name": "Ray Walker",
+                "role": "actor"
+              },
+              {
+                "name": "Berton Churchill",
+                "role": "actor"
+              },
+              {
+                "name": "Irene Ware",
+                "role": "actor"
+              },
+              {
+                "name": "Hobart Bosworth",
+                "role": "actor"
+              },
+              {
+                "name": "Hedda Hopper",
+                "role": "actor"
+              },
+              {
+                "name": "E. E. Clive",
+                "role": "actor"
+              }
+            ],
+            "description": "Here we have a well put-together murder mystery from Chesterfield pictures with just perhaps one twist too many at its resolution, and one ridiculous deduction too many by its sleuth.",
+            "id": "1947dbd7",
+            "poster": "dh.jpg",
+            "rating": 3.5,
+            "title": "The Dark Hour",
+            "webRef": {
+              "ref": "tt0027501",
+              "site": "imdb.com"
+            },
+            "year": 1936
+          },
+          {
+            "credits": [
+              {
+                "name": "Frank R. Strayer",
+                "role": "director"
+              },
+              {
+                "name": "John Miljan",
+                "role": "actor"
+              },
+              {
+                "name": "Irene Ware",
+                "role": "actor"
+              },
+              {
+                "name": "Iris Adrian",
+                "role": "actor"
+              },
+              {
+                "name": "Noel Madison",
+                "role": "actor"
+              },
+              {
+                "name": "Oscar Apfel",
+                "role": "actor"
+              }
+            ],
+            "description": "This is a first-rate detective thriller from the Poverty Row production company Invincible Pictures, with a stalwart cast, nicely-paced direction by Frank Strayer, and a couple of truly horrific murders to boot.",
+            "id": "2fcb26c2",
+            "poster": "maga.jpg",
+            "rating": 3.5,
+            "title": "Murder at Glen Athol",
+            "webRef": {
+              "ref": "tt0028000",
+              "site": "imdb.com"
+            },
+            "year": 1936
+          },
+          {
+            "credits": [
+              {
+                "name": "Edwin L. Marin",
+                "role": "director"
+              },
+              {
+                "name": "Chester Morris",
+                "role": "actor"
+              },
+              {
+                "name": "Madge Evans",
+                "role": "actor"
+              },
+              {
+                "name": "Leo Carrillo",
+                "role": "actor"
+              },
+              {
+                "name": "Frank McHugh",
+                "role": "actor"
+              },
+              {
+                "name": "Benita Hume",
+                "role": "actor"
+              }
+            ],
+            "description": "The production values and cast are outstanding in this MGM mystery which takes place during an opera staged at the Hollywood Bowl, but the story is somewhat jumbled due to continuity issues introduced during editing.",
+            "id": "b277e7a4",
+            "poster": "mmrdr.jpg",
+            "rating": 3.5,
+            "title": "Moonlight Murder",
+            "webRef": {
+              "ref": "tt0027980",
+              "site": "imdb.com"
+            },
+            "year": 1936
+          },
+          {
+            "credits": [
+              {
+                "name": "Lambert Hillyer",
+                "role": "director"
+              },
+              {
+                "name": "Boris Karloff",
+                "role": "actor"
+              },
+              {
+                "name": "Bela Lugosi",
+                "role": "actor"
+              },
+              {
+                "name": "Frances Drake",
+                "role": "actor"
+              },
+              {
+                "name": "Frank Lawton",
+                "role": "actor"
+              }
+            ],
+            "description": "In their movies Karloff and Lugosi seem to take turns playing the heavy, and this time it's Karloff delivering nicely as the demented scientist while Lugosi plays the kindly doctor in a surprisingly suspenseful Universal feature.",
+            "id": "ede9938e",
+            "poster": "tir.jpg",
+            "rating": 3.5,
+            "title": "The Invisible Ray",
+            "webRef": {
+              "ref": "tt0027800",
+              "site": "imdb.com"
+            },
+            "year": 1936
+          }
+        ]
+      }
+
+moviesSortByYear: #! sort(${response.body.movies}, year)
+  request:
+    url: ${baseUrl}/movies?rating=5
+    method: GET
+    headers:
+      Accept: application/json
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      content-type: application/json; charset=utf-8
+    body: |-
+      {
+        "movies": [
+          {
+            "credits": [
+              {
+                "name": "Tod Browning",
+                "role": "director"
+              },
+              {
+                "name": "Bela Lugosi",
+                "role": "actor"
+              },
+              {
+                "name": "Helen Chandler",
+                "role": "actor"
+              },
+              {
+                "name": "David Manners",
+                "role": "actor"
+              },
+              {
+                "name": "Dwight Frye",
+                "role": "actor"
+              },
+              {
+                "name": "Edward Van Sloan",
+                "role": "actor"
+              }
+            ],
+            "description": "What's even more amazing than Lugosi's out-of-body performance is the fact that the finest horror movie ever made was filmed within 2 years of the advent of talking pictures.",
+            "id": "269b34c1",
+            "poster": "drac.jpg",
+            "rating": 5,
+            "title": "Dracula",
+            "webRef": {
+              "ref": "tt0021814",
+              "site": "imdb.com"
+            },
+            "year": 1931
+          },
+          {
+            "credits": [
+              {
+                "name": "James Whale",
+                "role": "director"
+              },
+              {
+                "name": "Boris Karloff",
+                "role": "actor"
+              },
+              {
+                "name": "Colin Clive",
+                "role": "actor"
+              },
+              {
+                "name": "Mae Clarke",
+                "role": "actor"
+              },
+              {
+                "name": "John Boles",
+                "role": "actor"
+              },
+              {
+                "name": "Dwight Frye",
+                "role": "actor"
+              }
+            ],
+            "description": "Frankenstein solidified Universal's place as the premier horror studio of the era, and stands as the definitive American take on the school of German Expressionism.",
+            "id": "e2bca0d",
+            "poster": "frank.jpg",
+            "rating": 5,
+            "title": "Frankenstein",
+            "webRef": {
+              "ref": "tt0021884",
+              "site": "imdb.com"
+            },
+            "year": 1931
+          },
+          {
+            "credits": [
+              {
+                "name": "Rouben Mamoulian",
+                "role": "director"
+              },
+              {
+                "name": "Frederic March",
+                "role": "actor"
+              },
+              {
+                "name": "Miriam Hopkins",
+                "role": "actor"
+              },
+              {
+                "name": "Rose Hobart",
+                "role": "actor"
+              },
+              {
+                "name": "Holmes Herbert",
+                "role": "actor"
+              }
+            ],
+            "description": "A superb example of pre-code suggestiveness as well as expressionistic horror, this film features fine performances from both March and Hopkins, along with outstanding makeup effects on the transformed Mr. Hyde.",
+            "id": "c610e671",
+            "poster": "djmh32.jpg",
+            "rating": 5,
+            "title": "Dr. Jekyll and Mr. Hyde",
+            "webRef": {
+              "ref": "tt0022835",
+              "site": "imdb.com"
+            },
+            "year": 1932
+          },
+          {
+            "credits": [
+              {
+                "name": "Erle C. Kenton",
+                "role": "director"
+              },
+              {
+                "name": "Charles Laughton",
+                "role": "actor"
+              },
+              {
+                "name": "Bela Lugosi",
+                "role": "actor"
+              },
+              {
+                "name": "Richard Arlen",
+                "role": "actor"
+              },
+              {
+                "name": "Leila Hyams",
+                "role": "actor"
+              },
+              {
+                "name": "Kathleen Burke",
+                "role": "actor"
+              }
+            ],
+            "description": "Despite the misleading promotional copy in the poster, it's Charles Laughton's deliciously evil Dr. Moreau that dominates this film and lifts it beyond the typical horror adventure piece; although Kathleen Burke certainly does deliver quite a fetching turn as Lota the panther woman.",
+            "id": "76f99918",
+            "poster": "iols.jpg",
+            "rating": 5,
+            "title": "Island of Lost Souls",
+            "webRef": {
+              "ref": "tt0024188",
+              "site": "imdb.com"
+            },
+            "year": 1932
+          },
+          {
+            "credits": [
+              {
+                "name": "James Whale",
+                "role": "director"
+              },
+              {
+                "name": "Boris Karloff",
+                "role": "actor"
+              },
+              {
+                "name": "Melvyn Douglas",
+                "role": "actor"
+              },
+              {
+                "name": "Charles Laughton",
+                "role": "actor"
+              },
+              {
+                "name": "Lilian Bond",
+                "role": "actor"
+              },
+              {
+                "name": "Ernest Thesiger",
+                "role": "actor"
+              }
+            ],
+            "description": "James Whale shows once again that he is the supreme master of cinematic horror in all its facets, from atmosphere to characterization to lighting effects; from comic timing to romantic interludes to action choreography.",
+            "id": "5551e85c",
+            "poster": "todh.jpg",
+            "rating": 5,
+            "title": "The Old Dark House",
+            "webRef": {
+              "ref": "tt0023293",
+              "site": "imdb.com"
+            },
+            "year": 1932
+          },
+          {
+            "credits": [
+              {
+                "name": "James Whale",
+                "role": "director"
+              },
+              {
+                "name": "Claude Rains",
+                "role": "actor"
+              },
+              {
+                "name": "Gloria Stuart",
+                "role": "actor"
+              },
+              {
+                "name": "William Harrigan",
+                "role": "actor"
+              },
+              {
+                "name": "Henry Travers",
+                "role": "actor"
+              }
+            ],
+            "description": "From the opening scene with Claude Rains stumbling around in a blizzard, the desolation of H.G. Wells' story is depicted with chilling atmospherics and astonishing special effects.",
+            "id": "b1cd7001",
+            "poster": "tim.jpg",
+            "rating": 5,
+            "title": "The Invisible Man",
+            "webRef": {
+              "ref": "tt0024184",
+              "site": "imdb.com"
+            },
+            "year": 1933
+          },
+          {
+            "credits": [
+              {
+                "name": "James Whale",
+                "role": "director"
+              },
+              {
+                "name": "Boris Karloff",
+                "role": "actor"
+              },
+              {
+                "name": "Colin Clive",
+                "role": "actor"
+              },
+              {
+                "name": "Valerie Hobson",
+                "role": "actor"
+              },
+              {
+                "name": "Ernest Thesiger",
+                "role": "actor"
+              },
+              {
+                "name": "Dwight Frye",
+                "role": "actor"
+              }
+            ],
+            "description": "James Whale's poignant, horrifying, hilarious masterpiece demonstrates his genius and surpasses the original as a cathartic, visionary tour de force.",
+            "id": "f236166",
+            "poster": "tbof.jpg",
+            "rating": 5,
+            "title": "Bride of Frankenstein",
+            "webRef": {
+              "ref": "tt0026138",
+              "site": "imdb.com"
+            },
+            "year": 1935
+          }
+        ]
+      }
