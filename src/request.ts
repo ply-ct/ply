@@ -17,7 +17,7 @@ export interface Request extends Test {
     headers: { [key: string]: string };
     body?: string;
     submitted?: Date;
-    submit(values: object): Promise<Response>;
+    submit(values: object, options?: Options, runOptions?: RunOptions): Promise<Response>;
 }
 
 export class PlyRequest implements Request, PlyTest {

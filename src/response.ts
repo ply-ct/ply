@@ -1,7 +1,7 @@
 import { safeEval } from 'flowbee';
 import stringify from 'json-stable-stringify';
 import { Options } from './options';
-import { fixEol, isBinary } from './util';
+import { fixEol, isBinary, uintArrayToString } from './util';
 
 export interface Status {
     code: number;
@@ -65,8 +65,7 @@ export class PlyResponse implements Response {
 
         if (isBinary(this.headers, options)) {
             if (body) {
-                const uintArray = new Uint8Array(body);
-                body = new TextDecoder().decode(uintArray);
+                body = uintArrayToString(new Uint8Array(body));
             }
         } else if (typeof body === 'object' && massagers?.arraySorts) {
             for (const expr of Object.keys(massagers.arraySorts)) {

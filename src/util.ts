@@ -130,6 +130,17 @@ export function isBinary(headers?: { [key: string]: string }, options?: Options)
     );
 }
 
+/**
+ * Round trip friendly to decoding
+ */
+export function uintArrayToString(uintArray: Uint8Array): string {
+    return String.fromCharCode(...uintArray);
+}
+
+export function stringToUintArray(str: string): Uint8Array {
+    return Uint8Array.from([...str].map((ch) => ch.charCodeAt(0)));
+}
+
 let cachedPlyVersion = '';
 export function plyVersion(): Promise<string> {
     return new Promise((resolve, reject) => {
