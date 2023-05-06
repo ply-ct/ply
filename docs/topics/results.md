@@ -193,4 +193,16 @@ moviesSortById: #! sort(${response.body.movies}, id)
 Example flow expected results in ply-demo with client sorting:  
 https://github.com/ply-ct/ply-demo/blob/main/test/results/expected/flows/movies-client-sort.yaml
 
+## Flattening Operators <span style="color:#50C878;font-size:smaller;">*preview*</span>
+Flattening operators make it easier to compare whole response body segments for single-line diff results.
+This is especially useful when there's an object or array whose value you don't care about. When a flattening
+operator appears in expected results, the corresponding actual counterpart appears on a single line.
+
+| Operator | Description |
+| :------- | :---------- |
+| **<code>${=</code>**  | Flattened JSON (or XML or HTML)
+| **<code>${=~</code>** | Flattened matched against regex
+| **<code>${?</code>**  | Optional JSON or markup - may not be present
+| **<code>${?~</code>** | Optional matched against regex
+
 Next Topic: [Flows](flows)

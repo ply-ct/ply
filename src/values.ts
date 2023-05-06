@@ -8,6 +8,7 @@ import { parse as csvParse } from 'csv-parse';
 import { transform } from 'stream-transform';
 import readXlsx from 'read-excel-file/node';
 import { Retrieval } from './retrieval';
+import { parseJsonc } from './json';
 import { Log } from './log';
 
 export type ValueType = string | number | boolean | Date | null;
@@ -52,7 +53,7 @@ export class Values {
                 const contents = await new Retrieval(location).read();
                 if (contents) {
                     try {
-                        valueObjects[location] = JSON.parse(contents);
+                        valueObjects[location] = parseJsonc(location, contents);
                     } catch (err: any) {
                         throw new Error(`Cannot parse values file: ${location} (${err.message})`);
                     }

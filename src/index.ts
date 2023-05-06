@@ -24,7 +24,7 @@ export { Importer, ImportOptions } from './import/model';
 export { Values } from './values';
 export { suite, test, before, after } from './decorators';
 export { load as loadYaml, dump as dumpYaml, merge as mergeYaml } from './yaml';
-export { merge as mergeJson } from './json';
+export { parseJsonc, merge as mergeJson } from './json';
 export { replace } from './replace';
 export * as util from './util';
 export * as openapi from './plyex/openapi';
