@@ -1,6 +1,6 @@
 {
   "name": "@ply-ct/ply",
-  "version": "3.2.3",
+  "version": "3.2.4",
   "description": "REST API Automated Testing",
   "main": "dist",
   "bin": {
@@ -53,7 +53,7 @@
     "csv-parse": "^5.3.5",
     "diff-match-patch": "^1.0.5",
     "find-up": "^5.0.0",
-    "flowbee": "^1.0.5",
+    "flowbee": "^1.0.6",
     "form-data": "^4.0.0",
     "glob": "^8.1.0",
     "handlebars": "^4.7.7",
@@ -72,7 +72,7 @@
     "yargs": "^16.2.0"
   },
   "devDependencies": {
-    "@ply-ct/ply-movies": "^1.2.1",
+    "@ply-ct/ply-movies": "^1.2.2",
     "@types/chai": "^4.3.4",
     "@types/diff-match-patch": "^1.0.32",
     "@types/glob": "^8.0.1",
