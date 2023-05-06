@@ -1,7 +1,7 @@
 import { safeEval } from 'flowbee';
 import stringify from 'json-stable-stringify';
 import { Options } from './options';
-import { fixEol } from './util';
+import { fixEol, isBinary } from './util';
 
 export interface Status {
     code: number;
@@ -11,6 +11,9 @@ export interface Status {
 export interface Response {
     status: Status;
     headers: { [key: string]: string };
+    /**
+     * Body can be text, object, ArrayBuffer, or undefined.
+     */
     body?: any;
     submitted?: Date;
     time?: number;
@@ -30,6 +33,7 @@ export class PlyResponse implements Response {
      * Sorts arrays if...
      * Does not substitute values.
      * Response header keys are always lowercase.
+     * Binary response body is rendered as text.
      * @param runId
      * @param options
      * @param wantedHeaders optional name of headers subset to keep
@@ -41,7 +45,7 @@ export class PlyResponse implements Response {
         massagers?: ResponseMassagers,
         stringBody = false
     ): PlyResponse {
-        const headers: any = {};
+        const headers: { [key: string]: string } = {};
         const headerNames = massagers?.headers || Object.keys(this.headers);
         headerNames.forEach((h) => {
             headers[h.toLowerCase()] = this.headers[h];
@@ -59,7 +63,12 @@ export class PlyResponse implements Response {
             }
         }
 
-        if (typeof body === 'object' && massagers?.arraySorts) {
+        if (isBinary(this.headers, options)) {
+            if (body) {
+                const uintArray = new Uint8Array(body);
+                body = new TextDecoder().decode(uintArray);
+            }
+        } else if (typeof body === 'object' && massagers?.arraySorts) {
             for (const expr of Object.keys(massagers.arraySorts)) {
                 if (expr === '${response.body}' || expr.startsWith('${response.body.')) {
                     const arr = safeEval(expr, { response: { body } });

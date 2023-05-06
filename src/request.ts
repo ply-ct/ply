@@ -87,6 +87,7 @@ export class PlyRequest implements Request, PlyTest {
         return await this.doSubmit(
             this.getRunId(values),
             this.getRequest(values, options, runOptions, true),
+            options,
             runOptions
         );
     }
@@ -94,6 +95,7 @@ export class PlyRequest implements Request, PlyTest {
     private async doSubmit(
         runId: string,
         requestObj: Request,
+        options?: Options,
         runOptions?: RunOptions
     ): Promise<PlyResponse> {
         const before = new Date().getTime();
@@ -118,7 +120,12 @@ export class PlyRequest implements Request, PlyTest {
         const response = await fetch(requestObj.url, fetchRequest);
         const status = { code: response.status, message: response.statusText };
         const headers = this.responseHeaders(response.headers);
-        const body = await response.text();
+        let body: any;
+        if (util.isBinary(headers, options)) {
+            body = await response.arrayBuffer();
+        } else {
+            body = await response.text();
+        }
         const time = new Date().getTime() - before;
         const plyResponse = new PlyResponse(runId, status, headers, body, time);
         if (runOptions?.submit) {
@@ -215,7 +222,7 @@ export class PlyRequest implements Request, PlyTest {
         }
         const runId = this.getRunId(values);
         try {
-            const response = await this.doSubmit(runId, requestObject, runOpts);
+            const response = await this.doSubmit(runId, requestObject, runtime.options, runOpts);
             if (
                 response.headers &&
                 (runOptions?.createExpected ||

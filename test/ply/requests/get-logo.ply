@@ -1,0 +1,5 @@
+get-logo:
+  url: https://raw.githubusercontent.com/ply-ct/ply/main/docs/img/ply.png
+  method: GET
+  headers:
+    Authorization: Bearer ${github.token}

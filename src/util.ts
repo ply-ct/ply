@@ -1,5 +1,6 @@
 import * as process from 'process';
 import * as fs from 'fs';
+import { Options } from './options';
 
 /**
  * Turn a date into a timestamp based on the OS locale
@@ -117,6 +118,16 @@ export function header(
     const key = name.toLowerCase();
     const match = Object.keys(headers).find((h) => h.toLowerCase() === key);
     if (match) return [match, headers[match]];
+}
+
+export function isBinary(headers?: { [key: string]: string }, options?: Options): boolean {
+    if (!headers || !options?.binaryMediaTypes) return false;
+    const contentTypeKey = Object.keys(headers).find((k) => k.toLowerCase() === 'content-type');
+    if (!contentTypeKey) return false;
+    const contentType = headers[contentTypeKey];
+    return !!options.binaryMediaTypes.find(
+        (mt) => mt === contentType || mt.startsWith(`${contentType};`)
+    );
 }
 
 let cachedPlyVersion = '';

@@ -100,6 +100,10 @@ export interface Options {
      */
     genExcludeResponseHeaders?: string[];
     /**
+     * Media types to be treated as binary.
+     */
+    binaryMediaTypes?: string[];
+    /**
      * Prettification indent for yaml and response body (2).
      */
     prettyIndent?: number;
@@ -131,6 +135,7 @@ export interface PlyOptions extends Options {
     maxLoops: number;
     responseBodySortedKeys: boolean;
     genExcludeResponseHeaders?: string[];
+    binaryMediaTypes?: string[];
     prettyIndent: number;
     args?: any;
     runOptions?: RunOptions;
@@ -252,6 +257,13 @@ export class Defaults implements PlyOptions {
         'transfer-encoding',
         'x-powered-by'
     ];
+    binaryMediaTypes = [
+        'application/octet-stream',
+        'image/png',
+        'image/jpeg',
+        'image/gif',
+        'application/pdf'
+    ];
     prettyIndent = 2;
 }
 
@@ -368,6 +380,10 @@ export class Config {
             describe: 'Exclude from generated results',
             type: 'string'
         },
+        binaryMediaTypes: {
+            describe: 'Binary media types',
+            type: 'string'
+        },
         prettyIndent: {
             describe: 'Format response JSON'
         }
@@ -462,7 +478,14 @@ export class Config {
                     v.toLowerCase()
                 );
             }
-
+            if (opts.binaryMediaTypes) {
+                if (typeof opts.binaryMediaTypes === 'string') {
+                    opts.binaryMediaTypes = opts.binaryMediaTypes
+                        .split(',')
+                        .map((v: string) => v.trim());
+                }
+                opts.binaryMediaTypes = opts.binaryMediaTypes.map((v: string) => v.toLowerCase());
+            }
             opts.args = opts._;
             delete opts._;
         } else {

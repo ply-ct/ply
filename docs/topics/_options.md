@@ -23,4 +23,5 @@
 | **<code>maxLoops</code>**<br>**<code>--maxLoops</code>** | `10` | (When flows have loopback links). Max instance count per step. Overridable in flow design. 
 | **<code>responseBodySortedKeys</code>**<br>**<code>--responseBodySortedKeys</code>** | `true` | Predictable ordering of response body JSON property keys in result files. Usually needed for verification.
 | **<code>genExcludeResponseHeaders</code>**<br>**<code>--genExcludeResponseHeaders</code>** | `cache-control,`<br>`connection,`<br>`content-length,`<br>`date,`<br>`etag,`<br>`server,` <br>`transfer-encoding`, <br>`x-powered-by` | Response headers to exclude when generating expected results.
+| **<code>binaryMediaTypes</code>**<br>**<code>--binaryMediaTypes</code>** | `application/octet-stream,`<br>`image/png,`<br>`image/jpeg,`<br>`image/gif,`<br>`application/pdf` | Media types to be treated as binary (ArrayBuffer) in responses.
 | **<code>prettyIndent</code>**<br>**<code>--prettyIndent</code>** | `2` | JSON format indenting for response body content in result files.
