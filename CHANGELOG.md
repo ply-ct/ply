@@ -1,5 +1,9 @@
 # Change Log
 
+## [3.2.4](https://github.com/ply-ct/vscode-ply/tree/3.2.4) (2023-05-06)
+- Enhancement: Support jsonc for values files [\#72](https://github.com/ply-ct/ply/issues/72)
+- Enhancement: Config/option for binaryMediaTypes [\#73](https://github.com/ply-ct/ply/issues/73)
+
 ## [3.2.3](https://github.com/ply-ct/vscode-ply/tree/3.2.3) (2023-04-16)
 - Enhancement: Client sorting of response body array [\#69](https://github.com/ply-ct/ply/issues/69)
 - Bug: Previous results excluded from flow step expression eval [\#70](https://github.com/ply-ct/ply/issues/70)
