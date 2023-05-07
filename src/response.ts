@@ -1,7 +1,7 @@
 import { safeEval } from 'flowbee';
 import stringify from 'json-stable-stringify';
 import { Options } from './options';
-import { fixEol, isBinary, uintArrayToString } from './util';
+import { fixEol, isBinary, uintArrayToBase64 } from './util';
 
 export interface Status {
     code: number;
@@ -33,7 +33,7 @@ export class PlyResponse implements Response {
      * Sorts arrays if...
      * Does not substitute values.
      * Response header keys are always lowercase.
-     * Binary response body is rendered as text.
+     * Binary response body is base64 encoded.
      * @param runId
      * @param options
      * @param wantedHeaders optional name of headers subset to keep
@@ -65,7 +65,7 @@ export class PlyResponse implements Response {
 
         if (isBinary(this.headers, options)) {
             if (body) {
-                body = uintArrayToString(new Uint8Array(body));
+                body = uintArrayToBase64(new Uint8Array(body));
             }
         } else if (typeof body === 'object' && massagers?.arraySorts) {
             for (const expr of Object.keys(massagers.arraySorts)) {

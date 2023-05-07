@@ -130,15 +130,12 @@ export function isBinary(headers?: { [key: string]: string }, options?: Options)
     );
 }
 
-/**
- * Round trip friendly to decoding
- */
-export function uintArrayToString(uintArray: Uint8Array): string {
-    return String.fromCharCode(...uintArray);
+export function uintArrayToBase64(uintArray: Uint8Array): string {
+    return Buffer.from(uintArray).toString('base64');
 }
 
-export function stringToUintArray(str: string): Uint8Array {
-    return Uint8Array.from([...str].map((ch) => ch.charCodeAt(0)));
+export function base64ToUintArray(str: string): Uint8Array {
+    return new Uint8Array(Buffer.from(str, 'base64'));
 }
 
 let cachedPlyVersion = '';

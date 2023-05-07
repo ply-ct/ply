@@ -7,7 +7,7 @@
       "name": "cli",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/dist/cli.js",
-      "args": ["--trusted", "test/ply/flows/binary.ply.flow"],
+      "args": ["--create", "test/ply/requests/get-logo.ply"],
       "preLaunchTask": "tsc: build - tsconfig.json"
     }
   ]

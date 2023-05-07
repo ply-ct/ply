@@ -46,7 +46,7 @@ export interface Result extends Outcome {
     readonly request?: Request;
     /**
      * Response maybe with ignore headers removed, and formatted/sorted body content (per options).
-     * If binary media type, response body is converted to text.
+     * If binary media type, response body is base64 encoded.
      */
     readonly response?: Response;
 }
