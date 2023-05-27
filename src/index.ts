@@ -37,4 +37,5 @@ export * from './runs/model';
 export * from './runs/runs';
 export * from './report/report';
 export * from './report/json';
+export * from './names';
 export default new Ply();
