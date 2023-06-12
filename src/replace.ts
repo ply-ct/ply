@@ -1,7 +1,7 @@
+import { resolve } from '@ply-ct/ply-values';
 import { Log } from './log';
 import * as util from './util';
 import { RESULTS } from './names';
-import { resolve } from 'flowbee';
 
 export interface ReplaceOptions {
     logger?: Log;

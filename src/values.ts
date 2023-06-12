@@ -2,7 +2,7 @@ import * as process from 'process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as stream from 'stream';
-import { ValuesAccess } from 'flowbee';
+import { Values as ValuesAccess, ValuesHolder } from '@ply-ct/ply-values';
 import { merge } from 'merge-anything';
 import { parse as csvParse } from 'csv-parse';
 import { transform } from 'stream-transform';
@@ -45,7 +45,7 @@ export class Values {
         }
 
         this.values = {};
-        const valueObjects: { [loc: string]: object } = {};
+        const valuesHolders: ValuesHolder[] = [];
         for (const location of this.enabledLocs) {
             if (location.endsWith('.csv') || location.endsWith('.xlsx')) {
                 this.logger.debug(`Delayed load rowwise values file" ${location}`);
@@ -53,7 +53,10 @@ export class Values {
                 const contents = await new Retrieval(location).read();
                 if (contents) {
                     try {
-                        valueObjects[location] = parseJsonc(location, contents);
+                        valuesHolders.push({
+                            values: parseJsonc(location, contents),
+                            location: { path: location }
+                        });
                     } catch (err: any) {
                         throw new Error(`Cannot parse values file: ${location} (${err.message})`);
                     }
@@ -64,7 +67,7 @@ export class Values {
                 }
             }
         }
-        this.values = new ValuesAccess(valueObjects, process.env).values;
+        this.values = new ValuesAccess(valuesHolders, { env: process.env }).getValues();
         this.logger.debug('Values', this.values);
         return this.values;
     }

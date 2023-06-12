@@ -1,4 +1,4 @@
-import { safeEval } from 'flowbee';
+import { safeEval } from '@ply-ct/ply-values';
 import stringify from 'json-stable-stringify';
 import { Options } from './options';
 import { fixEol, isBinary, uintArrayToBase64 } from './util';
