@@ -2,7 +2,7 @@
 layout: topic
 ---
 # Testkube
-The Ply [Testkube](https://testkube.io/) executor is available in [Docker Hub](https://hub.docker.com/) at `plyct/ply-testkube`.
+The Ply [Testkube](https://testkube.io/) executor is available in [Docker Hub](https://hub.docker.com/) at `plyct/ply-testkube:1.0.1`.
 
 ## Create Ply Testkube executor
 ```
@@ -22,7 +22,7 @@ kubectl testkube run test ply-demo --args "values-files=test/values/global.json,
 ```
 Or to run specific Ply tests:
 ```
-kubectl testkube run test ply-demo --args "values-files=test/values/global.json,test/values/ply-ct.json test-files=test/requests/movie-queries.ply.yaml,test/flows/movies-api.ply.flow verbose=true npmInstall=true"
+kubectl testkube run test ply-demo --args "values-files=test/values/global.json,test/values/ply-ct.json test-files=test/requests/movie-queries.ply.yaml,test/flows/get-movies.ply.flow"
 ```
 
 <br>
