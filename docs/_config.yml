@@ -48,6 +48,9 @@ topics:
       - label: GitHub Action
         nav: action
         tags: github, action, ci, cd, badge
+      - label: Testkube
+        nav: testkube
+        tags: testkube, kubernetes
   - category: Reference
     topics:
       - label: CLI

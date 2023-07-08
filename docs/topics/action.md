@@ -76,4 +76,4 @@ In that case, specify the path to an overall Ply results file created using the 
 | github-token |                          | GitHub token for pushing badge updates. Required if badge-branch input is specified.                  |
 
 <br>
-Next Topic: [CLI](cli)
+Next Topic: [Testkube](testkube)
