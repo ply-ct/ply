@@ -1,5 +1,9 @@
 # Change Log
 
+## [3.2.6](https://github.com/ply-ct/vscode-ply/tree/3.2.6) (2023-07-15)
+- Enhancement: Externalize values to ply-values [\#75](https://github.com/ply-ct/ply/issues/75)
+- Dependencies: Bump dependencies [\#76](https://github.com/ply-ct/ply/issues/76)
+
 ## [3.2.4](https://github.com/ply-ct/vscode-ply/tree/3.2.4) (2023-05-06)
 - Enhancement: Support jsonc for values files [\#72](https://github.com/ply-ct/ply/issues/72)
 - Enhancement: Config/option for binaryMediaTypes [\#73](https://github.com/ply-ct/ply/issues/73)
