@@ -1,5 +1,9 @@
 # Change Log
 
+## [3.2.7](https://github.com/ply-ct/vscode-ply/tree/3.2.7) (2023-07-22)
+- Enhancement: Consistent logging interfaces [\#77](https://github.com/ply-ct/ply/issues/77)
+- Enhancement: Honor expression-based runtime values [\#78](https://github.com/ply-ct/ply/issues/78)
+
 ## [3.2.6](https://github.com/ply-ct/vscode-ply/tree/3.2.6) (2023-07-15)
 - Enhancement: Externalize values to ply-values [\#75](https://github.com/ply-ct/ply/issues/75)
 - Dependencies: Bump dependencies [\#76](https://github.com/ply-ct/ply/issues/76)
