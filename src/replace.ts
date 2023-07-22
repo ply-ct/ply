@@ -21,7 +21,7 @@ export const replace = (template: string, context: object, options?: ReplaceOpti
             l = l.replace(/\${@/g, '${' + RESULTS + '.');
             lines.push(
                 l.replace(/\$\{.+?}/g, (expr) => {
-                    return resolve(expr, context, options?.trusted);
+                    return resolve(expr, context, options?.trusted, options?.logger);
                 })
             );
         } catch (err: any) {

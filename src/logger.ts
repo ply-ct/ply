@@ -27,7 +27,18 @@ export class Logger implements Log {
         }
     }
 
-    private log(level: LogLevel, message: string, obj: any) {
+    log(message: string, obj?: any): void;
+    log(level: LogLevel, message: string, obj?: any): void;
+    log(levelOrMessage: LogLevel | string, messageOrObj: string | any, logObj?: any) {
+        let level = LogLevel.info;
+        let message = '' + messageOrObj;
+        let obj: any = logObj;
+        if (typeof levelOrMessage === 'string') {
+            message = levelOrMessage;
+            obj = messageOrObj;
+        } else {
+            level = levelOrMessage;
+        }
         if (level <= this.options.level) {
             if (level === LogLevel.error) {
                 if (obj) {

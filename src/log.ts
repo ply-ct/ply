@@ -13,6 +13,7 @@ export interface Log {
     info(message: string, obj?: any): void;
     error(message: string, obj?: any): void;
     debug(message: string, obj?: any): void;
+    log(message: string, obj?: any): void;
     enabled: boolean;
     level: LogLevel;
 }

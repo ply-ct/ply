@@ -68,7 +68,6 @@ export class Values {
             }
         }
         this.values = new ValuesAccess(valuesHolders, { env: process.env }).getValues();
-        this.logger.debug('Values', this.values);
         return this.values;
     }
 

@@ -201,6 +201,7 @@ export interface RunOptions {
 
     /**
      * Runtime override values
+     * If key is an expression, then simple subt is performed
      */
     values?: { [key: string]: string };
 }

@@ -320,7 +320,7 @@ export class Plier extends EventEmitter {
                 prettyIndent: opts.prettyIndent
             });
 
-        this.ply = new Ply(options, logger);
+        this.ply = new Ply(options, this.logger);
     }
 
     /**
@@ -343,6 +343,7 @@ export class Plier extends EventEmitter {
             // runOptions values override file files
             values = { ...values, ...runOptions.values };
         }
+        this.logger.debug('Values', values);
 
         // remove all previous runs
         await rimraf(`${this.options.logLocation}/runs`);
