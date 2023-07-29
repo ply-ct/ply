@@ -80,6 +80,11 @@ from [ply-demo global.json](https://github.com/ply-ct/ply-demo/blob/main/test/va
 **Note:** The legacy JSON-format environment variable PLY_VALUES is deprecated
 
 
+## Flow Values
+Double-clicking on a blank area in Ply's flow editor canvas opens the configurator for the overall flow. Here the Values tab
+enables you to specify static/initial/input values. Values entered here can be static string or expressions to evaluate at
+runtime. Input values can be designated as required according to a static boolean or an expression.
+
 ## Rowwise Values
 Ply supports [iterative test execution](iterate), which is indicated simply by including a .csv or .xlsx file among `valuesFiles`:
 ```yaml
@@ -115,7 +120,7 @@ These changes are cumulative, so subsequent tests can modify values as needed fo
 
 ## Precedence
 User-specified values take precedence in the following order (highest to lowest):
-  1. Values specified in the popup when running a [flow](flows)
+  1. Values specified in the values popup when running a [request](requests) or [flow](flows)
   1. Fixed values defined in flow via the Values configurator tab
   1. Runtime values set programmatically or autopopulated from previous requests
   1. Values loaded from the list of files in plyconfig.yaml/yml/json or on the command line
