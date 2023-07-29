@@ -9,7 +9,9 @@ We invented Ply because automated API testing should be a pleasure. Not a labori
 If tests are easier to build, they're more likely to be comprehensive.
 </p>
 <p>
-Postman and Insomnia are both awesome tools for sending HTTP requests. Where they fall short is in automated testing.
+Postman, Insomnia and Thunder Client are awesome tools for sending HTTP requests. Where they fall short is in automated testing.
+Ply is secure and open-source. No sign-up. No need to export collections for committing to Git. Artifacts are saved directly as
+human-readable YAML files. Use file system folders to naturally and intuitively organize requests and flows.  
 </p>
 </div>
 

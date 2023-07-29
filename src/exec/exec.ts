@@ -2,7 +2,7 @@ import * as flowbee from 'flowbee';
 import { RunOptions } from '../options';
 import { ResultStatus } from '../result';
 import { Runtime } from '../runtime';
-import { Log } from '../log';
+import { Log, LogLevel } from '../log';
 import { replace } from '../replace';
 import { RESULTS } from '../names';
 
@@ -26,7 +26,7 @@ export abstract class PlyExecBase implements PlyExec {
 
     protected evaluateToString(expr: string, values: any): string {
         if (this.isExpression(expr)) {
-            this.logger.debug(`Evaluating expression '${expr}' against values`, values);
+            this.logDebug(`Evaluating expression '${expr}' against values`, values);
             const ex = expr.replace(/@\[/g, RESULTS + '[').replace(/@/g, RESULTS + '.');
             const fun = new Function(...Object.keys(values), 'return `' + ex + '`');
             return fun(...Object.values(values));
@@ -74,5 +74,26 @@ export abstract class PlyExecBase implements PlyExec {
 
     isExpression(input: string): boolean {
         return input.startsWith('${') && input.endsWith('}');
+    }
+
+    /**
+     * Tagged log at info level
+     */
+    logInfo(message: string, obj?: any) {
+        this.logger.info(`${this.step.id} => ${message}`, obj);
+    }
+
+    /**
+     * Tagged log at error level
+     */
+    logError(message: string, obj?: any) {
+        this.logger.error(`${this.step.id} => ${message}`, obj);
+    }
+
+    /**
+     * Tagged log at debug level
+     */
+    logDebug(message: string, obj?: any) {
+        this.logger.debug(`${this.step.id} => ${message}`, obj);
     }
 }

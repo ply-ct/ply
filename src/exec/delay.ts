@@ -30,6 +30,7 @@ export class DelayExec extends PlyExecBase {
     }
 
     private delay(ms: number): Promise<void> {
+        this.logDebug(`Delaying ${ms} ms`);
         return new Promise((resolve) => {
             setTimeout(() => {
                 resolve();
