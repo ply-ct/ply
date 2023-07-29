@@ -26,11 +26,11 @@
     - [Verify response](#verify-response)
     - [Expected results](#expected-results)
   - [Documentation](#documentation)
-    - [Guide](guide)
-    - [CLI](cli)
-    - [API](api)
-  - [Demo](#demo-project)
-  - [VS Code Extension](#vs-code-extension)
+    - [Guide](https://ply-ct.org/ply/topics/requests)
+    - [CLI](https://ply-ct.org/ply/topics/cli)
+    - [API](https://ply-ct.org/ply/api)
+  - [Demo](https://github.com/ply-ct/ply-demo/)
+  - [VS Code Extension](https://marketplace.visualstudio.com/items?itemName=ply-ct.vscode-ply)
 
 ## Installation
 ```
@@ -193,11 +193,11 @@ repositoryTopicsQuery:
 ### Guide
 <https://ply-ct.org/ply/topics/requests>
 
-### API
-<https://ply-ct.org/ply/api>
-
 ### CLI
 <https://ply-ct.org/ply/topics/cli>
+
+### API
+<https://ply-ct.org/ply/api>
 
 ## Demo Project
 <https://github.com/ply-ct/ply-demo/>
