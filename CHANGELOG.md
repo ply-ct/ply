@@ -1,5 +1,8 @@
 # Change Log
 
+## [3.2.8](https://github.com/ply-ct/vscode-ply/tree/3.2.7) (2023-08-06)
+- Bug: Empty flow values converted to zero [\#79](https://github.com/ply-ct/ply/issues/77)
+
 ## [3.2.7](https://github.com/ply-ct/vscode-ply/tree/3.2.7) (2023-07-22)
 - Enhancement: Consistent logging interfaces [\#77](https://github.com/ply-ct/ply/issues/77)
 - Enhancement: Honor expression-based runtime values [\#78](https://github.com/ply-ct/ply/issues/78)

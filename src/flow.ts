@@ -95,10 +95,14 @@ export class PlyFlow implements Flow {
             const rows = JSON.parse(this.flow.attributes?.values);
             for (const row of rows) {
                 let rowVal: any = row[1];
-                const numVal = Number(row[1]);
-                if (!isNaN(numVal)) rowVal = numVal;
-                else if (row[1] === 'true' || row[1] === 'false') rowVal = row[1] === 'true';
-                else if (util.isJson(row[1])) rowVal = JSON.parse(row[1]);
+                if (('' + rowVal).trim() === '') {
+                    rowVal = undefined; // empty string
+                } else {
+                    const numVal = Number(row[1]);
+                    if (!isNaN(numVal)) rowVal = numVal;
+                    else if (row[1] === 'true' || row[1] === 'false') rowVal = row[1] === 'true';
+                    else if (util.isJson(row[1])) rowVal = JSON.parse(row[1]);
+                }
                 values[row[0]] = rowVal;
             }
         }
