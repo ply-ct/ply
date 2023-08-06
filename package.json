@@ -58,7 +58,7 @@
     "csv-parse": "^5.3.5",
     "diff-match-patch": "^1.0.5",
     "find-up": "^5.0.0",
-    "flowbee": "^1.1.6",
+    "flowbee": "^1.1.7",
     "form-data": "^4.0.0",
     "glob": "^8.1.0",
     "handlebars": "^4.7.7",
