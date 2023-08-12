@@ -47,7 +47,8 @@
     "typedoc": "typedoc --name 'ply' --out docs/api-docs --excludePrivate true src",
     "api-docs": "npm run typedoc && mkdir docs/api-docs/assets/css && cat docs/css/api.css >> docs/api-docs/assets/css/main.css",
     "serve-docs": "cd docs && bundle install && bundle exec jekyll serve --incremental --watch --baseurl ''",
-    "dry-run": "npm publish --dry-run > contents.txt 2>&1"
+    "dry-run": "npm publish --dry-run > contents.txt 2>&1",
+    "dependencies": "npm ls --prod --depth 1000 > deps.txt"
   },
   "homepage": "https://github.com/ply-ct/ply#readme",
   "overrides": {

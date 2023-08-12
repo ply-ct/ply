@@ -8,3 +8,4 @@ temp/
 .DS_Store
 /ply-results.json
 /contents.txt
+/deps.txt
