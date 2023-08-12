@@ -69,7 +69,7 @@
     "merge-anything": "^5.1.7",
     "minimatch": "^7.1.0",
     "read-excel-file": "^5.6.1",
-    "rimraf": "^4.1.2",
+    "rimraf": "~4.3.1",
     "stacktracey": "^2.1.8",
     "stream-transform": "^3.2.2",
     "ts-node": "^10.9.1",
