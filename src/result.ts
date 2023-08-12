@@ -1,5 +1,5 @@
+import * as flowbee from './flowbee';
 import * as yaml from './yaml';
-import * as flowbee from 'flowbee';
 import { Request } from './request';
 import { Response, PlyResponse } from './response';
 import { Location } from './location';

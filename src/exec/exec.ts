@@ -1,4 +1,4 @@
-import * as flowbee from 'flowbee';
+import { Step, StepInstance } from '../flowbee';
 import { RunOptions } from '../options';
 import { ResultStatus } from '../result';
 import { Runtime } from '../runtime';
@@ -16,11 +16,7 @@ export interface PlyExec {
 }
 
 export abstract class PlyExecBase implements PlyExec {
-    constructor(
-        readonly step: flowbee.Step,
-        readonly instance: flowbee.StepInstance,
-        readonly logger: Log
-    ) {}
+    constructor(readonly step: Step, readonly instance: StepInstance, readonly logger: Log) {}
 
     abstract run(runtime: Runtime, values: any, runOptions?: RunOptions): Promise<ExecResult>;
 
@@ -38,7 +34,7 @@ export abstract class PlyExecBase implements PlyExec {
     /**
      * Maps instance status to ply result
      */
-    protected mapToExecResult(instance: flowbee.StepInstance, runOptions?: RunOptions): ExecResult {
+    protected mapToExecResult(instance: StepInstance, runOptions?: RunOptions): ExecResult {
         let execResult: ExecResult;
         if (instance.status === 'In Progress' || instance.status === 'Waiting') {
             execResult = { status: 'Pending' };

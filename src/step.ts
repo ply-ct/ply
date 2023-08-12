@@ -1,6 +1,6 @@
 import * as process from 'process';
 import * as path from 'path';
-import * as flowbee from 'flowbee';
+import * as flowbee from './flowbee';
 import { Log } from './log';
 import { RunOptions } from './options';
 import { Request } from './request';
@@ -13,7 +13,6 @@ import { RequestExec } from './exec/request';
 import { ExecResult, PlyExec } from './exec/exec';
 import { StartExec } from './exec/start';
 import { StopExec } from './exec/stop';
-import { FlowElementStatus } from 'flowbee';
 import { DeciderExec } from './exec/decide';
 import { DelayExec } from './exec/delay';
 
@@ -216,7 +215,7 @@ export class PlyStep implements Step, PlyTest {
         return result;
     }
 
-    private mapToInstanceStatus(execResult: ExecResult): FlowElementStatus {
+    private mapToInstanceStatus(execResult: ExecResult): flowbee.FlowElementStatus {
         if (execResult.status === 'Passed' || execResult.status === 'Submitted') {
             return 'Completed';
         } else {

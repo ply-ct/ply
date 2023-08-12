@@ -1,13 +1,9 @@
-import * as flowbee from 'flowbee';
+import { Step, StepInstance } from '../flowbee';
 import { ExecResult, PlyExecBase } from './exec';
 import { Log } from '../log';
 
 export class StartExec extends PlyExecBase {
-    constructor(
-        readonly step: flowbee.Step,
-        readonly instance: flowbee.StepInstance,
-        readonly logger: Log
-    ) {
+    constructor(readonly step: Step, readonly instance: StepInstance, readonly logger: Log) {
         super(step, instance, logger);
     }
 

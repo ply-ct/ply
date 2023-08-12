@@ -1,12 +1,12 @@
 import { minimatch } from 'minimatch';
-import * as flowbee from 'flowbee';
+import * as flowbee from './flowbee';
+import { Listener, TypedEvent } from './event';
 import { Log, LogLevel } from './log';
 import { RunOptions } from './options';
 import { Runtime } from './runtime';
 import { PlyStep } from './step';
 import { Suite } from './suite';
 import { Request } from './request';
-import { Step } from 'flowbee';
 import { Result } from './result';
 import { RUN_ID } from './names';
 import * as util from './util';
@@ -59,8 +59,8 @@ export class PlyFlow implements Flow {
     results: FlowResults;
     maxLoops = 0;
 
-    private _onFlow = new flowbee.TypedEvent<flowbee.FlowEvent>();
-    onFlow(listener: flowbee.Listener<flowbee.FlowEvent>) {
+    private _onFlow = new TypedEvent<flowbee.FlowEvent>();
+    onFlow(listener: Listener<flowbee.FlowEvent>) {
         this._onFlow.on(listener);
     }
 
@@ -289,7 +289,7 @@ export class PlyFlow implements Flow {
             for (const link of step.links) {
                 const result = plyStep.instance.result?.trim();
                 if ((!result && !link.result) || result === link.result) {
-                    let outStep: Step | undefined;
+                    let outStep: flowbee.Step | undefined;
                     if (subflow) {
                         outStep = subflow.subflow.steps?.find((s) => s.id === link.to);
                     } else {

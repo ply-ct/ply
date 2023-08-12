@@ -1,14 +1,10 @@
-import * as flowbee from 'flowbee';
+import { Step, StepInstance } from '../flowbee';
 import { ExecResult, PlyExecBase } from './exec';
 import { Runtime } from '../runtime';
 import { Log } from '../log';
 
 export class DelayExec extends PlyExecBase {
-    constructor(
-        readonly step: flowbee.Step,
-        readonly instance: flowbee.StepInstance,
-        readonly logger: Log
-    ) {
+    constructor(readonly step: Step, readonly instance: StepInstance, readonly logger: Log) {
         super(step, instance, logger);
     }
 

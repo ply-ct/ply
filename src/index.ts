@@ -1,4 +1,3 @@
-import { Step, StepInstance, Subflow } from 'flowbee';
 import { Ply } from './ply';
 
 export { Ply, Plyee, Plier } from './ply';
@@ -28,9 +27,9 @@ export { parseJsonc, merge as mergeJson } from './json';
 export { replace } from './replace';
 export * as util from './util';
 export * as openapi from './plyex/openapi';
+export { Step as FlowStep, StepInstance, Subflow, SubflowInstance } from './flowbee';
 export * from './plyex/plyex';
 export * from './plyex/code';
-export { Step as FlowStep, StepInstance, Subflow };
 export * from './exec/decide';
 export * from './exec/delay';
 export * from './exec/exec';

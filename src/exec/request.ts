@@ -1,4 +1,4 @@
-import * as flowbee from 'flowbee';
+import { Step, StepInstance } from '../flowbee';
 import { ExecResult, PlyExecBase } from './exec';
 import { Suite } from '../suite';
 import { Request, PlyRequest } from '../request';
@@ -12,8 +12,8 @@ export class RequestExec extends PlyExecBase {
     constructor(
         private readonly name: string, // unique
         private readonly requestSuite: Suite<Request>, // unique
-        readonly step: flowbee.Step,
-        readonly instance: flowbee.StepInstance,
+        readonly step: Step,
+        readonly instance: StepInstance,
         readonly logger: Log,
         private readonly runNum?: number,
         private readonly instNum?: number

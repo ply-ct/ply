@@ -1,4 +1,4 @@
-import * as flowbee from 'flowbee';
+import * as flowbee from './flowbee';
 import { PlyFlow } from './flow';
 import { Log, LogLevel } from './log';
 import { Logger } from './logger';

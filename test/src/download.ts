@@ -1,4 +1,4 @@
-import { Step, StepInstance } from 'flowbee';
+import { Step, StepInstance } from '../../src/flowbee';
 import ply from '../../src/index';
 import { ExecResult, PlyExecBase } from '../../src/exec/exec';
 import { Log } from '../../src/log';
