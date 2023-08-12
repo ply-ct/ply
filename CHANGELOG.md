@@ -1,6 +1,9 @@
 # Change Log
 
-## [3.2.8](https://github.com/ply-ct/ply/tree/3.2.7) (2023-08-06)
+## [3.2.9](https://github.com/ply-ct/ply/tree/3.2.9) (2023-08-12)
+- Dependencies: Remove flowbee dependency [\#80](https://github.com/ply-ct/ply/issues/80)
+
+## [3.2.8](https://github.com/ply-ct/ply/tree/3.2.8) (2023-08-06)
 - Bug: Empty flow values converted to zero [\#79](https://github.com/ply-ct/ply/issues/77)
 
 ## [3.2.7](https://github.com/ply-ct/ply/tree/3.2.7) (2023-07-22)
