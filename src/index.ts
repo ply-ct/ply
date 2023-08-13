@@ -15,7 +15,7 @@ export { Retrieval } from './retrieval';
 export { Storage } from './storage';
 export { Suite, Tests } from './suite';
 export { Result, ResultPaths, Outcome, ResultStatus } from './result';
-export { PlyEvent, SuiteEvent, OutcomeEvent } from './event';
+export * from './event';
 export { Diff } from './compare';
 export { Code, CodeLine } from './code';
 export { Import } from './import/import';
