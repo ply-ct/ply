@@ -40,7 +40,7 @@ export class CaseLoader {
         this.checker = this.program.getTypeChecker();
 
         if (options.skip) {
-            this.skip = new Skip(options.testsLocation, options.skip);
+            this.skip = new Skip(options.skip);
         }
     }
 

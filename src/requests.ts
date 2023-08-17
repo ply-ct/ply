@@ -15,7 +15,7 @@ export class RequestLoader {
 
     constructor(readonly locations: string[], private options: PlyOptions, private logger?: Log) {
         if (options.skip) {
-            this.skip = new Skip(options.testsLocation, options.skip);
+            this.skip = new Skip(options.skip);
         }
     }
 
