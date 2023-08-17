@@ -6,7 +6,7 @@
 | **<code>caseFiles</code>**<br>**<code>--caseFiles</code>** | `"**/*.ply.ts"` | Case files glob pattern, relative to testsLocation.
 | **<code>flowFiles</code>**<br>**<code>--flowFiles</code>** | `"**/*.ply.flow"` | Flow files glob pattern, relative to testsLocation.
 | **<code>ignore</code>**<br>**<code>--ignore</code>** | `"**/{node_modules,bin,dist,out}/**"` | File pattern to ignore, relative to testsLocation. Ignored files are not even parsed by Ply.
-| **<code>skip</code>**<br>**<code>--skip</code>** | `"**/*.ply"` | File pattern for requests/cases/flows that are loaded but shouldn't be directly executed. By default, standalone requests (.ply files) are skipped by CLI test execution.
+| **<code>skip</code>**<br>**<code>--skip</code>** | `"**/*.ply"` | File pattern for requests/cases/flows that are loaded but shouldn't be directly executed (relative to testsLocation). By default, standalone requests (.ply files) are skipped by CLI test execution.
 | **<code>expectedLocation</code>**<br>**<code>--expectedLocation</code>** | `testsLocation + "/results/expected"` | Base directory containing expected result files.
 | **<code>actualLocation</code>**<br>**<code>--actualLocation</code>** | `testsLocation + "/results/actual"` | Base directory containing actual result files.
 | **<code>resultFollowsRelativePath</code>**<br>**<code>--resultFollowsRelativePath</code>** | `true` | Result files live under a similar subpath as request/case files (eg: expected result relative to 'expectedLocation' is the same as request/case file relative to 'testsLocation'). Otherwise results directory structure is flat.
