@@ -1,9 +1,14 @@
 import { minimatch } from 'minimatch';
+import { fwdSlashes } from './util';
 
 export class Skip {
-    constructor(readonly pattern: string) {}
+    private pattern: string;
+
+    constructor(pattern: string) {
+        this.pattern = fwdSlashes(pattern);
+    }
 
     isSkipped(path: string): boolean {
-        return minimatch(path, this.pattern);
+        return minimatch(fwdSlashes(path), this.pattern);
     }
 }
