@@ -118,8 +118,12 @@ export class PlyStep implements Step, PlyTest {
                 } else {
                     tsFile = this.step.path;
                 }
+                if (runOptions?.stepsBase) {
+                    tsFile = `${runOptions.stepsBase}/${tsFile}`;
+                }
 
                 if (!path.isAbsolute(tsFile)) tsFile = path.join(process.cwd(), tsFile);
+                tsFile = path.normalize(tsFile);
                 const mod = await import(tsFile);
                 if (typeof mod.default !== 'function') {
                     throw new Error(

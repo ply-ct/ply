@@ -200,6 +200,11 @@ export interface RunOptions {
     requireTsNode?: boolean;
 
     /**
+     * Base file system location for custom flow steps
+     */
+    stepsBase?: string;
+
+    /**
      * Runtime override values
      * If key is an expression, then simple subt is performed
      */
@@ -373,6 +378,14 @@ export class Config {
         useDist: {
             describe: 'Load cases from compiled js',
             type: 'boolean'
+        },
+        values: {
+            describe: 'Runtime override values',
+            type: 'string'
+        },
+        stepsBase: {
+            describe: 'Base path for custom steps',
+            type: 'string'
         },
         responseBodySortedKeys: {
             describe: 'Sort response body JSON keys'
@@ -551,6 +564,15 @@ export class Config {
             ) {
                 delete options.outputFile;
             }
+        }
+        if (options.values) {
+            options.runOptions.values = options.values;
+            delete options.values;
+        }
+        if (options.stepsBase) {
+            options.runOptions.stepsBase = options.stepsBase;
+            delete options.stepsBase;
+            delete options['steps-base'];
         }
 
         return options;
