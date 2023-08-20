@@ -1,6 +1,6 @@
 {
   "name": "@ply-ct/ply",
-  "version": "3.2.9",
+  "version": "3.2.10",
   "description": "REST API Automated Testing",
   "main": "dist",
   "bin": {
@@ -55,7 +55,7 @@
     "semver": "^7.5.3"
   },
   "dependencies": {
-    "@ply-ct/ply-values": "^0.3.3",
+    "@ply-ct/ply-values": "^0.3.4",
     "cross-fetch": "^3.1.5",
     "csv-parse": "^5.3.5",
     "diff-match-patch": "^1.0.5",

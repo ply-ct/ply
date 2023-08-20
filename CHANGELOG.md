@@ -1,6 +1,6 @@
 # Change Log
 
-## [3.2.10](https://github.com/ply-ct/ply/tree/3.2.9) (2023-08-17)
+## [3.2.10](https://github.com/ply-ct/ply/tree/3.2.9) (2023-08-20)
 - Enhancement: Improved performance for skip pattern matching [\#81](https://github.com/ply-ct/ply/issues/81)
 - Enhancement: Option to specify custom step root path [\#82](https://github.com/ply-ct/ply/issues/82)
 
