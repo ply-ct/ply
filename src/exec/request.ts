@@ -1,3 +1,4 @@
+import { Values } from '../values';
 import { Step, StepInstance } from '../flowbee';
 import { ExecResult, PlyExecBase } from './exec';
 import { Suite } from '../suite';
@@ -21,7 +22,7 @@ export class RequestExec extends PlyExecBase {
         super(step, instance, logger);
     }
 
-    async run(runtime: Runtime, values: any, runOptions?: RunOptions): Promise<ExecResult> {
+    async run(runtime: Runtime, values: Values, runOptions?: RunOptions): Promise<ExecResult> {
         const trusted = runOptions?.trusted;
         const url = this.getAttribute('url', values, { trusted, required: true });
         const method = this.getAttribute('method', values, { trusted, required: true });
@@ -45,7 +46,7 @@ export class RequestExec extends PlyExecBase {
             headers,
             body,
             submitted: new Date(),
-            submit: (_values: object) => {
+            submit: (_values: Values) => {
                 throw new Error('Not implemented');
             }
         };

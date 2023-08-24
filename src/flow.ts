@@ -1,4 +1,5 @@
 import { minimatch } from 'minimatch';
+import { Values } from './values';
 import * as flowbee from './flowbee';
 import { Listener, TypedEvent } from './event';
 import { Log, LogLevel } from './log';
@@ -90,7 +91,7 @@ export class PlyFlow implements Flow {
     }
 
     valuesFromFlowAttribute(): any {
-        const values: any = {};
+        const values: Values = {};
         if (this.flow.attributes?.values) {
             const rows = JSON.parse(this.flow.attributes?.values);
             for (const row of rows) {
@@ -114,7 +115,7 @@ export class PlyFlow implements Flow {
      */
     async run(
         runtime: Runtime,
-        values: any,
+        values: Values,
         runOptions?: RunOptions,
         runNum?: number
     ): Promise<Result> {
@@ -199,7 +200,7 @@ export class PlyFlow implements Flow {
     async exec(
         step: flowbee.Step,
         runtime: Runtime,
-        values: object,
+        values: Values,
         runOptions?: RunOptions,
         runNum?: number,
         subflow?: Subflow
@@ -352,7 +353,7 @@ export class PlyFlow implements Flow {
     async runSubflows(
         subflows: Subflow[],
         runtime: Runtime,
-        values: object,
+        values: Values,
         runOptions?: RunOptions,
         runNum?: number
     ) {

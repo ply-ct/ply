@@ -4,7 +4,7 @@ import { Import } from '../../src/import/import';
 import { Logger } from '../../src/logger';
 import { Ply } from '../../src/ply';
 import { Request } from '../../src/request';
-import { Values } from '../../src/values';
+import { ValuesBuilder } from '../../src/values';
 
 describe('Postman', () => {
     const reqRoot = 'test/mocha/postman/requests';
@@ -154,7 +154,7 @@ describe('Postman', () => {
             valuesLocation: valRoot,
             indent: 2
         });
-        const values = new Values({ [`${valRoot}/localhost.json`]: true }, new Logger());
+        const values = new ValuesBuilder({ [`${valRoot}/localhost.json`]: true }, new Logger());
         const obj = await values.read();
         assert.ok(obj);
         assert.strictEqual(obj.baseUrl, 'http://localhost:8080');

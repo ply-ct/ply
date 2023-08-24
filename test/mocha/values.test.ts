@@ -3,7 +3,7 @@ import * as assert from 'assert';
 import { Log, LogLevel } from '../../src/log';
 import { Logger } from '../../src/logger';
 import { Config } from '../../src/options';
-import { Values, fromXlsx, fromCsv } from '../../src/values';
+import { ValuesBuilder, fromXlsx, fromCsv } from '../../src/values';
 
 describe('Values', () => {
     const logger: Log = new Logger({ level: LogLevel.debug, prettyIndent: 2 });
@@ -18,7 +18,7 @@ describe('Values', () => {
             'not/here/at/all.json': false
         };
 
-        const values = await new Values(locations, logger).read();
+        const values = await new ValuesBuilder(locations, logger).read();
 
         assert.strictEqual(values.baseUrl, 'http://localhost:8080/movies');
         assert.strictEqual(values.year, 2020);
@@ -31,7 +31,7 @@ describe('Values', () => {
     });
 
     it('should use config', async () => {
-        const values = await new Values(options.valuesFiles, logger).read();
+        const values = await new ValuesBuilder(options.valuesFiles, logger).read();
 
         assert.strictEqual(values.baseUrl, 'http://localhost:3000');
         assert.strictEqual(values.year, 1931);
@@ -49,7 +49,7 @@ describe('Values', () => {
     });
 
     it('should stream csv', async () => {
-        const values = new Values(
+        const values = new ValuesBuilder(
             { ...options.valuesFiles, 'test/mocha/values/movies.csv': true },
             logger
         );
@@ -81,7 +81,7 @@ describe('Values', () => {
     });
 
     it('should stream xlsx', async () => {
-        const values = new Values(
+        const values = new ValuesBuilder(
             { ...options.valuesFiles, 'test/mocha/values/movies.xlsx': true },
             logger
         );

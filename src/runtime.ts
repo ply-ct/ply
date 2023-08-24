@@ -7,6 +7,7 @@ import { ResultPaths } from './result';
 import { TEST, BEFORE, AFTER, SUITE } from './names';
 import { TestSuite, TestCase, Before, After } from './decorators';
 import { ResponseMassagers } from './response';
+import { Values } from './values';
 
 /**
  * Runtime information for a test suite.
@@ -99,7 +100,7 @@ export class DecoratedSuite {
         });
     }
 
-    private async runIfMatch(beforeOrAfter: Before | After, test: string, values: object) {
+    private async runIfMatch(beforeOrAfter: Before | After, test: string, values: Values) {
         if (this.isMatch(beforeOrAfter, test)) {
             if (beforeOrAfter.tests || !beforeOrAfter.hasRun) {
                 await beforeOrAfter.method.call(this.instance, values);
@@ -112,13 +113,13 @@ export class DecoratedSuite {
         return !beforeOrAfter.tests || minimatch(test, beforeOrAfter.tests);
     }
 
-    async runBefores(test: string, values: object) {
+    async runBefores(test: string, values: Values) {
         for (const before of this.befores) {
             await this.runIfMatch(before, test, values);
         }
     }
 
-    async runAfters(test: string, values: object) {
+    async runAfters(test: string, values: Values) {
         for (const after of this.afters) {
             await this.runIfMatch(after, test, values);
         }

@@ -1,6 +1,7 @@
 import { Runtime } from './runtime';
 import { Result } from './result';
 import { RunOptions } from './options';
+import { Values } from './values';
 
 /**
  * step type means flow step(s) in isolation
@@ -27,7 +28,7 @@ export interface PlyTest extends Test {
      */
     run(
         runtime: Runtime,
-        values: object,
+        values: Values,
         runOptions?: RunOptions,
         runNum?: number
     ): Promise<Result>;

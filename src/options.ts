@@ -205,7 +205,6 @@ export interface RunOptions {
     stepsBase?: string;
 
     /**
-     * Runtime override values
      * If key is an expression, then simple subt is performed
      */
     values?: { [key: string]: string };
@@ -330,6 +329,10 @@ export class Config {
             describe: 'Values files (comma-separated)',
             type: 'string'
         },
+        values: {
+            describe: 'Runtime override values',
+            type: 'array'
+        },
         outputFile: {
             describe: 'Report or summary json file path',
             alias: 'o',
@@ -378,10 +381,6 @@ export class Config {
         useDist: {
             describe: 'Load cases from compiled js',
             type: 'boolean'
-        },
-        values: {
-            describe: 'Runtime override values',
-            type: 'string'
         },
         stepsBase: {
             describe: 'Base path for custom steps',
@@ -566,7 +565,17 @@ export class Config {
             }
         }
         if (options.values) {
-            options.runOptions.values = options.values;
+            options.runOptions.values = options.values.reduce(
+                (values: { [key: string]: string }, value: string) => {
+                    const eq = value.indexOf('=');
+                    if (eq > 0 && eq < value.length - 1) {
+                        const exprKey = '${' + value.substring(0, eq) + '}';
+                        values[exprKey] = value.substring(eq + 1);
+                    }
+                    return values;
+                },
+                {}
+            );
             delete options.values;
         }
         if (options.stepsBase) {

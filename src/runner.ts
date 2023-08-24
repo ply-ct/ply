@@ -26,7 +26,7 @@ export class PlyRunner<T extends Test> {
         private logger: Log
     ) {}
 
-    async runSuiteTests(values: object, runOptions?: RunOptions) {
+    async runSuiteTests(values: Values, runOptions?: RunOptions) {
         if (this.suiteTests.size === 0) return;
 
         if (this.plyValues.isRows) {

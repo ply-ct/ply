@@ -1,3 +1,4 @@
+import { Values } from './values';
 import * as flowbee from './flowbee';
 import { PlyFlow } from './flow';
 import { Log, LogLevel } from './log';
@@ -43,7 +44,7 @@ export class FlowSuite extends Suite<Step> {
      */
     async runTests(
         steps: Step[],
-        values: object,
+        values: Values,
         runOptions?: RunOptions,
         runNum?: number
     ): Promise<Result[]> {
@@ -79,7 +80,7 @@ export class FlowSuite extends Suite<Step> {
         return step;
     }
 
-    async runFlow(values: object, runOptions?: RunOptions, runNum?: number): Promise<Result> {
+    async runFlow(values: Values, runOptions?: RunOptions, runNum?: number): Promise<Result> {
         if (this.runtime.options?.parallel) {
             this.plyFlow = this.plyFlow.clone();
         }
@@ -129,7 +130,7 @@ export class FlowSuite extends Suite<Step> {
         return await this.plyFlow.run(this.runtime, values, runOptions, runNum);
     }
 
-    async runSteps(steps: Step[], values: any, runOptions?: RunOptions): Promise<Result[]> {
+    async runSteps(steps: Step[], values: Values, runOptions?: RunOptions): Promise<Result[]> {
         // flow values supersede file-based
         const flowValues = this.plyFlow.valuesFromFlowAttribute();
         for (const flowValKey of Object.keys(flowValues)) {

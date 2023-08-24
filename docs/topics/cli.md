@@ -43,7 +43,7 @@ Command-line exercises in this guide assume you have Ply installed globally.
 | **<code>--openapi</code>** | Augment OpenAPI spec with Ply example requests/responses and code samples. *Overwrites* existing OpenAPI spec file.
 | **<code>--create</code>** | Create expected result file from actual responses
 | **<code>--useDist</code>** | Import case modules from build output (eg dist) instead of from TypeScript sources
-| **<code>--values</code>** | Runtime override values
+| **<code>--values</code>** | Runtime override values. For example: `--values title=Dracula tmdb.studio=33` => `{ "title": "Dracula", "tmdb": { "studio": 33 } }`. 
 | **<code>--stepsBase</code>** | Base file system location for custom flow steps
 
 <br>

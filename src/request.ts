@@ -1,4 +1,5 @@
 import fetch from 'cross-fetch';
+import { Values } from './values';
 import { TestType, Test, PlyTest } from './test';
 import { Response, PlyResponse } from './response';
 import { Log, LogLevel } from './log';
@@ -17,7 +18,7 @@ export interface Request extends Test {
     headers: { [key: string]: string };
     body?: string;
     submitted?: Date;
-    submit(values: object, options?: Options, runOptions?: RunOptions): Promise<Response>;
+    submit(values: Values, options?: Options, runOptions?: RunOptions): Promise<Response>;
 }
 
 export class PlyRequest implements Request, PlyTest {
@@ -74,7 +75,7 @@ export class PlyRequest implements Request, PlyTest {
         return false;
     }
 
-    getRunId(values: any): string {
+    getRunId(values: Values): string {
         return values[RUN_ID];
     }
 
@@ -83,7 +84,7 @@ export class PlyRequest implements Request, PlyTest {
      * or comparing with expected.  Useful for cleaning up or restoring
      * REST resources before/after testing (see Case.before()/after()).
      */
-    async submit(values: object, options?: Options, runOptions?: RunOptions): Promise<Response> {
+    async submit(values: Values, options?: Options, runOptions?: RunOptions): Promise<Response> {
         return await this.doSubmit(
             this.getRunId(values),
             this.getRequest(values, options, runOptions, true),
@@ -140,7 +141,7 @@ export class PlyRequest implements Request, PlyTest {
      * Request object with substituted values
      */
     getRequest(
-        values: object,
+        values: Values,
         options?: Options,
         runOptions?: RunOptions,
         includeAuthHeader = false
@@ -202,7 +203,7 @@ export class PlyRequest implements Request, PlyTest {
      */
     async run(
         runtime: Runtime,
-        values: object,
+        values: Values,
         runOptions?: RunOptions,
         runNum?: number
     ): Promise<PlyResult> {

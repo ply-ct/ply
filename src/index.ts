@@ -41,4 +41,5 @@ export * from './report/report';
 export * from './report/json';
 export * from './names';
 export * from './skip';
+
 export default new Ply();

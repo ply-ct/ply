@@ -4,7 +4,7 @@ import { Import } from '../../src/import/import';
 import { Logger } from '../../src/logger';
 import { Ply } from '../../src/ply';
 import { Request } from '../../src/request';
-import { Values } from '../../src/values';
+import { ValuesBuilder } from '../../src/values';
 
 describe('Insomnia', () => {
     const reqRoot = 'test/mocha/insomnia/requests';
@@ -76,12 +76,15 @@ describe('Insomnia', () => {
         assert.strictEqual(greatsAfter1935.url, '${baseUrl}/movies?rating=5&year=>1935');
         assert.strictEqual(greatsAfter1935.method, 'GET');
 
-        const baseValues = new Values({ [`${valRoot}/Base Environment.json`]: true }, new Logger());
+        const baseValues = new ValuesBuilder(
+            { [`${valRoot}/Base Environment.json`]: true },
+            new Logger()
+        );
         const baseObj = await baseValues.read();
         assert.ok(baseObj);
         assert.strictEqual(baseObj.movieId, '435b30ad');
 
-        const plyctValues = new Values({ [`${valRoot}/ply-ct.json`]: true }, new Logger());
+        const plyctValues = new ValuesBuilder({ [`${valRoot}/ply-ct.json`]: true }, new Logger());
         const plyctObj = await plyctValues.read();
         assert.ok(plyctObj);
         assert.strictEqual(plyctObj.baseUrl, 'https://ply-ct.org');

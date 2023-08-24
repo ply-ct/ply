@@ -1,3 +1,4 @@
+import { Values } from '../values';
 import { Step, StepInstance } from '../flowbee';
 import { ExecResult, PlyExecBase } from './exec';
 import { Runtime } from '../runtime';
@@ -8,7 +9,7 @@ export class DelayExec extends PlyExecBase {
         super(step, instance, logger);
     }
 
-    async run(_runtime: Runtime, values: any): Promise<ExecResult> {
+    async run(_runtime: Runtime, values: Values): Promise<ExecResult> {
         let interval = this.step.attributes?.interval;
         if (interval) {
             if (this.isExpression(interval)) {

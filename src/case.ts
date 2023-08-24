@@ -3,6 +3,7 @@ import { Log } from './log';
 import { Runtime } from './runtime';
 import { RunOptions } from './options';
 import { Result } from './result';
+import { Values } from './values';
 
 export interface Case extends Test {
     readonly method: string;
@@ -25,7 +26,7 @@ export class PlyCase implements Case, PlyTest {
      * Or to send a request without testing, call submit().
      * @returns result with request outcomes and status of 'Pending'
      */
-    async run(runtime: Runtime, values: object, runOptions?: RunOptions): Promise<Result> {
+    async run(runtime: Runtime, values: Values, runOptions?: RunOptions): Promise<Result> {
         if (!runOptions?.trusted) {
             throw new Error(`Trusted context required for case execution: '${runtime.suitePath}'`);
         }

@@ -1,3 +1,4 @@
+import { Values } from './values';
 import * as flowbee from './flowbee';
 import * as yaml from './yaml';
 import { Request } from './request';
@@ -14,6 +15,7 @@ import * as util from './util';
 import { Runs } from './runs/runs';
 
 export type ResultStatus = 'Pending' | 'Passed' | 'Failed' | 'Errored' | 'Submitted';
+export type ResultData = string | { [key: string]: any } | any[];
 
 export interface Outcome {
     /**
@@ -21,6 +23,7 @@ export interface Outcome {
      */
     status: ResultStatus;
     message: string;
+    data?: ResultData;
     /**
      * One-based line number of first diff, relative to starting line of test
      */
@@ -104,7 +107,7 @@ export class Verifier {
      * Verify expected vs actual results yaml after substituting values.
      * Diffs/messages always contain \n newlines.
      */
-    verify(actualYaml: Yaml, values: any, runOptions?: RunOptions): Outcome {
+    verify(actualYaml: Yaml, values: Values, runOptions?: RunOptions): Outcome {
         // this.logger.debug(`Expected:\n${this.expectedYaml}\n` + `Actual:\n${actualYaml}\n`);
         const expected = new Code(this.expectedYaml.text, '#');
         const actual = new Code(actualYaml.text, '#');

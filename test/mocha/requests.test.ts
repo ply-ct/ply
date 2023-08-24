@@ -3,7 +3,7 @@ import { Ply, Plier } from '../../src/ply';
 import { Config } from '../../src/options';
 import { Request, PlyRequest } from '../../src/request';
 import { Storage } from '../../src/storage';
-import { Values } from '../../src/values';
+import { ValuesBuilder } from '../../src/values';
 import { MultipartForm } from '../../src/form';
 
 const values = {
@@ -153,7 +153,7 @@ describe('Requests', async () => {
         const ply = new Ply();
         const suites = await ply.loadRequests('test/ply/requests/github-api.ply.yaml');
         const suite = suites[0];
-        const vals = await new Values(
+        const vals = await new ValuesBuilder(
             { ['test/ply/values/global.json']: true },
             suite.logger
         ).read();

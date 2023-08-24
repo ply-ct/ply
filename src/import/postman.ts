@@ -5,6 +5,7 @@ import { Storage } from '../storage';
 import { Log } from '../log';
 import * as yaml from '../yaml';
 import * as util from '../util';
+import { Values } from '../values';
 
 export class Postman implements Importer {
     private storagePathToRequestsObj = new Map<string, { [key: string]: Request }>();
@@ -22,7 +23,7 @@ export class Postman implements Importer {
         if (obj.values) {
             // values
             const name = this.baseName(from.location);
-            const values: any = {};
+            const values: Values = {};
             for (const value of obj.values) {
                 if (value.enabled) {
                     values[value.key] = value.value;

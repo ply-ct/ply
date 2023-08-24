@@ -14,7 +14,7 @@ import { Log, LogLevel } from './log';
 import { Logger } from './logger';
 import * as util from './util';
 import { FlowLoader, FlowSuite } from './flows';
-import { Values } from './values';
+import { ValuesBuilder } from './values';
 import { PlyRunner } from './runner';
 import { ReporterFactory } from './report/report';
 import { OverallResults } from './runs/model';
@@ -325,7 +325,6 @@ export class Plier extends EventEmitter {
 
     /**
      * Plyees should be test paths (not suites).
-     * TODO: DRY this out
      */
     async run(
         plyees: string[],
@@ -337,7 +336,7 @@ export class Plier extends EventEmitter {
 
         this.logger.debug('Options', this.options);
 
-        const plyValues = new Values(this.options.valuesFiles, this.logger);
+        const plyValues = new ValuesBuilder(this.options.valuesFiles, this.logger);
         let values = await plyValues.read();
         if (runOptions?.values) {
             // runOptions values override file files

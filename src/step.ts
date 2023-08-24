@@ -15,6 +15,7 @@ import { StartExec } from './exec/start';
 import { StopExec } from './exec/stop';
 import { DeciderExec } from './exec/decide';
 import { DelayExec } from './exec/delay';
+import { Values } from './values';
 
 export interface Step extends Test {
     step: flowbee.Step;
@@ -57,7 +58,7 @@ export class PlyStep implements Step, PlyTest {
 
     async run(
         runtime: Runtime,
-        values: object,
+        values: Values,
         runOptions?: RunOptions,
         runNum?: number,
         instNum = 0
@@ -66,6 +67,7 @@ export class PlyStep implements Step, PlyTest {
         let result: Result;
         let stepRes: any;
         const level = this.subflow ? 1 : 0;
+        const createExpected = runOptions?.createExpected;
 
         try {
             let key = this.stepName;
@@ -73,15 +75,15 @@ export class PlyStep implements Step, PlyTest {
             runtime.appendResult(
                 `${key}:`,
                 level,
-                runOptions?.createExpected,
+                createExpected,
                 util.timestamp(this.instance.start)
             );
-            runtime.appendResult(`id: ${this.step.id}`, level + 1, runOptions?.createExpected);
+            runtime.appendResult(`id: ${this.step.id}`, level + 1, createExpected);
 
             let exec: PlyExec;
 
             if (this.step.path === 'start') {
-                if (this.subflow && !runOptions?.submit && !runOptions?.createExpected) {
+                if (this.subflow && !runOptions?.submit && !createExpected) {
                     await this.padActualStart(this.subflow.id, instNum);
                 }
                 exec = new StartExec(this.step, this.instance, this.logger);
@@ -157,7 +159,7 @@ export class PlyStep implements Step, PlyTest {
             if (
                 this.step.path !== 'start' &&
                 this.step.path !== 'stop' &&
-                this.step.path !== 'request'
+                !this.step.path.endsWith('request')
             ) {
                 this.instance.status = this.mapToInstanceStatus(execResult);
                 if (execResult.message) this.instance.message = execResult.message;
@@ -169,7 +171,7 @@ export class PlyStep implements Step, PlyTest {
 
             this.instance.end = new Date();
 
-            if (!runOptions?.submit && !runOptions?.createExpected) {
+            if (!runOptions?.submit && !createExpected) {
                 await this.padActualStart(this.name, instNum);
             }
 
@@ -178,6 +180,10 @@ export class PlyStep implements Step, PlyTest {
                 status: execResult.status,
                 message: execResult.message || ''
             };
+            if (execResult.data && !this.step.path.endsWith('request')) {
+                result.data = execResult.data;
+                this.instance.data = execResult.data;
+            }
         } catch (err: any) {
             this.logger.error(err.message, err);
             this.instance.status = 'Errored';
@@ -195,24 +201,30 @@ export class PlyStep implements Step, PlyTest {
             runtime.appendResult(
                 `status: ${this.instance.status}`,
                 level + 1,
-                runOptions?.createExpected,
+                createExpected,
                 `${elapsed} ms`
             );
 
             if (typeof stepRes === 'boolean' || typeof stepRes === 'number' || stepRes) {
                 this.instance.result = '' + stepRes;
-                runtime.appendResult(
-                    `result: ${this.instance.result}`,
-                    level + 1,
-                    runOptions?.createExpected
-                );
+                runtime.appendResult(`result: ${this.instance.result}`, level + 1, createExpected);
             }
             if (this.instance.message) {
                 runtime.appendResult(
                     `message: '${this.instance.message}'`,
                     level + 1,
-                    runOptions?.createExpected
+                    createExpected
                 );
+            }
+            if (this.instance.data && !this.step.path.endsWith('request')) {
+                const data =
+                    typeof this.instance.data === 'string'
+                        ? this.instance.data
+                        : JSON.stringify(this.instance.data, null, runtime.options.prettyIndent);
+                runtime.appendResult('data: |', level + 1, createExpected);
+                for (const line of util.lines(data)) {
+                    runtime.appendResult(line, level + 2, createExpected);
+                }
             }
         }
 

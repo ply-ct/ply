@@ -1,26 +1,28 @@
 import { Step, StepInstance } from '../flowbee';
 import { RunOptions } from '../options';
-import { ResultStatus } from '../result';
+import { Values } from '../values';
+import { ResultStatus, ResultData } from '../result';
 import { Runtime } from '../runtime';
-import { Log, LogLevel } from '../log';
+import { Log } from '../log';
 import { replace } from '../replace';
 import { RESULTS } from '../names';
 
 export interface ExecResult {
     status: ResultStatus;
     message?: string;
+    data?: ResultData;
 }
 
 export interface PlyExec {
-    run(runtime: Runtime, values: object, runOptions?: RunOptions): Promise<ExecResult>;
+    run(runtime: Runtime, values: Values, runOptions?: RunOptions): Promise<ExecResult>;
 }
 
 export abstract class PlyExecBase implements PlyExec {
     constructor(readonly step: Step, readonly instance: StepInstance, readonly logger: Log) {}
 
-    abstract run(runtime: Runtime, values: any, runOptions?: RunOptions): Promise<ExecResult>;
+    abstract run(runtime: Runtime, values: Values, runOptions?: RunOptions): Promise<ExecResult>;
 
-    protected evaluateToString(expr: string, values: any): string {
+    protected evaluateToString(expr: string, values: Values): string {
         if (this.isExpression(expr)) {
             this.logDebug(`Evaluating expression '${expr}' against values`, values);
             const ex = expr.replace(/@\[/g, RESULTS + '[').replace(/@/g, RESULTS + '.');
@@ -52,7 +54,7 @@ export abstract class PlyExecBase implements PlyExec {
      */
     protected getAttribute(
         name: string,
-        values: object,
+        values: Values,
         options?: { trusted?: boolean; required?: boolean }
     ): string | undefined {
         if (this.step.attributes) {

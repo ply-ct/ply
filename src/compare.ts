@@ -3,6 +3,7 @@ import { CodeLine } from './code';
 import { Log } from './log';
 import { replace } from './replace';
 import { lines } from './util';
+import { Values } from './values';
 
 /**
  * jsdiff object
@@ -27,7 +28,7 @@ export class Compare {
     /**
      * Diff results always contain \n newlines
      */
-    diffLines(expected: string, actual: string, values: object, trusted = false): Diff[] {
+    diffLines(expected: string, actual: string, values: Values, trusted = false): Diff[] {
         const dmp = new DiffMatchPatch();
         const a = dmp.diff_linesToChars_(expected, actual);
         const lineText1 = a.chars1;
@@ -69,7 +70,7 @@ export class Compare {
     /**
      * Handles regex and @request/@response.
      */
-    private markIgnored(diffs: Diff[], values: object, trusted: boolean) {
+    private markIgnored(diffs: Diff[], values: Values, trusted: boolean) {
         for (let i = 0; i < diffs.length; i++) {
             if (diffs[i].removed && diffs.length > i + 1 && diffs[i + 1].added) {
                 const exp = replace(diffs[i].value, values, { logger: this.logger, trusted });

@@ -1,3 +1,4 @@
+import { Values } from './values';
 import * as yaml from './yaml';
 import * as util from './util';
 import { TestType, Test, PlyTest } from './test';
@@ -91,7 +92,7 @@ export class Suite<T extends Test> {
      */
     async run(
         name: string,
-        values: object,
+        values: Values,
         runOptions?: RunOptions,
         runNum?: number,
         instNum?: number
@@ -102,7 +103,7 @@ export class Suite<T extends Test> {
      */
     async run(
         names: string[],
-        values: object,
+        values: Values,
         runOptions?: RunOptions,
         runNum?: number
     ): Promise<Result[]>;
@@ -111,7 +112,7 @@ export class Suite<T extends Test> {
      * @returns result array indicating outcomes
      * TODO: support runOptions.values for requests and cases
      */
-    async run(values: object, runOptions?: RunOptions): Promise<Result[]>;
+    async run(values: Values, runOptions?: RunOptions): Promise<Result[]>;
     async run(
         namesOrValues: object | string | string[],
         valuesOrRunOptions?: object | RunOptions,
@@ -155,7 +156,7 @@ export class Suite<T extends Test> {
      */
     async runTests(
         tests: T[],
-        values: object,
+        values: Values,
         runOptions?: RunOptions,
         runNum = 0,
         instNum = 0
@@ -433,7 +434,7 @@ export class Suite<T extends Test> {
      * @param results
      * @param result
      */
-    private addResult(results: Result[], result: Result, runValues: any) {
+    private addResult(results: Result[], result: Result, runValues: Values) {
         let plyResult;
         if (result instanceof PlyResult) {
             plyResult = result as PlyResult;

@@ -2,7 +2,7 @@ import * as process from 'process';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as stream from 'stream';
-import { Values as ValuesAccess, ValuesHolder } from '@ply-ct/ply-values';
+import { ValuesAccess, ValuesHolder, ValueType } from '@ply-ct/ply-values';
 import { merge } from 'merge-anything';
 import { parse as csvParse } from 'csv-parse';
 import { transform } from 'stream-transform';
@@ -11,16 +11,17 @@ import { Retrieval } from './retrieval';
 import { parseJsonc } from './json';
 import { Log } from './log';
 
-export type ValueType = string | number | boolean | Date | null;
+// redeclared here
+export type Values = { [key: string]: any };
 
 export interface ValueLocation {
     file: string;
     line?: number; // someday maybe
 }
 
-export class Values {
+export class ValuesBuilder {
     private readonly enabledLocs: string[];
-    private values: any = {};
+    private values: Values = {};
     private readonly rowsLoc: string | undefined;
 
     constructor(valuesFiles: { [file: string]: boolean }, private readonly logger: Log) {

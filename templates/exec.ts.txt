@@ -10,7 +10,7 @@ export default class Greeting extends ply.PlyExecBase {
         super(step, instance, logger);
     }
 
-    async run(runtime: ply.Runtime, values: any): Promise<ply.ExecResult> {
+    async run(runtime: ply.Runtime, values: ply.Values): Promise<ply.ExecResult> {
         const name = values.name || 'World';
         this.logger.info(`Hello, ${name} from step ${this.step.name} in flow ${runtime.suitePath}`);
         return { status: 'Passed' };
