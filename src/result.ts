@@ -631,6 +631,8 @@ export class ResultFlowParser {
                             this.options.prettyIndent || 2
                         );
                     }
+                } else if (stepObj.data) {
+                    stepInstance.data = stepObj.data;
                 }
                 stepInstances.push(stepInstance);
             }
