@@ -311,7 +311,7 @@ export class FlowSuite extends Suite<Step> {
 
         return steps.map((step) => {
             return {
-                name: step.subflow ? `${step.subflow.id}.${step.step.id}` : step.step.id,
+                name: step.subflow ? `${step.subflow.id}-${step.step.id}` : step.step.id,
                 type: 'flow',
                 step: step.step,
                 ...(step.subflow && { subflow: step.subflow })
