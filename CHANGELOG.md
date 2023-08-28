@@ -1,5 +1,8 @@
 # Change Log
 
+## [3.2.12](https://github.com/ply-ct/ply/tree/3.2.9) (2023-08-27)
+- Enhancement: Attach general-purpose data to flow steps [\#84](https://github.com/ply-ct/ply/issues/84)
+
 ## [3.2.11](https://github.com/ply-ct/ply/tree/3.2.9) (2023-08-23)
 - Enhancement: Runtime values override in CLI runOptions [\#83](https://github.com/ply-ct/ply/issues/83)
 
