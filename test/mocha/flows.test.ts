@@ -97,7 +97,7 @@ describe('Flows', async () => {
         const flow = await ply.loadFlow('test/ply/flows/decision.ply.flow');
         const results = await flow.run({});
         assert.strictEqual(results[0].status, 'Errored');
-        assert.ok(results[0].message.startsWith('Trusted context required'));
+        assert.ok(results[0].message?.startsWith('Trusted context required'));
     });
 
     it('rejects untrusted ts', async () => {
@@ -106,6 +106,6 @@ describe('Flows', async () => {
         const results = await flow.run({ baseUrl: 'http://localhost:3000' });
         assert.strictEqual(results[0].status, 'Errored');
         assert.ok(results[0].name === 'Increment loopCount');
-        assert.ok(results[0].message.startsWith('Trusted context required'));
+        assert.ok(results[0].message?.startsWith('Trusted context required'));
     });
 });

@@ -200,7 +200,7 @@ describe('Cases', async () => {
         assert.strictEqual(results.length, 3);
         for (const result of results) {
             assert.strictEqual(result.status, 'Errored');
-            assert.ok(result.message.startsWith('Trusted context required'));
+            assert.ok(result.message?.startsWith('Trusted context required'));
         }
     });
 });
