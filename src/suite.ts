@@ -110,7 +110,6 @@ export class Suite<T extends Test> {
     /**
      * Run all tests, write actual results, and verify vs expected.
      * @returns result array indicating outcomes
-     * TODO: support runOptions.values for requests and cases
      */
     async run(values: Values, runOptions?: RunOptions): Promise<Result[]>;
     async run(

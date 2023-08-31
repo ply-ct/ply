@@ -1,0 +1,7 @@
+{
+  "type": "step",
+  "name": "data",
+  "path": "test/src/steps/data.ts",
+  "icon": "test/src/steps/data.svg",
+  "template": {}
+}

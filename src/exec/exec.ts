@@ -1,10 +1,11 @@
 import { Step, StepInstance } from '../flowbee';
 import { RunOptions } from '../options';
 import { Values } from '../values';
-import { ResultStatus, ResultData } from '../result';
+import { ResultStatus, ResultData, Outcome, Verifier } from '../result';
 import { Runtime } from '../runtime';
 import { Log } from '../log';
 import { replace } from '../replace';
+import { lines } from '../util';
 import { RESULTS } from '../names';
 
 export interface ExecResult {
@@ -72,6 +73,37 @@ export abstract class PlyExecBase implements PlyExec {
 
     isExpression(input: string): boolean {
         return input.startsWith('${') && input.endsWith('}');
+    }
+
+    async verifyData(
+        runtime: Runtime,
+        data: ResultData,
+        values: Values,
+        runOptions?: RunOptions
+    ): Promise<Outcome> {
+        if (runOptions?.submit) return { status: 'Submitted', data };
+
+        const indent = runtime.options.prettyIndent;
+        const actualYaml = runtime.results.getActualYaml(this.step.id);
+        let actualYamlText = actualYaml.text + 'data: |\n'.padStart(8 + indent);
+        for (const line of lines(JSON.stringify(data, null, indent))) {
+            actualYamlText += line.padStart(line.length + 2 * indent) + '\n';
+        }
+
+        const expectedYaml = await runtime.results.getExpectedYaml(this.step.id);
+
+        const verifier = new Verifier(
+            this.step.name.replace(/\r?\n/g, ' '),
+            expectedYaml,
+            this.logger
+        );
+        const outcome = verifier.verify(
+            { ...actualYaml, text: actualYamlText },
+            values,
+            runOptions
+        );
+        outcome.data = data;
+        return outcome;
     }
 
     /**

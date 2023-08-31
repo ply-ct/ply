@@ -138,7 +138,6 @@ export interface PlyOptions extends Options {
     binaryMediaTypes?: string[];
     prettyIndent: number;
     args?: any;
-    runOptions?: RunOptions;
 }
 
 /**

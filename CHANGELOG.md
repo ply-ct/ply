@@ -1,5 +1,8 @@
 # Change Log
 
+## [3.2.13](https://github.com/ply-ct/ply/tree/3.2.9) (2023-08-30)
+- Enhancement: Verify data as part of flow step run [\#85](https://github.com/ply-ct/ply/issues/85)
+
 ## [3.2.12](https://github.com/ply-ct/ply/tree/3.2.9) (2023-08-27)
 - Enhancement: Attach general-purpose data to flow steps [\#84](https://github.com/ply-ct/ply/issues/84)
 

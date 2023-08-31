@@ -1,0 +1,22 @@
+Start:
+  id: s1
+  status: Completed
+data:
+  id: s3
+  data: |
+    {
+      "title": "Dracula",
+      "year": 1931,
+      "id": "269b34c1",
+      "poster": "drac.jpg",
+      "rating": 5,
+      "webRef": {
+        "ref": "tt0021814",
+        "site": "imdb.com"
+      }
+    }
+  status: Failed
+  message: 'Results differ from line 6 (data:3)'
+Stop:
+  id: s2
+  status: Completed

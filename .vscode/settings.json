@@ -36,5 +36,6 @@
     "TS_NODE_TRANSPILE_ONLY": "1"
   },
   "ply.plyPath": "dist",
-  "ply.requireTsNode": true
+  "ply.requireTsNode": true,
+  "ply.customSteps": "test/src/steps/**/*.json"
 }

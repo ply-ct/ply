@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as glob from 'glob';
 import * as tsNode from 'ts-node';
 import { Plier } from './ply';
-import { Config, Defaults } from './options';
+import { Config, Defaults, PlyOptions, RunOptions } from './options';
 import { Location } from './location';
 import { Storage } from './storage';
 import { Retrieval } from './retrieval';
@@ -20,7 +20,7 @@ const start = Date.now();
 tsNode.register({ transpileOnly: true });
 
 const opts = new Config(new Defaults(), true).options;
-const { runOptions, ...options } = opts;
+const { runOptions, ...options } = opts as PlyOptions & { runOptions?: RunOptions};
 const plier = new Plier(options);
 
 if (runOptions?.import) {

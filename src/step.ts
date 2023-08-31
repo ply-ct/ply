@@ -195,6 +195,17 @@ export class PlyStep implements Step, PlyTest {
             };
         }
 
+        if (this.instance.data && !this.step.path.endsWith('request')) {
+            const data =
+                typeof this.instance.data === 'string'
+                    ? this.instance.data
+                    : JSON.stringify(this.instance.data, null, runtime.options.prettyIndent);
+            runtime.appendResult('data: |', level + 1, createExpected);
+            for (const line of util.lines(data)) {
+                runtime.appendResult(line, level + 2, createExpected);
+            }
+        }
+
         // append status, result and message to actual result
         if (this.instance.end) {
             const elapsed = this.instance.end.getTime() - this.instance.start.getTime();
@@ -215,16 +226,6 @@ export class PlyStep implements Step, PlyTest {
                     level + 1,
                     createExpected
                 );
-            }
-            if (this.instance.data && !this.step.path.endsWith('request')) {
-                const data =
-                    typeof this.instance.data === 'string'
-                        ? this.instance.data
-                        : JSON.stringify(this.instance.data, null, runtime.options.prettyIndent);
-                runtime.appendResult('data: |', level + 1, createExpected);
-                for (const line of util.lines(data)) {
-                    runtime.appendResult(line, level + 2, createExpected);
-                }
             }
         }
 

@@ -22,7 +22,7 @@ export interface Outcome {
      * Status of test execution
      */
     status: ResultStatus;
-    message: string;
+    message?: string;
     data?: ResultData;
     /**
      * One-based line number of first diff, relative to starting line of test
@@ -56,7 +56,7 @@ export interface Result extends Outcome {
 
 export class PlyResult implements Result {
     status: 'Pending' | 'Passed' | 'Failed' | 'Errored' | 'Submitted' = 'Pending';
-    message = '';
+    message?: string;
     line = 0;
     diff?: string;
     request: Request;
