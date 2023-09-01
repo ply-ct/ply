@@ -23,6 +23,6 @@ export default class DataStep extends PlyExecBase {
             }
         };
 
-        return this.verifyData(runtime, data, values, runOptions);
+        return await this.verifyData(runtime, data, values, runOptions);
     }
 }
