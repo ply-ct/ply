@@ -4,9 +4,8 @@ import { Values } from '../values';
 import { ResultStatus, ResultData, Outcome, Verifier } from '../result';
 import { Runtime } from '../runtime';
 import { Log } from '../log';
-import { replace } from '../replace';
+import { replace, replaceLine } from '../replace';
 import { lines } from '../util';
-import { RESULTS } from '../names';
 
 export interface ExecResult {
     status: ResultStatus;
@@ -23,15 +22,8 @@ export abstract class PlyExecBase implements PlyExec {
 
     abstract run(runtime: Runtime, values: Values, runOptions?: RunOptions): Promise<ExecResult>;
 
-    protected evaluateToString(expr: string, values: Values): string {
-        if (this.isExpression(expr)) {
-            this.logDebug(`Evaluating expression '${expr}' against values`, values);
-            const ex = expr.replace(/@\[/g, RESULTS + '[').replace(/@/g, RESULTS + '.');
-            const fun = new Function(...Object.keys(values), 'return `' + ex + '`');
-            return fun(...Object.values(values));
-        } else {
-            return expr;
-        }
+    protected evaluateToString(expr: string, values: Values, trusted = false): string {
+        return replaceLine(expr, values, { trusted, logger: this.logger });
     }
 
     /**

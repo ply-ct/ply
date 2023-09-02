@@ -3,17 +3,18 @@ import { Step, StepInstance } from '../flowbee';
 import { ExecResult, PlyExecBase } from './exec';
 import { Runtime } from '../runtime';
 import { Log } from '../log';
+import { RunOptions } from '../options';
 
 export class DelayExec extends PlyExecBase {
     constructor(readonly step: Step, readonly instance: StepInstance, readonly logger: Log) {
         super(step, instance, logger);
     }
 
-    async run(_runtime: Runtime, values: Values): Promise<ExecResult> {
+    async run(_runtime: Runtime, values: Values, runOptions?: RunOptions): Promise<ExecResult> {
         let interval = this.step.attributes?.interval;
         if (interval) {
             if (this.isExpression(interval)) {
-                interval = this.evaluateToString(interval, values);
+                interval = this.evaluateToString(interval, values, runOptions?.trusted);
             }
             const ms = Number(interval);
             if (isNaN(ms)) {
