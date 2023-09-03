@@ -5,8 +5,8 @@ data:
   id: s3
   data: |
     {
-      "title": "Dracula",
-      "year": 1931,
+      "title": "${title}",
+      "year": ${year},
       "id": "269b34c1",
       "poster": "drac.jpg",
       "rating": 5,
@@ -15,8 +15,7 @@ data:
         "site": "imdb.com"
       }
     }
-  status: Failed
-  message: 'Results differ from line 6 (data:3)'
+  status: Completed
 Stop:
   id: s2
   status: Completed

@@ -178,7 +178,6 @@ export class Verifier {
         } else {
             return {
                 status: 'Passed',
-                message: 'Test succeeded',
                 line: 0
             };
         }

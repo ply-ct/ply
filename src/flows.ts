@@ -230,7 +230,8 @@ export class FlowSuite extends Suite<Step> {
                     {
                         status: result.status,
                         message: result.message,
-                        start: plyStep.instance.start?.getTime()
+                        start: plyStep.instance.start?.getTime(),
+                        diffs: result.diffs
                     },
                     0,
                     'Step'

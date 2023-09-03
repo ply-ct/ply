@@ -184,6 +184,7 @@ export class PlyStep implements Step, PlyTest {
                 result.data = execResult.data;
                 this.instance.data = execResult.data;
             }
+            if (execResult.diffs) result.diffs = execResult.diffs;
         } catch (err: any) {
             this.logger.error(err.message, err);
             this.instance.status = 'Errored';

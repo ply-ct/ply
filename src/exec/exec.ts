@@ -6,11 +6,13 @@ import { Runtime } from '../runtime';
 import { Log } from '../log';
 import { replace, replaceLine } from '../replace';
 import { lines } from '../util';
+import { Diff } from '../compare';
 
 export interface ExecResult {
     status: ResultStatus;
     message?: string;
     data?: ResultData;
+    diffs?: Diff[];
 }
 
 export interface PlyExec {
