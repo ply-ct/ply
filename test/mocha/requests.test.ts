@@ -117,7 +117,7 @@ describe('Requests', async () => {
 
         const result = await suite.run('moviesByYearAndRating', values);
         assert.strictEqual(result.status, 'Passed');
-        assert.strictEqual(result.message, 'Test succeeded');
+        assert.ok(!result.message);
     });
 
     it('can handle failure', async () => {
@@ -160,7 +160,7 @@ describe('Requests', async () => {
 
         const result = await suite.run('repositoryTopicsQuery', vals);
         assert.strictEqual(result.status, 'Passed');
-        assert.strictEqual(result.message, 'Test succeeded');
+        assert.ok(!result.message);
     });
 
     it('can iterate suite', async () => {
