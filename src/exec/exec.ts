@@ -76,6 +76,7 @@ export abstract class PlyExecBase implements PlyExec {
         runOptions?: RunOptions
     ): Promise<Outcome> {
         if (runOptions?.submit) return { status: 'Submitted', data };
+        if (runOptions?.createExpected) return { status: 'Passed', data };
 
         const indent = runtime.options.prettyIndent;
         const actualYaml = runtime.results.getActualYaml(this.step.id);
