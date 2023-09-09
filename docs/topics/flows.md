@@ -5,7 +5,7 @@ layout: topic
 
 ## Create a Ply flow
 1. Launch VS Code, and in its Activity Bar click the Ply icon:
-   <img src="../img/ply-activity.png" alt="Ply Activity Icon" class="icon-img">
+   <img src="../img/ply-activity.png" alt="Ply Activity Icon" class="icon-img" style="width: 26px">
 1. Drop down Ply's meatball menu:
    <img src="../img/meatball.png" alt="Meatball Menu" class="icon-img" style="margin:0"><span class="after-icon">, then select "New Ply Flow".</span>
 1. Name the flow "get-movies.ply.flow", saving to an empty folder somewhere.
