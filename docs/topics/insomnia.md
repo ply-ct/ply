@@ -41,7 +41,7 @@ ply --import=insomnia "test/insomnia/insomnia-movies.yaml"
 ```
 
 ## VS Code
-To import from Insomnia using the Ply VS Code extension, open Test Explorer view, dropdown the meatball menu
-(`...`) in the toolbar, and select "Import from Insomnia". Then browse for your exported Insomnia collection file.
+To import from Insomnia using the Ply VS Code extension, click the Ply activity icon, dropdown the meatball menu
+(`...`) in its toolbar, and select "Import from Insomnia". Then browse for your exported Insomnia collection file.
 
 Next Topic: [OpenAPI](openapi)

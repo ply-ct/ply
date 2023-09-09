@@ -40,7 +40,7 @@ Ply is simply a more intuitive way to automate REST and GraphQL API testing.
         <li>Side-by-side diff view compares expected/actual, with smart decorations aware of runtime values</li>
         <li><a href="https://github.com/ply-ct/ply#readme">Command-line interface</a> for integrating into CI/CD pipelines</li>
         <li>Decorations on your Ply test flows and files display test statuses and results</li>
-        <li>Test Explorer sidebar shows all Ply flow/request/case suites along with their statuses</li>
+        <li>Ply sidebar shows all Ply flow/request/case suites along with their statuses</li>
         <li>CodeLens links in your Ply test files for running and debugging tests</li>
       </ul>
     </div>

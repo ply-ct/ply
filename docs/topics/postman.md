@@ -46,7 +46,7 @@ ply --import=postman "myenv.postman_environment.json"
 ```
 
 ## VS Code
-To import from Postman using the Ply VS Code extension, open Test Explorer view, dropdown the meatball menu
-(`...`) in the toolbar, and select "Import from Postman". Then browse for your exported Postman collection file.
+To import from Postman using the Ply VS Code extension, click the Ply activity icon, dropdown the meatball menu
+(`...`) in its toolbar, and select "Import from Postman". Then browse for your exported Postman collection file.
 
 Next Topic: [Insomnia](insomnia)

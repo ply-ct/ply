@@ -4,17 +4,17 @@ layout: topic
 # Flows
 
 ## Create a Ply flow
-1. Launch VS Code, and in its Activity Bar click the Test Explorer icon:
-   <img src="../img/test-explorer.png" alt="Text Explorer Icon" class="icon-img">
-1. Drop down Test Explorer's meatball menu
+1. Launch VS Code, and in its Activity Bar click the Ply icon:
+   <img src="../img/ply-activity.png" alt="Ply Activity Icon" class="icon-img">
+1. Drop down Ply's meatball menu:
    <img src="../img/meatball.png" alt="Meatball Menu" class="icon-img" style="margin:0"><span class="after-icon">, then select "New Ply Flow".</span>
 1. Name the flow "get-movies.ply.flow", saving to an empty folder somewhere.
 1. Your newly-created flow should appear, containing two steps: Start and Stop:  
    <img src="../img/get-movies-1.png" alt="get-movies 1" width="540px">
-1. Expand the Flows group in Test Explorer, and you should see get-movies.ply.flow.
+1. Expand the tree in Ply Tests view, and you should see get-movies.ply.flow.
 
 ## Run your flow
-1. In Ply's flow diagram toolbar (or in the Test Explorer item hover menu), click the run icon:
+1. In Ply's flow diagram toolbar (or in the Ply Tests item hover menu), click the run icon:
    <img src="../img/run.svg" alt="Run Icon" class="icon-img">  
    When prompted, select "Submit without verifying" (*Submit* is Ply-speak for "don't check run results").
 1. To show flow/step statuses, the diagram automatically switches to Inspect mode, indicated by this icon in the toolbar mode dropdown:
