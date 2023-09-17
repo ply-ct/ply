@@ -64,7 +64,11 @@ export class FlowSuite extends Suite<Step> {
 
         let results: Result[];
         if (this.isFlowSpec(steps)) {
+            const start = Date.now();
             results = [await this.runFlow(runValues, runOptions, runNum)];
+            if (results.length) {
+                results[0] = { ...results[0], start, end: Date.now() };
+            }
         } else {
             results = await this.runSteps(steps, runValues, runOptions);
         }

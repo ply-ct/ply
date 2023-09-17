@@ -16,6 +16,8 @@ import { StopExec } from './exec/stop';
 import { DeciderExec } from './exec/decide';
 import { DelayExec } from './exec/delay';
 import { Values } from './values';
+import { ValueExec } from './exec/value';
+import { SubflowExec } from './exec/subflow';
 
 export interface Step extends Test {
     step: flowbee.Step;
@@ -109,6 +111,10 @@ export class PlyStep implements Step, PlyTest {
                 exec = new DeciderExec(this.step, this.instance, this.logger);
             } else if (this.step.path === 'delay') {
                 exec = new DelayExec(this.step, this.instance, this.logger);
+            } else if (this.step.path === 'value') {
+                exec = new ValueExec(this.step, this.instance, this.logger);
+            } else if (this.step.path === 'subflow') {
+                exec = new SubflowExec(this.step, this.instance, this.logger);
             } else if (this.step.path === 'typescript' || this.step.path.endsWith('.ts')) {
                 const type = this.step.path === 'typescript' ? 'TypeScript' : 'Custom';
                 let tsFile: string;

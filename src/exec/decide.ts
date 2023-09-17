@@ -1,4 +1,4 @@
-import { ValuesBuilder } from '../values';
+import { Values } from '../values';
 import { Step, StepInstance } from '../flowbee';
 import { ExecResult, PlyExecBase } from './exec';
 import { Runtime } from '../runtime';
@@ -13,11 +13,7 @@ export class DeciderExec extends PlyExecBase {
         super(step, instance, logger);
     }
 
-    async run(
-        _runtime: Runtime,
-        values: ValuesBuilder,
-        runOptions?: RunOptions
-    ): Promise<ExecResult> {
+    async run(_runtime: Runtime, values: Values, runOptions?: RunOptions): Promise<ExecResult> {
         const expression = this.step.attributes?.expression;
         if (expression) {
             let expr = expression;
