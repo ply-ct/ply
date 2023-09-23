@@ -10,6 +10,7 @@ import { PlyRunner } from '../runner';
 import { Suite } from '../suite';
 import { Test } from '../test';
 import { ResultStatus } from '../result';
+import { FlowResult } from '../flow';
 
 export class SubflowExec extends PlyExecBase {
     constructor(readonly step: Step, readonly instance: StepInstance, readonly logger: Log) {
@@ -25,13 +26,13 @@ export class SubflowExec extends PlyExecBase {
 
         // bind subflow values
         delete runOptions?.values;
-        const bindValues = this.getAttribute('values', values, {
+        const inValues = this.getAttribute('inValues', values, {
             trusted: runOptions?.trusted
         });
-        if (bindValues) {
+        if (inValues) {
             if (!runOptions) runOptions = {};
             if (!runOptions.values) runOptions.values = {};
-            const rows = JSON.parse(bindValues);
+            const rows = JSON.parse(inValues);
             for (const row of rows) {
                 let rowVal: any = row[1];
                 if (this.isExpression(rowVal)) {
@@ -62,6 +63,20 @@ export class SubflowExec extends PlyExecBase {
 
         const runner = new PlyRunner(runtime.options, substeps, subValues, this.logger);
         await runner.runSuiteTests(subValues, runOptions);
+
+        let outBindings: { [key: string]: string } | undefined;
+        const outValues = this.getAttribute('outValues', values, {
+            trusted: runOptions?.trusted
+        });
+        if (outValues) {
+            outBindings = {}; // flow value name to return value name
+            for (const row of JSON.parse(outValues)) {
+                if (row[1]) {
+                    outBindings[row[1]] = row[0];
+                }
+            }
+        }
+
         let status: ResultStatus = 'Passed';
         const data: (string | number)[][] = [];
         for (const result of runner.results) {
@@ -75,7 +90,18 @@ export class SubflowExec extends PlyExecBase {
             if (result.status !== 'Passed') {
                 status = result.status;
             }
+            if (outBindings) {
+                const returnValues = (result as FlowResult).return;
+                if (returnValues) {
+                    for (const flowValName of Object.keys(outBindings)) {
+                        values[flowValName] = returnValues[outBindings[flowValName]];
+                    }
+                }
+            }
         }
+
+        // const dataRes = await this.verifyData(runtime, data, values, runOptions);
+        // if (dataRes.status !== 'Passed' && status === 'Passed') status = dataRes.status
 
         return { status, data };
     }

@@ -7,7 +7,6 @@ import { Runtime } from '../runtime';
 import { RunOptions } from '../options';
 import { Log } from '../log';
 import { replace } from '../replace';
-import * as yaml from '../yaml';
 
 export class RequestExec extends PlyExecBase {
     constructor(
@@ -59,10 +58,7 @@ export class RequestExec extends PlyExecBase {
         (request as any).stepName = this.step.name.replace(/\r?\n/g, ' ');
 
         this.instance.data = {
-            request: yaml.dump(
-                request.getRequest(values, runtime.options),
-                runtime.options.prettyIndent
-            )
+            request: request.getRequest(values, runtime.options)
         };
 
         if (this.step.attributes?.submit === 'true') {
@@ -70,7 +66,7 @@ export class RequestExec extends PlyExecBase {
                 ...runOptions,
                 submit: true
             });
-            this.instance.data.response = yaml.dump(response, runtime.options.prettyIndent);
+            this.instance.data.response = response;
         } else {
             this.requestSuite.tests[this.name] = request;
             const result = await this.requestSuite.run(
@@ -97,7 +93,7 @@ export class RequestExec extends PlyExecBase {
                         )
                     };
                 }
-                this.instance.data.response = yaml.dump(response, runtime.options.prettyIndent);
+                this.instance.data.response = response;
             }
         }
 

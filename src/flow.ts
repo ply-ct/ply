@@ -11,6 +11,8 @@ import { Request } from './request';
 import { Result } from './result';
 import { RUN_ID } from './names';
 import * as util from './util';
+import { replaceLine } from './replace';
+import { RESULTS } from './names';
 
 export interface Flow {
     flow: flowbee.Flow;
@@ -20,17 +22,31 @@ export interface Subflow {
     subflow: flowbee.Subflow;
     instance: flowbee.SubflowInstance;
 }
+export interface FlowResult extends Result {
+    /**
+     * flow path
+     */
+    flow: string;
+    /**
+     * return values
+     */
+    return?: Values;
+}
 
-export class FlowResults {
-    results: Result[] = [];
+export class FlowStepResults {
+    private results: (Result & { stepId: string })[] = [];
 
-    constructor(readonly name: string) {}
+    constructor(readonly flow: string) {}
+
+    add(stepId: string, result: Result) {
+        this.results.push({ ...result, stepId });
+    }
 
     get latest(): Result {
         if (this.results.length > 0) {
             return this.results[this.results.length - 1];
         } else {
-            return { name: this.name, status: 'Pending', message: '' };
+            return { name: this.flow, status: 'Pending', message: '' };
         }
     }
 
@@ -47,7 +63,53 @@ export class FlowResults {
                 anySubmitted = true;
             }
         }
-        return { name: this.name, status: anySubmitted ? 'Submitted' : 'Passed', message: '' };
+        return {
+            name: this.flow,
+            status: anySubmitted ? 'Submitted' : 'Passed',
+            message: ''
+        };
+    }
+
+    /**
+     * Step result values
+     */
+    get values(): Values {
+        return this.results.reduce((values, result) => {
+            if (result.data) {
+                let data = result.data;
+                if (typeof data === 'object') {
+                    data = { ...data }; // clone array or object
+                }
+                let plyResults = values[RESULTS];
+                if (!plyResults) {
+                    plyResults = {};
+                    values[RESULTS] = plyResults;
+                }
+                let stepResult = plyResults[result.stepId];
+                if (!stepResult) {
+                    stepResult = {};
+                    plyResults[result.stepId] = stepResult;
+                }
+                if (typeof data === 'object' && !Array.isArray(data)) {
+                    if (data.request) {
+                        stepResult.request = data.request;
+                        if (typeof stepResult.request.body === 'string' && util.isJson(stepResult.request.body)) {
+                            stepResult.request.body = JSON.parse(stepResult.request.body);
+                        }
+                    }
+                    if (data.response) {
+                        stepResult.response = data.response;
+                        if (typeof stepResult.response.body === 'string' && util.isJson(stepResult.response.body)) {
+                            stepResult.response.body = JSON.parse(stepResult.response.body);
+                        }
+                    }
+                } else {
+                    stepResult.data = data;
+                }
+            }
+
+            return values;
+        }, {} as Values);
     }
 }
 
@@ -57,7 +119,7 @@ export class PlyFlow implements Flow {
     start = 0;
     end?: number | undefined;
     instance: flowbee.FlowInstance;
-    results: FlowResults;
+    results: FlowStepResults;
     maxLoops = 0;
 
     private _onFlow = new TypedEvent<flowbee.FlowEvent>();
@@ -72,7 +134,7 @@ export class PlyFlow implements Flow {
     ) {
         this.name = flowbee.getFlowName(flow);
         this.instance = this.newInstance();
-        this.results = new FlowResults(this.name);
+        this.results = new FlowStepResults(this.name);
     }
 
     clone(): PlyFlow {
@@ -90,10 +152,10 @@ export class PlyFlow implements Flow {
         return this.instance;
     }
 
-    valuesFromFlowAttribute(): any {
+    valuesFromAttribute(): Values {
         const values: Values = {};
         if (this.flow.attributes?.values) {
-            const rows = JSON.parse(this.flow.attributes?.values);
+            const rows = JSON.parse(this.flow.attributes.values);
             for (const row of rows) {
                 let rowVal: any = row[1];
                 if (('' + rowVal).trim() === '') {
@@ -110,6 +172,21 @@ export class PlyFlow implements Flow {
         return values;
     }
 
+    returnValues(values: Values, trusted = false): Values | undefined {
+        if (this.flow.attributes?.return) {
+            const rows = JSON.parse(this.flow.attributes.return);
+            const returnVals: Values = {};
+            for (const row of rows) {
+                const expr = row[1];
+                const val = replaceLine(expr, values, { trusted, logger: this.logger });
+                if (val.trim().length) {
+                    returnVals[row[0]] = val;
+                }
+            }
+            return returnVals;
+        }
+    }
+
     /**
      * Run a ply flow.
      */
@@ -120,11 +197,11 @@ export class PlyFlow implements Flow {
         runNum?: number
     ): Promise<Result> {
         this.newInstance();
-        this.results = new FlowResults(this.name);
+        this.results = new FlowStepResults(this.name);
         values[RUN_ID] = this.instance.runId || util.genId();
 
         // flow values supersede file-based
-        const flowValues = this.valuesFromFlowAttribute();
+        const flowValues = this.valuesFromAttribute();
         for (const flowValKey of Object.keys(flowValues)) {
             values[flowValKey] = flowValues[flowValKey];
         }
@@ -260,7 +337,8 @@ export class PlyFlow implements Flow {
         const result = await plyStep.run(runtime, values, runOptions, runNum, insts);
         result.start = plyStep.instance.start?.getTime();
         result.end = plyStep.instance.end?.getTime();
-        this.results.results.push(result);
+        result.data = plyStep.instance.data;
+        this.results.add(plyStep.name, result);
         this.requestSuite.logOutcome(plyStep, result, runNum, plyStep.stepName);
 
         if (this.results.latestBad()) {

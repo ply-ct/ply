@@ -42,16 +42,16 @@ export interface Result extends Outcome {
     /**
      * Request name
      */
-    readonly name: string;
+    name: string;
     /**
      * Request with runtime substitutions, minus Authorization header
      */
-    readonly request?: Request;
+    request?: Request;
     /**
      * Response maybe with ignore headers removed, and formatted/sorted body content (per options).
      * If binary media type, response body is base64 encoded.
      */
-    readonly response?: Response;
+    response?: Response;
 }
 
 export class PlyResult implements Result {
@@ -78,7 +78,6 @@ export class PlyResult implements Result {
      * Returns the result with request/response bodies as objects (if parseable).
      */
     getResult(options: Options): Result {
-        // TODO: request
         return {
             name: this.name,
             status: this.status,

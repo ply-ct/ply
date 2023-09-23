@@ -1,6 +1,6 @@
 import { Values } from './values';
 import * as flowbee from './flowbee';
-import { PlyFlow } from './flow';
+import { FlowResult, PlyFlow } from './flow';
 import { Log, LogLevel } from './log';
 import { Logger } from './logger';
 import { PlyOptions, RunOptions } from './options';
@@ -64,11 +64,7 @@ export class FlowSuite extends Suite<Step> {
 
         let results: Result[];
         if (this.isFlowSpec(steps)) {
-            const start = Date.now();
             results = [await this.runFlow(runValues, runOptions, runNum)];
-            if (results.length) {
-                results[0] = { ...results[0], start, end: Date.now() };
-            }
         } else {
             results = await this.runSteps(steps, runValues, runOptions);
         }
@@ -84,7 +80,7 @@ export class FlowSuite extends Suite<Step> {
         return step;
     }
 
-    async runFlow(values: Values, runOptions?: RunOptions, runNum?: number): Promise<Result> {
+    async runFlow(values: Values, runOptions?: RunOptions, runNum?: number): Promise<FlowResult> {
         if (this.runtime.options?.parallel) {
             this.plyFlow = this.plyFlow.clone();
         }
@@ -131,12 +127,28 @@ export class FlowSuite extends Suite<Step> {
             }
         });
         this.plyFlow.requestSuite.emitter = this.emitter;
-        return await this.plyFlow.run(this.runtime, values, runOptions, runNum);
+        const start = Date.now();
+        const res = await this.plyFlow.run(this.runtime, values, runOptions, runNum);
+        const flowResult: FlowResult = { flow: this.path, ...res, start, end: Date.now() };
+
+        if (this.plyFlow.flow.attributes?.return) {
+            // don't evaluate result values if not used
+            const retVals = this.plyFlow.returnValues(
+                { ...values, ...this.plyFlow.results.values },
+                runOptions?.trusted
+            );
+            if (retVals) {
+                this.log.debug(`${this.name} return values`, retVals);
+                flowResult.return = retVals;
+            }
+        }
+
+        return flowResult;
     }
 
     async runSteps(steps: Step[], values: Values, runOptions?: RunOptions): Promise<Result[]> {
         // flow values supersede file-based
-        const flowValues = this.plyFlow.valuesFromFlowAttribute();
+        const flowValues = this.plyFlow.valuesFromAttribute();
         for (const flowValKey of Object.keys(flowValues)) {
             values[flowValKey] = flowValues[flowValKey];
         }

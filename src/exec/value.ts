@@ -15,6 +15,7 @@ export class ValueExec extends PlyExecBase {
         const name = this.getAttribute('name', values, { trusted, required: true })!;
         const expression = this.getAttribute('expression', values, { trusted, required: true })!;
         values[name] = this.evaluateToString(expression, values, trusted);
+        this.logger.debug(`Set value ${name} = ${values[name]}`);
         return { status: 'Passed' };
     }
 }

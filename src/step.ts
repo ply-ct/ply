@@ -203,12 +203,12 @@ export class PlyStep implements Step, PlyTest {
         }
 
         if (this.instance.data && !this.step.path.endsWith('request')) {
-            const data =
+            const dataStr =
                 typeof this.instance.data === 'string'
                     ? this.instance.data
                     : JSON.stringify(this.instance.data, null, runtime.options.prettyIndent);
             runtime.appendResult('data: |', level + 1, createExpected);
-            for (const line of util.lines(data)) {
+            for (const line of util.lines(dataStr)) {
                 runtime.appendResult(line, level + 2, createExpected);
             }
         }

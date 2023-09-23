@@ -1,5 +1,8 @@
 # Change Log
 
+## [3.2.16](https://github.com/ply-ct/ply/tree/3.2.16) (2023-09-23)
+- Enhancement: Subflow result values [\#90](https://github.com/ply-ct/ply/issues/90)
+
 ## [3.2.15](https://github.com/ply-ct/ply/tree/3.2.15) (2023-09-17)
 - Enhancement: Subflows [\#88](https://github.com/ply-ct/ply/issues/88)
 - Enhancement: Values Step [\#89](https://github.com/ply-ct/ply/issues/89)

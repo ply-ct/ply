@@ -257,6 +257,7 @@ export class Defaults implements PlyOptions {
         'content-length',
         'date',
         'etag',
+        'keep-alive',
         'server',
         'transfer-encoding',
         'x-powered-by'

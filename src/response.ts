@@ -1,7 +1,7 @@
 import { safeEval } from '@ply-ct/ply-values';
 import stringify from 'json-stable-stringify';
 import { Options } from './options';
-import { fixEol, isBinary, uintArrayToBase64 } from './util';
+import { fixEol, isJson, isBinary, uintArrayToBase64 } from './util';
 
 export interface Status {
     code: number;
@@ -53,7 +53,7 @@ export class PlyResponse implements Response {
 
         let body = this.body;
         let isJsonString = false;
-        if (typeof body === 'string' && (body.startsWith('{') || body.startsWith('['))) {
+        if (typeof body === 'string' && isJson(body)) {
             try {
                 body = JSON.parse(body);
                 isJsonString = true;
