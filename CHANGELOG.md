@@ -1,5 +1,8 @@
 # Change Log
 
+## [3.2.17](https://github.com/ply-ct/ply/tree/3.2.17) (2023-10-01)
+- Enhancement: Option to validate required flow values [\#87](https://github.com/ply-ct/ply/issues/87)
+
 ## [3.2.16](https://github.com/ply-ct/ply/tree/3.2.16) (2023-09-23)
 - Enhancement: Subflow result values [\#90](https://github.com/ply-ct/ply/issues/90)
 
