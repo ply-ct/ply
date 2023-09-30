@@ -133,7 +133,7 @@ export class FlowSuite extends Suite<Step> {
 
         if (this.plyFlow.flow.attributes?.return) {
             // don't evaluate result values if not used
-            const retVals = this.plyFlow.returnValues(
+            const retVals = this.plyFlow.getReturnValues(
                 { ...values, ...this.plyFlow.results.values },
                 runOptions?.trusted
             );
@@ -146,15 +146,14 @@ export class FlowSuite extends Suite<Step> {
         return flowResult;
     }
 
+    /**
+     * Run steps independently
+     */
     async runSteps(steps: Step[], values: Values, runOptions?: RunOptions): Promise<Result[]> {
         // flow values supersede file-based
-        const flowValues = this.plyFlow.valuesFromAttribute();
+        const flowValues = this.plyFlow.getFlowValues(values, runOptions);
         for (const flowValKey of Object.keys(flowValues)) {
             values[flowValKey] = flowValues[flowValKey];
-        }
-        // run values override even flow-configured vals
-        if (runOptions?.values) {
-            values = { ...values, ...runOptions.values };
         }
 
         const requestSuite = new Suite<Request>(

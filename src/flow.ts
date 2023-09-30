@@ -1,5 +1,5 @@
 import { minimatch } from 'minimatch';
-import { Values } from './values';
+import { Values, isExpression } from './values';
 import * as flowbee from './flowbee';
 import { Listener, TypedEvent } from './event';
 import { Log, LogLevel } from './log';
@@ -93,13 +93,19 @@ export class FlowStepResults {
                 if (typeof data === 'object' && !Array.isArray(data)) {
                     if (data.request) {
                         stepResult.request = data.request;
-                        if (typeof stepResult.request.body === 'string' && util.isJson(stepResult.request.body)) {
+                        if (
+                            typeof stepResult.request.body === 'string' &&
+                            util.isJson(stepResult.request.body)
+                        ) {
                             stepResult.request.body = JSON.parse(stepResult.request.body);
                         }
                     }
                     if (data.response) {
                         stepResult.response = data.response;
-                        if (typeof stepResult.response.body === 'string' && util.isJson(stepResult.response.body)) {
+                        if (
+                            typeof stepResult.response.body === 'string' &&
+                            util.isJson(stepResult.response.body)
+                        ) {
                             stepResult.response.body = JSON.parse(stepResult.response.body);
                         }
                     }
@@ -152,27 +158,64 @@ export class PlyFlow implements Flow {
         return this.instance;
     }
 
-    valuesFromAttribute(): Values {
-        const values: Values = {};
+    /**
+     * Flow input values
+     */
+    getFlowValues(values: Values, runOptions?: RunOptions): Values {
+        const flowValues: Values = {};
         if (this.flow.attributes?.values) {
             const rows = JSON.parse(this.flow.attributes.values);
             for (const row of rows) {
                 let rowVal: any = row[1];
-                if (('' + rowVal).trim() === '') {
-                    rowVal = undefined; // empty string
-                } else {
+                if (rowVal?.trim().length) {
+                    if (isExpression(rowVal)) {
+                        rowVal = replaceLine(rowVal, values, {
+                            trusted: runOptions?.trusted,
+                            logger: this.logger
+                        });
+                    }
                     const numVal = Number(row[1]);
                     if (!isNaN(numVal)) rowVal = numVal;
                     else if (row[1] === 'true' || row[1] === 'false') rowVal = row[1] === 'true';
                     else if (util.isJson(row[1])) rowVal = JSON.parse(row[1]);
+                    flowValues[row[0]] = rowVal;
                 }
-                values[row[0]] = rowVal;
+
+                // run values override even flow-configured vals
+                if (runOptions?.values) {
+                    const runValue =
+                        runOptions.values[row[0]] || runOptions.values[`\${${row[0]}}`];
+                    if (runValue) flowValues[row[0]] = runValue;
+                }
             }
         }
-        return values;
+
+        return flowValues;
     }
 
-    returnValues(values: Values, trusted = false): Values | undefined {
+    /**
+     * returns missing value names
+     */
+    validateValues(values: Values): string[] {
+        const missingRequired: string[] = [];
+        if (this.flow.attributes?.values) {
+            const rows = JSON.parse(this.flow.attributes.values);
+            for (const row of rows) {
+                if (
+                    row[2] === 'true' &&
+                    (values[row[0]] === undefined || values[rows[0]] === null)
+                ) {
+                    missingRequired.push(row[0]);
+                }
+            }
+        }
+        return missingRequired;
+    }
+
+    /**
+     * Flow output values
+     */
+    getReturnValues(values: Values, trusted = false): Values | undefined {
         if (this.flow.attributes?.return) {
             const rows = JSON.parse(this.flow.attributes.return);
             const returnVals: Values = {};
@@ -201,13 +244,9 @@ export class PlyFlow implements Flow {
         values[RUN_ID] = this.instance.runId || util.genId();
 
         // flow values supersede file-based
-        const flowValues = this.valuesFromAttribute();
+        const flowValues = this.getFlowValues(values, runOptions);
         for (const flowValKey of Object.keys(flowValues)) {
             values[flowValKey] = flowValues[flowValKey];
-        }
-        // run values override even flow-configured vals
-        if (runOptions?.values) {
-            values = { ...values, ...runOptions.values };
         }
 
         this.maxLoops = runtime.options.maxLoops || 10;
@@ -233,6 +272,11 @@ export class PlyFlow implements Flow {
             runOptions.createExpected = true;
         }
 
+        const startStep = this.flow.steps?.find((s) => s.path === 'start');
+        if (!startStep) {
+            throw new Error(`Cannot find start step in flow: ${this.flow.path}`);
+        }
+
         const runId = this.logger.level === LogLevel.debug ? ` (${this.instance.runId})` : '';
         this.logger.info(`Running flow '${this.name}'${runId}`);
         this.instance.status = 'In Progress';
@@ -243,11 +287,6 @@ export class PlyFlow implements Flow {
         await this.runSubflows(this.getSubflows('Before'), runtime, values, runOptions, runNum);
         if (this.results.latestBad() && runtime.options.bail) {
             return this.endFlow();
-        }
-
-        const startStep = this.flow.steps?.find((s) => s.path === 'start');
-        if (!startStep) {
-            throw new Error(`Cannot find start step in flow: ${this.flow.path}`);
         }
 
         await this.exec(startStep, runtime, values, runOptions, runNum);
@@ -334,7 +373,26 @@ export class PlyFlow implements Flow {
         this.logger.info('Executing step', plyStep.name);
         this.emit('exec', 'step', plyStep.instance);
 
-        const result = await plyStep.run(runtime, values, runOptions, runNum, insts);
+        let result: Result | undefined;
+        if (runtime.options.validate) {
+            // perform any preflight validations
+            if (plyStep.step.path === 'start') {
+                const missing = this.validateValues(values);
+                if (missing.length) {
+                    plyStep.instance.status = 'Errored';
+                    result = {
+                        name: this.name,
+                        status: 'Errored',
+                        message: `Missing required value(s): ${missing.join(', ')}`
+                    };
+                }
+            }
+        }
+
+        if (!result) {
+            result = await plyStep.run(runtime, values, runOptions, runNum, insts);
+        }
+
         result.start = plyStep.instance.start?.getTime();
         result.end = plyStep.instance.end?.getTime();
         result.data = plyStep.instance.data;

@@ -71,6 +71,11 @@ export interface Options {
      */
     bail?: boolean;
     /**
+     * Validate for missing required input values.
+     * Default is true unless 'submit' runOption.
+     */
+    validate?: boolean;
+    /**
      * Run suites in parallel.
      */
     parallel?: boolean;
@@ -128,6 +133,7 @@ export interface PlyOptions extends Options {
     verbose: boolean;
     quiet: boolean;
     bail: boolean;
+    validate: boolean;
     parallel: boolean;
     batchRows: number;
     batchDelay: number;
@@ -246,6 +252,7 @@ export class Defaults implements PlyOptions {
     verbose = false;
     quiet = false;
     bail = false;
+    validate = true;
     parallel = false;
     batchRows = 1;
     batchDelay = 0;
@@ -346,6 +353,9 @@ export class Config {
         },
         bail: {
             describe: 'Stop on first failure'
+        },
+        validate: {
+            describe: 'Validate flows inputs'
         },
         parallel: {
             describe: 'Run suites in parallel'
@@ -527,6 +537,9 @@ export class Config {
         if (options.submit) {
             options.runOptions.submit = options.submit;
             delete options.submit;
+            if (opts.validate === undefined) {
+                options.validate = false;
+            }
         }
         if (options.create) {
             options.runOptions.createExpected = options.create;

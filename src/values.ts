@@ -13,6 +13,9 @@ import { Log } from './log';
 
 // redeclared here
 export type Values = { [key: string]: any };
+export const isExpression = (input: string): boolean => {
+    return input.startsWith('${') && input.endsWith('}');
+};
 
 export interface ValueLocation {
     file: string;

@@ -16,6 +16,7 @@
 | **<code>verbose</code>**<br>**<code>--verbose</code>** | `false` | Display debug/verbose logging output. Takes precedence over 'quiet' if both are true.
 | **<code>quiet</code>**<br>**<code>--quiet</code>** | `false` | The opposite of 'verbose'. Only error/status output is logged.
 | **<code>bail</code>**<br>**<code>--bail</code>** | `false` | Stop execution on first failure.
+| **<code>validate</code>**<br>**<code>--validate</code>** | `true unless 'submit'` | Validate flow input values.
 | **<code>parallel</code>**<br>**<code>--parallel</code>** | `false` | Run request/flow/case suites in parallel (but tests within a suite are **always** sequential).
 | **<code>batchRows</code>**<br>**<code>--batchRows</code>** | `1` | (For use with [rowwise](values#rowwise-values) values). Number of rows to run per batch.
 | **<code>batchDelay</code>**<br>**<code>--batchDelay</code>** | `0` | (For use with [rowwise](values#rowwise-values) values). Delay in ms between row batches.
