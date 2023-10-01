@@ -8,6 +8,7 @@ import { Response } from '../response';
 import { Test } from '../test';
 import { Outcome } from '../result';
 import { fwdSlashes } from '../util';
+import { Values } from '../values';
 
 export class Runs {
     constructor(readonly path: string) {}
@@ -35,6 +36,7 @@ export class Runs {
         test: Test,
         outcome: Outcome & { request?: Request; response?: Response },
         message?: string,
+        values?: Values,
         runNumber = 0
     ) {
         const testRun: TestRun = {
@@ -46,10 +48,15 @@ export class Runs {
             result: {
                 status: outcome.status,
                 ...(message && { message })
-            }
+            },
+            values
         };
-        if (outcome.request) testRun.request = outcome.request;
-        if (outcome.response) testRun.response = outcome.response;
+        if (outcome.request) {
+            testRun.request = outcome.request;
+            if (outcome.response) testRun.response = outcome.response;
+        } else if (outcome.data && !(outcome.data as { [key: string]: any }).request) {
+            testRun.data = outcome.data;
+        }
 
         const storage = new Storage(`${this.path}/${name}.${runNumber + 1}.json`);
         const content = storage.read();

@@ -397,7 +397,16 @@ export class PlyFlow implements Flow {
         result.end = plyStep.instance.end?.getTime();
         result.data = plyStep.instance.data;
         this.results.add(plyStep.name, result);
-        this.requestSuite.logOutcome(plyStep, result, runNum, plyStep.stepName);
+
+        if (runtime.options.verbose) {
+            this.requestSuite.logOutcome(plyStep, result, runNum, plyStep.stepName, values);
+        } else if ((plyStep.step.path === 'start' || plyStep.step.path === 'stop') && !subflow) {
+            // non-verbose only start/stop step values are logged
+            const { [RESULTS]: _results, [RUN_ID]: _runId, ...loggedValues } = values;
+            this.requestSuite.logOutcome(plyStep, result, runNum, plyStep.stepName, loggedValues);
+        } else {
+            this.requestSuite.logOutcome(plyStep, result, runNum, plyStep.stepName);
+        }
 
         if (this.results.latestBad()) {
             this.instance.status = plyStep.instance.status;

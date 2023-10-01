@@ -1,8 +1,9 @@
-import { ResultStatus } from '../result';
+import { ResultData, ResultStatus } from '../result';
 import { TestType } from '../test';
 import { Request } from '../request';
 import { Response } from '../response';
 import { Log } from '../log';
+import { Values } from '../values';
 
 export interface ReportOptions {
     format: string;
@@ -52,4 +53,6 @@ export interface TestRun {
     result: RunResult;
     request?: Request;
     response?: Response;
+    data?: ResultData;
+    values?: Values;
 }

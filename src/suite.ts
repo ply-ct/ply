@@ -563,7 +563,7 @@ export class Suite<T extends Test> {
         }
     }
 
-    logOutcome(test: Test, outcome: Outcome, runNum?: number, label?: string) {
+    logOutcome(test: Test, outcome: Outcome, runNum?: number, label?: string, values?: Values) {
         outcome.end = Date.now();
         const ms = outcome.start ? ` in ${outcome.end - outcome.start} ms` : '';
         const testLabel = label || test.type.charAt(0).toLocaleUpperCase() + test.type.substring(1);
@@ -589,7 +589,7 @@ export class Suite<T extends Test> {
 
         if (this.type !== 'flow') {
             // flows are logged through their requestSuites
-            this.runtime.results.runs.writeRun(this.path, test, outcome, message, runNum);
+            this.runtime.results.runs.writeRun(this.path, test, outcome, message, values, runNum);
         }
 
         if (this.emitter) {
