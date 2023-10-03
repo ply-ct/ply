@@ -1,6 +1,6 @@
 # Change Log
 
-## [3.2.17](https://github.com/ply-ct/ply/tree/3.2.17) (2023-10-01)
+## [3.2.17](https://github.com/ply-ct/ply/tree/3.2.17) (2023-10-02)
 - Enhancement: Option to validate required flow values [\#87](https://github.com/ply-ct/ply/issues/87)
 - Enhancement: Include values in run data output [\#91](https://github.com/ply-ct/ply/issues/91)
 
