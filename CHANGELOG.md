@@ -1,5 +1,9 @@
 # Change Log
 
+## [3.2.18](https://github.com/ply-ct/ply/tree/3.2.18) (2023-10-12)
+- Enhancement: Extensibility for custom reporters [\#56](https://github.com/ply-ct/ply/issues/56)
+- Bug: Multiline cell value in CSV reporter [\#92](https://github.com/ply-ct/ply/issues/92)
+
 ## [3.2.17](https://github.com/ply-ct/ply/tree/3.2.17) (2023-10-02)
 - Enhancement: Option to validate required flow values [\#87](https://github.com/ply-ct/ply/issues/87)
 - Enhancement: Include values in run data output [\#91](https://github.com/ply-ct/ply/issues/91)

@@ -26,6 +26,8 @@ export class SheetReporter implements Reporter {
                     val = '';
                 } else if (val instanceof Date) {
                     val = timestamp(val).replace(/,/g, '');
+                } else if (typeof val === 'string') {
+                    val = `"${val.replace(/\"/g, '""')}"`;
                 }
                 row.push(`${val}`);
             }
