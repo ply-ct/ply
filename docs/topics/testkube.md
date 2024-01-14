@@ -2,7 +2,7 @@
 layout: topic
 ---
 # Testkube
-The Ply [Testkube](https://testkube.io/) executor is available in [Docker Hub](https://hub.docker.com/) at `plyct/ply-testkube:1.0.2`.
+The Ply [Testkube](https://testkube.io/) executor is available in [Docker Hub](https://hub.docker.com/) at `plyct/ply-testkube:1.2.1`.
 
 ## Create Ply Testkube executor
 ```

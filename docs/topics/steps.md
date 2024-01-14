@@ -32,7 +32,7 @@ in Ply's request editor, for full-featured JSON/code support and convenient ad-h
 
 Ordinarily a request step is included in expected/actual [results](results) comparison. But the configurator 
 "Submit Only" checkbox allows you to override this behavior so that its output is ignored, which can be especially 
-useful in the context of setup/teardown [subflows](flows#subflows). Below we don't care whether the DELETE request
+useful in the context of setup/teardown [embedded subflows](flows#embedded-subflows). Below we don't care whether the DELETE request
 returns HTTP `404-Not Found` or `200-OK`; just that the movies is not present when our test begins.  
 <img src="../img/request-step.png" alt="Request step" width="778px" class="mac-bs">
 
@@ -44,6 +44,10 @@ milliseconds. Configured intervals can be expressions, in which case execution m
 Decider steps control flow branching, and so can have outbound links to multiple downstream steps. A Decider is
 configured with an expression, which is compared (as a string) against the labels of all outbound links to determine
 flow direction. See the "Done" step in the screenshot below for an example of how this is used.
+
+## Subflow step
+A subflow step runs another ply flow, passing input values and receiving output values.
+<img src="../img/invoke-subflow.png" alt="Invoke subflow" width="1115px" class="mac-bs">
 
 ## TypeScript step
 A TypeScript step executes your custom .ts module that default-exports a class implementing the 
