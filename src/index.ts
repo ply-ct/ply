@@ -30,6 +30,7 @@ export * as openapi from './plyex/openapi';
 export { Step as FlowStep, StepInstance, Subflow, SubflowInstance } from './flowbee';
 export * from './plyex/plyex';
 export * from './plyex/code';
+export { ExecContext } from './exec/context';
 export * from './exec/decide';
 export * from './exec/delay';
 export * from './exec/exec';

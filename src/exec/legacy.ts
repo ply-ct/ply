@@ -26,13 +26,9 @@ export class LegacyExec extends StepExec {
  * @deprecated Extend StepExec or implement PlyExec directly
  */
 export abstract class PlyExecBase {
-    legacy = true;
+    static legacy = true;
 
     constructor(readonly step: Step, readonly instance: StepInstance, readonly logger: Log) {}
-
-    async runLegacy(context: ExecContext): Promise<ExecResult> {
-        return this.run(context.runtime, context.values, context.runOptions);
-    }
 
     abstract run(runtime: Runtime, values: Values, runOptions?: RunOptions): Promise<ExecResult>;
 
