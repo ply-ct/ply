@@ -1,6 +1,5 @@
-import * as process from 'process';
-import * as path from 'path';
 import * as flowbee from './flowbee';
+import * as util from './util';
 import { Log } from './log';
 import { RunOptions } from './options';
 import { Request } from './request';
@@ -8,16 +7,10 @@ import { Runtime } from './runtime';
 import { Suite } from './suite';
 import { PlyTest, Test } from './test';
 import { Result } from './result';
-import * as util from './util';
-import { RequestExec } from './exec/request';
-import { ExecResult, PlyExec } from './exec/exec';
-import { StartExec } from './exec/start';
-import { StopExec } from './exec/stop';
-import { DeciderExec } from './exec/decide';
-import { DelayExec } from './exec/delay';
 import { Values } from './values';
-import { ValueExec } from './exec/value';
-import { SubflowExec } from './exec/subflow';
+import { ExecFactory } from './exec/factory';
+import { ContextImpl } from './exec/impl';
+import { ExecResult } from './exec/exec';
 
 export interface Step extends Test {
     step: flowbee.Step;
@@ -44,15 +37,15 @@ export class PlyStep implements Step, PlyTest {
         readonly step: flowbee.Step,
         private readonly requestSuite: Suite<Request>,
         private readonly logger: Log,
-        readonly flowPath: string,
-        flowInstanceId: string,
+        private readonly flow: flowbee.Flow,
+        private readonly flowInstance: flowbee.FlowInstance,
         readonly subflow?: flowbee.Subflow
     ) {
         this.name = getStepId(this);
         this.stepName = step.name.replace(/\r?\n/g, ' ');
         this.instance = {
             id: util.genId(),
-            flowInstanceId,
+            flowInstanceId: this.flowInstance.id,
             stepId: step.id,
             status: 'In Progress'
         };
@@ -82,77 +75,38 @@ export class PlyStep implements Step, PlyTest {
             );
             runtime.appendResult(`id: ${this.step.id}`, level + 1, createExpected);
 
-            let exec: PlyExec;
+            const context = new ContextImpl({
+                name: this.name,
+                runtime,
+                flow: this.flow,
+                flowInstance: this.flowInstance,
+                subflow: this.subflow,
+                step: this.step,
+                stepInstance: this.instance,
+                logger: this.logger,
+                values,
+                runOptions,
+                requestSuite: this.requestSuite,
+                runNum,
+                instNum
+            });
 
-            if (this.step.path === 'start') {
-                if (this.subflow && !runOptions?.submit && !createExpected) {
-                    await this.padActualStart(this.subflow.id, instNum);
-                }
-                exec = new StartExec(this.step, this.instance, this.logger);
-            } else if (this.step.path === 'stop') {
-                exec = new StopExec(
-                    this.flowPath,
-                    this.step,
-                    this.instance,
-                    this.logger,
-                    this.subflow
-                );
-            } else if (this.step.path === 'request') {
-                exec = new RequestExec(
-                    this.name,
-                    this.requestSuite,
-                    this.step,
-                    this.instance,
-                    this.logger,
-                    runNum,
-                    instNum
-                );
-            } else if (this.step.path === 'decide') {
-                exec = new DeciderExec(this.step, this.instance, this.logger);
-            } else if (this.step.path === 'delay') {
-                exec = new DelayExec(this.step, this.instance, this.logger);
-            } else if (this.step.path === 'value') {
-                exec = new ValueExec(this.step, this.instance, this.logger);
-            } else if (this.step.path === 'subflow') {
-                exec = new SubflowExec(this.step, this.instance, this.logger);
-            } else if (this.step.path === 'typescript' || this.step.path.endsWith('.ts')) {
-                const type = this.step.path === 'typescript' ? 'TypeScript' : 'Custom';
-                let tsFile: string;
-                if (type === 'TypeScript') {
-                    if (!this.step.attributes?.tsFile) {
-                        throw new Error(`Step ${this.step.id} missing attribute: tsFile`);
-                    }
-                    tsFile = this.step.attributes.tsFile;
-                } else {
-                    tsFile = this.step.path;
-                }
-                if (runOptions?.stepsBase) {
-                    tsFile = `${runOptions.stepsBase}/${tsFile}`;
-                }
+            const exec = await ExecFactory.create(context);
 
-                if (!path.isAbsolute(tsFile)) tsFile = path.join(process.cwd(), tsFile);
-                tsFile = path.normalize(tsFile);
-                const mod = await import(tsFile);
-                if (typeof mod.default !== 'function') {
-                    throw new Error(
-                        `${type} step module must export PlyExec implementor class as default: ${tsFile}`
-                    );
-                }
-                exec = new mod.default(this.step, this.instance, this.logger);
-                if (typeof exec.run !== 'function') {
-                    throw new Error(
-                        `${type} step module must implement PlyExec.run() method: ${tsFile}`
-                    );
-                }
-            } else {
-                throw new Error(`Unsupported step: ${this.step.path}`);
+            if (
+                this.step.path === 'start' &&
+                this.subflow &&
+                !runOptions?.submit &&
+                !createExpected
+            ) {
+                await this.padActualStart(this.subflow.id, instNum);
             }
 
             if (!runOptions?.trusted) {
                 let trustRequired = true;
                 const trustFun = (exec as any).isTrustRequired;
                 if (typeof trustFun === 'function') {
-                    trustRequired = trustFun();
+                    trustRequired = trustFun(context);
                 }
                 if (trustRequired) {
                     throw new Error(
@@ -161,7 +115,8 @@ export class PlyStep implements Step, PlyTest {
                 }
             }
 
-            const execResult = await exec.run(runtime, values, runOptions);
+            const execResult = await exec.run(context);
+
             if (
                 this.step.path !== 'start' &&
                 this.step.path !== 'stop' &&

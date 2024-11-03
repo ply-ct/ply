@@ -289,7 +289,7 @@ export class PlyFlow implements Flow {
             return this.endFlow();
         }
 
-        await this.exec(startStep, runtime, values, runOptions, runNum);
+        await this.exec(startStep, runtime, values, undefined, runOptions, runNum);
         if (this.results.latestBad() && runtime.options.bail) {
             return this.endFlow();
         }
@@ -317,6 +317,7 @@ export class PlyFlow implements Flow {
         step: flowbee.Step,
         runtime: Runtime,
         values: Values,
+        incomingLinkId?: string,
         runOptions?: RunOptions,
         runNum?: number,
         subflow?: Subflow
@@ -340,8 +341,8 @@ export class PlyFlow implements Flow {
             step,
             this.requestSuite,
             this.logger,
-            this.flow.path,
-            this.instance.id,
+            this.flow,
+            this.instance,
             subflow?.subflow
         );
 
@@ -430,7 +431,7 @@ export class PlyFlow implements Flow {
             return;
         }
 
-        const outSteps: flowbee.Step[] = [];
+        const outSteps: { [linkId: string]: flowbee.Step } = {};
         if (step.links) {
             for (const link of step.links) {
                 const result = plyStep.instance.result?.trim();
@@ -442,7 +443,7 @@ export class PlyFlow implements Flow {
                         outStep = this.flow.steps?.find((s) => s.id === link.to);
                     }
                     if (outStep) {
-                        outSteps.push(outStep);
+                        outSteps[link.id] = outStep;
                     } else {
                         this.stepError(
                             plyStep,
@@ -452,7 +453,7 @@ export class PlyFlow implements Flow {
                 }
             }
         }
-        if (outSteps.length === 0 && step.path !== 'stop') {
+        if (Object.keys(outSteps).length === 0 && step.path !== 'stop') {
             this.stepError(
                 plyStep,
                 `No outbound link from step ${step.id} matches result: ${plyStep.instance.result}`
@@ -461,8 +462,8 @@ export class PlyFlow implements Flow {
 
         // steps can execute in parallel
         await Promise.all(
-            outSteps.map((outStep) =>
-                this.exec(outStep, runtime, values, runOptions, runNum, subflow)
+            Object.keys(outSteps).map((linkId) =>
+                this.exec(outSteps[linkId], runtime, values, linkId, runOptions, runNum, subflow)
             )
         );
     }
@@ -523,7 +524,7 @@ export class PlyFlow implements Flow {
                 util.timestamp(subflow.instance.start)
             );
             runtime.appendResult(`id: ${subflow.subflow.id}`, 1, runOptions?.createExpected);
-            await this.exec(startStep, runtime, values, runOptions, runNum, subflow);
+            await this.exec(startStep, runtime, values, undefined, runOptions, runNum, subflow);
             subflow.instance.end = new Date();
             const elapsed = subflow.instance.end.getTime() - subflow.instance.start.getTime();
             if (this.results.latestBad()) {

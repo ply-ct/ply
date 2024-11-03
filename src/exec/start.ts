@@ -1,19 +1,14 @@
-import { Step, StepInstance } from '../flowbee';
-import { ExecResult, PlyExecBase } from './exec';
-import { Log } from '../log';
+import { StepExec, ExecResult } from './exec';
+import { ExecContext } from './context';
 
-export class StartExec extends PlyExecBase {
-    constructor(readonly step: Step, readonly instance: StepInstance, readonly logger: Log) {
-        super(step, instance, logger);
-    }
-
-    async run(): Promise<ExecResult> {
+export class StartExec extends StepExec {
+    async run(context: ExecContext): Promise<ExecResult> {
         // result simply driven by instance status
-        if (this.instance.status === 'In Progress') {
+        if (context.stepInstance.status === 'In Progress') {
             // not overwritten by step execution
-            this.instance.status = 'Completed';
+            context.stepInstance.status = 'Completed';
         }
-        return this.mapToExecResult(this.instance);
+        return this.mapToExecResult(context.stepInstance);
     }
 
     isTrustRequired(): boolean {

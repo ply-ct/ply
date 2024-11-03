@@ -33,6 +33,7 @@ export * from './plyex/code';
 export * from './exec/decide';
 export * from './exec/delay';
 export * from './exec/exec';
+export { PlyExecBase } from './exec/legacy';
 export * from './exec/request';
 export { Runtime } from './runtime';
 export * from './runs/model';
