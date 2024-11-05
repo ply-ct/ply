@@ -409,6 +409,10 @@ export class PlyFlow implements Flow {
             this.requestSuite.logOutcome(plyStep, result, runNum, plyStep.stepName);
         }
 
+        if (result.status === 'Waiting') {
+            return;
+        }
+
         if (this.results.latestBad()) {
             this.instance.status = plyStep.instance.status;
             if (subflow) subflow.instance.status = plyStep.instance.status;
@@ -427,6 +431,7 @@ export class PlyFlow implements Flow {
             runOptions,
             runNum
         );
+
         if (this.results.latestBad() && runtime.options.bail) {
             return;
         }

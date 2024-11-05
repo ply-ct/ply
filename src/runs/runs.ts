@@ -146,7 +146,7 @@ export class Runs {
         filter?: (testRun: TestRun) => boolean
     ): Promise<PlyResults> {
         const suiteRuns = await this.loadSuiteRuns(pattern, filter);
-        const overall = { Passed: 0, Failed: 0, Errored: 0, Pending: 0, Submitted: 0 };
+        const overall = { Passed: 0, Failed: 0, Errored: 0, Pending: 0, Submitted: 0, Waiting: 0 };
         suiteRuns.forEach((sr) => {
             overall[sr.result.status]++;
         });

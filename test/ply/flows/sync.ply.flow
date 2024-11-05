@@ -1,0 +1,73 @@
+attributes:
+  NodeStyle: BoxIcon
+  display: x=23,y=18,w=156,h=27
+steps:
+  - id: s1
+    name: Start
+    path: start
+    attributes:
+      display: x=56,y=97,w=60,h=40
+    links:
+      - id: l1
+        to: s4
+        attributes:
+          display: type=Elbow,x=148,y=117,xs=120&176,ys=117&117
+      - id: l4
+        to: s5
+        attributes:
+          display: type=ElbowV,x=82,y=198,xs=86&86&266,ys=137&280&280
+  - id: s2
+    name: Stop
+    path: stop
+    attributes:
+      display: x=760,y=260,w=60,h=40
+  - id: s3
+    name: |-
+      Log
+      Path 1
+    path: log
+    links:
+      - id: l5
+        to: s6
+        attributes:
+          display: type=ElbowH,x=400,y=106,xs=450&580&580,ys=120&120&236
+    attributes:
+      display: x=350,y=80,w=100,h=80
+      level: Info
+      message: Path 1
+  - id: s4
+    name: 2 secs
+    path: delay
+    links:
+      - id: l2
+        to: s3
+        attributes:
+          display: type=Elbow,x=317,y=120,xs=284&346,ys=120&120
+    attributes:
+      display: x=180,y=80,w=100,h=80
+      interval: '2000'
+  - id: s5
+    name: |-
+      Log
+      Path 2
+    path: log
+    links:
+      - id: l7
+        to: s6
+        attributes:
+          display: type=Elbow,x=450,y=280,xs=374&526,ys=280&280
+    attributes:
+      display: x=270,y=240,w=100,h=80
+      level: Info
+      message: Path 2
+  - id: s6
+    name: Sync
+    path: sync
+    links:
+      - id: l6
+        to: s2
+        attributes:
+          display: type=Elbow,x=695,y=280,xs=634&756,ys=280&280
+    attributes:
+      display: x=530,y=240,w=100,h=80
+      mode: Await all incoming links

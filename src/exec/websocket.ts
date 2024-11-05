@@ -1,6 +1,7 @@
 import { StepExec, ExecResult } from './exec';
 import { ExecContext } from './context';
 import WebSocket from 'ws';
+import { isJson } from '../util';
 
 export class WebsocketExec extends StepExec {
     async run(context: ExecContext): Promise<ExecResult> {
@@ -27,7 +28,15 @@ export class WebsocketExec extends StepExec {
             });
             ws.on('message', async (data) => {
                 ws.close();
-                const outcome = await context.verifyData(data);
+                let stepData = data.toString();
+                if (isJson(stepData)) {
+                    stepData = JSON.stringify(
+                        JSON.parse(stepData),
+                        null,
+                        context.runtime.options.prettyIndent
+                    );
+                }
+                const outcome = await context.verifyData(stepData);
                 resolve(outcome);
             });
             ws.on('close', () => {

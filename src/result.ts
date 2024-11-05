@@ -14,7 +14,7 @@ import { Yaml } from './yaml';
 import * as util from './util';
 import { Runs } from './runs/runs';
 
-export type ResultStatus = 'Pending' | 'Passed' | 'Failed' | 'Errored' | 'Submitted';
+export type ResultStatus = 'Pending' | 'Passed' | 'Failed' | 'Errored' | 'Submitted' | 'Waiting';
 export type ResultData = string | { [key: string]: any } | any[];
 
 export interface Outcome {
@@ -55,7 +55,7 @@ export interface Result extends Outcome {
 }
 
 export class PlyResult implements Result {
-    status: 'Pending' | 'Passed' | 'Failed' | 'Errored' | 'Submitted' = 'Pending';
+    status: 'Pending' | 'Passed' | 'Failed' | 'Errored' | 'Submitted' | 'Waiting' = 'Pending';
     message?: string;
     line = 0;
     diff?: string;

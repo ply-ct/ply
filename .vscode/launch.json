@@ -7,7 +7,7 @@
       "name": "cli",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/dist/cli.js",
-      "args": ["--trusted", "--reporter=csv", "test/ply/flows/movies-api.ply.flow"],
+      "args": ["--trusted", "--submit", "test/ply/flows/sync.ply.flow"],
       "preLaunchTask": "tsc: build - tsconfig.json"
     }
   ]
