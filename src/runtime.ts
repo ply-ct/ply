@@ -1,9 +1,11 @@
 import * as path from 'path';
 import { minimatch } from 'minimatch';
+import * as yaml from './yaml';
+import * as util from './util';
 import { Location } from './location';
 import { Retrieval } from './retrieval';
 import { PlyOptions } from './options';
-import { ResultPaths } from './result';
+import { ResultOptions, ResultPaths } from './result';
 import { TEST, BEFORE, AFTER, SUITE } from './names';
 import { TestSuite, TestCase, Before, After } from './decorators';
 import { ResponseMassagers } from './response';
@@ -39,11 +41,55 @@ export class Runtime {
         return this.retrieval.location.relativeTo(this.options.testsLocation);
     }
 
-    appendResult(line: string, level = 0, withExpected = false, comment?: string) {
-        line = line.padStart(line.length + level * (this.options.prettyIndent || 0));
-        this.results.actual.append(`${line}${comment ? '  # ' + comment : ''}\n`);
-        if (withExpected) {
+    appendResult(line: string, options: ResultOptions) {
+        line = line.padStart(line.length + (options.level || 0) * (this.options.prettyIndent || 0));
+        this.results.actual.append(`${line}${options.comment ? '  # ' + options.comment : ''}\n`);
+        if (options.withExpected) {
             this.results.expected.append(`${line}\n`);
+        }
+    }
+
+    updateResult(name: string, line: string, options: ResultOptions) {
+        if (options.subflow) {
+            // parallel not supported in subflow
+            this.appendResult(line, options);
+            return;
+        }
+        line = line.padStart(line.length + (options.level || 0) * (this.options.prettyIndent || 0));
+        const actual = yaml.load(
+            this.results.actual.location.path,
+            this.results.actual.read()!,
+            true
+        );
+        const loc = actual[name].__end;
+        this.results.actual.insert(
+            `${line}${options.comment ? '  # ' + options.comment : ''}`,
+            loc + 1
+        );
+        if (options.withExpected) {
+            this.results.expected.insert(`${line}`, loc + 1);
+        }
+    }
+
+    /**
+     * Take into account comments in expected yaml.
+     */
+    async padActualStart(name: string, instNum: number) {
+        const expectedYaml = await this.results.getExpectedYaml(name, instNum);
+        if (expectedYaml.start > 0) {
+            const actualYaml = this.results.getActualYaml(name, instNum);
+            if (expectedYaml.start > actualYaml.start) {
+                const extraExpectedLines = util
+                    .lines(expectedYaml.text)
+                    .slice(actualYaml.start, expectedYaml.start);
+                const extraWhite = extraExpectedLines.filter((line) => {
+                    const trimmed = line.trim();
+                    return !trimmed.length || trimmed.startsWith('#');
+                }).length;
+                if (extraWhite) {
+                    this.results.actual.padLines(actualYaml.start, extraWhite);
+                }
+            }
         }
     }
 }

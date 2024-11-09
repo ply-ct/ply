@@ -62,6 +62,14 @@ export class Retrieval {
         }
     }
 
+    insert(contents: string, start: number) {
+        if (this.storage) {
+            this.storage.insert(contents, start);
+        } else {
+            throw new Error('Retrieval.insert() not supported for remote path: ' + this);
+        }
+    }
+
     remove() {
         if (this.storage) {
             this.storage.remove();

@@ -8,7 +8,7 @@ import { Runtime } from './runtime';
 import { PlyStep } from './step';
 import { Suite } from './suite';
 import { Request } from './request';
-import { Result } from './result';
+import { Result, ResultOptions } from './result';
 import { RUN_ID } from './names';
 import * as util from './util';
 import { replaceLine } from './replace';
@@ -522,37 +522,42 @@ export class PlyFlow implements Flow {
 
             this.emit('start', 'subflow', subflow.instance);
             this.logger.info('Executing subflow', subflow.subflow.name);
-            runtime.appendResult(
-                `${subflow.subflow.name}:`,
-                0,
-                runOptions?.createExpected,
-                util.timestamp(subflow.instance.start)
-            );
-            runtime.appendResult(`id: ${subflow.subflow.id}`, 1, runOptions?.createExpected);
+            const resOpts: ResultOptions = {
+                level: 0,
+                withExpected: runOptions?.createExpected,
+                subflow: subflow.subflow.name
+            };
+            runtime.appendResult(`${subflow.subflow.name}:`, {
+                ...resOpts,
+                level: 0,
+                comment: util.timestamp(subflow.instance.start)
+            });
+            runtime.appendResult(`id: ${subflow.subflow.id}`, {
+                ...resOpts,
+                level: 1
+            });
             await this.exec(startStep, runtime, values, undefined, runOptions, runNum, subflow);
             subflow.instance.end = new Date();
             const elapsed = subflow.instance.end.getTime() - subflow.instance.start.getTime();
             if (this.results.latestBad()) {
                 subflow.instance.status =
                     this.results.latest.status === 'Errored' ? 'Errored' : 'Failed';
-                runtime.appendResult(
-                    `status: ${subflow.instance.status}`,
-                    1,
-                    runOptions?.createExpected,
-                    `${elapsed} ms`
-                );
+                runtime.updateResult(subflow.subflow.name, `status: ${subflow.instance.status}`, {
+                    ...resOpts,
+                    level: 1,
+                    comment: `${elapsed} ms`
+                });
                 this.emit('error', 'subflow', subflow.instance);
                 if (runtime.options.bail) {
                     return;
                 }
             } else {
                 subflow.instance.status = 'Completed';
-                runtime.appendResult(
-                    `status: ${subflow.instance.status}`,
-                    1,
-                    runOptions?.createExpected,
-                    `${elapsed} ms`
-                );
+                runtime.updateResult(subflow.subflow.name, `status: ${subflow.instance.status}`, {
+                    ...resOpts,
+                    level: 1,
+                    comment: `${elapsed} ms`
+                });
                 this.emit('finish', 'subflow', subflow.instance);
             }
         }

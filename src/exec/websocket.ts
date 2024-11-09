@@ -30,11 +30,7 @@ export class WebsocketExec extends StepExec {
                 ws.close();
                 let stepData = data.toString();
                 if (isJson(stepData)) {
-                    stepData = JSON.stringify(
-                        JSON.parse(stepData),
-                        null,
-                        context.runtime.options.prettyIndent
-                    );
+                    stepData = JSON.parse(stepData);
                 }
                 const outcome = await context.verifyData(stepData);
                 resolve(outcome);

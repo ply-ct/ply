@@ -33,10 +33,10 @@ steps:
           display: type=Elbow,x=480,y=120,xs=324&636,ys=120&120
     attributes:
       display: x=220,y=80,w=100,h=80
-      timeout: '10000'
+      timeout: '100000'
       url: ${wsUrl}/updates
   - id: s5
-    name: 2 secs
+    name: 3 secs
     path: delay
     links:
       - id: l7
@@ -45,7 +45,7 @@ steps:
           display: type=Elbow,x=345,y=260,xs=324&366,ys=260&260
     attributes:
       display: x=220,y=220,w=100,h=80
-      interval: '2000'
+      interval: '3000'
   - id: s7
     name: |-
       Update

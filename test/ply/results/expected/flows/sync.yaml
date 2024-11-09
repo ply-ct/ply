@@ -3,13 +3,13 @@ Start:
   status: Completed
 2 secs:
   id: s4
+  status: Completed
 Log Path 2:
   id: s5
   status: Completed
 Sync:
   id: s6
   status: Waiting
-  status: Completed
 Log Path 1:
   id: s3
   status: Completed

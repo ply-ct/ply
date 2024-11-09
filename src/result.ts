@@ -54,6 +54,13 @@ export interface Result extends Outcome {
     response?: Response;
 }
 
+export interface ResultOptions {
+    subflow?: string;
+    level: number;
+    comment?: string;
+    withExpected?: boolean;
+}
+
 export class PlyResult implements Result {
     status: 'Pending' | 'Passed' | 'Failed' | 'Errored' | 'Submitted' | 'Waiting' = 'Pending';
     message?: string;

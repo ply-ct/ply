@@ -6,7 +6,7 @@ import { Request } from './request';
 import { Runtime } from './runtime';
 import { Suite } from './suite';
 import { PlyTest, Test } from './test';
-import { Result } from './result';
+import { Result, ResultOptions } from './result';
 import { Values } from './values';
 import { ExecFactory } from './exec/factory';
 import { ContextImpl } from './exec/impl';
@@ -64,16 +64,22 @@ export class PlyStep implements Step, PlyTest {
         const level = this.subflow ? 1 : 0;
         const createExpected = runOptions?.createExpected;
 
+        let key = this.stepName;
+        if (instNum) key += `_${instNum}`;
+
+        const resOpts: ResultOptions = {
+            level: 0,
+            withExpected: createExpected,
+            subflow: this.subflow?.name
+        };
+
         try {
-            let key = this.stepName;
-            if (instNum) key += `_${instNum}`;
-            runtime.appendResult(
-                `${key}:`,
+            runtime.appendResult(`${key}:`, {
+                ...resOpts,
                 level,
-                createExpected,
-                util.timestamp(this.instance.start)
-            );
-            runtime.appendResult(`id: ${this.step.id}`, level + 1, createExpected);
+                comment: util.timestamp(this.instance.start)
+            });
+            runtime.appendResult(`id: ${this.step.id}`, { ...resOpts, level: level + 1 });
 
             const context = new ContextImpl({
                 name: this.name,
@@ -99,7 +105,7 @@ export class PlyStep implements Step, PlyTest {
                 !runOptions?.submit &&
                 !createExpected
             ) {
-                await this.padActualStart(this.subflow.id, instNum);
+                await this.requestSuite.runtime.padActualStart(this.subflow.id, instNum);
             }
 
             if (!runOptions?.trusted) {
@@ -133,7 +139,7 @@ export class PlyStep implements Step, PlyTest {
             this.instance.end = new Date();
 
             if (!runOptions?.submit && !createExpected) {
-                await this.padActualStart(this.name, instNum);
+                await this.requestSuite.runtime.padActualStart(this.name, instNum);
             }
 
             result = {
@@ -162,32 +168,33 @@ export class PlyStep implements Step, PlyTest {
                 typeof this.instance.data === 'string'
                     ? this.instance.data
                     : JSON.stringify(this.instance.data, null, runtime.options.prettyIndent);
-            runtime.appendResult('data: |', level + 1, createExpected);
+            runtime.updateResult(key, 'data: |', { ...resOpts, level: level + 1 });
             for (const line of util.lines(dataStr)) {
-                runtime.appendResult(line, level + 2, createExpected);
+                runtime.updateResult(key, line, { ...resOpts, level: level + 2 });
             }
         }
 
         // append status, result and message to actual result
         if (this.instance.end) {
             const elapsed = this.instance.end.getTime() - this.instance.start.getTime();
-            runtime.appendResult(
-                `status: ${this.instance.status}`,
-                level + 1,
-                createExpected,
-                `${elapsed} ms`
-            );
+            runtime.updateResult(key, `status: ${this.instance.status}`, {
+                ...resOpts,
+                level: level + 1,
+                comment: `${elapsed} ms`
+            });
 
             if (typeof stepRes === 'boolean' || typeof stepRes === 'number' || stepRes) {
                 this.instance.result = '' + stepRes;
-                runtime.appendResult(`result: ${this.instance.result}`, level + 1, createExpected);
+                runtime.updateResult(key, `result: ${this.instance.result}`, {
+                    ...resOpts,
+                    level: level + 1
+                });
             }
             if (this.instance.message) {
-                runtime.appendResult(
-                    `message: '${this.instance.message}'`,
-                    level + 1,
-                    createExpected
-                );
+                runtime.updateResult(key, `message: '${this.instance.message}'`, {
+                    ...resOpts,
+                    level: level + 1
+                });
             }
         }
 
@@ -199,19 +206,6 @@ export class PlyStep implements Step, PlyTest {
             return 'Completed';
         } else {
             return execResult.status;
-        }
-    }
-
-    private async padActualStart(name: string, instNum: number) {
-        const expectedYaml = await this.requestSuite.runtime.results.getExpectedYaml(name, instNum);
-        if (expectedYaml.start > 0) {
-            const actualYaml = this.requestSuite.runtime.results.getActualYaml(name, instNum);
-            if (expectedYaml.start > actualYaml.start) {
-                this.requestSuite.runtime.results.actual.padLines(
-                    actualYaml.start,
-                    expectedYaml.start - actualYaml.start
-                );
-            }
         }
     }
 }
