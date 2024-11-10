@@ -1,6 +1,6 @@
 # Change Log
 
-## [3.3.0](https://github.com/ply-ct/ply/tree/3.2.19) (2023-10-29)
+## [3.3.0](https://github.com/ply-ct/ply/tree/3.2.19) (2023-11-09)
 - Chore: Accumulated vulnerabilities [\#98](https://github.com/ply-ct/ply/issues/98)
 - Enhancement: WebSocket client step [\#99](https://github.com/ply-ct/ply/issues/99)
 
