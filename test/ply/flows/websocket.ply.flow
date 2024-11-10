@@ -1,0 +1,93 @@
+attributes:
+  NodeStyle: BoxIcon
+  display: x=23,y=18,w=156,h=27
+steps:
+  - id: s1
+    name: Start
+    path: start
+    attributes:
+      display: x=56,y=97,w=60,h=40
+    links:
+      - id: l1
+        attributes:
+          display: type=Elbow,x=169,y=117,xs=120&216,ys=117&117
+        to: s3
+      - id: l3
+        to: s5
+        attributes:
+          display: type=Elbow,x=167,y=187,xs=120&216,ys=117&260
+  - id: s2
+    name: Stop
+    path: stop
+    attributes:
+      display: x=810,y=100,w=60,h=40
+  - id: s3
+    name: |-
+      WebSocket
+      Subscribe
+    path: websocket
+    links:
+      - id: l6
+        to: s9
+        attributes:
+          display: type=Elbow,x=480,y=120,xs=324&636,ys=120&120
+    attributes:
+      display: x=220,y=80,w=100,h=80
+      timeout: '100000'
+      url: ${wsUrl}/updates
+  - id: s5
+    name: 3 secs
+    path: delay
+    links:
+      - id: l7
+        to: s8
+        attributes:
+          display: type=Elbow,x=345,y=260,xs=324&366,ys=260&260
+    attributes:
+      display: x=220,y=220,w=100,h=80
+      interval: '3000'
+  - id: s7
+    name: |-
+      Update
+      Rating
+    path: request
+    links:
+      - id: l10
+        to: s9
+        attributes:
+          display: type=Elbow,x=658,y=212,xs=624&690,ys=260&164
+    attributes:
+      body: |-
+        {
+          "rating": 5.0
+        }
+      display: x=520,y=220,w=100,h=80
+      headers: '[["Accept","application/json"],["Content-Type","application/json"]]'
+      method: PATCH
+      url: ${baseUrl}/movies/${@s8.response.body.movies[0].id}
+  - id: s8
+    name: |-
+      Get Movie
+      by Title
+    path: request
+    links:
+      - id: l9
+        to: s7
+        attributes:
+          display: type=Elbow,x=497,y=260,xs=474&516,ys=260&260
+    attributes:
+      display: x=370,y=220,w=100,h=80
+      url: ${baseUrl}/movies?title=Frankenstein
+      method: GET
+      headers: '[["Accept","application/json"]]'
+  - id: s9
+    name: Sync
+    path: sync
+    links:
+      - id: l11
+        to: s2
+        attributes:
+          display: type=Elbow,x=779,y=120,xs=744&806,ys=120&120
+    attributes:
+      display: x=640,y=80,w=100,h=80
+      mode: Await all incoming links

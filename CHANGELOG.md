@@ -1,5 +1,9 @@
 # Change Log
 
+## [3.3.0](https://github.com/ply-ct/ply/tree/3.2.19) (2023-10-29)
+- Chore: Accumulated vulnerabilities [\#98](https://github.com/ply-ct/ply/issues/98)
+- Enhancement: WebSocket client step [\#99](https://github.com/ply-ct/ply/issues/99)
+
 ## [3.2.18](https://github.com/ply-ct/ply/tree/3.2.18) (2023-10-12)
 - Enhancement: Extensibility for custom reporters [\#56](https://github.com/ply-ct/ply/issues/56)
 - Bug: Multiline cell value in CSV reporter [\#92](https://github.com/ply-ct/ply/issues/92)

@@ -1,27 +1,19 @@
-import { Values } from '../values';
-import { Step, StepInstance } from '../flowbee';
-import { ExecResult, PlyExecBase } from './exec';
-import { Runtime } from '../runtime';
-import { Log } from '../log';
-import { RunOptions } from '../options';
+import { StepExec, ExecResult } from './exec';
+import { ExecContext } from './context';
 
 /**
  * Cannot have side-effects (no updating values);
  */
-export class DeciderExec extends PlyExecBase {
-    constructor(readonly step: Step, readonly instance: StepInstance, readonly logger: Log) {
-        super(step, instance, logger);
-    }
-
-    async run(_runtime: Runtime, values: Values, runOptions?: RunOptions): Promise<ExecResult> {
-        const expression = this.step.attributes?.expression;
+export class DecideExec extends StepExec {
+    async run(context: ExecContext): Promise<ExecResult> {
+        const expression = context.step.attributes?.expression;
         if (expression) {
             let expr = expression;
             if (!this.isExpression(expr)) {
                 expr = '${' + expr + '}';
             }
-            const result = this.evaluateToString(expr, values, runOptions?.trusted);
-            this.instance.result = result;
+            const result = context.evaluateToString(expr);
+            context.stepInstance.result = result;
             return { status: 'Passed' };
         } else {
             return { status: 'Errored', message: 'Missing attribute: expression' };

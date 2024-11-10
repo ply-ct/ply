@@ -28,6 +28,7 @@ export interface OverallResults {
     Errored: number;
     Pending: number;
     Submitted: number;
+    Waiting: number;
 }
 
 export interface PlyResults {

@@ -1,16 +1,8 @@
-import { Step, StepInstance } from '../../../src/flowbee';
-import { ExecResult, PlyExecBase } from '../../../src/exec/exec';
-import { Log } from '../../../src/log';
-import { Runtime } from '../../../src/runtime';
-import { Values } from '../../../src/values';
-import { RunOptions } from '../../../src/options';
+import { StepExec, ExecResult } from '../../../src/exec/exec';
+import { ExecContext } from '../../../src/exec/context';
 
-export default class DataStep extends PlyExecBase {
-    constructor(readonly step: Step, readonly instance: StepInstance, readonly logger: Log) {
-        super(step, instance, logger);
-    }
-
-    async run(runtime: Runtime, values: Values, runOptions?: RunOptions): Promise<ExecResult> {
+export default class DataStep extends StepExec {
+    async run(context: ExecContext): Promise<ExecResult> {
         const data = {
             title: 'Dracula',
             year: 1931,
@@ -23,6 +15,6 @@ export default class DataStep extends PlyExecBase {
             }
         };
 
-        return await this.verifyData(runtime, data, values, runOptions);
+        return await context.verifyData(data);
     }
 }

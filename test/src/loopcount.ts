@@ -1,15 +1,9 @@
-import { Step, StepInstance } from '../../src/flowbee';
-import { ExecResult, PlyExecBase } from '../../src/exec/exec';
-import { Logger } from '../../src/logger';
-import { Runtime } from '../../src/runtime';
+import { ExecResult, StepExec } from '../../src/exec/exec';
+import { ExecContext } from '../../src/exec/context';
 
-export default class IncrementLoopCount extends PlyExecBase {
-    constructor(readonly step: Step, readonly instance: StepInstance, readonly logger: Logger) {
-        super(step, instance, logger);
-    }
-
-    async run(_runtime: Runtime, values: any): Promise<ExecResult> {
-        values.loopCount += 1;
+export default class DataStep extends StepExec {
+    async run(context: ExecContext): Promise<ExecResult> {
+        context.values.loopCount += 1;
         return { status: 'Passed' };
     }
 }

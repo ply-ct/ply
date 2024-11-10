@@ -8,7 +8,7 @@ import { Runtime } from './runtime';
 import { PlyStep } from './step';
 import { Suite } from './suite';
 import { Request } from './request';
-import { Result } from './result';
+import { Result, ResultOptions } from './result';
 import { RUN_ID } from './names';
 import * as util from './util';
 import { replaceLine } from './replace';
@@ -289,7 +289,7 @@ export class PlyFlow implements Flow {
             return this.endFlow();
         }
 
-        await this.exec(startStep, runtime, values, runOptions, runNum);
+        await this.exec(startStep, runtime, values, undefined, runOptions, runNum);
         if (this.results.latestBad() && runtime.options.bail) {
             return this.endFlow();
         }
@@ -317,6 +317,7 @@ export class PlyFlow implements Flow {
         step: flowbee.Step,
         runtime: Runtime,
         values: Values,
+        incomingLinkId?: string,
         runOptions?: RunOptions,
         runNum?: number,
         subflow?: Subflow
@@ -340,8 +341,8 @@ export class PlyFlow implements Flow {
             step,
             this.requestSuite,
             this.logger,
-            this.flow.path,
-            this.instance.id,
+            this.flow,
+            this.instance,
             subflow?.subflow
         );
 
@@ -408,6 +409,10 @@ export class PlyFlow implements Flow {
             this.requestSuite.logOutcome(plyStep, result, runNum, plyStep.stepName);
         }
 
+        if (result.status === 'Waiting') {
+            return;
+        }
+
         if (this.results.latestBad()) {
             this.instance.status = plyStep.instance.status;
             if (subflow) subflow.instance.status = plyStep.instance.status;
@@ -426,11 +431,12 @@ export class PlyFlow implements Flow {
             runOptions,
             runNum
         );
+
         if (this.results.latestBad() && runtime.options.bail) {
             return;
         }
 
-        const outSteps: flowbee.Step[] = [];
+        const outSteps: { [linkId: string]: flowbee.Step } = {};
         if (step.links) {
             for (const link of step.links) {
                 const result = plyStep.instance.result?.trim();
@@ -442,7 +448,7 @@ export class PlyFlow implements Flow {
                         outStep = this.flow.steps?.find((s) => s.id === link.to);
                     }
                     if (outStep) {
-                        outSteps.push(outStep);
+                        outSteps[link.id] = outStep;
                     } else {
                         this.stepError(
                             plyStep,
@@ -452,7 +458,7 @@ export class PlyFlow implements Flow {
                 }
             }
         }
-        if (outSteps.length === 0 && step.path !== 'stop') {
+        if (Object.keys(outSteps).length === 0 && step.path !== 'stop') {
             this.stepError(
                 plyStep,
                 `No outbound link from step ${step.id} matches result: ${plyStep.instance.result}`
@@ -461,8 +467,8 @@ export class PlyFlow implements Flow {
 
         // steps can execute in parallel
         await Promise.all(
-            outSteps.map((outStep) =>
-                this.exec(outStep, runtime, values, runOptions, runNum, subflow)
+            Object.keys(outSteps).map((linkId) =>
+                this.exec(outSteps[linkId], runtime, values, linkId, runOptions, runNum, subflow)
             )
         );
     }
@@ -516,37 +522,42 @@ export class PlyFlow implements Flow {
 
             this.emit('start', 'subflow', subflow.instance);
             this.logger.info('Executing subflow', subflow.subflow.name);
-            runtime.appendResult(
-                `${subflow.subflow.name}:`,
-                0,
-                runOptions?.createExpected,
-                util.timestamp(subflow.instance.start)
-            );
-            runtime.appendResult(`id: ${subflow.subflow.id}`, 1, runOptions?.createExpected);
-            await this.exec(startStep, runtime, values, runOptions, runNum, subflow);
+            const resOpts: ResultOptions = {
+                level: 0,
+                withExpected: runOptions?.createExpected,
+                subflow: subflow.subflow.name
+            };
+            runtime.appendResult(`${subflow.subflow.name}:`, {
+                ...resOpts,
+                level: 0,
+                comment: util.timestamp(subflow.instance.start)
+            });
+            runtime.appendResult(`id: ${subflow.subflow.id}`, {
+                ...resOpts,
+                level: 1
+            });
+            await this.exec(startStep, runtime, values, undefined, runOptions, runNum, subflow);
             subflow.instance.end = new Date();
             const elapsed = subflow.instance.end.getTime() - subflow.instance.start.getTime();
             if (this.results.latestBad()) {
                 subflow.instance.status =
                     this.results.latest.status === 'Errored' ? 'Errored' : 'Failed';
-                runtime.appendResult(
-                    `status: ${subflow.instance.status}`,
-                    1,
-                    runOptions?.createExpected,
-                    `${elapsed} ms`
-                );
+                runtime.updateResult(subflow.subflow.name, `status: ${subflow.instance.status}`, {
+                    ...resOpts,
+                    level: 1,
+                    comment: `${elapsed} ms`
+                });
                 this.emit('error', 'subflow', subflow.instance);
                 if (runtime.options.bail) {
                     return;
                 }
             } else {
                 subflow.instance.status = 'Completed';
-                runtime.appendResult(
-                    `status: ${subflow.instance.status}`,
-                    1,
-                    runOptions?.createExpected,
-                    `${elapsed} ms`
-                );
+                runtime.updateResult(subflow.subflow.name, `status: ${subflow.instance.status}`, {
+                    ...resOpts,
+                    level: 1,
+                    comment: `${elapsed} ms`
+                });
                 this.emit('finish', 'subflow', subflow.instance);
             }
         }

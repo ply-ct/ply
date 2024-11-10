@@ -261,11 +261,23 @@ export class Suite<T extends Test> {
                 if (test.type === 'request') {
                     const plyResult = result as PlyResult;
                     let indent = callingCaseInfo ? this.runtime.options.prettyIndent : 0;
+                    let subflow: string | undefined;
                     if (this.callingFlowPath && test.name.startsWith('f')) {
+                        subflow = test.name.substring(1);
                         indent += this.runtime.options.prettyIndent; // subflow extra indent
                     }
                     actualYaml = { start: 0, text: this.buildResultYaml(plyResult, indent) };
-                    this.runtime.results.actual.append(actualYaml.text);
+                    let stepName = (test as any).stepName;
+                    if (stepName) {
+                        if (instNum) stepName += `_${instNum}`;
+                        this.runtime.updateResult(stepName, actualYaml.text.trimEnd(), {
+                            level: 0,
+                            withExpected: runOptions?.createExpected,
+                            subflow
+                        });
+                    } else {
+                        this.runtime.results.actual.append(actualYaml.text);
+                    }
                     if (!callingCaseInfo) {
                         if (expectedExists && this.callingFlowPath) {
                             // expectedExists based on specific request step
@@ -296,12 +308,7 @@ export class Suite<T extends Test> {
                             if (expectedYaml.start > 0 || this.callingFlowPath) {
                                 // flows need to re-read actual even if not padding
                                 actualYaml = this.runtime.results.getActualYaml(test.name, instNum);
-                                if (padActualStart && expectedYaml.start > actualYaml.start) {
-                                    this.runtime.results.actual.padLines(
-                                        actualYaml.start,
-                                        expectedYaml.start - actualYaml.start
-                                    );
-                                }
+                                this.runtime.padActualStart(test.name, instNum);
                             }
                             const verifier = new Verifier(test.name, expectedYaml, this.logger);
                             this.log.debug(
@@ -553,12 +560,16 @@ export class Suite<T extends Test> {
                 }, [])
                 .join('\n');
 
-            const expected = new Storage(this.runtime.results.expected.location.toString());
-            if (isFirst) {
-                this.log.info(`Creating expected result: ${expected}`);
-                expected.write(actualYamlText);
-            } else {
-                expected.append(actualYamlText);
+            const stepName = (test as any).stepName;
+            if (!stepName) {
+                // not in a flow: don't mess with previous behavior
+                const expected = new Storage(this.runtime.results.expected.location.toString());
+                if (isFirst) {
+                    this.log.info(`Creating expected result: ${expected}`);
+                    expected.write(actualYamlText);
+                } else {
+                    expected.append(actualYamlText);
+                }
             }
         }
     }

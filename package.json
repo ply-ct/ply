@@ -1,6 +1,6 @@
 {
   "name": "@ply-ct/ply",
-  "version": "3.2.19",
+  "version": "3.3.0",
   "description": "REST API Automated Testing",
   "main": "dist",
   "bin": {
@@ -37,7 +37,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "start-movies": "ply-movies start &",
+    "start-movies": "ply-movies start --websockets &",
     "pretest": "npm run start-movies",
     "prepublish": "npm run build",
     "mocha": "mocha --require ts-node/register",
@@ -52,7 +52,7 @@
   },
   "homepage": "https://github.com/ply-ct/ply#readme",
   "dependencies": {
-    "@ply-ct/ply-values": "^0.3.7",
+    "@ply-ct/ply-values": "^0.3.8",
     "cross-fetch": "^3.1.5",
     "csv-parse": "^5.3.5",
     "diff-match-patch": "^1.0.5",
@@ -71,11 +71,12 @@
     "stacktracey": "^2.1.8",
     "stream-transform": "^3.2.2",
     "ts-node": "^10.9.1",
+    "ws": "^8.18.0",
     "xml-formatter": "^2.6.1",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
-    "@ply-ct/ply-movies": "^1.2.5",
+    "@ply-ct/ply-movies": "^1.3.0",
     "@types/chai": "^4.3.4",
     "@types/diff-match-patch": "^1.0.32",
     "@types/glob": "^8.0.1",
@@ -83,6 +84,7 @@
     "@types/json-stable-stringify": "^1.0.34",
     "@types/mocha": "^10.0.1",
     "@types/node": "^12.12.6",
+    "@types/ws": "^8.5.12",
     "@types/yargs": "^16.0.4",
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",

@@ -353,7 +353,8 @@ export class Plier extends EventEmitter {
             Failed: 0,
             Errored: 0,
             Pending: 0,
-            Submitted: 0
+            Submitted: 0,
+            Waiting: 0
         };
 
         // requests
@@ -365,7 +366,7 @@ export class Plier extends EventEmitter {
                     throw new Error(`Plyee is not a test: ${plyee}`);
                 }
                 if (plyee.test.endsWith('.ply') && requestSuite.size()) {
-                    return requestSuite.all().values().next().value.name;
+                    return requestSuite.all().values().next().value!.name;
                 }
                 return plyee.test;
             });

@@ -1,42 +1,32 @@
-import { Values, ValuesBuilder } from '../values';
-import { Step, StepInstance, SubflowInstance } from '../flowbee';
-import { ExecResult, PlyExecBase } from './exec';
-import { Runtime } from '../runtime';
-import { Log } from '../log';
-import { RunOptions } from '../options';
-import { Ply } from '../ply';
 import * as util from '../util';
+import { StepExec, ExecResult } from './exec';
+import { ExecContext } from './context';
+import { ValuesBuilder } from '../values';
+import { Ply } from '../ply';
 import { PlyRunner } from '../runner';
 import { Suite } from '../suite';
 import { Test } from '../test';
 import { ResultStatus } from '../result';
 import { FlowResult } from '../flow';
 
-export class SubflowExec extends PlyExecBase {
-    constructor(readonly step: Step, readonly instance: StepInstance, readonly logger: Log) {
-        super(step, instance, logger);
-    }
-
-    async run(runtime: Runtime, values: Values, runOptions?: RunOptions): Promise<ExecResult> {
-        const subflowPath = this.getAttribute('subflow', values, {
-            trusted: runOptions?.trusted,
-            required: true
-        })!;
-        const subflow = await new Ply(runtime.options, this.logger).loadFlow(subflowPath);
+export class SubflowExec extends StepExec {
+    async run(context: ExecContext): Promise<ExecResult> {
+        const subflowPath = context.getAttribute('subflow', { required: true })!;
+        const subflow = await new Ply(context.runtime.options, context.logger).loadFlow(
+            subflowPath
+        );
 
         // bind subflow values
-        delete runOptions?.values;
-        const inValues = this.getAttribute('inValues', values, {
-            trusted: runOptions?.trusted
-        });
+        delete context.runOptions?.values;
+        const inValues = context.getAttribute('inValues');
         if (inValues) {
-            if (!runOptions) runOptions = {};
-            if (!runOptions.values) runOptions.values = {};
+            if (!context.runOptions) context.runOptions = {};
+            if (!context.runOptions.values) context.runOptions.values = {};
             const rows = JSON.parse(inValues);
             for (const row of rows) {
                 let rowVal: any = row[1];
                 if (this.isExpression(rowVal)) {
-                    rowVal = this.evaluateToString(rowVal, values, runOptions.trusted);
+                    rowVal = context.evaluateToString(rowVal);
                 }
                 if (('' + rowVal).trim() === '') {
                     rowVal = undefined; // empty string
@@ -46,11 +36,11 @@ export class SubflowExec extends PlyExecBase {
                     else if (row[1] === 'true' || row[1] === 'false') rowVal = row[1] === 'true';
                     else if (util.isJson(row[1])) rowVal = JSON.parse(row[1]);
                 }
-                runOptions.values[row[0]] = rowVal;
+                context.runOptions.values[row[0]] = rowVal;
             }
         }
 
-        const plyValues = new ValuesBuilder(runtime.options.valuesFiles, this.logger);
+        const plyValues = new ValuesBuilder(context.runtime.options.valuesFiles, context.logger);
         let subValues = await plyValues.read();
 
         const substeps = new Map<Suite<Test>, string[]>();
@@ -61,13 +51,11 @@ export class SubflowExec extends PlyExecBase {
             })
         );
 
-        const runner = new PlyRunner(runtime.options, substeps, subValues, this.logger);
-        await runner.runSuiteTests(subValues, runOptions);
+        const runner = new PlyRunner(context.runtime.options, substeps, subValues, context.logger);
+        await runner.runSuiteTests(subValues, context.runOptions);
 
         let outBindings: { [key: string]: string } | undefined;
-        const outValues = this.getAttribute('outValues', values, {
-            trusted: runOptions?.trusted
-        });
+        const outValues = context.getAttribute('outValues');
         if (outValues) {
             outBindings = {}; // flow value name to return value name
             for (const row of JSON.parse(outValues)) {
@@ -94,7 +82,7 @@ export class SubflowExec extends PlyExecBase {
                 const returnValues = (result as FlowResult).return;
                 if (returnValues) {
                     for (const flowValName of Object.keys(outBindings)) {
-                        values[flowValName] = returnValues[outBindings[flowValName]];
+                        context.values[flowValName] = returnValues[outBindings[flowValName]];
                     }
                 }
             }

@@ -1,18 +1,12 @@
-import { Step, StepInstance } from '../../src/flowbee';
 import ply from '../../src/index';
-import { ExecResult, PlyExecBase } from '../../src/exec/exec';
-import { Log } from '../../src/log';
-import { Runtime } from '../../src/runtime';
+import { ExecResult, StepExec } from '../../src/exec/exec';
+import { ExecContext } from '../../src/exec/context';
 import { uintArrayToBase64 } from '../../src/util';
 
-export default class Download extends PlyExecBase {
-    constructor(readonly step: Step, readonly instance: StepInstance, readonly logger: Log) {
-        super(step, instance, logger);
-    }
-
-    async run(_runtime: Runtime, values: any): Promise<ExecResult> {
+export default class DataStep extends StepExec {
+    async run(context: ExecContext): Promise<ExecResult> {
         const req = await ply.loadRequest('test/ply/requests/get-logo.ply');
-        const resp = await req.submit(values, ply.options);
+        const resp = await req.submit(context.values, ply.options);
         const str = uintArrayToBase64(new Uint8Array(resp.body));
         if (str.startsWith('iVBOR')) {
             return { status: 'Passed' };

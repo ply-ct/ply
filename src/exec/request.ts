@@ -1,44 +1,27 @@
+import { StepExec, ExecResult } from './exec';
+import { ExecContext } from './context';
 import { Values } from '../values';
-import { Step, StepInstance } from '../flowbee';
-import { ExecResult, PlyExecBase } from './exec';
-import { Suite } from '../suite';
 import { Request, PlyRequest } from '../request';
-import { Runtime } from '../runtime';
-import { RunOptions } from '../options';
-import { Log } from '../log';
 import { replace } from '../replace';
 
-export class RequestExec extends PlyExecBase {
-    constructor(
-        private readonly name: string, // unique
-        private readonly requestSuite: Suite<Request>, // unique
-        readonly step: Step,
-        readonly instance: StepInstance,
-        readonly logger: Log,
-        private readonly runNum?: number,
-        private readonly instNum?: number
-    ) {
-        super(step, instance, logger);
-    }
-
-    async run(runtime: Runtime, values: Values, runOptions?: RunOptions): Promise<ExecResult> {
-        const trusted = runOptions?.trusted;
-        const url = this.getAttribute('url', values, { trusted, required: true });
-        const method = this.getAttribute('method', values, { trusted, required: true });
+export class RequestExec extends StepExec {
+    async run(context: ExecContext): Promise<ExecResult> {
+        const url = context.getAttribute('url', { required: true });
+        const method = context.getAttribute('method', { required: true });
         const headers: { [key: string]: string } = {};
-        if (this.step.attributes?.headers) {
-            const rows = JSON.parse(this.step.attributes.headers);
+        if (context.step.attributes?.headers) {
+            const rows = JSON.parse(context.step.attributes.headers);
             for (const row of rows) {
-                headers[row[0]] = replace(row[1], values, {
-                    logger: this.logger,
-                    trusted: runOptions?.trusted
+                headers[row[0]] = replace(row[1], context.values, {
+                    logger: context.logger,
+                    trusted: context.runOptions?.trusted
                 });
             }
         }
-        let body = this.getAttribute('body', values, { trusted });
+        let body = context.getAttribute('body');
 
         const requestObj: Request = {
-            name: this.name,
+            name: context.name,
             type: 'request',
             url: url!, // required above
             method: method!, // required above
@@ -50,35 +33,43 @@ export class RequestExec extends PlyExecBase {
             }
         };
 
-        const request = new PlyRequest(this.name, requestObj, this.logger, runtime.retrieval);
+        const request = new PlyRequest(
+            context.name,
+            requestObj,
+            context.logger,
+            context.runtime.retrieval
+        );
         if (request.isGraphQl) {
             request.graphQl = body;
-            body = JSON.stringify({ query: body }, null, runtime.options?.prettyIndent);
+            body = JSON.stringify({ query: body }, null, context.runtime.options?.prettyIndent);
         }
-        (request as any).stepName = this.step.name.replace(/\r?\n/g, ' ');
+        (request as any).stepName = context.step.name.replace(/\r?\n/g, ' ');
 
-        this.instance.data = {
-            request: request.getRequest(values, runtime.options)
+        context.stepInstance.data = {
+            request: request.getRequest(context.values, context.runtime.options)
         };
 
-        if (this.step.attributes?.submit === 'true') {
-            const response = await request.submit(values, runtime.options, {
-                ...runOptions,
+        if (context.step.attributes?.submit === 'true') {
+            const response = await request.submit(context.values, context.runtime.options, {
+                ...context.runOptions,
                 submit: true
             });
-            this.instance.data.response = response;
+            context.stepInstance.data.response = response;
         } else {
-            this.requestSuite.tests[this.name] = request;
-            const result = await this.requestSuite.run(
-                this.name,
-                values,
-                runOptions,
-                this.runNum,
-                this.instNum
+            if (!context.requestSuite) {
+                throw new Error(`Request suite not found for request: ${context.name}`);
+            }
+            context.requestSuite.tests[context.name] = request;
+            const result = await context.requestSuite.run(
+                context.name,
+                context.values,
+                context.runOptions,
+                context.runNum,
+                context.instNum
             );
             if (result.status !== 'Passed' && result.status !== 'Submitted') {
-                this.instance.status = result.status === 'Failed' ? 'Failed' : 'Errored';
-                this.instance.message = result.message;
+                context.stepInstance.status = result.status === 'Failed' ? 'Failed' : 'Errored';
+                context.stepInstance.message = result.message;
             }
             if (result.response) {
                 let response = result.response;
@@ -89,20 +80,20 @@ export class RequestExec extends PlyExecBase {
                         body: JSON.stringify(
                             result.response.body,
                             null,
-                            runtime.options.prettyIndent
+                            context.runtime.options.prettyIndent
                         )
                     };
                 }
-                this.instance.data.response = response;
+                context.stepInstance.data.response = response;
             }
         }
 
-        if (this.instance.status === 'In Progress') {
+        if (context.stepInstance.status === 'In Progress') {
             // not overwritten by step execution
-            this.instance.status = 'Completed';
+            context.stepInstance.status = 'Completed';
         }
 
-        return this.mapToExecResult(this.instance, runOptions);
+        return this.mapToExecResult(context.stepInstance, context.runOptions);
     }
 
     isTrustRequired(): boolean {

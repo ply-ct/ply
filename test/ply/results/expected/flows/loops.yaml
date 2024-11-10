@@ -4,11 +4,11 @@ Start:
 Get Movie:
   id: s3
   request:
-    url: ${baseUrl}/movies?title=Frankenstein
+    url: http://localhost:3000/movies?title=Frankenstein
     method: GET
     headers:
       Accept: application/json
-  response:
+  response:  # 5 ms
     status:
       code: 200
       message: OK
@@ -70,11 +70,11 @@ Wait a Little:
 Get Movie_1:
   id: s3
   request:
-    url: ${baseUrl}/movies?title=Island of Lost Souls
+    url: http://localhost:3000/movies?title=Island of Lost Souls
     method: GET
     headers:
       Accept: application/json
-  response:
+  response:  # 3 ms
     status:
       code: 200
       message: OK
@@ -136,11 +136,11 @@ Wait a Little_1:
 Get Movie_2:
   id: s3
   request:
-    url: ${baseUrl}/movies?title=The Invisible Man
+    url: http://localhost:3000/movies?title=The Invisible Man
     method: GET
     headers:
       Accept: application/json
-  response:
+  response:  # 4 ms
     status:
       code: 200
       message: OK

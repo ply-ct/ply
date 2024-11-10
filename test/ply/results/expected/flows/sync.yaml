@@ -1,0 +1,21 @@
+Start:
+  id: s1
+  status: Completed
+2 secs:
+  id: s4
+  status: Completed
+Log Path 2:
+  id: s5
+  status: Completed
+Sync:
+  id: s6
+  status: Waiting
+Log Path 1:
+  id: s3
+  status: Completed
+Sync_1:
+  id: s6
+  status: Completed
+Stop:
+  id: s2
+  status: Completed

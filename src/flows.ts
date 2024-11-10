@@ -202,8 +202,8 @@ export class FlowSuite extends Suite<Step> {
                 step.step,
                 requestSuite,
                 this.logger,
-                this.plyFlow.flow.path,
-                '',
+                this.plyFlow.flow,
+                this.plyFlow.instance,
                 subflow
             );
 

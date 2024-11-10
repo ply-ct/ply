@@ -1,0 +1,143 @@
+Start:
+  id: s1
+  status: Completed
+WebSocket Subscribe:
+  id: s3
+  data: |
+    {
+      "action": "update",
+      "movie": {
+        "credits": [
+          {
+            "name": "James Whale",
+            "role": "director"
+          },
+          {
+            "name": "Boris Karloff",
+            "role": "actor"
+          },
+          {
+            "name": "Colin Clive",
+            "role": "actor"
+          },
+          {
+            "name": "Mae Clarke",
+            "role": "actor"
+          },
+          {
+            "name": "John Boles",
+            "role": "actor"
+          },
+          {
+            "name": "Dwight Frye",
+            "role": "actor"
+          }
+        ],
+        "description": "Frankenstein solidified Universal's place as the premier horror studio of the era, and stands as the definitive American take on the school of German Expressionism.",
+        "id": "e2bca0d",
+        "poster": "frank.jpg",
+        "rating": 5,
+        "title": "Frankenstein",
+        "webRef": {
+          "ref": "tt0021884",
+          "site": "imdb.com"
+        },
+        "year": 1931
+      }
+    }
+  status: Completed
+3 secs:
+  id: s5
+  status: Completed
+Get Movie by Title:
+  id: s8
+  request:
+    url: http://localhost:3000/movies?title=Frankenstein
+    method: GET
+    headers:
+      Accept: application/json
+  response:  # 11 ms
+    status:
+      code: 200
+      message: OK
+    headers:
+      content-type: application/json; charset=utf-8
+    body: |-
+      {
+        "movies": [
+          {
+            "credits": [
+              {
+                "name": "James Whale",
+                "role": "director"
+              },
+              {
+                "name": "Boris Karloff",
+                "role": "actor"
+              },
+              {
+                "name": "Colin Clive",
+                "role": "actor"
+              },
+              {
+                "name": "Mae Clarke",
+                "role": "actor"
+              },
+              {
+                "name": "John Boles",
+                "role": "actor"
+              },
+              {
+                "name": "Dwight Frye",
+                "role": "actor"
+              }
+            ],
+            "description": "Frankenstein solidified Universal's place as the premier horror studio of the era, and stands as the definitive American take on the school of German Expressionism.",
+            "id": "e2bca0d",
+            "poster": "frank.jpg",
+            "rating": 5,
+            "title": "Frankenstein",
+            "webRef": {
+              "ref": "tt0021884",
+              "site": "imdb.com"
+            },
+            "year": 1931
+          }
+        ]
+      }
+  status: Completed
+Update Rating:
+  id: s7
+  request:
+    url: http://localhost:3000/movies/e2bca0d
+    method: PATCH
+    headers:
+      Accept: application/json
+      Content-Type: application/json
+    body: |-
+      {
+        "rating": 5.0
+      }
+  response:  # 48 ms
+    status:
+      code: 200
+      message: OK
+    headers:
+      content-type: application/json; charset=utf-8
+    body: |-
+      {
+        "status": {
+          "code": 200,
+          "message": "OK"
+        }
+      }
+  status: Completed
+Sync:
+  id: s9
+  status: Waiting
+Sync_1:
+  id: s9
+  status: Completed
+Stop:
+  id: s2
+  status: Completed

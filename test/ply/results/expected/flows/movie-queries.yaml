@@ -5,11 +5,11 @@ Start:
 Movies by Year & Rating:
   id: s3
   request:
-    url: ${baseUrl}/movies?year=${year}&rating=${rating}
+    url: http://localhost:3000/movies?year=1931&rating=5
     method: GET
     headers:
       Accept: application/json
-  response:
+  response: # 5 ms
     status:
       code: 200
       message: OK
@@ -46,15 +46,15 @@ Movies by Year & Rating:
               }
             ],
             "description": "What's even more amazing than Lugosi's out-of-body performance is the fact that the finest horror movie ever made was filmed within 2 years of the advent of talking pictures.",
-            "id": "${~[a-f0-9]}+",
+            "id": "269b34c1",
             "poster": "drac.jpg",
-            "rating": ${rating},
+            "rating": 5,
             "title": "Dracula",
             "webRef": {
               "ref": "tt0021814",
               "site": "imdb.com"
             },
-            "year": ${year}
+            "year": 1931
           },
           {
             "credits": [
@@ -84,15 +84,15 @@ Movies by Year & Rating:
               }
             ],
             "description": "Frankenstein solidified Universal's place as the premier horror studio of the era, and stands as the definitive American take on the school of German Expressionism.",
-            "id": "${~[a-f0-9]}+",
+            "id": "e2bca0d",
             "poster": "frank.jpg",
-            "rating": ${rating},
+            "rating": 5,
             "title": "Frankenstein",
             "webRef": {
               "ref": "tt0021884",
               "site": "imdb.com"
             },
-            "year": ${year}
+            "year": 1931
           }
         ]
       }
@@ -100,11 +100,11 @@ Movies by Year & Rating:
 Movie by ID:
   id: s4
   request:
-    url: ${baseUrl}/movies/${@s3.response.body.movies[0].id}
+    url: http://localhost:3000/movies/269b34c1
     method: GET
     headers:
       Accept: application/json
-  response:
+  response: # 63 ms
     status:
       code: 200
       message: OK
@@ -139,7 +139,7 @@ Movie by ID:
           }
         ],
         "description": "What's even more amazing than Lugosi's out-of-body performance is the fact that the finest horror movie ever made was filmed within 2 years of the advent of talking pictures.",
-        "id": "${@s3.response.body.movies[0].id}",
+        "id": "269b34c1",
         "poster": "drac.jpg",
         "rating": 5,
         "title": "Dracula",
@@ -153,11 +153,11 @@ Movie by ID:
 Great Films of 1935:
   id: s5
   request:
-    url: ${baseUrl}/movies?${queries.highlyRated1935}
+    url: http://localhost:3000/movies?year=1935&rating=>4&sort=rating&descending=true
     method: GET
     headers:
       Accept: application/json
-  response:
+  response: # 5 ms
     status:
       code: 200
       message: OK
@@ -194,7 +194,7 @@ Great Films of 1935:
               }
             ],
             "description": "James Whale's poignant, horrifying, hilarious masterpiece demonstrates his genius and surpasses the original as a cathartic, visionary tour de force.",
-            "id": "${~[a-f0-9]}+",
+            "id": "f236166",
             "poster": "tbof.jpg",
             "rating": 5,
             "title": "Bride of Frankenstein",
@@ -232,7 +232,7 @@ Great Films of 1935:
               }
             ],
             "description": "The best of Hitchcock's early features, with a truly thrilling series of chase sequences and a richly developed romantic interest; only slightly sullied by the ludicrous shenanigans during the last five minutes.",
-            "id": "${~[a-f0-9]}+",
+            "id": "494ecd62",
             "poster": "ttns.jpg",
             "rating": 4.5,
             "title": "The Thirty-Nine Steps",
