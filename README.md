@@ -3,7 +3,7 @@
 </a>
 <br><br>
 <a href="https://github.com/ply-ct/ply/actions">
-  <img src="https://github.com/ply-ct/ply/workflows/build/badge.svg" />
+  <img src="https://github.com/ply-ct/ply/actions/workflows/build-test.yaml/badge.svg" />
 </a>
 <a href="https://github.com/ply-ct/ply/actions">
   <img src="https://ply-ct.org/badges/ply-ct/ply/workflows/build" />
